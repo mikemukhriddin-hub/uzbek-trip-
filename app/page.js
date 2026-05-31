@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { Compass, Sparkles, MapPin, CheckCircle, XCircle, Languages, AlertCircle, Lock, Info } from 'lucide-react';
+import { Compass, Sparkles, MapPin, CheckCircle, XCircle, Languages, AlertCircle, Lock, Info, Sun } from 'lucide-react';
 
 // Dynamically import the Map component with no SSR to bypass Leaflet window errors
 const Map = dynamic(() => import('@/components/Map'), { 
@@ -615,6 +615,75 @@ export default function Home() {
               <p style={{ fontSize: '14px', color: '#94a3b8', lineHeight: 1.5 }}>
                 {t.heroSubtitle}
               </p>
+            </div>
+
+            {/* 🌤 Live Traveler Info & Weather Banner */}
+            <div 
+              className="glass-container gold-glow" 
+              style={{
+                padding: '16px 20px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '16px',
+                border: '1px solid rgba(212, 175, 55, 0.25)',
+                backgroundColor: 'rgba(18, 26, 47, 0.45)',
+                borderRadius: '16px'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <div style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '10px',
+                  backgroundColor: 'rgba(251, 191, 36, 0.12)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#fbbf24',
+                  flexShrink: 0
+                }}>
+                  <Sun size={22} className="animate-spin" style={{ animationDuration: '30s' }} />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                  <span style={{ fontSize: '15px', fontWeight: '800', color: '#fff' }}>
+                    {language === 'EN' ? 'Samarkand Today: 28°C' : 'Самарканд сегодня: 28°C'}
+                  </span>
+                  <span style={{ fontSize: '12px', color: '#009b9e', fontWeight: '500' }}>
+                    {language === 'EN' ? '☀️ Clear skies & sunny forecast' : '☀️ Ясно, солнечно и тепло'}
+                  </span>
+                </div>
+              </div>
+              
+              <Link
+                href="/discover"
+                className="btn-gold"
+                style={{
+                  padding: '10px 18px',
+                  fontSize: '13px',
+                  fontWeight: '700',
+                  textDecoration: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  borderRadius: '10px',
+                  backgroundColor: '#d4af37',
+                  color: '#0a0f1d',
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 0 15px rgba(212, 175, 55, 0.15)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'scale(1.03)';
+                  e.currentTarget.style.boxShadow = '0 0 20px rgba(212, 175, 55, 0.35)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                  e.currentTarget.style.boxShadow = '0 0 15px rgba(212, 175, 55, 0.15)';
+                }}
+              >
+                <span>{language === 'EN' ? 'Discover Guide ➔' : 'Открыть путеводитель ➔'}</span>
+              </Link>
             </div>
 
             {/* Step 1: Route Builder */}
