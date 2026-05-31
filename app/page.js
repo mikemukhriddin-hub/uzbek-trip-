@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { Compass, Sparkles, MapPin, CheckCircle, XCircle, Languages, AlertCircle, Lock } from 'lucide-react';
+import { Compass, Sparkles, MapPin, CheckCircle, XCircle, Languages, AlertCircle, Lock, Info } from 'lucide-react';
 
 // Dynamically import the Map component with no SSR to bypass Leaflet window errors
 const Map = dynamic(() => import('@/components/Map'), { 
@@ -558,7 +558,8 @@ export default function Home() {
             onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(212, 175, 55, 0.2)'; }}
             onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'rgba(212, 175, 55, 0.1)'; }}
           >
-            <span>{language === 'EN' ? '🕌 Discover' : '🕌 Инфо'}</span>
+            <Info size={14} />
+            <span>{language === 'EN' ? 'Discover' : 'Инфо'}</span>
           </Link>
 
           {/* Language Switcher Button */}
