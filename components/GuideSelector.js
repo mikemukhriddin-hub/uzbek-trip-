@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { UserCheck, Check, MessageSquare, Languages } from 'lucide-react';
+import { Check, MessageSquare, Languages } from 'lucide-react';
+import { ThreeDGuide } from './icons/ThreeDIcons';
 
 const LANGUAGES = [
   { code: 'EN', label: { EN: '🇬🇧 English', RU: '🇬🇧 Английский' } },
@@ -129,7 +130,7 @@ export default function GuideSelector({
                   {/* Interactive 3D Icon */}
                   <div className={`icon-3d-container ${isSelected ? 'icon-3d-container-selected' : ''}`}>
                     <div className={`icon-3d-card ${isSelected ? 'icon-3d-card-selected' : ''}`}>
-                      <UserCheck size={22} className="icon-3d-svg" />
+                      <ThreeDGuide size={28} className="icon-3d-svg" />
                     </div>
                   </div>
 

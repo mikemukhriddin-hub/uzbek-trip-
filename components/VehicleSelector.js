@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Car, User, Smartphone, Star, Check } from 'lucide-react';
+import { User, Smartphone, Star, Check } from 'lucide-react';
+import { ThreeDCar } from './icons/ThreeDIcons';
 
 export default function VehicleSelector({ 
   vehicles = [], 
@@ -76,7 +77,7 @@ export default function VehicleSelector({
                 {/* Interactive 3D Icon */}
                 <div className={`icon-3d-container ${isSelected ? 'icon-3d-container-selected' : ''}`}>
                   <div className={`icon-3d-card ${isSelected ? 'icon-3d-card-selected' : ''}`}>
-                    <Car size={22} className="icon-3d-svg" />
+                    <ThreeDCar size={28} className="icon-3d-svg" />
                   </div>
                 </div>
 

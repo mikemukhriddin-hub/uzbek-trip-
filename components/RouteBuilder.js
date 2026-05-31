@@ -1,25 +1,26 @@
 'use client';
 
 import React from 'react';
-import { MapPin, Check, Plus, Landmark, TreePine, Utensils } from 'lucide-react';
+import { MapPin, Check, Plus } from 'lucide-react';
+import { ThreeDHistorical, ThreeDNature, ThreeDDining } from './icons/ThreeDIcons';
 
 const CATEGORIES = {
   historical: {
     EN: 'Historical Sights',
     RU: 'Исторические достопримечательности',
-    icon: Landmark,
+    icon: ThreeDHistorical,
     color: '#0070c0',
   },
   alternative: {
     EN: 'Alternative & Nature',
     RU: 'Альтернативные места и Природа',
-    icon: TreePine,
+    icon: ThreeDNature,
     color: '#009b9e',
   },
   food: {
     EN: 'Local Food & Dining',
     RU: 'Национальная кухня',
-    icon: Utensils,
+    icon: ThreeDDining,
     color: '#d4af37',
   },
 };
@@ -68,7 +69,7 @@ export default function RouteBuilder({
               {/* Interactive 3D Icon */}
               <div className="icon-3d-container" style={{ '--hover-accent': catInfo.color }}>
                 <div className="icon-3d-card" style={{ width: '36px', height: '36px', borderRadius: '8px' }}>
-                  <IconComponent size={18} className="icon-3d-svg" style={{ color: catInfo.color }} />
+                  <IconComponent size={24} className="icon-3d-svg" />
                 </div>
               </div>
               <span>{categoryTitle}</span>

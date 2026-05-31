@@ -289,24 +289,17 @@ input:focus, select:focus, textarea:focus {
 .icon-3d-svg {
   transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
   transform: translateZ(0);
-  color: #94a3b8;
-  fill: currentColor;
-  fill-opacity: 0.06; /* Gives outline icons a 2.5D solid shape appearance */
-  stroke-width: 2.2px;
 }
 
 .icon-3d-container:hover .icon-3d-svg {
   transform: translateZ(28px) scale(1.15);
-  color: var(--hover-accent) !important;
-  fill-opacity: 0.18; /* Richer body depth on hover */
   filter: 
     drop-shadow(-3px 5px 6px rgba(0, 0, 0, 0.55))
     drop-shadow(0 0 8px color-mix(in srgb, var(--hover-accent) 45%, transparent));
 }
 
 .icon-3d-container-selected .icon-3d-svg {
-  color: #d4af37 !important;
-  fill-opacity: 0.15;
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--hover-accent) 30%, transparent));
 }
 
 
