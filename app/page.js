@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import { Compass, Sparkles, MapPin, CheckCircle, Languages, AlertCircle } from 'lucide-react';
+import { Compass, Sparkles, MapPin, CheckCircle, XCircle, Languages, AlertCircle } from 'lucide-react';
 
 // Dynamically import the Map component with no SSR to bypass Leaflet window errors
 const Map = dynamic(() => import('@/components/Map'), { 
@@ -88,6 +88,11 @@ export default function Home() {
   const [createdBookingId, setCreatedBookingId] = useState(null);
   const [verificationError, setVerificationError] = useState('');
   const [successPage, setSuccessPage] = useState(false);
+  
+  // Cancellation states
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [bookingCancelled, setBookingCancelled] = useState(false);
 
   // Fetch initial data from database on mount (falls back to mock if not configured)
   useEffect(() => {
@@ -226,6 +231,29 @@ export default function Home() {
     }
   };
 
+  const handleCancelBooking = async () => {
+    if (!createdBookingId) return;
+    setIsCancelling(true);
+    try {
+      const res = await fetch('/api/bookings/cancel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bookingId: createdBookingId }),
+      });
+      if (res.ok) {
+        setBookingCancelled(true);
+        setShowCancelConfirm(false);
+      } else {
+        const d = await res.json();
+        alert(d.message || 'Failed to cancel booking.');
+      }
+    } catch (err) {
+      alert(`Error: ${err.message}`);
+    } finally {
+      setIsCancelling(false);
+    }
+  };
+
   const t = {
     heroTitle: language === 'RU' ? 'Самарканд CrafTour' : 'Samarqand CrafTour',
     heroSubtitle: language === 'RU' 
@@ -256,53 +284,103 @@ export default function Home() {
         padding: '24px',
       }} className="animate-fade-in">
         <div className="glass-container gold-glow" style={{ padding: '36px', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <div style={{
-            width: '72px',
-            height: '72px',
-            borderRadius: '50%',
-            backgroundColor: 'rgba(16, 185, 129, 0.15)',
-            color: '#10b981',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            margin: '0 auto',
-          }}>
-            <CheckCircle size={38} />
-          </div>
+          {bookingCancelled ? (
+            <>
+              <div style={{
+                width: '72px',
+                height: '72px',
+                borderRadius: '50%',
+                backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                color: '#ef4444',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto',
+              }}>
+                <XCircle size={38} />
+              </div>
 
-          <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#fff' }}>{t.successTitle}</h2>
-          
-          <p style={{ fontSize: '15px', color: '#94a3b8', lineHeight: 1.6 }}>
-            {t.successSub}
-          </p>
+              <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#fff' }}>
+                {language === 'RU' ? '❌ Бронирование отменено' : '❌ Booking Cancelled'}
+              </h2>
+              
+              <p style={{ fontSize: '15px', color: '#94a3b8', lineHeight: 1.6 }}>
+                {language === 'RU'
+                  ? `Поездка отменена. Ваш гид ${selectedGuide?.full_name} и водитель ${selectedVehicle?.driver_name} были оповещены и освобождены.`
+                  : `Your trip has been cancelled. Your guide ${selectedGuide?.full_name} and driver ${selectedVehicle?.driver_name} have been notified.`}
+              </p>
+            </>
+          ) : (
+            <>
+              <div style={{
+                width: '72px',
+                height: '72px',
+                borderRadius: '50%',
+                backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                color: '#10b981',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto',
+              }}>
+                <CheckCircle size={38} />
+              </div>
 
-          <div style={{
-            textAlign: 'left',
-            padding: '20px',
-            backgroundColor: 'rgba(10, 15, 29, 0.6)',
-            borderRadius: '12px',
-            border: '1px solid rgba(212, 175, 55, 0.2)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '10px',
-            fontSize: '14px'
-          }}>
-            <h4 style={{ fontWeight: '700', color: '#d4af37', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '6px' }}>
-              {t.successDetailTitle}
-            </h4>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: '#94a3b8' }}>{t.successGuide}</span>
-              <strong style={{ color: '#fff' }}>{selectedGuide?.full_name} ({selectedGuideLanguage})</strong>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: '#94a3b8' }}>{t.successDriver}</span>
-              <strong style={{ color: '#fff' }}>{selectedVehicle?.driver_name} ({selectedVehicle?.car_model})</strong>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: '#94a3b8' }}>{t.successTotal}</span>
-              <strong style={{ color: '#d4af37', fontSize: '16px' }}>${bookingData?.totalPrice?.toFixed(2)}</strong>
-            </div>
-          </div>
+              <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#fff' }}>{t.successTitle}</h2>
+              
+              <p style={{ fontSize: '15px', color: '#94a3b8', lineHeight: 1.6 }}>
+                {t.successSub}
+              </p>
+
+              <div style={{
+                textAlign: 'left',
+                padding: '20px',
+                backgroundColor: 'rgba(10, 15, 29, 0.6)',
+                borderRadius: '12px',
+                border: '1px solid rgba(212, 175, 55, 0.2)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '10px',
+                fontSize: '14px'
+              }}>
+                <h4 style={{ fontWeight: '700', color: '#d4af37', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '6px' }}>
+                  {t.successDetailTitle}
+                </h4>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: '#94a3b8' }}>{t.successGuide}</span>
+                  <strong style={{ color: '#fff' }}>{selectedGuide?.full_name} ({selectedGuideLanguage})</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: '#94a3b8' }}>{t.successDriver}</span>
+                  <strong style={{ color: '#fff' }}>{selectedVehicle?.driver_name} ({selectedVehicle?.car_model})</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: '#94a3b8' }}>{t.successTotal}</span>
+                  <strong style={{ color: '#d4af37', fontSize: '16px' }}>${bookingData?.totalPrice?.toFixed(2)}</strong>
+                </div>
+              </div>
+
+              <div style={{ marginTop: '10px' }}>
+                <button
+                  type="button"
+                  onClick={() => setShowCancelConfirm(true)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#64748b',
+                    textDecoration: 'underline',
+                    fontSize: '12px',
+                    cursor: 'pointer',
+                    transition: 'color 0.2s',
+                  }}
+                  onMouseEnter={(e) => e.target.style.color = '#ef4444'}
+                  onMouseLeave={(e) => e.target.style.color = '#64748b'}
+                >
+                  {language === 'RU' ? 'Отменить это бронирование?' : 'Need to cancel this booking?'}
+                </button>
+              </div>
+            </>
+          )}
 
           <button
             onClick={() => {
@@ -310,6 +388,7 @@ export default function Home() {
               setSelectedVehicle(null);
               setSelectedGuide(null);
               setSuccessPage(false);
+              setBookingCancelled(false);
             }}
             className="btn-gold"
             style={{ padding: '12px 24px', alignSelf: 'center', marginTop: '10px' }}
@@ -317,6 +396,103 @@ export default function Home() {
             {t.successBack}
           </button>
         </div>
+
+        {/* Cancellation Warning Modal */}
+        {showCancelConfirm && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(5, 7, 16, 0.85)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '16px',
+          }}>
+            <div 
+              className="glass-container gold-glow animate-fade-in" 
+              style={{
+                width: '100%',
+                maxWidth: '460px',
+                padding: '30px',
+                border: '1px solid rgba(239, 68, 68, 0.4)',
+                backgroundColor: '#0f172a',
+                textAlign: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '20px'
+              }}
+            >
+              <div style={{
+                width: '60px',
+                height: '60px',
+                borderRadius: '50%',
+                backgroundColor: 'rgba(239, 68, 68, 0.12)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#ef4444',
+                margin: '0 auto'
+              }}>
+                <XCircle size={32} />
+              </div>
+
+              <div>
+                <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#fff', marginBottom: '8px' }}>
+                  {language === 'RU' ? 'Отменить поездку вашей мечты?' : 'Cancel Your Dream Trip?'}
+                </h3>
+                <p style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: 1.6 }}>
+                  {language === 'RU'
+                    ? `Ваш опытный гид (${selectedGuide?.full_name}) и водитель (${selectedVehicle?.driver_name}) уже забронировали свой день для вас. Если вы отмените, они потеряют этот рабочий день. Вы уверены?`
+                    : `Your guide (${selectedGuide?.full_name}) and driver (${selectedVehicle?.driver_name}) have reserved their day for you. If you cancel, they will lose their schedule. Are you sure you want to cancel?`}
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '10px' }}>
+                <button
+                  type="button"
+                  onClick={() => setShowCancelConfirm(false)}
+                  className="btn-gold"
+                  style={{
+                    padding: '12px',
+                    fontSize: '14px',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    width: '100%',
+                    backgroundColor: '#d4af37',
+                    color: '#0a0f1d'
+                  }}
+                >
+                  {language === 'RU' ? 'Нет, сохранить бронь' : 'No, Keep My Booking'}
+                </button>
+                
+                <button
+                  type="button"
+                  onClick={handleCancelBooking}
+                  disabled={isCancelling}
+                  style={{
+                    padding: '10px',
+                    fontSize: '12px',
+                    color: '#ef4444',
+                    background: 'none',
+                    border: 'none',
+                    textDecoration: 'underline',
+                    cursor: isCancelling ? 'not-allowed' : 'pointer',
+                    opacity: isCancelling ? 0.6 : 1
+                  }}
+                >
+                  {isCancelling 
+                    ? (language === 'RU' ? 'Отмена...' : 'Cancelling...') 
+                    : (language === 'RU' ? 'Да, отменить бронирование' : 'Yes, Cancel Booking')}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     );
   }
