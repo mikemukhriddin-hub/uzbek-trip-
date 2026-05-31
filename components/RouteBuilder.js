@@ -39,8 +39,8 @@ const LOCATION_IMAGES = {
   11: '/images/locations/karimbek_restaurant.png'
 };
 
-function getLocationImage(id) {
-  return LOCATION_IMAGES[id] || '/images/locations/registan.png';
+function getLocationImage(id, imageUrl) {
+  return imageUrl || LOCATION_IMAGES[id] || '/images/locations/registan.png';
 }
 
 export default function RouteBuilder({ 
@@ -127,7 +127,7 @@ export default function RouteBuilder({
                         boxShadow: '0 2px 8px rgba(0,0,0,0.25)'
                       }}>
                         <img 
-                          src={getLocationImage(loc.id)} 
+                          src={getLocationImage(loc.id, loc.image_url)} 
                           alt={name} 
                           style={{
                             width: '100%',

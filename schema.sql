@@ -22,7 +22,8 @@ CREATE TABLE locations (
     latitude DECIMAL(9, 6) NOT NULL,
     longitude DECIMAL(9, 6) NOT NULL,
     category VARCHAR(50) NOT NULL, -- 'historical', 'alternative', 'food'
-    is_out_of_city BOOLEAN DEFAULT FALSE -- TRUE for mountain or out of town spots
+    is_out_of_city BOOLEAN DEFAULT FALSE, -- TRUE for mountain or out of town spots
+    image_url TEXT -- Custom image URL for thumbnail
 );
 
 -- 2. Gidlar asosi

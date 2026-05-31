@@ -60,7 +60,8 @@ export default function AdminPage() {
   const [locations, setLocations] = useState([]);
   const [locationForm, setLocationForm] = useState({
     name_en: '', name_ru: '', description_en: '', description_ru: '',
-    latitude: '', longitude: '', category: 'historical', is_out_of_city: false
+    latitude: '', longitude: '', category: 'historical', is_out_of_city: false,
+    image_url: ''
   });
 
   // Vehicles state
@@ -227,7 +228,8 @@ export default function AdminPage() {
           setLocations(prev => [...prev, data.data || data.mockData]);
           setLocationForm({
             name_en: '', name_ru: '', description_en: '', description_ru: '',
-            latitude: '', longitude: '', category: 'historical', is_out_of_city: false
+            latitude: '', longitude: '', category: 'historical', is_out_of_city: false,
+            image_url: ''
           });
           alert('Location added successfully!');
         } else {
@@ -729,6 +731,7 @@ export default function AdminPage() {
                 <input type="checkbox" checked={locationForm.is_out_of_city} onChange={e => setLocationForm({...locationForm, is_out_of_city: e.target.checked})} style={{ width: 'auto' }} />
                 Is Out of City (Triggers Mountain Rate)
               </label>
+              <input type="text" placeholder="Image URL (e.g. /images/locations/new.png)" value={locationForm.image_url} onChange={e => setLocationForm({...locationForm, image_url: e.target.value})} style={{ gridColumn: '1 / -1' }} />
               <textarea placeholder="Description (English)" value={locationForm.description_en} onChange={e => setLocationForm({...locationForm, description_en: e.target.value})} style={{ gridColumn: '1 / -1' }} />
               <textarea placeholder="Description (Russian)" value={locationForm.description_ru} onChange={e => setLocationForm({...locationForm, description_ru: e.target.value})} style={{ gridColumn: '1 / -1' }} />
               <button type="submit" className="btn-gold" style={{ padding: '10px 24px', gridColumn: '1 / -1', alignSelf: 'start', justifySelf: 'start' }} disabled={loading}>
@@ -742,6 +745,7 @@ export default function AdminPage() {
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', color: '#94a3b8', fontSize: '13px' }}>
+                  <th style={{ padding: '12px 8px' }}>Photo</th>
                   <th style={{ padding: '12px 8px' }}>Category</th>
                   <th style={{ padding: '12px 8px' }}>Name (EN / RU)</th>
                   <th style={{ padding: '12px 8px' }}>Coordinates</th>
@@ -752,8 +756,42 @@ export default function AdminPage() {
               <tbody>
                 {locations.map((loc) => {
                   const isEditing = editingResource?.type === 'location' && editingResource?.id === loc.id;
+                  const defaultImages = {
+                    1: '/images/locations/registan.png',
+                    2: '/images/locations/gureamir.png',
+                    3: '/images/locations/shahizinda.png',
+                    4: '/images/locations/bibikhanym.png',
+                    5: '/images/locations/ulughbeg.png',
+                    6: '/images/locations/urgut_mountains.png',
+                    7: '/images/locations/omonqoton.png',
+                    8: '/images/locations/konigil.png',
+                    9: '/images/locations/osh_center.png',
+                    10: '/images/locations/bread_bakery.png',
+                    11: '/images/locations/karimbek_restaurant.png'
+                  };
+                  const displayImg = loc.image_url || defaultImages[loc.id];
+                  
                   return (
                     <tr key={loc.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '14px' }}>
+                      <td style={{ padding: '14px 8px' }}>
+                        {isEditing ? (
+                          <input 
+                            type="text" 
+                            placeholder="Image URL" 
+                            value={editingResource.data.image_url || ''} 
+                            onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, image_url: e.target.value}})} 
+                            style={{ padding: '4px', fontSize: '12px', width: '120px' }} 
+                          />
+                        ) : (
+                          <div style={{ width: '40px', height: '40px', borderRadius: '6px', overflow: 'hidden', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                            {displayImg ? (
+                              <img src={displayImg} alt={loc.name_en} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            ) : (
+                              <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', color: '#64748b' }}>None</div>
+                            )}
+                          </div>
+                        )}
+                      </td>
                       <td style={{ padding: '14px 8px' }}>
                         <span style={{
                           padding: '2px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold',
