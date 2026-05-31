@@ -58,27 +58,32 @@ export default function RouteBuilder({
             <div style={{ 
               display: 'flex', 
               alignItems: 'center', 
-              gap: '8px', 
+              gap: '12px',
               color: catInfo.color, 
               fontWeight: 600,
               fontSize: '15px',
-              borderBottom: `1px solid rgba(255,255,255,0.08)`,
-              paddingBottom: '6px'
+              borderBottom: `1.5px solid var(--border-card)`,
+              paddingBottom: '10px'
             }}>
-              <IconComponent size={18} />
+              {/* Interactive 3D Icon */}
+              <div className="icon-3d-container">
+                <div className="icon-3d-card" style={{ width: '36px', height: '36px', borderRadius: '8px' }}>
+                  <IconComponent size={18} className="icon-3d-svg" style={{ color: catInfo.color }} />
+                </div>
+              </div>
               <span>{categoryTitle}</span>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {catLocations.map((loc) => {
                 const isSelected = selectedLocations.some((sel) => sel.id === loc.id);
-                const name = language === 'RU' ? loc.name_ru : loc.name_en;
-                const desc = language === 'RU' ? loc.description_ru : loc.description_en;
+                const name = language === 'RU' ? loc.name_ru : language === 'UZ' ? loc.name_uz : loc.name_en;
+                const desc = language === 'RU' ? loc.description_ru : language === 'UZ' ? loc.description_uz : loc.description_en;
 
                 return (
                   <div 
                     key={loc.id} 
-                    className="glass-container animate-fade-in"
+                    className={`glass-container animate-fade-in ${isSelected ? 'selected-card-glow' : ''}`}
                     style={{
                       padding: '12px 16px',
                       display: 'flex',
@@ -86,21 +91,21 @@ export default function RouteBuilder({
                       justifyContent: 'space-between',
                       gap: '12px',
                       border: isSelected 
-                        ? `1px solid ${catInfo.color}` 
-                        : '1px solid rgba(255, 255, 255, 0.05)',
+                        ? `1.5px solid ${catInfo.color}` 
+                        : '1px solid var(--border-card)',
                       boxShadow: isSelected ? `0 0 12px rgba(${catKey === 'food' ? '212,175,55' : catKey === 'alternative' ? '0,155,158' : '0,112,192'}, 0.15)` : 'none'
                     }}
                   >
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                        <span style={{ fontWeight: 600, fontSize: '15px', color: isSelected ? '#fff' : '#e2e8f0' }}>
+                        <span style={{ fontWeight: 600, fontSize: '15px', color: 'var(--text-primary)' }}>
                           {name}
                         </span>
                         
                         {loc.is_out_of_city && (
                           <span style={{
                             backgroundColor: 'rgba(212, 175, 55, 0.12)',
-                            color: '#d4af37',
+                            color: 'var(--text-gold)',
                             fontSize: '11px',
                             fontWeight: '600',
                             padding: '2px 6px',
@@ -111,7 +116,7 @@ export default function RouteBuilder({
                           </span>
                         )}
                       </div>
-                      <span style={{ fontSize: '12px', color: '#94a3b8', lineHeight: 1.4 }}>
+                      <span style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
                         {desc}
                       </span>
                     </div>
@@ -120,8 +125,8 @@ export default function RouteBuilder({
                       onClick={() => onToggleLocation(loc)}
                       style={{
                         backgroundColor: isSelected ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.05)',
-                        border: isSelected ? '1px solid #10b981' : '1px solid rgba(255, 255, 255, 0.1)',
-                        color: isSelected ? '#10b981' : '#f1f5f9',
+                        border: isSelected ? '1px solid #10b981' : '1px solid var(--border-card)',
+                        color: isSelected ? '#10b981' : 'var(--text-primary)',
                         padding: '6px 12px',
                         borderRadius: '8px',
                         fontSize: '12px',

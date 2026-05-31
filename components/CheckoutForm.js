@@ -108,7 +108,7 @@ export default function CheckoutForm({
       
       {/* Date and Details Input */}
       <div className="glass-container" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-        <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#d4af37', marginBottom: '4px' }}>{t.title}</h3>
+        <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-gold)', marginBottom: '4px' }}>{t.title}</h3>
 
         {errors.general && (
           <div style={{
@@ -125,8 +125,8 @@ export default function CheckoutForm({
 
         {/* Date Selector */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          <label style={{ fontSize: '13px', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <Calendar size={14} style={{ color: '#d4af37' }} />
+          <label style={{ fontSize: '13px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Calendar size={14} style={{ color: 'var(--text-gold)' }} />
             <span>{t.dateLabel} *</span>
           </label>
           <input
@@ -136,7 +136,7 @@ export default function CheckoutForm({
             min={getTodayDateString()}
             onChange={handleInputChange}
             style={{
-              borderColor: errors.date ? '#ef4444' : 'rgba(212, 175, 55, 0.3)',
+              borderColor: errors.date ? '#ef4444' : 'var(--input-border)',
             }}
           />
           {errors.date && <span style={{ fontSize: '11px', color: '#ef4444' }}>{errors.date}</span>}
@@ -144,8 +144,8 @@ export default function CheckoutForm({
 
         {/* Full Name */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          <label style={{ fontSize: '13px', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <User size={14} style={{ color: '#d4af37' }} />
+          <label style={{ fontSize: '13px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <User size={14} style={{ color: 'var(--text-gold)' }} />
             <span>{t.nameLabel} *</span>
           </label>
           <input
@@ -155,7 +155,7 @@ export default function CheckoutForm({
             value={formData.name}
             onChange={handleInputChange}
             style={{
-              borderColor: errors.name ? '#ef4444' : 'rgba(212, 175, 55, 0.3)',
+              borderColor: errors.name ? '#ef4444' : 'var(--input-border)',
             }}
           />
           {errors.name && <span style={{ fontSize: '11px', color: '#ef4444' }}>{errors.name}</span>}
@@ -163,8 +163,8 @@ export default function CheckoutForm({
 
         {/* Email */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          <label style={{ fontSize: '13px', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <Mail size={14} style={{ color: '#d4af37' }} />
+          <label style={{ fontSize: '13px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Mail size={14} style={{ color: 'var(--text-gold)' }} />
             <span>{t.emailLabel} *</span>
           </label>
           <input
@@ -174,7 +174,7 @@ export default function CheckoutForm({
             value={formData.email}
             onChange={handleInputChange}
             style={{
-              borderColor: errors.email ? '#ef4444' : 'rgba(212, 175, 55, 0.3)',
+              borderColor: errors.email ? '#ef4444' : 'var(--input-border)',
             }}
           />
           {errors.email && <span style={{ fontSize: '11px', color: '#ef4444' }}>{errors.email}</span>}
@@ -182,8 +182,8 @@ export default function CheckoutForm({
 
         {/* Phone / WhatsApp */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          <label style={{ fontSize: '13px', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <Phone size={14} style={{ color: '#d4af37' }} />
+          <label style={{ fontSize: '13px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Phone size={14} style={{ color: 'var(--text-gold)' }} />
             <span>{t.phoneLabel} *</span>
           </label>
           <input
@@ -193,7 +193,7 @@ export default function CheckoutForm({
             value={formData.phone}
             onChange={handleInputChange}
             style={{
-              borderColor: errors.phone ? '#ef4444' : 'rgba(212, 175, 55, 0.3)',
+              borderColor: errors.phone ? '#ef4444' : 'var(--input-border)',
             }}
           />
           {errors.phone && <span style={{ fontSize: '11px', color: '#ef4444' }}>{errors.phone}</span>}
@@ -201,28 +201,28 @@ export default function CheckoutForm({
       </div>
 
       {/* Invoice Breakdown */}
-      <div className="glass-container" style={{ padding: '20px', border: '1px solid rgba(0, 112, 192, 0.2)' }}>
-        <h4 style={{ fontSize: '14px', fontWeight: 600, color: '#fff', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '8px', marginBottom: '12px' }}>
+      <div className="glass-container" style={{ padding: '20px', border: '1.5px solid var(--border-card)' }}>
+        <h4 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)', borderBottom: '1px solid var(--border-card)', paddingBottom: '8px', marginBottom: '12px' }}>
           {t.invoiceTitle}
         </h4>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '13px' }}>
           
           {/* Guide service line */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
             <span>
               {t.guideCost}{' '}
               {selectedGuide && (
-                <span style={{ fontSize: '11px', color: '#d4af37', backgroundColor: 'rgba(212,175,55,0.1)', padding: '1px 5px', borderRadius: '3px', marginLeft: '4px' }}>
+                <span style={{ fontSize: '11px', color: 'var(--text-gold)', backgroundColor: 'rgba(212,175,55,0.1)', padding: '1px 5px', borderRadius: '3px', marginLeft: '4px' }}>
                   {selectedGuide.full_name} ({t.guideLang} {selectedGuideLanguage})
                 </span>
               )}
             </span>
-            <span style={{ color: '#fff', fontWeight: '500' }}>${guideRate.toFixed(2)}</span>
+            <span style={{ color: 'var(--text-primary)', fontWeight: '500' }}>${guideRate.toFixed(2)}</span>
           </div>
 
           {/* Transport service line */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
             <span>
               {t.transportCost}{' '}
               {selectedVehicle && (
@@ -231,22 +231,22 @@ export default function CheckoutForm({
                 </span>
               )}
             </span>
-            <span style={{ color: '#fff', fontWeight: '500' }}>${transportRate.toFixed(2)}</span>
+            <span style={{ color: 'var(--text-primary)', fontWeight: '500' }}>${transportRate.toFixed(2)}</span>
           </div>
 
           {/* Platform fee */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
             <span>{t.platformFee}</span>
-            <span style={{ color: '#fff', fontWeight: '500' }}>${fixedFee.toFixed(2)}</span>
+            <span style={{ color: 'var(--text-primary)', fontWeight: '500' }}>${fixedFee.toFixed(2)}</span>
           </div>
 
           {/* Divider */}
-          <div style={{ height: '1px', backgroundColor: 'rgba(255,255,255,0.08)', margin: '4px 0' }} />
+          <div style={{ height: '1px', backgroundColor: 'var(--border-card)', margin: '4px 0' }} />
 
           {/* Total Price */}
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '16px', fontWeight: '700' }}>
-            <span style={{ color: '#d4af37' }}>{t.totalPrice}</span>
-            <span style={{ color: '#d4af37', textShadow: '0 0 10px rgba(212,175,55,0.3)' }}>${total.toFixed(2)}</span>
+            <span style={{ color: 'var(--text-gold)' }}>{t.totalPrice}</span>
+            <span style={{ color: 'var(--text-gold)', textShadow: '0 0 10px rgba(212,175,55,0.15)' }}>${total.toFixed(2)}</span>
           </div>
         </div>
       </div>
@@ -261,11 +261,11 @@ export default function CheckoutForm({
         flexDirection: 'column',
         gap: '6px'
       }}>
-        <strong style={{ fontSize: '13px', color: '#d4af37', display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <strong style={{ fontSize: '13px', color: 'var(--text-gold)', display: 'flex', alignItems: 'center', gap: '6px' }}>
           <Info size={14} />
           {t.disclaimerTitle}
         </strong>
-        <p style={{ fontSize: '12px', color: '#e2e8f0', lineHeight: 1.4 }}>
+        <p style={{ fontSize: '12px', color: 'var(--text-primary)', lineHeight: 1.4 }}>
           {t.disclaimerDesc}
         </p>
       </div>

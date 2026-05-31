@@ -73,17 +73,11 @@ export default function VehicleSelector({
               }}
             >
               <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                <div style={{
-                  width: '44px',
-                  height: '44px',
-                  borderRadius: '10px',
-                  backgroundColor: isSelected ? 'rgba(212, 175, 55, 0.15)' : 'rgba(255,255,255,0.05)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: isSelected ? '#d4af37' : '#94a3b8'
-                }}>
-                  <Car size={22} />
+                {/* Interactive 3D Icon */}
+                <div className={`icon-3d-container ${isSelected ? 'icon-3d-container-selected' : ''}`}>
+                  <div className={`icon-3d-card ${isSelected ? 'icon-3d-card-selected' : ''}`}>
+                    <Car size={22} className="icon-3d-svg" />
+                  </div>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>

@@ -60,7 +60,7 @@ export default function GuideSelector({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#d4af37' }}>{t.title}</h3>
+        <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-gold)' }}>{t.title}</h3>
         
         {/* Language Selection Pills */}
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -73,9 +73,9 @@ export default function GuideSelector({
                 style={{
                   padding: '8px 12px',
                   borderRadius: '8px',
-                  border: isSelected ? '1px solid #d4af37' : '1px solid rgba(255,255,255,0.08)',
+                  border: isSelected ? '1.5px solid var(--text-gold)' : '1px solid var(--border-card)',
                   backgroundColor: isSelected ? 'rgba(212,175,55,0.12)' : 'rgba(255,255,255,0.03)',
-                  color: isSelected ? '#d4af37' : '#94a3b8',
+                  color: isSelected ? 'var(--text-gold)' : 'var(--text-secondary)',
                   fontSize: '13px',
                   fontWeight: isSelected ? '600' : '400',
                   cursor: 'pointer',
@@ -98,8 +98,8 @@ export default function GuideSelector({
           <div style={{
             padding: '24px',
             textAlign: 'center',
-            color: '#94a3b8',
-            border: '1px dashed rgba(255,255,255,0.1)',
+            color: 'var(--text-secondary)',
+            border: '1px dashed var(--border-card)',
             borderRadius: '12px'
           }}>
             {t.noGuides}
@@ -112,38 +112,32 @@ export default function GuideSelector({
             return (
               <div
                 key={guide.id}
-                className={`glass-container animate-fade-in ${isSelected ? 'gold-glow' : ''}`}
+                className={`glass-container animate-fade-in ${isSelected ? 'selected-card-glow' : ''}`}
                 onClick={() => onSelectGuide(guide)}
                 style={{
                   padding: '16px',
                   cursor: 'pointer',
-                  border: isSelected ? '1px solid #d4af37' : '1px solid rgba(255, 255, 255, 0.05)',
+                  border: isSelected ? '1.5px solid var(--text-gold)' : '1px solid var(--border-card)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   gap: '16px',
-                  backgroundColor: isSelected ? 'rgba(212, 175, 55, 0.05)' : 'rgba(18, 26, 47, 0.7)'
+                  backgroundColor: isSelected ? 'rgba(212, 175, 55, 0.05)' : 'var(--bg-card)'
                 }}
               >
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                  <div style={{
-                    width: '44px',
-                    height: '44px',
-                    borderRadius: '10px',
-                    backgroundColor: isSelected ? 'rgba(212, 175, 55, 0.15)' : 'rgba(255,255,255,0.05)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: isSelected ? '#d4af37' : '#94a3b8'
-                  }}>
-                    <UserCheck size={22} />
+                  {/* Interactive 3D Icon */}
+                  <div className={`icon-3d-container ${isSelected ? 'icon-3d-container-selected' : ''}`}>
+                    <div className={`icon-3d-card ${isSelected ? 'icon-3d-card-selected' : ''}`}>
+                      <UserCheck size={22} className="icon-3d-svg" />
+                    </div>
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                    <span style={{ fontWeight: 600, fontSize: '15px', color: '#fff' }}>
+                    <span style={{ fontWeight: 600, fontSize: '15px', color: 'var(--text-primary)' }}>
                       {guide.full_name}
                     </span>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#94a3b8' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: 'var(--text-secondary)' }}>
                       <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                         <MessageSquare size={11} /> {t.speaks} {spokeLangs.join(', ')}
                       </span>
@@ -152,9 +146,9 @@ export default function GuideSelector({
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
-                  <span style={{ fontSize: '20px', fontWeight: '700', color: isSelected ? '#d4af37' : '#f1f5f9' }}>
+                  <span style={{ fontSize: '20px', fontWeight: '700', color: isSelected ? 'var(--text-gold)' : 'var(--text-primary)' }}>
                     ${Number(guide.daily_rate).toFixed(0)}
-                    <span style={{ fontSize: '11px', fontWeight: '400', color: '#94a3b8', marginLeft: '4px' }}>
+                    <span style={{ fontSize: '11px', fontWeight: '400', color: 'var(--text-secondary)', marginLeft: '4px' }}>
                       {t.dailyRate}
                     </span>
                   </span>
@@ -167,8 +161,9 @@ export default function GuideSelector({
                     display: 'flex',
                     alignItems: 'center',
                     gap: '4px',
-                    backgroundColor: isSelected ? '#d4af37' : 'rgba(255,255,255,0.05)',
-                    color: isSelected ? '#0a0f1d' : '#e2e8f0',
+                    background: isSelected ? 'var(--btn-gold-bg)' : 'rgba(255,255,255,0.05)',
+                    color: isSelected ? 'var(--btn-gold-text)' : 'var(--text-primary)',
+                    border: isSelected ? 'none' : '1px solid var(--border-card)',
                     transition: 'all 0.2s ease'
                   }}>
                     {isSelected ? <Check size={12} /> : null}

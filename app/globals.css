@@ -24,6 +24,19 @@
   --text-light-primary: #0f172a;
   --text-light-secondary: #475569;
 
+  /* Core active variables mapping to dark theme values by default */
+  --bg-card: rgba(18, 26, 47, 0.7);
+  --border-card: rgba(212, 175, 55, 0.15);
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-gold: #d4af37;
+  --btn-gold-bg: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
+  --btn-gold-text: #0a0f1d;
+  --input-bg: rgba(10, 15, 29, 0.6);
+  --input-border: rgba(212, 175, 55, 0.3);
+  --input-text: #fff;
+  --shadow-color: rgba(0, 0, 0, 0.37);
+
   /* Font Aliases */
   --font-family-title: var(--font-playfair), serif;
   --font-family-body: var(--font-inter), sans-serif;
@@ -198,3 +211,65 @@ input:focus, select:focus, textarea:focus {
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
 }
+
+/* ========================================================
+   🕶 INTERACTIVE 3D ICON DESIGN SYSTEM (Option 1)
+   ======================================================== */
+
+.icon-3d-container {
+  perspective: 250px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.icon-3d-card {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transform-style: preserve-3d;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+/* 3D floating and rotation on hover */
+.icon-3d-container:hover .icon-3d-card {
+  transform: rotateX(15deg) rotateY(-18deg) translateZ(8px);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #d4af37;
+  box-shadow: 
+    -5px 6px 16px rgba(0, 0, 0, 0.4),
+    0 0 15px rgba(212, 175, 55, 0.25);
+}
+
+.icon-3d-card-selected {
+  border-color: #d4af37 !important;
+  background: rgba(212, 175, 55, 0.12) !important;
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.3) !important;
+}
+
+.icon-3d-svg {
+  transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), filter 0.35s ease;
+  transform: translateZ(0);
+  color: #94a3b8;
+}
+
+.icon-3d-container:hover .icon-3d-svg {
+  transform: translateZ(24px) scale(1.12);
+  color: #d4af37 !important;
+  filter: drop-shadow(-3px 5px 6px rgba(0, 0, 0, 0.5));
+}
+
+.icon-3d-container-selected .icon-3d-svg {
+  color: #d4af37 !important;
+}
+
+
