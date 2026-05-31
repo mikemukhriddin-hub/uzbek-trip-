@@ -25,7 +25,7 @@
   --text-light-secondary: #475569;
 
   /* Font Aliases */
-  --font-family-title: var(--font-outfit), sans-serif;
+  --font-family-title: var(--font-playfair), serif;
   --font-family-body: var(--font-inter), sans-serif;
 }
 
@@ -78,13 +78,14 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Custom interactive classes */
 .glass-container {
-  background: var(--bg-dark-card);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(18, 26, 47, 0.45);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   border: 1px solid var(--bg-dark-border);
   border-radius: 16px;
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0) 100%);
 }
 
 .gold-glow {
