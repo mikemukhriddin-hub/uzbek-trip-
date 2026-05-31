@@ -141,9 +141,9 @@ export function ThreeDHistorical({ size = 24, className = '', style = {} }) {
       <line x1="22" y1="27" x2="42" y2="27" stroke="#0070c0" strokeWidth="1" strokeDasharray="1 1" />
       <path d="M22 24 C22 17, 26 10, 32 6 C38 10, 42 17, 42 24 Z" fill="url(#domeGrad)" />
       <path d="M25 24 C25 18, 28 13, 32 6" stroke="#00f2fe" strokeWidth="0.8" opacity="0.7" fill="none" />
-      <path d="M29 24 C29 18, 30.5 13, 32 6" stroke="#00f2fe" stroke-width="0.8" opacity="0.7" fill="none" />
-      <path d="M35 24 C35 18, 33.5 13, 32 6" stroke="#00f2fe" stroke-width="0.8" opacity="0.7" fill="none" />
-      <path d="M39 24 C39 18, 36 13, 32 6" stroke="#00f2fe" stroke-width="0.8" opacity="0.7" fill="none" />
+      <path d="M29 24 C29 18, 30.5 13, 32 6" stroke="#00f2fe" strokeWidth="0.8" opacity="0.7" fill="none" />
+      <path d="M35 24 C35 18, 33.5 13, 32 6" stroke="#00f2fe" strokeWidth="0.8" opacity="0.7" fill="none" />
+      <path d="M39 24 C39 18, 36 13, 32 6" stroke="#00f2fe" strokeWidth="0.8" opacity="0.7" fill="none" />
       <line x1="32" y1="6" x2="32" y2="2" stroke="#fcd34d" strokeWidth="1.5" />
       <circle cx="32" cy="2" r="1" fill="#fcd34d" />
     </svg>
