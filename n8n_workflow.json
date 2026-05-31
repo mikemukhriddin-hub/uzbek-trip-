@@ -1,0 +1,85 @@
+{
+  "name": "Samarqand CrafTour - Telegram and Webhook Only",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "craf-tour-booking",
+        "responseMode": "onReceived"
+      },
+      "id": "1d84b553-61f2-4ad5-9eb2-8cbfcb7362d2",
+      "name": "Webhook Node",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        380,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "value1": "={{ $json.body.event }}",
+              "value2": "booking_created"
+            },
+            {
+              "value1": "={{ $json.body.event }}",
+              "value2": "booking_verified"
+            }
+          ]
+        }
+      },
+      "id": "4a7fb8c9-94af-4b8c-85bd-400902c6fe8a",
+      "name": "Route Event",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [
+        600,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "=🚨 **NEW BOOKING VERIFIED!** 🚨\n\n👤 **Tourist:** {{ $json.body.details.tourist_name }}\n📧 **Email:** {{ $json.body.details.tourist_email }}\n📞 **Phone/WhatsApp:** {{ $json.body.details.tourist_phone }}\n📅 **Date:** {{ $json.body.details.booking_date }}\n💬 **Language:** {{ $json.body.details.customer_language }}\n\n👤 **Guide:** {{ $json.body.details.guide.full_name }}\n🚗 **Driver:** {{ $json.body.details.vehicle.driver_name }} ({{ $json.body.details.vehicle.car_model }})\n💵 **Total Price:** ${{ $json.body.details.total_price }}\n\n🔗 **Action Required:** Contact the tourist on WhatsApp:\nhttps://wa.me/{{ $json.body.details.tourist_phone.replace(/\\+/g, '') }}"
+      },
+      "id": "e309cb8d-ea8f-4ad1-b29e-f49cc07bb5c1",
+      "name": "Telegram Alert to Admin",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        820,
+        240
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Node": {
+      "main": [
+        [
+          {
+            "node": "Route Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Event": {
+      "main": [
+        null,
+        [
+          {
+            "node": "Telegram Alert to Admin",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {}
+}
