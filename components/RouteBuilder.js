@@ -66,7 +66,7 @@ export default function RouteBuilder({
               paddingBottom: '10px'
             }}>
               {/* Interactive 3D Icon */}
-              <div className="icon-3d-container">
+              <div className="icon-3d-container" style={{ '--hover-accent': catInfo.color }}>
                 <div className="icon-3d-card" style={{ width: '36px', height: '36px', borderRadius: '8px' }}>
                   <IconComponent size={18} className="icon-3d-svg" style={{ color: catInfo.color }} />
                 </div>
