@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { 
   CheckCircle, 
   XCircle, 
@@ -48,8 +49,10 @@ function MyTourContent() {
 
   useEffect(() => {
     if (!id || !token) {
-      setErrorMsg('Invalid or missing tour parameters.');
-      setLoading(false);
+      Promise.resolve().then(() => {
+        setErrorMsg('Invalid or missing tour parameters.');
+        setLoading(false);
+      });
       return;
     }
 
@@ -136,9 +139,9 @@ function MyTourContent() {
           <p style={{ fontSize: '14px', color: '#94a3b8', lineHeight: 1.5 }}>
             {errorMsg || t.notFound}
           </p>
-          <a href="/" className="btn-gold" style={{ padding: '10px 20px', display: 'inline-block', textDecoration: 'none', alignSelf: 'center', fontSize: '13px' }}>
+          <Link href="/" className="btn-gold" style={{ padding: '10px 20px', display: 'inline-block', textDecoration: 'none', alignSelf: 'center', fontSize: '13px' }}>
             {t.backBtn}
-          </a>
+          </Link>
         </div>
       </main>
     );
@@ -250,9 +253,9 @@ function MyTourContent() {
             <strong style={{ fontSize: '20px', color: '#d4af37', textShadow: '0 0 10px rgba(212,175,55,0.3)' }}>${parseFloat(booking.total_price).toFixed(2)}</strong>
           </div>
           
-          <a href="/" style={{ padding: '10px 20px', border: '1px solid rgba(255,255,255,0.08)', backgroundColor: 'rgba(255,255,255,0.02)', color: '#fff', borderRadius: '10px', textDecoration: 'none', fontSize: '13px', fontWeight: '500' }}>
+          <Link href="/" style={{ padding: '10px 20px', border: '1px solid rgba(255,255,255,0.08)', backgroundColor: 'rgba(255,255,255,0.02)', color: '#fff', borderRadius: '10px', textDecoration: 'none', fontSize: '13px', fontWeight: '500' }}>
             {t.backBtn}
-          </a>
+          </Link>
         </div>
 
         {/* Cancel trigger */}

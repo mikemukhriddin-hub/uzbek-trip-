@@ -127,7 +127,9 @@ export default function Home() {
 
   // Update selected guide language automatically if guide list resets
   useEffect(() => {
-    setSelectedGuide(null);
+    Promise.resolve().then(() => {
+      setSelectedGuide(null);
+    });
   }, [selectedGuideLanguage]);
 
   // Determine if route includes any mountain/out-of-city zones

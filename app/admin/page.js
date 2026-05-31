@@ -90,55 +90,6 @@ export default function AdminPage() {
   const [actionLoading, setActionLoading] = useState(null); // stores ID being modified
   const [errorMsg, setErrorMsg] = useState('');
 
-  // Check auth status on mount
-  useEffect(() => {
-    const savedToken = localStorage.getItem('admin_token');
-    if (savedToken) {
-      setIsAuthenticated(true);
-      fetchAllData(savedToken);
-    }
-  }, []);
-
-  const handleLogin = (e) => {
-    e.preventDefault();
-    if (!password) return;
-
-    setLoginError('');
-    setLoading(true);
-    fetch('/api/admin/bookings', {
-      headers: { 'Authorization': password }
-    })
-      .then(async (res) => {
-        if (res.ok) {
-          localStorage.setItem('admin_token', password);
-          setIsAuthenticated(true);
-          fetchAllData(password);
-        } else {
-          setLoginError('Incorrect password. Please try again.');
-        }
-      })
-      .catch((err) => {
-        setLoginError('Server error: ' + err.message);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('admin_token');
-    setIsAuthenticated(false);
-    setUserRole('admin');
-    setGuideId(null);
-    setGuideName('');
-    setBookings([]);
-    setLocations([]);
-    setVehicles([]);
-    setGuides([]);
-    setTariffs([]);
-    setPassword('');
-  };
-
   const fetchAllData = (token = localStorage.getItem('admin_token')) => {
     if (!token) return;
     setLoading(true);
@@ -182,6 +133,58 @@ export default function AdminPage() {
         setLoading(false);
       });
   };
+
+  // Check auth status on mount
+  useEffect(() => {
+    const savedToken = localStorage.getItem('admin_token');
+    if (savedToken) {
+      Promise.resolve().then(() => {
+        setIsAuthenticated(true);
+        fetchAllData(savedToken);
+      });
+    }
+  }, []);
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    if (!password) return;
+
+    setLoginError('');
+    setLoading(true);
+    fetch('/api/admin/bookings', {
+      headers: { 'Authorization': password }
+    })
+      .then(async (res) => {
+        if (res.ok) {
+          localStorage.setItem('admin_token', password);
+          setIsAuthenticated(true);
+          fetchAllData(password);
+        } else {
+          setLoginError('Incorrect password. Please try again.');
+        }
+      })
+      .catch((err) => {
+        setLoginError('Server error: ' + err.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('admin_token');
+    setIsAuthenticated(false);
+    setUserRole('admin');
+    setGuideId(null);
+    setGuideName('');
+    setBookings([]);
+    setLocations([]);
+    setVehicles([]);
+    setGuides([]);
+    setTariffs([]);
+    setPassword('');
+  };
+
 
   // --- CRUD Actions ---
 

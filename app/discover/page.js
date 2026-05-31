@@ -97,7 +97,11 @@ export default function DiscoverPage() {
   useEffect(() => {
     // Basic local language check
     const savedLang = localStorage.getItem('site_lang');
-    if (savedLang) setLanguage(savedLang);
+    if (savedLang) {
+      Promise.resolve().then(() => {
+        setLanguage(savedLang);
+      });
+    }
   }, []);
 
   const handleLanguageToggle = () => {
