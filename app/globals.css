@@ -304,5 +304,10 @@ input:focus, select:focus, textarea:focus {
   filter: drop-shadow(0 0 4px color-mix(in srgb, var(--hover-accent) 30%, transparent));
 }
 
+/* Zoom location thumbnail on card hover */
+.glass-container:hover .location-card-img {
+  transform: scale(1.08);
+}
+
 
 

@@ -25,6 +25,24 @@ const CATEGORIES = {
   },
 };
 
+const LOCATION_IMAGES = {
+  1: '/images/locations/registan.png',
+  2: '/images/locations/gureamir.png',
+  3: '/images/locations/shahizinda.png',
+  4: '/images/locations/bibikhanym.png',
+  5: '/images/locations/ulughbeg.png',
+  6: '/images/locations/urgut_mountains.png',
+  7: '/images/locations/omonqoton.png',
+  8: '/images/locations/konigil.png',
+  9: '/images/locations/osh_center.png',
+  10: '/images/locations/bread_bakery.png',
+  11: '/images/locations/karimbek_restaurant.png'
+};
+
+function getLocationImage(id) {
+  return LOCATION_IMAGES[id] || '/images/locations/registan.png';
+}
+
 export default function RouteBuilder({ 
   locations = [], 
   selectedLocations = [], 
@@ -97,29 +115,54 @@ export default function RouteBuilder({
                       boxShadow: isSelected ? `0 0 12px rgba(${catKey === 'food' ? '212,175,55' : catKey === 'alternative' ? '0,155,158' : '0,112,192'}, 0.15)` : 'none'
                     }}
                   >
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                        <span style={{ fontWeight: 600, fontSize: '15px', color: 'var(--text-primary)' }}>
-                          {name}
-                        </span>
-                        
-                        {loc.is_out_of_city && (
-                          <span style={{
-                            backgroundColor: 'rgba(212, 175, 55, 0.12)',
-                            color: 'var(--text-gold)',
-                            fontSize: '11px',
-                            fontWeight: '600',
-                            padding: '2px 6px',
-                            borderRadius: '4px',
-                            border: '1px solid rgba(212, 175, 55, 0.2)'
-                          }}>
-                            {t.mountainArea}
-                          </span>
-                        )}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
+                      {/* Location Thumbnail */}
+                      <div style={{ 
+                        width: '64px', 
+                        height: '64px', 
+                        borderRadius: '8px', 
+                        overflow: 'hidden', 
+                        flexShrink: 0,
+                        border: '1.5px solid var(--border-card)',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.25)'
+                      }}>
+                        <img 
+                          src={getLocationImage(loc.id)} 
+                          alt={name} 
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            transition: 'transform 0.3s ease',
+                          }}
+                          className="location-card-img"
+                        />
                       </div>
-                      <span style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
-                        {desc}
-                      </span>
+
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                          <span style={{ fontWeight: 600, fontSize: '15px', color: 'var(--text-primary)' }}>
+                            {name}
+                          </span>
+                          
+                          {loc.is_out_of_city && (
+                            <span style={{
+                              backgroundColor: 'rgba(212, 175, 55, 0.12)',
+                              color: 'var(--text-gold)',
+                              fontSize: '11px',
+                              fontWeight: '600',
+                              padding: '2px 6px',
+                              borderRadius: '4px',
+                              border: '1px solid rgba(212, 175, 55, 0.2)'
+                            }}>
+                              {t.mountainArea}
+                            </span>
+                          )}
+                        </div>
+                        <span style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
+                          {desc}
+                        </span>
+                      </div>
                     </div>
 
                     <button
