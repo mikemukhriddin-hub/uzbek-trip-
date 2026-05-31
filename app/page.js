@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { Compass, Sparkles, MapPin, CheckCircle, XCircle, Languages, AlertCircle, Lock } from 'lucide-react';
 
@@ -533,27 +534,53 @@ export default function Home() {
           </span>
         </div>
 
-        {/* Language Switcher Button */}
-        <button
-          onClick={toggleLanguage}
-          style={{
-            padding: '8px 16px',
-            borderRadius: '10px',
-            backgroundColor: 'rgba(255,255,255,0.05)',
-            border: '1px solid rgba(255,255,255,0.1)',
-            color: '#fff',
-            fontSize: '13px',
-            fontWeight: '600',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            transition: 'all 0.2s ease'
-          }}
-        >
-          <Languages size={14} style={{ color: '#d4af37' }} />
-          <span>{language === 'EN' ? 'Русский (RU)' : 'English (EN)'}</span>
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {/* Discover Info Button */}
+          <Link
+            href="/discover"
+            style={{
+              padding: '8px 16px',
+              borderRadius: '10px',
+              backgroundColor: 'rgba(212, 175, 55, 0.1)',
+              border: '1px solid rgba(212, 175, 55, 0.25)',
+              color: '#d4af37',
+              fontSize: '13px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              textDecoration: 'none',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(212, 175, 55, 0.2)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'rgba(212, 175, 55, 0.1)'; }}
+          >
+            <span>{language === 'EN' ? '🕌 Discover' : '🕌 Инфо'}</span>
+          </Link>
+
+          {/* Language Switcher Button */}
+          <button
+            onClick={toggleLanguage}
+            style={{
+              padding: '8px 16px',
+              borderRadius: '10px',
+              backgroundColor: 'rgba(255,255,255,0.05)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              color: '#fff',
+              fontSize: '13px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <Languages size={14} style={{ color: '#d4af37' }} />
+            <span>{language === 'EN' ? 'Русский (RU)' : 'English (EN)'}</span>
+          </button>
+        </div>
       </header>
 
       {/* 🚀 Main Interface Grid */}
