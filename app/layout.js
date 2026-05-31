@@ -30,7 +30,7 @@ export default function RootLayout({ children }) {
           crossOrigin=""
         />
       </head>
-      <body>{children}</body>
+      <body suppressHydrationWarning>{children}</body>
     </html>
   );
 }
