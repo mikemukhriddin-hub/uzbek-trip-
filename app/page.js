@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import { Compass, Sparkles, MapPin, CheckCircle, XCircle, Languages, AlertCircle } from 'lucide-react';
+import { Compass, Sparkles, MapPin, CheckCircle, XCircle, Languages, AlertCircle, Lock } from 'lucide-react';
 
 // Dynamically import the Map component with no SSR to bypass Leaflet window errors
 const Map = dynamic(() => import('@/components/Map'), { 
@@ -686,6 +686,41 @@ export default function Home() {
         error={verificationError}
         language={language}
       />
+
+      <footer style={{
+        marginTop: 'auto',
+        padding: '24px 16px',
+        borderTop: '1px solid rgba(212, 175, 55, 0.1)',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        maxWidth: '1280px',
+        width: '100%',
+        margin: '40px auto 0 auto',
+        fontSize: '13px',
+        color: '#64748b'
+      }}>
+        <div>
+          © {new Date().getFullYear()} Samarqand CrafTour. {language === 'RU' ? 'Все права защищены.' : 'All rights reserved.'}
+        </div>
+        <a
+          href="/admin"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            color: '#64748b',
+            textDecoration: 'none',
+            opacity: 0.5,
+            transition: 'opacity 0.2s, color 0.2s',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.opacity = 1; e.currentTarget.style.color = '#d4af37'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.opacity = 0.5; e.currentTarget.style.color = '#64748b'; }}
+        >
+          <Lock size={12} />
+          <span>{language === 'RU' ? 'Панель администратора' : 'Admin Portal'}</span>
+        </a>
+      </footer>
     </main>
   );
 }
