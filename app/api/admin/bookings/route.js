@@ -175,3 +175,45 @@ export async function PATCH(req) {
     return NextResponse.json({ message: 'Internal server error', error: err.message }, { status: 500 });
   }
 }
+
+export async function DELETE(req) {
+  const auth = await checkAuth(req);
+  if (!auth.authorized || auth.role !== 'admin') {
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+  }
+
+  const { searchParams } = new URL(req.url);
+  const bookingId = searchParams.get('bookingId');
+  const clearAll = searchParams.get('clearAll') === 'true';
+
+  if (!bookingId && !clearAll) {
+    return NextResponse.json({ message: 'Missing bookingId or clearAll parameter' }, { status: 400 });
+  }
+
+  if (!supabaseConfigured) {
+    return NextResponse.json({ message: 'Mock delete successful', bookingId, clearAll });
+  }
+
+  try {
+    if (clearAll) {
+      const { error } = await supabase
+        .from('bookings')
+        .delete()
+        .neq('id', 0); // deletes all rows
+
+      if (error) throw error;
+      return NextResponse.json({ message: 'All bookings cleared successfully' });
+    } else {
+      const { error } = await supabase
+        .from('bookings')
+        .delete()
+        .eq('id', bookingId);
+
+      if (error) throw error;
+      return NextResponse.json({ message: 'Booking deleted successfully', bookingId });
+    }
+  } catch (err) {
+    console.error('Error deleting booking:', err);
+    return NextResponse.json({ message: 'Internal server error', error: err.message }, { status: 500 });
+  }
+}

@@ -211,6 +211,58 @@ export default function AdminPage() {
       .finally(() => setActionLoading(null));
   };
 
+  const deleteBooking = (bookingId) => {
+    const confirmMsg = 'Are you sure you want to permanently delete this booking? This will remove all associated route details and cannot be undone.';
+    if (!window.confirm(confirmMsg)) return;
+
+    setActionLoading(bookingId);
+    const token = localStorage.getItem('admin_token');
+    fetch(`/api/admin/bookings?bookingId=${bookingId}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': token }
+    })
+      .then(async (res) => {
+        const data = await res.json();
+        if (res.ok) {
+          setBookings((prev) => prev.filter((b) => b.id !== bookingId));
+        } else {
+          alert(data.message || 'Failed to delete booking.');
+        }
+      })
+      .catch((err) => {
+        alert('Server error: ' + err.message);
+      })
+      .finally(() => {
+        setActionLoading(null);
+      });
+  };
+
+  const clearAllBookings = () => {
+    const confirmMsg = 'WARNING: Are you sure you want to permanently delete ALL bookings and clear your history? This will delete all booking files, customer records, and cannot be undone.';
+    if (!window.confirm(confirmMsg)) return;
+
+    setLoading(true);
+    const token = localStorage.getItem('admin_token');
+    fetch('/api/admin/bookings?clearAll=true', {
+      method: 'DELETE',
+      headers: { 'Authorization': token }
+    })
+      .then(async (res) => {
+        const data = await res.json();
+        if (res.ok) {
+          setBookings([]);
+        } else {
+          alert(data.message || 'Failed to clear booking history.');
+        }
+      })
+      .catch((err) => {
+        alert('Server error: ' + err.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
   // Manage Locations CRUD
   const handleAddLocation = (e) => {
     e.preventDefault();
@@ -609,22 +661,48 @@ export default function AdminPage() {
       {/* ======================================================== */}
       {activeTab === 'bookings' && (
         <>
-          <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', overflowX: 'auto', paddingBottom: '4px' }}>
-            {['all', 'pending', 'confirmed', 'completed', 'cancelled'].map((status) => (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+            <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
+              {['all', 'pending', 'confirmed', 'completed', 'cancelled'].map((status) => (
+                <button
+                  key={status}
+                  onClick={() => setBookingFilter(status)}
+                  style={{
+                    padding: '8px 16px', borderRadius: '20px',
+                    backgroundColor: bookingFilter === status ? '#d4af37' : 'rgba(255,255,255,0.05)',
+                    color: bookingFilter === status ? '#0a0f1d' : '#fff',
+                    border: bookingFilter === status ? '1px solid #d4af37' : '1px solid rgba(255,255,255,0.1)',
+                    fontWeight: '600', textTransform: 'capitalize', cursor: 'pointer'
+                  }}
+                >
+                  {status} ({bookings.filter(b => status === 'all' || b.status === status).length})
+                </button>
+              ))}
+            </div>
+
+            {userRole === 'admin' && bookings.length > 0 && (
               <button
-                key={status}
-                onClick={() => setBookingFilter(status)}
+                onClick={clearAllBookings}
                 style={{
-                  padding: '8px 16px', borderRadius: '20px',
-                  backgroundColor: bookingFilter === status ? '#d4af37' : 'rgba(255,255,255,0.05)',
-                  color: bookingFilter === status ? '#0a0f1d' : '#fff',
-                  border: bookingFilter === status ? '1px solid #d4af37' : '1px solid rgba(255,255,255,0.1)',
-                  fontWeight: '600', textTransform: 'capitalize', cursor: 'pointer'
+                  padding: '8px 16px',
+                  borderRadius: '20px',
+                  backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                  color: '#ef4444',
+                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  transition: 'all 0.2s ease'
                 }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.2)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.1)'; }}
               >
-                {status} ({bookings.filter(b => status === 'all' || b.status === status).length})
+                <Trash2 size={14} />
+                <span>Clear All History</span>
               </button>
-            ))}
+            )}
           </div>
 
           <div className="glass-container" style={{ padding: '20px', overflowX: 'auto' }}>
@@ -689,7 +767,7 @@ export default function AdminPage() {
                         </td>
                         <td style={{ padding: '16px 8px', textAlign: 'center' }}>
                           {actionLoading === booking.id ? <Loader2 size={16} className="animate-spin" /> : (
-                            <div style={{ display: 'flex', gap: '6px', justifyContent: 'center' }}>
+                            <div style={{ display: 'flex', gap: '6px', justifyContent: 'center', alignItems: 'center' }}>
                               {booking.status === 'pending' && (
                                 <button onClick={() => updateBookingStatus(booking.id, 'confirmed')} title="Confirm" style={{ padding: '4px', background: 'rgba(212,175,55,0.1)', color: '#d4af37', border: '1px solid #d4af37', cursor: 'pointer', borderRadius: '4px' }}><CheckCircle size={14} /></button>
                               )}
@@ -700,6 +778,16 @@ export default function AdminPage() {
                                 </>
                               )}
                               {(booking.status === 'completed' || booking.status === 'cancelled') && <span style={{ color: '#64748b', fontSize: '11px' }}>Archived</span>}
+                              
+                              {userRole === 'admin' && (
+                                <button 
+                                  onClick={() => deleteBooking(booking.id)} 
+                                  title="Delete booking" 
+                                  style={{ padding: '4px', background: 'rgba(239,68,68,0.1)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.3)', cursor: 'pointer', borderRadius: '4px' }}
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                              )}
                             </div>
                           )}
                         </td>
