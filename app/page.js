@@ -29,6 +29,7 @@ import VehicleSelector from '@/components/VehicleSelector';
 import GuideSelector from '@/components/GuideSelector';
 import CheckoutForm from '@/components/CheckoutForm';
 import VerificationModal from '@/components/VerificationModal';
+import BackgroundGraphics from '@/components/BackgroundGraphics';
 
 // MOCK FALLBACK DATA (matching seed SQL)
 const MOCK_LOCATIONS = [
@@ -499,6 +500,7 @@ export default function Home() {
 
   return (
     <main style={{ width: '100%', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <BackgroundGraphics />
       
       {/* 🕌 Premium Header */}
       <header className="glass-container" style={{
