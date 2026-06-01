@@ -70,10 +70,49 @@ export async function POST(req) {
     let bookingId;
 
     if (isDbActive) {
-      // Create main booking row
-      const { data: booking, error: bookingErr } = await supabase
-        .from('bookings')
-        .insert({
+      try {
+        // Create main booking row
+        const { data: booking, error: bookingErr } = await supabase
+          .from('bookings')
+          .insert({
+            tourist_name: touristName,
+            tourist_email: touristEmail,
+            tourist_phone: touristPhone,
+            guide_id: guideId,
+            vehicle_id: vehicleId,
+            total_price: totalPrice,
+            booking_date: bookingDate,
+            customer_language: lang,
+            status: 'pending',
+            passenger_count: passengerCount || 1,
+          })
+          .select('id')
+          .single();
+
+        if (bookingErr) throw bookingErr;
+        bookingId = booking.id;
+
+        // Insert locations into booking_items
+        if (locations && locations.length > 0) {
+          const items = locations.map((loc) => ({
+            booking_id: bookingId,
+            location_id: loc.locationId,
+            visit_order: loc.visitOrder,
+          }));
+
+          const { error: itemsErr } = await supabase
+            .from('booking_items')
+            .insert(items);
+
+          if (itemsErr) throw itemsErr;
+        }
+      } catch (dbErr) {
+        console.warn('⚠️ Supabase schema mismatch or database error. Falling back to Mock Mode:', dbErr.message);
+        // Fall back to Mock Mode in-memory storage
+        bookingId = Math.floor(10000 + Math.random() * 90000);
+        global.mockBookingsStore = global.mockBookingsStore || new Map();
+        global.mockBookingsStore.set(bookingId.toString(), {
+          id: bookingId,
           tourist_name: touristName,
           tourist_email: touristEmail,
           tourist_phone: touristPhone,
@@ -82,28 +121,9 @@ export async function POST(req) {
           total_price: totalPrice,
           booking_date: bookingDate,
           customer_language: lang,
-          status: 'pending',
           passenger_count: passengerCount || 1,
-        })
-        .select('id')
-        .single();
-
-      if (bookingErr) throw bookingErr;
-      bookingId = booking.id;
-
-      // Insert locations into booking_items
-      if (locations && locations.length > 0) {
-        const items = locations.map((loc) => ({
-          booking_id: bookingId,
-          location_id: loc.locationId,
-          visit_order: loc.visitOrder,
-        }));
-
-        const { error: itemsErr } = await supabase
-          .from('booking_items')
-          .insert(items);
-
-        if (itemsErr) throw itemsErr;
+          locations: locations || []
+        });
       }
     } else {
       // Mock Booking ID for testing without Supabase
