@@ -90,6 +90,7 @@ export async function POST(req) {
           if (rawMock) {
             bookingDetails = {
               ...rawMock,
+              isMock: true, // Mark it as mock data
               status: 'confirmed',
               guide: { full_name: 'Sherzod Alimov', phone_number: '+998901234567' },
               vehicle: { 
@@ -111,6 +112,7 @@ export async function POST(req) {
         if (rawMock) {
           bookingDetails = {
             ...rawMock,
+            isMock: true, // Mark it as mock data
             status: 'confirmed',
             guide: { full_name: 'Sherzod Alimov', phone_number: '+998901234567' },
             vehicle: { 
@@ -132,8 +134,9 @@ export async function POST(req) {
 
     if (bookingDetails) {
       const newLocIds = bookingDetails.booking_items ? bookingDetails.booking_items.map(item => item.location_id) : [];
+      const useDb = isDbActive && !bookingDetails.isMock;
 
-      if (isDbActive) {
+      if (useDb) {
         try {
           // Query other confirmed bookings on the same date and same language
           const { data: activeBookings, error: searchErr } = await supabase
