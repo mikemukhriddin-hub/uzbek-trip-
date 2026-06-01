@@ -140,7 +140,7 @@ export async function POST(req) {
         const { data: booking, error: bookingErr } = await supabase
           .from('bookings')
           .insert({
-            tourist_name: touristName,
+            tourist_name: `${touristName}||OTP:${otpCode}`,
             tourist_email: touristEmail,
             tourist_phone: touristPhone,
             guide_id: guideId,

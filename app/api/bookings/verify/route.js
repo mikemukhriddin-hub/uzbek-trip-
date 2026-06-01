@@ -18,43 +18,112 @@ export async function POST(req) {
     }
 
     const key = bookingId.toString();
-    const stored = global.otpStore ? global.otpStore.get(key) : null;
+    let storedCode = null;
+    let expiry = null;
+    let cleanTouristName = null;
 
-    // Check if OTP exists and is valid
-    if (!stored) {
+    // Try global.otpStore first (useful for memory-based / local mock dev flow)
+    const stored = global.otpStore ? global.otpStore.get(key) : null;
+    if (stored) {
+      storedCode = stored.code;
+      expiry = stored.expiry;
+    }
+
+    let bookingDetails = null;
+
+    // 1. Fetch booking details to get emails and verify OTP (from tourist_name suffix if stateless)
+    if (isDbActive) {
+      try {
+        const { data: booking, error: fetchErr } = await supabase
+          .from('bookings')
+          .select(`
+            *,
+            guide:guides(full_name, phone_number),
+            vehicle:vehicles(driver_name, driver_phone, car_model, car_number, capacity),
+            booking_items(location_id)
+          `)
+          .eq('id', bookingId)
+          .single();
+
+        if (fetchErr) throw fetchErr;
+        bookingDetails = booking;
+
+        // If not found in memory store, try extracting OTP from tourist_name
+        if (!storedCode && bookingDetails && bookingDetails.tourist_name) {
+          const match = bookingDetails.tourist_name.match(/(.*?)\|\|OTP:(\d{6})/);
+          if (match) {
+            cleanTouristName = match[1];
+            storedCode = match[2];
+            // Expiry is 10 minutes from created_at
+            const createdAtTime = new Date(bookingDetails.created_at || Date.now()).getTime();
+            expiry = createdAtTime + 10 * 60 * 1000;
+          }
+        }
+      } catch (err) {
+        console.warn('⚠️ Supabase schema mismatch or fetch error. Falling back to Mock store data:', err.message);
+      }
+    }
+
+    // Fallback to Mock Store if no details yet
+    if (!bookingDetails && global.mockBookingsStore) {
+      bookingDetails = global.mockBookingsStore.get(key);
+    }
+
+    // Check if OTP was found at all
+    if (!storedCode) {
       return NextResponse.json(
         { message: 'Verification code not found or has expired.' },
         { status: 400 }
       );
     }
 
-    if (Date.now() > stored.expiry) {
-      global.otpStore.delete(key);
+    // Check if expired
+    if (Date.now() > expiry) {
+      if (global.otpStore) {
+        global.otpStore.delete(key);
+      }
       return NextResponse.json(
         { message: 'Verification code has expired. Please request a new one.' },
         { status: 400 }
       );
     }
 
-    if (stored.code !== code) {
+    // Check if incorrect
+    if (storedCode !== code) {
       return NextResponse.json(
         { message: 'Incorrect verification code. Please try again.' },
         { status: 400 }
       );
     }
 
-    // OTP is valid! Remove it from store
-    global.otpStore.delete(key);
+    // OTP is valid! Clean up memory store
+    if (global.otpStore) {
+      global.otpStore.delete(key);
+    }
 
-    // 0. Update booking status to 'confirmed' in database
+    // 0. Update booking status to 'confirmed' and clear the OTP suffix in database
     if (isDbActive) {
       try {
+        const updateData = {
+          status: 'confirmed',
+          verified_at: new Date().toISOString()
+        };
+
+        let nameToUpdate = cleanTouristName;
+        if (!nameToUpdate && bookingDetails && bookingDetails.tourist_name) {
+          nameToUpdate = bookingDetails.tourist_name.replace(/\|\|OTP:\d{6}/, '');
+        }
+
+        if (nameToUpdate) {
+          updateData.tourist_name = nameToUpdate;
+          if (bookingDetails) {
+            bookingDetails.tourist_name = nameToUpdate;
+          }
+        }
+
         const { error: updateErr } = await supabase
           .from('bookings')
-          .update({ 
-            status: 'confirmed',
-            verified_at: new Date().toISOString()
-          })
+          .update(updateData)
           .eq('id', bookingId);
         
         if (updateErr) {
@@ -74,36 +143,6 @@ export async function POST(req) {
           rawMock.verified_at = new Date().toISOString();
           rawMock.notification_sent = false;
         }
-      }
-    }
-
-    let bookingDetails = null;
-
-    // 1. Fetch booking details to send instant verification email
-    if (isDbActive) {
-      try {
-        const { data: booking, error: fetchErr } = await supabase
-          .from('bookings')
-          .select(`
-            *,
-            guide:guides(full_name, phone_number),
-            vehicle:vehicles(driver_name, driver_phone, car_model, car_number, capacity),
-            booking_items(location_id)
-          `)
-          .eq('id', bookingId)
-          .single();
-
-        if (fetchErr) throw fetchErr;
-        bookingDetails = booking;
-      } catch (err) {
-        console.warn('⚠️ Supabase schema mismatch or fetch error. Falling back to Mock store data:', err.message);
-        if (global.mockBookingsStore) {
-          bookingDetails = global.mockBookingsStore.get(bookingId.toString());
-        }
-      }
-    } else {
-      if (global.mockBookingsStore) {
-        bookingDetails = global.mockBookingsStore.get(bookingId.toString());
       }
     }
     const n8nWebhookUrl = process.env.N8N_WEBHOOK_URL;
