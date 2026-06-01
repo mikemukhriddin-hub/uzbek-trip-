@@ -66,31 +66,66 @@ export async function POST(req) {
 
     // 1. Double-booking prevention check (Availability Check)
     if (isDbActive) {
-      // Check if guide is already booked on this date
-      const { data: guideBookings, error: guideErr } = await supabase
-        .from('bookings')
-        .select('id')
-        .eq('booking_date', bookingDate)
-        .eq('guide_id', guideId)
-        .neq('status', 'cancelled');
+      try {
+        const { data: conflicts, error: conflictErr } = await supabase
+          .from('bookings')
+          .select(`
+            id,
+            guide_id,
+            vehicle_id,
+            customer_language,
+            passenger_count
+          `)
+          .eq('booking_date', bookingDate)
+          .neq('status', 'cancelled')
+          .or(`guide_id.eq.${guideId},vehicle_id.eq.${vehicleId}`);
 
-      if (guideErr) throw guideErr;
+        if (conflictErr) throw conflictErr;
 
-      // Check if driver/vehicle is already booked on this date
-      const { data: vehicleBookings, error: vehicleErr } = await supabase
-        .from('bookings')
-        .select('id')
-        .eq('booking_date', bookingDate)
-        .eq('vehicle_id', vehicleId)
-        .neq('status', 'cancelled');
+        if (conflicts && conflicts.length > 0) {
+          const conflictIds = conflicts.map(c => c.id);
+          const { data: conflictItems, error: itemsErr } = await supabase
+            .from('booking_items')
+            .select('booking_id, location_id')
+            .in('booking_id', conflictIds);
 
-      if (vehicleErr) throw vehicleErr;
+          if (itemsErr) throw itemsErr;
 
-      if (guideBookings.length > 0 || vehicleBookings.length > 0) {
-        const errorMsg = lang === 'RU'
-          ? 'Выбранный гид или водитель уже заняты на эту дату. Пожалуйста, выберите другого гида/водителя или измените дату поездки.'
-          : 'The selected guide or driver is already booked on this date. Please choose another date or service provider.';
-        return NextResponse.json({ message: errorMsg }, { status: 409 });
+          const newLocIdsStr = (locations || [])
+            .map(l => l.locationId || l.location_id)
+            .sort((a, b) => a - b)
+            .join(',');
+
+          let hasPoolableMatch = false;
+
+          for (const conflict of conflicts) {
+            const conflictLocs = (conflictItems || [])
+              .filter(item => item.booking_id === conflict.id)
+              .map(item => item.location_id)
+              .sort((a, b) => a - b)
+              .join(',');
+
+            const isSameRoute = conflictLocs === newLocIdsStr;
+            const isSameLanguage = conflict.customer_language === lang;
+            const combinedPassengers = (conflict.passenger_count || 1) + (passengerCount || 1);
+
+            if (isSameRoute && isSameLanguage && combinedPassengers <= 20) {
+              hasPoolableMatch = true;
+              break;
+            }
+          }
+
+          if (!hasPoolableMatch) {
+            const errorMsg = lang === 'RU'
+              ? 'Выбранный гид или водитель уже заняты на эту дату. Пожалуйста, выберите другого гида/водителя или измените дату поездки.'
+              : 'The selected guide or driver is already booked on this date. Please choose another date or service provider.';
+            return NextResponse.json({ message: errorMsg }, { status: 409 });
+          } else {
+            console.log(`[Double-Booking Check] Allowed booking submit as it is poolable with existing booking(s).`);
+          }
+        }
+      } catch (checkErr) {
+        console.error('Failed running double-booking check:', checkErr.message);
       }
     }
 
