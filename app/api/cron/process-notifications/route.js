@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabase, supabaseConfigured } from '@/lib/supabase';
 import nodemailer from 'nodemailer';
-import { createRequire } from 'module';
-const myRequire = createRequire(import.meta.url);
-const PDFDocument = eval('myRequire')('pdfkit');
+import PDFDocument from 'pdfkit';
 
 // Global cache for Roboto font buffers to avoid redownloading on every request
 global.robotoRegular = global.robotoRegular || null;
