@@ -18,6 +18,7 @@ export default function CheckoutForm({
     email: '',
     phone: '',
     date: '',
+    passengerCount: 1,
   });
   const [errors, setErrors] = useState({});
 
@@ -27,6 +28,7 @@ export default function CheckoutForm({
     emailLabel: language === 'RU' ? 'Электронная почта' : 'Email Address',
     phoneLabel: language === 'RU' ? 'Телефон / WhatsApp' : 'Phone / WhatsApp Number',
     dateLabel: language === 'RU' ? 'Дата поездки' : 'Travel Date',
+    passengerCountLabel: language === 'RU' ? 'Количество путешественников' : 'Number of Travelers',
     
     // Invoice Breakdown
     invoiceTitle: language === 'RU' ? 'Детализация счета' : 'Invoice Breakdown',
@@ -140,6 +142,37 @@ export default function CheckoutForm({
             }}
           />
           {errors.date && <span style={{ fontSize: '11px', color: '#ef4444' }}>{errors.date}</span>}
+        </div>
+
+        {/* Number of Travelers Selector */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <label style={{ fontSize: '13px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <User size={14} style={{ color: 'var(--text-gold)' }} />
+            <span>{t.passengerCountLabel} *</span>
+          </label>
+          <select
+            name="passengerCount"
+            value={formData.passengerCount}
+            onChange={(e) => setFormData(prev => ({ ...prev, passengerCount: parseInt(e.target.value, 10) }))}
+            style={{
+              width: '100%',
+              padding: '10px',
+              borderRadius: '8px',
+              backgroundColor: 'rgba(10, 15, 29, 0.7)',
+              border: '1px solid var(--input-border)',
+              color: '#fff',
+              fontSize: '14px',
+              outline: 'none',
+              cursor: 'pointer',
+              height: '44px'
+            }}
+          >
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 20, 25, 30, 40, 50].map(num => (
+              <option key={num} value={num} style={{ backgroundColor: '#0f172a', color: '#fff' }}>
+                {num} {num === 1 ? (language === 'RU' ? 'человек' : 'person') : (language === 'RU' ? 'человек' : 'people')}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Full Name */}

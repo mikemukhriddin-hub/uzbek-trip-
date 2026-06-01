@@ -50,7 +50,8 @@ CREATE TABLE vehicles (
     car_model VARCHAR(100) NOT NULL,
     car_number VARCHAR(20) NOT NULL,
     city_rate DECIMAL(10, 2) NOT NULL,
-    out_of_city_rate DECIMAL(10, 2) NOT NULL
+    out_of_city_rate DECIMAL(10, 2) NOT NULL,
+    capacity INT DEFAULT 5
 );
 
 -- 5. Buyurtmalar bosh jadvali
@@ -66,6 +67,7 @@ CREATE TABLE bookings (
     booking_date DATE NOT NULL,
     customer_language VARCHAR(5) DEFAULT 'EN', -- 'EN' or 'RU'
     status booking_status DEFAULT 'pending',
+    passenger_count INT DEFAULT 1,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -120,7 +122,9 @@ INSERT INTO guide_language_tariffs (guide_id, language_code, daily_rate) VALUES
 (3, 'ES', 70.00);
 
 -- Seed Vehicles
-INSERT INTO vehicles (driver_name, driver_phone, car_model, car_number, city_rate, out_of_city_rate) VALUES
-('Alisher aka', '+998909998877', 'Chevrolet Cobalt (White)', '01 A 777 BA', 30.00, 45.00),
-('Doston aka', '+998935554433', 'Chevrolet Gentra (Black)', '01 Z 888 ZZ', 35.00, 50.00),
-('Sarvar aka', '+998993332211', 'Chevrolet Gentra (Silver)', '01 Y 555 YY', 35.00, 50.00);
+INSERT INTO vehicles (driver_name, driver_phone, car_model, car_number, city_rate, out_of_city_rate, capacity) VALUES
+('Alisher aka', '+998909998877', 'Chevrolet Cobalt (White)', '01 A 777 BA', 30.00, 45.00, 5),
+('Doston aka', '+998935554433', 'Chevrolet Gentra (Black)', '01 Z 888 ZZ', 35.00, 50.00, 5),
+('Sarvar aka', '+998993332211', 'Chevrolet Gentra (Silver)', '01 Y 555 YY', 35.00, 50.00, 5),
+('Odil aka', '+998901234567', 'Hyundai H1 Minivan (Silver)', '01 X 777 XX', 50.00, 75.00, 8),
+('Jahongir aka', '+998909876543', 'Isuzu Bus (Turquoise)', '01 B 999 BB', 120.00, 180.00, 20);

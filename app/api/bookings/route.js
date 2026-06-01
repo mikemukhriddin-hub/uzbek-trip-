@@ -17,6 +17,7 @@ export async function POST(req) {
       vehicleId,
       totalPrice,
       customerLanguage,
+      passengerCount,
       locations,
     } = body;
 
@@ -30,8 +31,11 @@ export async function POST(req) {
 
     const lang = customerLanguage || 'EN';
 
+    const bypassSupabase = req.headers.get('x-bypass-supabase') === 'true';
+    const isDbActive = supabaseConfigured && !bypassSupabase;
+
     // 1. Double-booking prevention check (Availability Check)
-    if (supabaseConfigured) {
+    if (isDbActive) {
       // Check if guide is already booked on this date
       const { data: guideBookings, error: guideErr } = await supabase
         .from('bookings')
@@ -65,7 +69,7 @@ export async function POST(req) {
 
     let bookingId;
 
-    if (supabaseConfigured) {
+    if (isDbActive) {
       // Create main booking row
       const { data: booking, error: bookingErr } = await supabase
         .from('bookings')
@@ -79,6 +83,7 @@ export async function POST(req) {
           booking_date: bookingDate,
           customer_language: lang,
           status: 'pending',
+          passenger_count: passengerCount || 1,
         })
         .select('id')
         .single();
@@ -104,12 +109,28 @@ export async function POST(req) {
       // Mock Booking ID for testing without Supabase
       bookingId = Math.floor(10000 + Math.random() * 90000);
       console.log('--- Offline Mock Mode Activated ---');
-      console.log(`Mock Booking created: ID=${bookingId}, Date=${bookingDate}`);
+      console.log(`Mock Booking created: ID=${bookingId}, Date=${bookingDate}, Passengers=${passengerCount || 1}`);
     }
 
     // 3. Store OTP in global memory with 10 minutes lifespan
     const expiry = Date.now() + 10 * 60 * 1000;
     global.otpStore.set(bookingId.toString(), { code: otpCode, expiry });
+    
+    // Store mock booking details for offline verification & pooling testing
+    global.mockBookingsStore = global.mockBookingsStore || new Map();
+    global.mockBookingsStore.set(bookingId.toString(), {
+      id: bookingId,
+      tourist_name: touristName,
+      tourist_email: touristEmail,
+      tourist_phone: touristPhone,
+      guide_id: guideId,
+      vehicle_id: vehicleId,
+      total_price: totalPrice,
+      booking_date: bookingDate,
+      customer_language: lang,
+      passenger_count: passengerCount || 1,
+      locations: locations || []
+    });
 
     // Output OTP directly to terminal logs for easy developer access
     console.log('==========================================');
@@ -191,6 +212,7 @@ export async function POST(req) {
             bookingDate,
             totalPrice,
             customerLanguage: lang,
+            passengerCount: passengerCount || 1,
             otpCode,
           }),
         });

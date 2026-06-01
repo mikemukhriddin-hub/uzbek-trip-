@@ -5,6 +5,9 @@ import nodemailer from 'nodemailer';
 
 export async function POST(req) {
   try {
+    const bypassSupabase = req.headers.get('x-bypass-supabase') === 'true';
+    const isDbActive = supabaseConfigured && !bypassSupabase;
+
     const { bookingId, code } = await req.json();
 
     if (!bookingId || !code) {
@@ -44,7 +47,7 @@ export async function POST(req) {
     global.otpStore.delete(key);
 
     // 0. Update booking status to 'confirmed' in database
-    if (supabaseConfigured) {
+    if (isDbActive) {
       try {
         const { error: updateErr } = await supabase
           .from('bookings')
@@ -64,13 +67,14 @@ export async function POST(req) {
     let bookingDetails = null;
 
     // 1. Fetch booking details to send notifications
-    if (supabaseConfigured) {
+    if (isDbActive) {
       const { data: booking, error: fetchErr } = await supabase
         .from('bookings')
         .select(`
           *,
           guide:guides(full_name, phone_number),
-          vehicle:vehicles(driver_name, driver_phone, car_model, car_number)
+          vehicle:vehicles(driver_name, driver_phone, car_model, car_number, capacity),
+          booking_items(location_id)
         `)
         .eq('id', bookingId)
         .single();
@@ -80,13 +84,161 @@ export async function POST(req) {
       } else {
         bookingDetails = booking;
       }
+    } else {
+      // Mock mode: retrieve from global mockBookingsStore
+      if (global.mockBookingsStore) {
+        const rawMock = global.mockBookingsStore.get(bookingId.toString());
+        if (rawMock) {
+          bookingDetails = {
+            ...rawMock,
+            status: 'confirmed',
+            guide: { full_name: 'Sherzod Alimov', phone_number: '+998901234567' },
+            vehicle: { 
+              driver_name: rawMock.vehicle_id === 4 ? 'Odil aka' : (rawMock.vehicle_id === 5 ? 'Jahongir aka' : 'Doston aka'), 
+              driver_phone: rawMock.vehicle_id === 4 ? '+998901234567' : (rawMock.vehicle_id === 5 ? '+998909876543' : '+998935554433'), 
+              car_model: rawMock.vehicle_id === 4 ? 'Hyundai H1 Minivan (Silver)' : (rawMock.vehicle_id === 5 ? 'Isuzu Bus (Turquoise)' : 'Chevrolet Gentra (Black)'), 
+              car_number: rawMock.vehicle_id === 4 ? '01 X 777 XX' : (rawMock.vehicle_id === 5 ? '01 B 999 BB' : '01 Z 888 ZZ'),
+              capacity: rawMock.vehicle_id === 4 ? 8 : (rawMock.vehicle_id === 5 ? 20 : 5)
+            },
+            booking_items: rawMock.locations.map(loc => ({ location_id: loc.locationId }))
+          };
+        }
+      }
+    }
+
+    // 1.2 Matching/Pooling algorithm
+    let matchedPartner = null;
+    let combinedPassengersCount = 0;
+
+    if (bookingDetails) {
+      const newLocIds = bookingDetails.booking_items ? bookingDetails.booking_items.map(item => item.location_id) : [];
+
+      if (isDbActive) {
+        // Query other confirmed bookings on the same date and same language
+        const { data: activeBookings, error: searchErr } = await supabase
+          .from('bookings')
+          .select(`
+            *,
+            guide:guides(full_name, phone_number),
+            vehicle:vehicles(capacity, car_model, driver_name, driver_phone),
+            booking_items(location_id)
+          `)
+          .eq('booking_date', bookingDetails.booking_date)
+          .eq('customer_language', bookingDetails.customer_language)
+          .eq('status', 'confirmed')
+          .neq('id', bookingDetails.id);
+
+        if (!searchErr && activeBookings) {
+          for (const candidate of activeBookings) {
+            const candidateLocIds = candidate.booking_items ? candidate.booking_items.map(item => item.location_id) : [];
+            const isSameRoute = newLocIds.length === candidateLocIds.length && 
+                                newLocIds.every(id => candidateLocIds.includes(id));
+            
+            if (isSameRoute) {
+              const carCapacity = candidate.vehicle?.capacity || 5;
+              const totalPassengers = (candidate.passenger_count || 1) + (bookingDetails.passenger_count || 1);
+
+              if (totalPassengers <= carCapacity) {
+                matchedPartner = candidate;
+                combinedPassengersCount = totalPassengers;
+                break;
+              }
+            }
+          }
+        }
+
+        // If matched, merge vehicle/driver assignment in Database
+        if (matchedPartner) {
+          const { error: mergeErr } = await supabase
+            .from('bookings')
+            .update({
+              vehicle_id: matchedPartner.vehicle_id,
+              guide_id: matchedPartner.guide_id
+            })
+            .eq('id', bookingDetails.id);
+
+          if (mergeErr) {
+            console.error('Error merging guide/vehicle in Supabase:', mergeErr);
+          } else {
+            console.log(`Successfully merged Booking #${bookingDetails.id} with partner Booking #${matchedPartner.id}`);
+            // Update local object representation for notification
+            bookingDetails.vehicle_id = matchedPartner.vehicle_id;
+            bookingDetails.guide_id = matchedPartner.guide_id;
+            bookingDetails.vehicle = matchedPartner.vehicle;
+            bookingDetails.guide = matchedPartner.guide;
+          }
+        }
+      } else {
+        // Mock matching
+        global.mockVerifiedBookings = global.mockVerifiedBookings || [];
+        for (const candidate of global.mockVerifiedBookings) {
+          if (
+            candidate.booking_date === bookingDetails.booking_date &&
+            candidate.customer_language === bookingDetails.customer_language &&
+            candidate.id !== bookingDetails.id
+          ) {
+            const candidateLocIds = candidate.booking_items ? candidate.booking_items.map(item => item.location_id) : [];
+            const isSameRoute = newLocIds.length === candidateLocIds.length && 
+                                newLocIds.every(id => candidateLocIds.includes(id));
+
+            if (isSameRoute) {
+              const carCapacity = candidate.vehicle?.capacity || 5;
+              const totalPassengers = (candidate.passenger_count || 1) + (bookingDetails.passenger_count || 1);
+
+              if (totalPassengers <= carCapacity) {
+                matchedPartner = candidate;
+                combinedPassengersCount = totalPassengers;
+                break;
+              }
+            }
+          }
+        }
+
+        if (matchedPartner) {
+          bookingDetails.vehicle_id = matchedPartner.vehicle_id;
+          bookingDetails.guide_id = matchedPartner.guide_id;
+          bookingDetails.vehicle = matchedPartner.vehicle;
+          bookingDetails.guide = matchedPartner.guide;
+          console.log(`[Mock] Successfully merged Booking #${bookingDetails.id} with partner Booking #${matchedPartner.id}`);
+        }
+
+        // Save to mock verified bookings
+        global.mockVerifiedBookings.push(bookingDetails);
+      }
     }
 
     // 1.5 Send Telegram alert directly via Telegram Bot API
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
     const chatId = process.env.TELEGRAM_CHAT_ID;
-    if (botToken && chatId) {
-      try {
+    
+    let tgText = '';
+    if (bookingDetails) {
+      if (matchedPartner) {
+        const capacity = matchedPartner.vehicle?.capacity || 5;
+        const driverName = matchedPartner.vehicle?.driver_name || 'N/A';
+        const carModel = matchedPartner.vehicle?.car_model || 'N/A';
+        const guideName = bookingDetails.guide?.full_name || 'N/A';
+        
+        tgText = `🚗 *HAMKORLIKDAGI GURUH SAYOHATI! (TOUR POOLING)* 🚗\n\n` +
+          `📅 *Sana:* ${bookingDetails.booking_date}\n` +
+          `💬 *Til:* ${bookingDetails.customer_language}\n` +
+          `🚗 *Mashina:* ${carModel} (${driverName})\n` +
+          `👤 *Gid:* ${guideName}\n` +
+          `👥 *Band sig'im:* ${combinedPassengersCount}/${capacity} kishi\n\n` +
+          `====================================\n` +
+          `👤 *1-Sayohatchi (${matchedPartner.passenger_count || 1} kishi):* ${matchedPartner.tourist_name}\n` +
+          `📞 *Tel/WhatsApp:* ${matchedPartner.tourist_phone}\n` +
+          `📧 *Email:* ${matchedPartner.tourist_email}\n` +
+          `💵 *Narxi:* $${matchedPartner.total_price || 'N/A'}\n\n` +
+          `👤 *2-Sayohatchi (${bookingDetails.passenger_count || 1} kishi):* ${bookingDetails.tourist_name}\n` +
+          `📞 *Tel/WhatsApp:* ${bookingDetails.tourist_phone}\n` +
+          `📧 *Email:* ${bookingDetails.tourist_email}\n` +
+          `💵 *Narxi:* $${bookingDetails.total_price || 'N/A'}\n` +
+          `====================================\n\n` +
+          `🔗 *WhatsApp orqali bog'lanish:* \n` +
+          `1-Sayyoh: https://wa.me/${(matchedPartner.tourist_phone || '').replace(/\+/g, '')}\n` +
+          `2-Sayyoh: https://wa.me/${(bookingDetails.tourist_phone || '').replace(/\+/g, '')}`;
+      } else {
         const touristName = bookingDetails?.tourist_name || 'N/A';
         const touristEmail = bookingDetails?.tourist_email || 'N/A';
         const touristPhone = bookingDetails?.tourist_phone || 'N/A';
@@ -96,9 +248,10 @@ export async function POST(req) {
         const driverName = bookingDetails?.vehicle?.driver_name || 'N/A';
         const carModel = bookingDetails?.vehicle?.car_model || 'N/A';
         const totalPrice = bookingDetails?.total_price ? `$${bookingDetails.total_price}` : 'N/A';
+        const pCount = bookingDetails?.passenger_count || 1;
 
-        const tgText = `🚨 *NEW BOOKING VERIFIED!* 🚨\n\n` +
-          `👤 *Tourist:* ${touristName}\n` +
+        tgText = `🚨 *NEW BOOKING VERIFIED!* 🚨\n\n` +
+          `👤 *Tourist:* ${touristName} (${pCount} ${pCount === 1 ? 'person' : 'people'})\n` +
           `📧 *Email:* ${touristEmail}\n` +
           `📞 *Phone/WhatsApp:* ${touristPhone}\n` +
           `📅 *Date:* ${bookingDate}\n` +
@@ -108,7 +261,17 @@ export async function POST(req) {
           `💵 *Total Price:* ${totalPrice}\n\n` +
           `🔗 *Action Required:* Contact the tourist on WhatsApp:\n` +
           `https://wa.me/${touristPhone.replace(/\+/g, '')}`;
+      }
+    }
 
+    // Always log the built Telegram text for debugging / verification
+    console.log('==========================================');
+    console.log('🕌 TELEGRAM NOTIFICATION ALERTS BROADCAST:');
+    console.log(tgText);
+    console.log('==========================================');
+
+    if (botToken && chatId && tgText) {
+      try {
         const tgRes = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
