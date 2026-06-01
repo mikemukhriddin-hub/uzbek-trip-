@@ -5,6 +5,36 @@ import nodemailer from 'nodemailer';
 // In-memory OTP store (global to survive Next.js dev hot-reloads in local environment)
 global.otpStore = global.otpStore || new Map();
 
+// Local Development Cron Poller (polls every 30 seconds in local environment)
+if (process.env.NODE_ENV === 'development' && !global.localCronPoller) {
+  setTimeout(() => {
+    global.localCronPoller = setInterval(async () => {
+      try {
+        console.log('🔄 [Local Poller] Triggering notification processor...');
+        const bypassSupabase = !supabaseConfigured;
+        const headers = bypassSupabase ? { 'x-bypass-supabase': 'true' } : {};
+        
+        const res = await fetch('http://localhost:3000/api/cron/process-notifications', {
+          headers
+        });
+        if (res.ok) {
+          const data = await res.json();
+          console.log('🔄 [Local Poller] Notification processor run completed:', data);
+        } else {
+          console.warn('🔄 [Local Poller] Notification processor returned error status:', res.status);
+        }
+      } catch (err) {
+        console.error('🔄 [Local Poller] Failed to poll notification processor:', err.message);
+      }
+    }, 30000);
+    
+    if (global.localCronPoller.unref) {
+      global.localCronPoller.unref();
+    }
+    console.log('🔄 [Local Poller] Initialized background polling (30s interval).');
+  }, 5000);
+}
+
 export async function POST(req) {
   try {
     const body = await req.json();

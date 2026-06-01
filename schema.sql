@@ -68,6 +68,8 @@ CREATE TABLE bookings (
     customer_language VARCHAR(5) DEFAULT 'EN', -- 'EN' or 'RU'
     status booking_status DEFAULT 'pending',
     passenger_count INT DEFAULT 1,
+    notification_sent BOOLEAN DEFAULT FALSE,
+    verified_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
