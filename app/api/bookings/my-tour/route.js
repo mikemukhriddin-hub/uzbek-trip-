@@ -30,13 +30,24 @@ export async function GET(req) {
       return NextResponse.json({ message: 'Missing booking ID or token.' }, { status: 400 });
     }
 
-    if (!supabaseConfigured) {
+    const bypassSupabase = req.headers.get('x-bypass-supabase') === 'true';
+    console.log('🔍 [my-tour API] x-bypass-supabase header:', req.headers.get('x-bypass-supabase'), 'Raw Headers:', JSON.stringify(Object.fromEntries(req.headers.entries())));
+    const isDbActive = supabaseConfigured && !bypassSupabase;
+
+    if (!isDbActive) {
       // Mock mode validation
-      const isValid = validateMagicToken(bookingId, MOCK_BOOKING.tourist_email, token);
+      let mockBooking = MOCK_BOOKING;
+      if (global.mockBookingsStore) {
+        const stored = global.mockBookingsStore.get(bookingId);
+        if (stored) mockBooking = stored;
+      }
+
+      const email = mockBooking.tourist_email || mockBooking.touristEmail || 'john@example.com';
+      const isValid = validateMagicToken(bookingId, email, token);
       if (!isValid) {
         return NextResponse.json({ message: 'Invalid or expired token.' }, { status: 403 });
       }
-      return NextResponse.json(MOCK_BOOKING);
+      return NextResponse.json(mockBooking);
     }
 
     // 1. Fetch booking details to get the email for token validation

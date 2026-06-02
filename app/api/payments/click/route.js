@@ -169,11 +169,16 @@ export async function POST(req) {
 
       const requestUrl = new URL(req.url);
       const confirmUrl = `${requestUrl.protocol}//${requestUrl.host}/api/bookings/payment/confirm`;
+      const bypassHeaderVal = req.headers.get('x-bypass-supabase') === 'true';
+      const headers = { 'Content-Type': 'application/json' };
+      if (bypassHeaderVal) {
+        headers['x-bypass-supabase'] = 'true';
+      }
 
       try {
         await fetch(confirmUrl, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers,
           body: JSON.stringify(confirmPayload)
         });
       } catch (confirmErr) {
