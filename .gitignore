@@ -43,3 +43,7 @@ next-env.d.ts
 # local AI assistant skills
 .agent/
 .claude/
+
+# logs and scratch
+*.log
+test_response.html

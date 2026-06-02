@@ -29,8 +29,8 @@ import RouteBuilder from '@/components/RouteBuilder';
 import VehicleSelector from '@/components/VehicleSelector';
 import GuideSelector from '@/components/GuideSelector';
 import BackgroundGraphics from '@/components/BackgroundGraphics';
+import CheckoutForm from '@/components/CheckoutForm';
 
-const CheckoutForm = dynamic(() => import('@/components/CheckoutForm'), { ssr: false });
 const VerificationModal = dynamic(() => import('@/components/VerificationModal'), { ssr: false });
 const PaymentPortal = dynamic(() => import('@/components/PaymentPortal'), { ssr: false });
 
