@@ -16,8 +16,8 @@ const MOCK_BOOKINGS = [
     guide: { full_name: 'Sherzod Alimov', phone_number: '+998901234567' },
     vehicle: { driver_name: 'Alisher aka', driver_phone: '+998909998877', car_model: 'Chevrolet Cobalt (White)', car_number: '01 A 777 BA' },
     booking_items: [
-      { visit_order: 1, location: { name_en: 'Registan Square', name_ru: 'Площадь Регистан' } },
-      { visit_order: 2, location: { name_en: 'Gur-e-Amir Mausoleum', name_ru: 'Мавзолей Гур-Эмир' } }
+      { visit_order: 1, location: { name_en: 'Registan Square', name_ru: 'Площадь Регистан', name_uz: 'Registon maydoni' } },
+      { visit_order: 2, location: { name_en: 'Gur-e-Amir Mausoleum', name_ru: 'Мавзолей Гур-Эмир', name_uz: "Go'ri Amir maqbarasi" } }
     ]
   },
   {
@@ -33,8 +33,8 @@ const MOCK_BOOKINGS = [
     guide: { full_name: 'Elena Petrova', phone_number: '+998937654321' },
     vehicle: { driver_name: 'Doston aka', driver_phone: '+998935554433', car_model: 'Chevrolet Gentra (Black)', car_number: '01 Z 888 ZZ' },
     booking_items: [
-      { visit_order: 1, location: { name_en: 'Shah-i-Zinda', name_ru: 'Шахи Зинда' } },
-      { visit_order: 2, location: { name_en: 'Urgut Mountain Bazaar & Hills', name_ru: 'Ургутский горный базар и горы' } }
+      { visit_order: 1, location: { name_en: 'Shah-i-Zinda', name_ru: 'Шахи Зинда', name_uz: 'Shohi Zinda' } },
+      { visit_order: 2, location: { name_en: 'Urgut Mountain Bazaar & Hills', name_ru: 'Ургутский горный базар и горы', name_uz: "Urgut tog' bozori va adirlari" } }
     ]
   }
 ];
@@ -101,7 +101,7 @@ export async function GET(req) {
         vehicle:vehicles(driver_name, driver_phone, car_model, car_number),
         booking_items(
           visit_order,
-          location:locations(id, name_en, name_ru)
+          location:locations(id, name_en, name_ru, name_uz)
         )
       `);
 

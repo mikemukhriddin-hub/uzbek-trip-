@@ -14,9 +14,9 @@ export async function POST(req) {
 
   try {
     const body = await req.json();
-    const { name_en, name_ru, description_en, description_ru, latitude, longitude, category, is_out_of_city, image_url } = body;
+    const { name_en, name_ru, name_uz, description_en, description_ru, description_uz, latitude, longitude, category, is_out_of_city, image_url } = body;
 
-    if (!name_en || !name_ru || !category) {
+    if (!name_en || !name_ru || !name_uz || !category) {
       return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
     }
 
@@ -29,8 +29,10 @@ export async function POST(req) {
       .insert({
         name_en,
         name_ru,
+        name_uz: name_uz || null,
         description_en,
         description_ru,
+        description_uz: description_uz || null,
         latitude: parseFloat(latitude) || 39.6548,
         longitude: parseFloat(longitude) || 66.9757,
         category,
@@ -56,7 +58,7 @@ export async function PATCH(req) {
 
   try {
     const body = await req.json();
-    const { id, name_en, name_ru, description_en, description_ru, latitude, longitude, category, is_out_of_city, image_url } = body;
+    const { id, name_en, name_ru, name_uz, description_en, description_ru, description_uz, latitude, longitude, category, is_out_of_city, image_url } = body;
 
     if (!id) {
       return NextResponse.json({ message: 'Missing location ID' }, { status: 400 });
@@ -71,8 +73,10 @@ export async function PATCH(req) {
       .update({
         name_en,
         name_ru,
+        name_uz,
         description_en,
         description_ru,
+        description_uz,
         latitude: parseFloat(latitude),
         longitude: parseFloat(longitude),
         category,

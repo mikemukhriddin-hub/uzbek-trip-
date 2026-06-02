@@ -44,6 +44,318 @@ export default function AdminPage() {
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   
+  // Language state
+  const [language, setLanguage] = useState('EN');
+  const [showLangDropdown, setShowLangDropdown] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('site_lang');
+    if (saved) setLanguage(saved);
+  }, []);
+
+  const t = {
+    EN: {
+      adminTitle: "SAMARQAND CRAFTOUR",
+      adminSubtitle: "Admin Panel Access Control",
+      enterPassword: "Enter Admin Password",
+      unlockButton: "Unlock Admin Panel",
+      logoutButton: "Log Out",
+      refreshButton: "Refresh",
+      adminRole: "ADMIN PANEL",
+      guideRole: "GUIDE PORTAL",
+      loadingData: "Loading dashboard data...",
+      incorrectPassword: "Incorrect password. Please try again.",
+      serverError: "Server error: ",
+      loadingBookings: "Loading bookings...",
+      noBookings: "No bookings found.",
+      
+      bookings: "Bookings",
+      locations: "Locations",
+      vehicles: "Vehicles/Drivers",
+      guides: "Guides",
+      guide: "Guide",
+      myProfile: "My Profile",
+
+      all: "All",
+      pending: "Pending",
+      confirmed: "Confirmed",
+      completed: "Completed",
+      cancelled: "Cancelled",
+      clearHistory: "Clear All History",
+
+      bookingId: "Booking ID",
+      touristDetails: "Tourist Details",
+      tourDate: "Tour Date",
+      routeSights: "Route Sights",
+      guideDriver: "Guide & Driver",
+      totalPrice: "Total Price",
+      status: "Status",
+      actions: "Actions",
+      archived: "Archived",
+      confirmDelete: "Are you sure you want to permanently delete this booking? This will remove all associated route details and cannot be undone.",
+      confirmClear: "WARNING: Are you sure you want to permanently delete ALL bookings and clear your history? This will delete all booking files, customer records, and cannot be undone.",
+
+      addLocation: "Add New Sight/Dining Spot",
+      nameEn: "Name (English)*",
+      nameRu: "Name (Russian)*",
+      nameUz: "Name (Uzbek)*",
+      lat: "Latitude (e.g. 39.6548)",
+      lng: "Longitude (e.g. 66.9757)",
+      historical: "Historical Sight",
+      alternative: "Alternative Spot",
+      food: "Dining / Food Place",
+      outOfCity: "Is Out of City (Triggers Mountain Rate)",
+      imageUrl: "Image URL (e.g. /images/locations/new.png)",
+      descEn: "Description (English)",
+      descRu: "Description (Russian)",
+      descUz: "Description (Uzbek)",
+      saveLocation: "Save Location",
+      existingLocations: "Existing Locations",
+      photo: "Photo",
+      category: "Category",
+      nameEnRuUz: "Name (EN / RU / UZ)",
+      coordinates: "Coordinates",
+      outOfCityCol: "Out of City",
+      yes: "Yes",
+      no: "No",
+      confirmDeleteLoc: "Are you sure you want to delete this location?",
+
+      addVehicle: "Add New Driver / Transport",
+      driverName: "Driver Name*",
+      driverPhone: "Driver Phone*",
+      carModel: "Car Model*",
+      carNumber: "Car Number*",
+      cityRate: "City Rate ($)*",
+      outOfCityRate: "Out of City Rate ($)*",
+      saveDriver: "Save Driver/Vehicle",
+      driversRates: "Drivers & Rates",
+      driver: "Driver",
+      phone: "Phone",
+      carDetails: "Car Details",
+      cityRateCol: "City Rate",
+      outOfCityRateCol: "Out of City Rate",
+      confirmDeleteVeh: "Are you sure you want to delete this vehicle?",
+
+      addGuide: "Add New Expert Guide",
+      fullName: "Full Name*",
+      phoneNumber: "Phone Number*",
+      enRate: "English Daily Rate ($)",
+      ruRate: "Russian Daily Rate ($)",
+      uzRate: "Uzbek Daily Rate ($)",
+      esRate: "Spanish Daily Rate ($)",
+      frRate: "French Daily Rate ($)",
+      saveGuide: "Save Guide",
+      expertGuides: "Expert Guides",
+      myProfileRates: "My Profile & Daily Rates",
+      name: "Name",
+      rateSuffix: "Rate",
+      confirmDeleteGuide: "Are you sure you want to delete this guide?",
+
+      save: "Save",
+      cancel: "Cancel"
+    },
+    RU: {
+      adminTitle: "SAMARQAND CRAFTOUR",
+      adminSubtitle: "Контроль доступа к панели администратора",
+      enterPassword: "Введите пароль администратора",
+      unlockButton: "Разблокировать панель",
+      logoutButton: "Выйти",
+      refreshButton: "Обновить",
+      adminRole: "ПАНЕЛЬ АДМИНИСТРАТОРА",
+      guideRole: "ПОРТАЛ ГИДА",
+      loadingData: "Загрузка данных...",
+      incorrectPassword: "Неверный пароль. Пожалуйста, попробуйте снова.",
+      serverError: "Ошибка сервера: ",
+      loadingBookings: "Загрузка бронирований...",
+      noBookings: "Бронирования не найдены.",
+
+      bookings: "Бронирования",
+      locations: "Локации",
+      vehicles: "Транспорт/Водители",
+      guides: "Гиды",
+      guide: "Гид",
+      myProfile: "Мой профиль",
+
+      all: "Все",
+      pending: "В ожидании",
+      confirmed: "Подтверждено",
+      completed: "Завершено",
+      cancelled: "Отменено",
+      clearHistory: "Очистить всю историю",
+
+      bookingId: "ID Бронирования",
+      touristDetails: "Данные туриста",
+      tourDate: "Дата тура",
+      routeSights: "Достопримечательности",
+      guideDriver: "Гид и Водитель",
+      totalPrice: "Итоговая цена",
+      status: "Статус",
+      actions: "Действия",
+      archived: "Архивировано",
+      confirmDelete: "Вы уверены, что хотите навсегда удалить это бронирование? Это удалит все связанные детали маршрута и действие нельзя будет отменить.",
+      confirmClear: "ВНИМАНИЕ: Вы уверены, что хотите навсегда удалить ВСЕ бронирования и очистить историю? Это удалит все файлы бронирования, записи клиентов и действие нельзя будет отменить.",
+
+      addLocation: "Добавить новое место/ресторан",
+      nameEn: "Название (Английский)*",
+      nameRu: "Название (Русский)*",
+      nameUz: "Название (Узбекский)*",
+      lat: "Широта (например, 39.6548)",
+      lng: "Долгота (например, 66.9757)",
+      historical: "Историческое место",
+      alternative: "Альтернативное место",
+      food: "Где поесть / Ресторан",
+      outOfCity: "За городом (тариф в горы)",
+      imageUrl: "Ссылка на фото (например, /images/locations/new.png)",
+      descEn: "Описание (Английский)",
+      descRu: "Описание (Русский)",
+      descUz: "Описание (Узбекский)",
+      saveLocation: "Сохранить локацию",
+      existingLocations: "Существующие локации",
+      photo: "Фото",
+      category: "Категория",
+      nameEnRuUz: "Название (EN / RU / UZ)",
+      coordinates: "Координаты",
+      outOfCityCol: "За городом",
+      yes: "Да",
+      no: "Нет",
+      confirmDeleteLoc: "Вы уверены, что хотите удалить эту локацию?",
+
+      addVehicle: "Добавить нового водителя / транспорт",
+      driverName: "Имя водителя*",
+      driverPhone: "Телефон водителя*",
+      carModel: "Модель машины*",
+      carNumber: "Номер машины*",
+      cityRate: "Тариф по городу ($)*",
+      outOfCityRate: "Тариф за городом ($)*",
+      saveDriver: "Сохранить водителя",
+      driversRates: "Водители и Тарифы",
+      driver: "Водитель",
+      phone: "Телефон",
+      carDetails: "Данные машины",
+      cityRateCol: "Тариф по городу",
+      outOfCityRateCol: "Тариф за городом",
+      confirmDeleteVeh: "Вы уверены, что хотите удалить этого водителя?",
+
+      addGuide: "Добавить нового гида",
+      fullName: "ФИО*",
+      phoneNumber: "Номер телефона*",
+      enRate: "Дневной тариф (Английский) ($)",
+      ruRate: "Дневной тариф (Русский) ($)",
+      uzRate: "Дневной тариф (Узбекский) ($)",
+      esRate: "Дневной тариф (Испанский) ($)",
+      frRate: "Дневной тариф (Французский) ($)",
+      saveGuide: "Сохранить гида",
+      expertGuides: "Экспертные гиды",
+      myProfileRates: "Мой профиль и дневные тарифы",
+      name: "Имя",
+      rateSuffix: "Тариф",
+      confirmDeleteGuide: "Вы уверены, что хотите удалить этого гида?",
+
+      save: "Сохранить",
+      cancel: "Отмена"
+    },
+    UZ: {
+      adminTitle: "SAMARQAND CRAFTOUR",
+      adminSubtitle: "Admin paneliga kirishni nazorat qilish",
+      enterPassword: "Admin parolini kiriting",
+      unlockButton: "Admin panelini ochish",
+      logoutButton: "Chiqish",
+      refreshButton: "Yangilash",
+      adminRole: "ADMIN PANEL",
+      guideRole: "GID PORTALI",
+      loadingData: "Ma'lumotlar yuklanmoqda...",
+      incorrectPassword: "Noto'g'ri parol. Qaytadan urinib ko'ring.",
+      serverError: "Server xatoligi: ",
+      loadingBookings: "Buyurtmalar yuklanmoqda...",
+      noBookings: "Buyurtmalar topilmadi.",
+
+      bookings: "Buyurtmalar",
+      locations: "Joylar",
+      vehicles: "Transport/Haydovchilar",
+      guides: "Gidlar",
+      guide: "Gid",
+      myProfile: "Mening profilim",
+
+      all: "Hammasi",
+      pending: "Kutilmoqda",
+      confirmed: "Tasdiqlandi",
+      completed: "Tugatildi",
+      cancelled: "Bekor qilindi",
+      clearHistory: "Tarixni tozalash",
+
+      bookingId: "Buyurtma IDsi",
+      touristDetails: "Turist ma'lumotlari",
+      tourDate: "Sayohat sanasi",
+      routeSights: "Marshrut joylari",
+      guideDriver: "Gid va Haydovchi",
+      totalPrice: "Jami narx",
+      status: "Holat",
+      actions: "Amallar",
+      archived: "Arxivlandi",
+      confirmDelete: "Ushbu buyurtmani butunlay o'chirib tashlamoqchimisiz? Bu bog'liq bo'lgan barcha marshrut tafsilotlarini o'chirib tashlaydi va buni ortga qaytarib bo'lmaydi.",
+      confirmClear: "DIQQAT: BARCHA buyurtmalarni butunlay o'chirib tashlashni va tarixingizni tozalashni xohlaysizmi? Bu barcha buyurtma fayllarini va mijozlar yozuvlarini o'chirib tashlaydi hamda buni ortga qaytarib bo'lmaydi.",
+
+      addLocation: "Yangi diqqatga sazovor joy/restoran qo'shish",
+      nameEn: "Nomi (Inglizcha)*",
+      nameRu: "Nomi (Ruscha)*",
+      nameUz: "Nomi (O'zbekcha)*",
+      lat: "Kenglik (masalan, 39.6548)",
+      lng: "Uzunlik (masalan, 66.9757)",
+      historical: "Tarixiy joy",
+      alternative: "Muqobil joy",
+      food: "Ovqatlanish joyi",
+      outOfCity: "Shahardan tashqarida (Tog' tarifi qo'llaniladi)",
+      imageUrl: "Rasm havolasi (masalan, /images/locations/new.png)",
+      descEn: "Tavsif (Inglizcha)",
+      descRu: "Tavsif (Ruscha)",
+      descUz: "Tavsif (O'zbekcha)",
+      saveLocation: "Joyni saqlash",
+      existingLocations: "Mavjud joylar",
+      photo: "Rasm",
+      category: "Kategoriya",
+      nameEnRuUz: "Nomi (EN / RU / UZ)",
+      coordinates: "Koordinatalar",
+      outOfCityCol: "Shahardan tashqari",
+      yes: "Ha",
+      no: "Yo'q",
+      confirmDeleteLoc: "Ushbu joyni o'chirmoqchimisiz?",
+
+      addVehicle: "Yangi haydovchi / transport qo'shish",
+      driverName: "Haydovchi ismi*",
+      driverPhone: "Haydovchi telefoni*",
+      carModel: "Mashina modeli*",
+      carNumber: "Mashina raqami*",
+      cityRate: "Shahar tarifi ($)*",
+      outOfCityRate: "Shahardan tashqari tarifi ($)*",
+      saveDriver: "Haydovchi/Transportni saqlash",
+      driversRates: "Haydovchilar va Tariflar",
+      driver: "Haydovchi",
+      phone: "Telefon",
+      carDetails: "Mashina tafsilotlari",
+      cityRateCol: "Shahar tarifi",
+      outOfCityRateCol: "Shahardan tashqari tarifi",
+      confirmDeleteVeh: "Ushbu haydovchini o'chirmoqchimisiz?",
+
+      addGuide: "Yangi ekspert gid qo'shish",
+      fullName: "To'liq ismi*",
+      phoneNumber: "Telefon raqami*",
+      enRate: "Ingliz tili tarifi ($)",
+      ruRate: "Rus tili tarifi ($)",
+      uzRate: "O'zbek tili tarifi ($)",
+      esRate: "Ispan tili tarifi ($)",
+      frRate: "Fransuz tili tarifi ($)",
+      saveGuide: "Gidni saqlash",
+      expertGuides: "Ekspert gidlar",
+      myProfileRates: "Mening profilim va kunlik tariflar",
+      name: "Ism",
+      rateSuffix: "Tarif",
+      confirmDeleteGuide: "Ushbu gidni o'chirmoqchimisiz?",
+
+      save: "Saqlash",
+      cancel: "Bekor qilish"
+    }
+  };
+
   // Role & Details state
   const [userRole, setUserRole] = useState('admin'); // 'admin' or 'guide'
   const [guideId, setGuideId] = useState(null);
@@ -59,7 +371,7 @@ export default function AdminPage() {
   // Locations state
   const [locations, setLocations] = useState([]);
   const [locationForm, setLocationForm] = useState({
-    name_en: '', name_ru: '', description_en: '', description_ru: '',
+    name_en: '', name_ru: '', name_uz: '', description_en: '', description_ru: '', description_uz: '',
     latitude: '', longitude: '', category: 'historical', is_out_of_city: false,
     image_url: ''
   });
@@ -90,6 +402,8 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState(null); // stores ID being modified
   const [errorMsg, setErrorMsg] = useState('');
+
+  const currT = t[language] || t.EN;
 
   const fetchAllData = (token = localStorage.getItem('admin_token')) => {
     if (!token) return;
@@ -128,7 +442,7 @@ export default function AdminPage() {
         }
       })
       .catch((err) => {
-        setErrorMsg('Error loading dashboard data: ' + err.message);
+        setErrorMsg(currT.loadingData + ' ' + err.message);
       })
       .finally(() => {
         setLoading(false);
@@ -161,11 +475,11 @@ export default function AdminPage() {
           setIsAuthenticated(true);
           fetchAllData(password);
         } else {
-          setLoginError('Incorrect password. Please try again.');
+          setLoginError(currT.incorrectPassword);
         }
       })
       .catch((err) => {
-        setLoginError('Server error: ' + err.message);
+        setLoginError(currT.serverError + err.message);
       })
       .finally(() => {
         setLoading(false);
@@ -213,7 +527,7 @@ export default function AdminPage() {
   };
 
   const deleteBooking = (bookingId) => {
-    const confirmMsg = 'Are you sure you want to permanently delete this booking? This will remove all associated route details and cannot be undone.';
+    const confirmMsg = currT.confirmDelete;
     if (!window.confirm(confirmMsg)) return;
 
     setActionLoading(bookingId);
@@ -239,7 +553,7 @@ export default function AdminPage() {
   };
 
   const clearAllBookings = () => {
-    const confirmMsg = 'WARNING: Are you sure you want to permanently delete ALL bookings and clear your history? This will delete all booking files, customer records, and cannot be undone.';
+    const confirmMsg = currT.confirmClear;
     if (!window.confirm(confirmMsg)) return;
 
     setLoading(true);
@@ -324,7 +638,7 @@ export default function AdminPage() {
   };
 
   const handleDeleteLocation = (locationId) => {
-    if (!confirm('Are you sure you want to delete this location?')) return;
+    if (!confirm(currT.confirmDeleteLoc)) return;
     const token = localStorage.getItem('admin_token');
     setActionLoading(locationId);
 
@@ -403,7 +717,7 @@ export default function AdminPage() {
   };
 
   const handleDeleteVehicle = (vehicleId) => {
-    if (!confirm('Are you sure you want to delete this vehicle?')) return;
+    if (!confirm(currT.confirmDeleteVeh)) return;
     const token = localStorage.getItem('admin_token');
     setActionLoading(vehicleId);
 
@@ -526,7 +840,7 @@ export default function AdminPage() {
   };
 
   const handleDeleteGuide = (guideId) => {
-    if (!confirm('Are you sure you want to delete this guide?')) return;
+    if (!confirm(currT.confirmDeleteGuide)) return;
     const token = localStorage.getItem('admin_token');
     setActionLoading(guideId);
 
@@ -558,7 +872,75 @@ export default function AdminPage() {
   // --- Login Gate ---
   if (!isAuthenticated) {
     return (
-      <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+      <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', position: 'relative' }}>
+        
+        {/* Floating Language Switcher */}
+        <div style={{ position: 'absolute', top: '24px', right: '24px', zIndex: 100 }}>
+          <button
+            onClick={() => setShowLangDropdown(!showLangDropdown)}
+            style={{
+              padding: '8px 16px',
+              borderRadius: '10px',
+              backgroundColor: 'rgba(255,255,255,0.05)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              color: '#fff',
+              fontSize: '13px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <Languages size={14} style={{ color: '#d4af37' }} />
+            <span>{language === 'EN' ? '🇬🇧 EN' : language === 'RU' ? '🇷🇺 RU' : '🇺🇿 UZ'}</span>
+          </button>
+          {showLangDropdown && (
+            <div style={{
+              position: 'absolute',
+              top: 'calc(100% + 8px)',
+              right: 0,
+              backgroundColor: '#0f172a',
+              border: '1px solid rgba(212,175,55,0.25)',
+              borderRadius: '10px',
+              padding: '4px',
+              zIndex: 1000,
+              boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '2px',
+              minWidth: '130px'
+            }}>
+              {['EN', 'RU', 'UZ'].map((langCode) => (
+                <button
+                  key={langCode}
+                  onClick={() => {
+                    setLanguage(langCode);
+                    setShowLangDropdown(false);
+                    localStorage.setItem('site_lang', langCode);
+                  }}
+                  style={{
+                    padding: '8px 12px',
+                    border: 'none',
+                    background: language === langCode ? 'rgba(212,175,55,0.1)' : 'transparent',
+                    color: language === langCode ? '#d4af37' : '#94a3b8',
+                    textAlign: 'left',
+                    fontSize: '13px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    borderRadius: '6px',
+                    transition: 'all 0.2s ease',
+                    width: '100%'
+                  }}
+                >
+                  {langCode === 'EN' ? '🇬🇧 English' : langCode === 'RU' ? '🇷🇺 Русский' : '🇺🇿 O\'zbekcha'}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
         <div className="glass-container gold-glow animate-fade-in" style={{
           width: '100%', maxWidth: '420px', padding: '36px', display: 'flex', flexDirection: 'column', gap: '24px'
         }}>
@@ -572,12 +954,12 @@ export default function AdminPage() {
             <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#fff', letterSpacing: '0.05em' }}>
               SAMARQAND <span style={{ color: '#d4af37' }}>CRAFTOUR</span>
             </h2>
-            <p style={{ fontSize: '13px', color: '#94a3b8' }}>Admin Panel Access Control</p>
+            <p style={{ fontSize: '13px', color: '#94a3b8' }}>{currT.adminSubtitle}</p>
           </div>
 
           <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <label style={{ fontSize: '12px', fontWeight: '600', color: '#94a3b8' }}>Enter Admin Password</label>
+              <label style={{ fontSize: '12px', fontWeight: '600', color: '#94a3b8' }}>{currT.enterPassword}</label>
               <input
                 type="password"
                 placeholder="••••••••"
@@ -595,7 +977,7 @@ export default function AdminPage() {
             )}
             <button type="submit" className="btn-gold" style={{ padding: '12px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }} disabled={loading}>
               {loading ? <Loader2 size={16} className="animate-spin" /> : <Unlock size={16} />}
-              <span>Unlock Admin Panel</span>
+              <span>{currT.unlockButton}</span>
             </button>
           </form>
         </div>
@@ -619,16 +1001,83 @@ export default function AdminPage() {
             <Compass size={20} />
           </div>
           <span style={{ fontSize: '18px', fontWeight: 800, letterSpacing: '0.05em', color: '#fff' }}>
-            SAMARQAND <span style={{ color: '#d4af37' }}>CRAFTOUR</span> <span style={{ fontSize: '12px', color: '#94a3b8', marginLeft: '8px', fontWeight: 'normal' }}>{userRole === 'guide' ? `GUIDE PORTAL: ${guideName}` : 'ADMIN PANEL'}</span>
+            SAMARQAND <span style={{ color: '#d4af37' }}>CRAFTOUR</span> <span style={{ fontSize: '12px', color: '#94a3b8', marginLeft: '8px', fontWeight: 'normal' }}>{userRole === 'guide' ? `${currT.guideRole}: ${guideName}` : currT.adminRole}</span>
           </span>
         </div>
 
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          {/* Header Dropdown Language Switcher */}
+          <div style={{ position: 'relative' }}>
+            <button
+              onClick={() => setShowLangDropdown(!showLangDropdown)}
+              style={{
+                padding: '8px 12px',
+                borderRadius: '10px',
+                backgroundColor: 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                color: '#fff',
+                fontSize: '13px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <Languages size={14} style={{ color: '#d4af37' }} />
+              <span>{language === 'EN' ? '🇬🇧 EN' : language === 'RU' ? '🇷🇺 RU' : '🇺🇿 UZ'}</span>
+            </button>
+            {showLangDropdown && (
+              <div style={{
+                position: 'absolute',
+                top: 'calc(100% + 8px)',
+                right: 0,
+                backgroundColor: '#0f172a',
+                border: '1px solid rgba(212,175,55,0.25)',
+                borderRadius: '10px',
+                padding: '4px',
+                zIndex: 1000,
+                boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '2px',
+                minWidth: '130px'
+              }}>
+                {['EN', 'RU', 'UZ'].map((langCode) => (
+                  <button
+                    key={langCode}
+                    onClick={() => {
+                      setLanguage(langCode);
+                      setShowLangDropdown(false);
+                      localStorage.setItem('site_lang', langCode);
+                    }}
+                    style={{
+                      padding: '8px 12px',
+                      border: 'none',
+                      background: language === langCode ? 'rgba(212,175,55,0.1)' : 'transparent',
+                      color: language === langCode ? '#d4af37' : '#94a3b8',
+                      textAlign: 'left',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      borderRadius: '6px',
+                      transition: 'all 0.2s ease',
+                      width: '100%'
+                    }}
+                  >
+                    {langCode === 'EN' ? '🇬🇧 English' : langCode === 'RU' ? '🇷🇺 Русский' : '🇺🇿 O\'zbekcha'}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
           <button onClick={() => fetchAllData()} style={{ padding: '8px 12px', borderRadius: '10px', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }} disabled={loading}>
-            <RefreshCw size={14} className={loading ? 'animate-spin' : ''} /> Refresh
+            <RefreshCw size={14} className={loading ? 'animate-spin' : ''} /> {currT.refreshButton}
           </button>
           <button onClick={handleLogout} style={{ padding: '8px 12px', borderRadius: '10px', backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600' }}>
-            <LogOut size={14} /> Log Out
+            <LogOut size={14} /> {currT.logoutButton}
           </button>
         </div>
       </header>
@@ -648,7 +1097,7 @@ export default function AdminPage() {
                 fontWeight: '700', fontSize: '15px', cursor: 'pointer', textTransform: 'capitalize'
               }}
             >
-              {tab === 'guides' && userRole === 'guide' ? 'My Profile' : tab}
+              {tab === 'guides' && userRole === 'guide' ? currT.myProfile : currT[tab]}
             </button>
           ))}
       </div>
@@ -678,7 +1127,7 @@ export default function AdminPage() {
                     fontWeight: '600', textTransform: 'capitalize', cursor: 'pointer'
                   }}
                 >
-                  {status} ({bookings.filter(b => status === 'all' || b.status === status).length})
+                  {currT[status]} ({bookings.filter(b => status === 'all' || b.status === status).length})
                 </button>
               ))}
             </div>
@@ -703,7 +1152,7 @@ export default function AdminPage() {
                 onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.1)'; }}
               >
                 <Trash2 size={14} />
-                <span>Clear All History</span>
+                <span>{currT.clearHistory}</span>
               </button>
             )}
           </div>
@@ -712,24 +1161,24 @@ export default function AdminPage() {
             {loading && bookings.length === 0 ? (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '200px', gap: '10px', color: '#94a3b8' }}>
                 <Loader2 size={32} className="animate-spin" style={{ color: '#d4af37' }} />
-                <span>Loading bookings...</span>
+                <span>{currT.loadingBookings}</span>
               </div>
             ) : filteredBookings.length === 0 ? (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '200px', color: '#94a3b8' }}>
-                No bookings found.
+                {currT.noBookings}
               </div>
             ) : (
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '900px' }}>
                 <thead>
                   <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', color: '#94a3b8', fontSize: '13px' }}>
-                    <th style={{ padding: '12px 8px' }}>Booking ID</th>
-                    <th style={{ padding: '12px 8px' }}>Tourist Details</th>
-                    <th style={{ padding: '12px 8px' }}>Tour Date</th>
-                    <th style={{ padding: '12px 8px' }}>Route Sights</th>
-                    <th style={{ padding: '12px 8px' }}>Guide & Driver</th>
-                    <th style={{ padding: '12px 8px' }}>Total Price</th>
-                    <th style={{ padding: '12px 8px' }}>Status</th>
-                    <th style={{ padding: '12px 8px', textAlign: 'center' }}>Actions</th>
+                    <th style={{ padding: '12px 8px' }}>{currT.bookingId}</th>
+                    <th style={{ padding: '12px 8px' }}>{currT.touristDetails}</th>
+                    <th style={{ padding: '12px 8px' }}>{currT.tourDate}</th>
+                    <th style={{ padding: '12px 8px' }}>{currT.routeSights}</th>
+                    <th style={{ padding: '12px 8px' }}>{currT.guideDriver}</th>
+                    <th style={{ padding: '12px 8px' }}>{currT.totalPrice}</th>
+                    <th style={{ padding: '12px 8px' }}>{currT.status}</th>
+                    <th style={{ padding: '12px 8px', textAlign: 'center' }}>{currT.actions}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -759,28 +1208,28 @@ export default function AdminPage() {
                           )) || <span style={{ color: '#64748b' }}>None</span>}
                         </td>
                         <td style={{ padding: '16px 8px', fontSize: '12px' }}>
-                          <div><span style={{ color: '#64748b' }}>Guide: </span>{booking.guide?.full_name || 'N/A'}</div>
-                          <div><span style={{ color: '#64748b' }}>Driver: </span>{booking.vehicle?.driver_name || 'N/A'}</div>
+                          <div><span style={{ color: '#64748b' }}>{currT.guide}: </span>{booking.guide?.full_name || 'N/A'}</div>
+                          <div><span style={{ color: '#64748b' }}>{currT.driver}: </span>{booking.vehicle?.driver_name || 'N/A'}</div>
                         </td>
                         <td style={{ padding: '16px 8px', fontWeight: '800', color: '#d4af37' }}>${parseFloat(booking.total_price).toFixed(2)}</td>
                         <td style={{ padding: '16px 8px' }}>
                           <span style={{ padding: '4px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: '700', color: colors.text, backgroundColor: colors.bg, border: `1px solid ${colors.border}` }}>
-                            {booking.status}
+                            {currT[booking.status] || booking.status}
                           </span>
                         </td>
                         <td style={{ padding: '16px 8px', textAlign: 'center' }}>
                           {actionLoading === booking.id ? <Loader2 size={16} className="animate-spin" /> : (
                             <div style={{ display: 'flex', gap: '6px', justifyContent: 'center', alignItems: 'center' }}>
                               {booking.status === 'pending' && (
-                                <button onClick={() => updateBookingStatus(booking.id, 'confirmed')} title="Confirm" style={{ padding: '4px', background: 'rgba(212,175,55,0.1)', color: '#d4af37', border: '1px solid #d4af37', cursor: 'pointer', borderRadius: '4px' }}><CheckCircle size={14} /></button>
+                                <button onClick={() => updateBookingStatus(booking.id, 'confirmed')} title={currT.confirmed} style={{ padding: '4px', background: 'rgba(212,175,55,0.1)', color: '#d4af37', border: '1px solid #d4af37', cursor: 'pointer', borderRadius: '4px' }}><CheckCircle size={14} /></button>
                               )}
                               {booking.status !== 'completed' && booking.status !== 'cancelled' && (
                                 <>
-                                  <button onClick={() => updateBookingStatus(booking.id, 'completed')} title="Complete" style={{ padding: '4px', background: 'rgba(16,185,129,0.1)', color: '#10b981', border: '1px solid #10b981', cursor: 'pointer', borderRadius: '4px' }}><CheckCircle size={14} /></button>
-                                  <button onClick={() => updateBookingStatus(booking.id, 'cancelled')} title="Cancel" style={{ padding: '4px', background: 'rgba(239,68,68,0.1)', color: '#ef4444', border: '1px solid #ef4444', cursor: 'pointer', borderRadius: '4px' }}><XCircle size={14} /></button>
+                                  <button onClick={() => updateBookingStatus(booking.id, 'completed')} title={currT.completed} style={{ padding: '4px', background: 'rgba(16,185,129,0.1)', color: '#10b981', border: '1px solid #10b981', cursor: 'pointer', borderRadius: '4px' }}><CheckCircle size={14} /></button>
+                                  <button onClick={() => updateBookingStatus(booking.id, 'cancelled')} title={currT.cancelled} style={{ padding: '4px', background: 'rgba(239,68,68,0.1)', color: '#ef4444', border: '1px solid #ef4444', cursor: 'pointer', borderRadius: '4px' }}><XCircle size={14} /></button>
                                 </>
                               )}
-                              {(booking.status === 'completed' || booking.status === 'cancelled') && <span style={{ color: '#64748b', fontSize: '11px' }}>Archived</span>}
+                              {(booking.status === 'completed' || booking.status === 'cancelled') && <span style={{ color: '#64748b', fontSize: '11px' }}>{currT.archived}</span>}
                               
                               {userRole === 'admin' && (
                                 <button 
@@ -810,41 +1259,43 @@ export default function AdminPage() {
       {activeTab === 'locations' && (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '24px' }}>
           <div className="glass-container" style={{ padding: '24px' }}>
-            <h3 style={{ color: '#d4af37', marginBottom: '16px', fontSize: '18px', display: 'flex', alignItems: 'center', gap: '8px' }}><Plus size={18} /> Add New Sight/Dining Spot</h3>
+            <h3 style={{ color: '#d4af37', marginBottom: '16px', fontSize: '18px', display: 'flex', alignItems: 'center', gap: '8px' }}><Plus size={18} /> {currT.addLocation}</h3>
             <form onSubmit={handleAddLocation} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
-              <input type="text" placeholder="Name (English)*" value={locationForm.name_en} onChange={e => setLocationForm({...locationForm, name_en: e.target.value})} required />
-              <input type="text" placeholder="Name (Russian)*" value={locationForm.name_ru} onChange={e => setLocationForm({...locationForm, name_ru: e.target.value})} required />
-              <input type="text" placeholder="Latitude (e.g. 39.6548)" value={locationForm.latitude} onChange={e => setLocationForm({...locationForm, latitude: e.target.value})} />
-              <input type="text" placeholder="Longitude (e.g. 66.9757)" value={locationForm.longitude} onChange={e => setLocationForm({...locationForm, longitude: e.target.value})} />
+              <input type="text" placeholder={currT.nameEn} value={locationForm.name_en} onChange={e => setLocationForm({...locationForm, name_en: e.target.value})} required />
+              <input type="text" placeholder={currT.nameRu} value={locationForm.name_ru} onChange={e => setLocationForm({...locationForm, name_ru: e.target.value})} required />
+              <input type="text" placeholder={currT.nameUz} value={locationForm.name_uz} onChange={e => setLocationForm({...locationForm, name_uz: e.target.value})} required />
+              <input type="text" placeholder={currT.lat} value={locationForm.latitude} onChange={e => setLocationForm({...locationForm, latitude: e.target.value})} />
+              <input type="text" placeholder={currT.lng} value={locationForm.longitude} onChange={e => setLocationForm({...locationForm, longitude: e.target.value})} />
               <select value={locationForm.category} onChange={e => setLocationForm({...locationForm, category: e.target.value})}>
-                <option value="historical">Historical Sight</option>
-                <option value="alternative">Alternative Spot</option>
-                <option value="food">Dining / Food Place</option>
+                <option value="historical">{currT.historical}</option>
+                <option value="alternative">{currT.alternative}</option>
+                <option value="food">{currT.food}</option>
               </select>
               <label style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#94a3b8', fontSize: '14px', cursor: 'pointer' }}>
                 <input type="checkbox" checked={locationForm.is_out_of_city} onChange={e => setLocationForm({...locationForm, is_out_of_city: e.target.checked})} style={{ width: 'auto' }} />
-                Is Out of City (Triggers Mountain Rate)
+                {currT.outOfCity}
               </label>
-              <input type="text" placeholder="Image URL (e.g. /images/locations/new.png)" value={locationForm.image_url} onChange={e => setLocationForm({...locationForm, image_url: e.target.value})} style={{ gridColumn: '1 / -1' }} />
-              <textarea placeholder="Description (English)" value={locationForm.description_en} onChange={e => setLocationForm({...locationForm, description_en: e.target.value})} style={{ gridColumn: '1 / -1' }} />
-              <textarea placeholder="Description (Russian)" value={locationForm.description_ru} onChange={e => setLocationForm({...locationForm, description_ru: e.target.value})} style={{ gridColumn: '1 / -1' }} />
+              <input type="text" placeholder={currT.imageUrl} value={locationForm.image_url} onChange={e => setLocationForm({...locationForm, image_url: e.target.value})} style={{ gridColumn: '1 / -1' }} />
+              <textarea placeholder={currT.descEn} value={locationForm.description_en} onChange={e => setLocationForm({...locationForm, description_en: e.target.value})} style={{ gridColumn: '1 / -1' }} />
+              <textarea placeholder={currT.descRu} value={locationForm.description_ru} onChange={e => setLocationForm({...locationForm, description_ru: e.target.value})} style={{ gridColumn: '1 / -1' }} />
+              <textarea placeholder={currT.descUz} value={locationForm.description_uz} onChange={e => setLocationForm({...locationForm, description_uz: e.target.value})} style={{ gridColumn: '1 / -1' }} />
               <button type="submit" className="btn-gold" style={{ padding: '10px 24px', gridColumn: '1 / -1', alignSelf: 'start', justifySelf: 'start' }} disabled={loading}>
-                {loading ? <Loader2 size={16} className="animate-spin" /> : 'Save Location'}
+                {loading ? <Loader2 size={16} className="animate-spin" /> : currT.saveLocation}
               </button>
             </form>
           </div>
 
           <div className="glass-container" style={{ padding: '24px', overflowX: 'auto' }}>
-            <h3 style={{ color: '#fff', marginBottom: '16px', fontSize: '18px' }}>Existing Locations ({locations.length})</h3>
+            <h3 style={{ color: '#fff', marginBottom: '16px', fontSize: '18px' }}>{currT.existingLocations} ({locations.length})</h3>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', color: '#94a3b8', fontSize: '13px' }}>
-                  <th style={{ padding: '12px 8px' }}>Photo</th>
-                  <th style={{ padding: '12px 8px' }}>Category</th>
-                  <th style={{ padding: '12px 8px' }}>Name (EN / RU)</th>
-                  <th style={{ padding: '12px 8px' }}>Coordinates</th>
-                  <th style={{ padding: '12px 8px' }}>Out of City</th>
-                  <th style={{ padding: '12px 8px', textAlign: 'center' }}>Actions</th>
+                  <th style={{ padding: '12px 8px' }}>{currT.photo}</th>
+                  <th style={{ padding: '12px 8px' }}>{currT.category}</th>
+                  <th style={{ padding: '12px 8px' }}>{currT.nameEnRuUz}</th>
+                  <th style={{ padding: '12px 8px' }}>{currT.coordinates}</th>
+                  <th style={{ padding: '12px 8px' }}>{currT.outOfCityCol}</th>
+                  <th style={{ padding: '12px 8px', textAlign: 'center' }}>{currT.actions}</th>
                 </tr>
               </thead>
               <tbody>
@@ -891,18 +1342,23 @@ export default function AdminPage() {
                           padding: '2px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold',
                           backgroundColor: loc.category === 'historical' ? 'rgba(0,112,192,0.15)' : loc.category === 'food' ? 'rgba(16,185,129,0.15)' : 'rgba(212,175,55,0.15)',
                           color: loc.category === 'historical' ? '#0070c0' : loc.category === 'food' ? '#10b981' : '#d4af37'
-                        }}>{loc.category}</span>
+                        }}>{currT[loc.category] || loc.category}</span>
                       </td>
                       <td style={{ padding: '14px 8px' }}>
                         {isEditing ? (
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                             <input type="text" value={editingResource.data.name_en} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, name_en: e.target.value}})} style={{ padding: '4px', fontSize: '12px' }} />
                             <input type="text" value={editingResource.data.name_ru} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, name_ru: e.target.value}})} style={{ padding: '4px', fontSize: '12px' }} />
+                            <input type="text" value={editingResource.data.name_uz || ''} placeholder="Name (Uzbek)" onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, name_uz: e.target.value}})} style={{ padding: '4px', fontSize: '12px' }} />
+                            <textarea value={editingResource.data.description_en || ''} placeholder="Description (English)" onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, description_en: e.target.value}})} style={{ padding: '4px', fontSize: '12px', minHeight: '40px' }} />
+                            <textarea value={editingResource.data.description_ru || ''} placeholder="Description (Russian)" onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, description_ru: e.target.value}})} style={{ padding: '4px', fontSize: '12px', minHeight: '40px' }} />
+                            <textarea value={editingResource.data.description_uz || ''} placeholder="Description (Uzbek)" onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, description_uz: e.target.value}})} style={{ padding: '4px', fontSize: '12px', minHeight: '40px' }} />
                           </div>
                         ) : (
                           <div>
                             <div style={{ fontWeight: '600' }}>{loc.name_en}</div>
                             <div style={{ color: '#94a3b8', fontSize: '12px' }}>{loc.name_ru}</div>
+                            <div style={{ color: '#d4af37', fontSize: '12px' }}>{loc.name_uz || ''}</div>
                           </div>
                         )}
                       </td>
@@ -920,7 +1376,7 @@ export default function AdminPage() {
                         {isEditing ? (
                           <input type="checkbox" checked={editingResource.data.is_out_of_city} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, is_out_of_city: e.target.checked}})} />
                         ) : (
-                          <span>{loc.is_out_of_city ? 'Yes' : 'No'}</span>
+                          <span>{loc.is_out_of_city ? currT.yes : currT.no}</span>
                         )}
                       </td>
                       <td style={{ padding: '14px 8px', textAlign: 'center' }}>
@@ -928,8 +1384,8 @@ export default function AdminPage() {
                           <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
                             {isEditing ? (
                               <>
-                                <button onClick={() => handleUpdateLocation(loc.id)} style={{ padding: '4px 8px', background: '#10b981', color: '#000', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>Save</button>
-                                <button onClick={() => setEditingResource(null)} style={{ padding: '4px 8px', background: '#64748b', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Cancel</button>
+                                <button onClick={() => handleUpdateLocation(loc.id)} style={{ padding: '4px 8px', background: '#10b981', color: '#000', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>{currT.save}</button>
+                                <button onClick={() => setEditingResource(null)} style={{ padding: '4px 8px', background: '#64748b', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>{currT.cancel}</button>
                               </>
                             ) : (
                               <>
@@ -955,31 +1411,31 @@ export default function AdminPage() {
       {activeTab === 'vehicles' && (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '24px' }}>
           <div className="glass-container" style={{ padding: '24px' }}>
-            <h3 style={{ color: '#d4af37', marginBottom: '16px', fontSize: '18px', display: 'flex', alignItems: 'center', gap: '8px' }}><Car size={18} /> Add New Driver / Transport</h3>
+            <h3 style={{ color: '#d4af37', marginBottom: '16px', fontSize: '18px', display: 'flex', alignItems: 'center', gap: '8px' }}><Car size={18} /> {currT.addVehicle}</h3>
             <form onSubmit={handleAddVehicle} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
-              <input type="text" placeholder="Driver Name*" value={vehicleForm.driver_name} onChange={e => setVehicleForm({...vehicleForm, driver_name: e.target.value})} required />
-              <input type="text" placeholder="Driver Phone*" value={vehicleForm.driver_phone} onChange={e => setVehicleForm({...vehicleForm, driver_phone: e.target.value})} required />
-              <input type="text" placeholder="Car Model*" value={vehicleForm.car_model} onChange={e => setVehicleForm({...vehicleForm, car_model: e.target.value})} required />
-              <input type="text" placeholder="Car Number*" value={vehicleForm.car_number} onChange={e => setVehicleForm({...vehicleForm, car_number: e.target.value})} required />
-              <input type="number" placeholder="City Rate ($)*" value={vehicleForm.city_rate} onChange={e => setVehicleForm({...vehicleForm, city_rate: e.target.value})} required />
-              <input type="number" placeholder="Out of City Rate ($)*" value={vehicleForm.out_of_city_rate} onChange={e => setVehicleForm({...vehicleForm, out_of_city_rate: e.target.value})} required />
+              <input type="text" placeholder={currT.driverName} value={vehicleForm.driver_name} onChange={e => setVehicleForm({...vehicleForm, driver_name: e.target.value})} required />
+              <input type="text" placeholder={currT.driverPhone} value={vehicleForm.driver_phone} onChange={e => setVehicleForm({...vehicleForm, driver_phone: e.target.value})} required />
+              <input type="text" placeholder={currT.carModel} value={vehicleForm.car_model} onChange={e => setVehicleForm({...vehicleForm, car_model: e.target.value})} required />
+              <input type="text" placeholder={currT.carNumber} value={vehicleForm.car_number} onChange={e => setVehicleForm({...vehicleForm, car_number: e.target.value})} required />
+              <input type="number" placeholder={currT.cityRate} value={vehicleForm.city_rate} onChange={e => setVehicleForm({...vehicleForm, city_rate: e.target.value})} required />
+              <input type="number" placeholder={currT.outOfCityRate} value={vehicleForm.out_of_city_rate} onChange={e => setVehicleForm({...vehicleForm, out_of_city_rate: e.target.value})} required />
               <button type="submit" className="btn-gold" style={{ padding: '10px 24px', gridColumn: '1 / -1', alignSelf: 'start', justifySelf: 'start' }} disabled={loading}>
-                {loading ? <Loader2 size={16} className="animate-spin" /> : 'Save Driver/Vehicle'}
+                {loading ? <Loader2 size={16} className="animate-spin" /> : currT.saveDriver}
               </button>
             </form>
           </div>
 
           <div className="glass-container" style={{ padding: '24px', overflowX: 'auto' }}>
-            <h3 style={{ color: '#fff', marginBottom: '16px', fontSize: '18px' }}>Drivers & Rates ({vehicles.length})</h3>
+            <h3 style={{ color: '#fff', marginBottom: '16px', fontSize: '18px' }}>{currT.driversRates} ({vehicles.length})</h3>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', color: '#94a3b8', fontSize: '13px' }}>
-                  <th style={{ padding: '12px 8px' }}>Driver</th>
-                  <th style={{ padding: '12px 8px' }}>Phone</th>
-                  <th style={{ padding: '12px 8px' }}>Car Details</th>
-                  <th style={{ padding: '12px 8px' }}>City Rate</th>
-                  <th style={{ padding: '12px 8px' }}>Out of City Rate</th>
-                  <th style={{ padding: '12px 8px', textAlign: 'center' }}>Actions</th>
+                  <th style={{ padding: '12px 8px' }}>{currT.driver}</th>
+                  <th style={{ padding: '12px 8px' }}>{currT.phone}</th>
+                  <th style={{ padding: '12px 8px' }}>{currT.carDetails}</th>
+                  <th style={{ padding: '12px 8px' }}>{currT.cityRateCol}</th>
+                  <th style={{ padding: '12px 8px' }}>{currT.outOfCityRateCol}</th>
+                  <th style={{ padding: '12px 8px', textAlign: 'center' }}>{currT.actions}</th>
                 </tr>
               </thead>
               <tbody>
@@ -1033,8 +1489,8 @@ export default function AdminPage() {
                           <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
                             {isEditing ? (
                               <>
-                                <button onClick={() => handleUpdateVehicle(v.id)} style={{ padding: '4px 8px', background: '#10b981', color: '#000', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>Save</button>
-                                <button onClick={() => setEditingResource(null)} style={{ padding: '4px 8px', background: '#64748b', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Cancel</button>
+                                <button onClick={() => handleUpdateVehicle(v.id)} style={{ padding: '4px 8px', background: '#10b981', color: '#000', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>{currT.save}</button>
+                                <button onClick={() => setEditingResource(null)} style={{ padding: '4px 8px', background: '#64748b', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>{currT.cancel}</button>
                               </>
                             ) : (
                               <>
@@ -1063,34 +1519,34 @@ export default function AdminPage() {
           {/* Add Guide Form */}
           {userRole === 'admin' && (
             <div className="glass-container" style={{ padding: '24px' }}>
-              <h3 style={{ color: '#d4af37', marginBottom: '16px', fontSize: '18px', display: 'flex', alignItems: 'center', gap: '8px' }}><Languages size={18} /> Add New Expert Guide</h3>
+              <h3 style={{ color: '#d4af37', marginBottom: '16px', fontSize: '18px', display: 'flex', alignItems: 'center', gap: '8px' }}><Languages size={18} /> {currT.addGuide}</h3>
               <form onSubmit={handleAddGuide} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
-                <input type="text" placeholder="Full Name*" value={guideForm.full_name} onChange={e => setGuideForm({...guideForm, full_name: e.target.value})} required />
-                <input type="text" placeholder="Phone Number*" value={guideForm.phone_number} onChange={e => setGuideForm({...guideForm, phone_number: e.target.value})} required />
+                <input type="text" placeholder={currT.fullName} value={guideForm.full_name} onChange={e => setGuideForm({...guideForm, full_name: e.target.value})} required />
+                <input type="text" placeholder={currT.phoneNumber} value={guideForm.phone_number} onChange={e => setGuideForm({...guideForm, phone_number: e.target.value})} required />
                 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <span style={{ fontSize: '12px', color: '#64748b' }}>English Daily Rate ($)</span>
+                  <span style={{ fontSize: '12px', color: '#64748b' }}>{currT.enRate}</span>
                   <input type="number" placeholder="e.g. 50" value={guideForm.en_rate} onChange={e => setGuideForm({...guideForm, en_rate: e.target.value})} />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <span style={{ fontSize: '12px', color: '#64748b' }}>Russian Daily Rate ($)</span>
+                  <span style={{ fontSize: '12px', color: '#64748b' }}>{currT.ruRate}</span>
                   <input type="number" placeholder="e.g. 40" value={guideForm.ru_rate} onChange={e => setGuideForm({...guideForm, ru_rate: e.target.value})} />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <span style={{ fontSize: '12px', color: '#64748b' }}>Uzbek Daily Rate ($)</span>
+                  <span style={{ fontSize: '12px', color: '#64748b' }}>{currT.uzRate}</span>
                   <input type="number" placeholder="e.g. 35" value={guideForm.uz_rate} onChange={e => setGuideForm({...guideForm, uz_rate: e.target.value})} />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <span style={{ fontSize: '12px', color: '#64748b' }}>Spanish Daily Rate ($)</span>
+                  <span style={{ fontSize: '12px', color: '#64748b' }}>{currT.esRate}</span>
                   <input type="number" placeholder="e.g. 70" value={guideForm.es_rate} onChange={e => setGuideForm({...guideForm, es_rate: e.target.value})} />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <span style={{ fontSize: '12px', color: '#64748b' }}>French Daily Rate ($)</span>
+                  <span style={{ fontSize: '12px', color: '#64748b' }}>{currT.frRate}</span>
                   <input type="number" placeholder="e.g. 65" value={guideForm.fr_rate} onChange={e => setGuideForm({...guideForm, fr_rate: e.target.value})} />
                 </div>
 
                 <button type="submit" className="btn-gold" style={{ padding: '10px 24px', gridColumn: '1 / -1', alignSelf: 'start', justifySelf: 'start' }} disabled={loading}>
-                  {loading ? <Loader2 size={16} className="animate-spin" /> : 'Save Guide'}
+                  {loading ? <Loader2 size={16} className="animate-spin" /> : currT.saveGuide}
                 </button>
               </form>
             </div>
@@ -1099,19 +1555,19 @@ export default function AdminPage() {
           {/* Guides List */}
           <div className="glass-container" style={{ padding: '24px', overflowX: 'auto' }}>
             <h3 style={{ color: '#fff', marginBottom: '16px', fontSize: '18px' }}>
-              {userRole === 'guide' ? 'My Profile & Daily Rates' : `Expert Guides (${guides.length})`}
+              {userRole === 'guide' ? currT.myProfileRates : `${currT.expertGuides} (${guides.length})`}
             </h3>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', color: '#94a3b8', fontSize: '13px' }}>
-                  <th style={{ padding: '12px 8px' }}>Name</th>
-                  <th style={{ padding: '12px 8px' }}>Phone Number</th>
-                  <th style={{ padding: '12px 8px' }}>English Rate</th>
-                  <th style={{ padding: '12px 8px' }}>Russian Rate</th>
-                  <th style={{ padding: '12px 8px' }}>Uzbek Rate</th>
-                  <th style={{ padding: '12px 8px' }}>Spanish Rate</th>
-                  <th style={{ padding: '12px 8px' }}>French Rate</th>
-                  <th style={{ padding: '12px 8px', textAlign: 'center' }}>Actions</th>
+                  <th style={{ padding: '12px 8px' }}>{currT.name}</th>
+                  <th style={{ padding: '12px 8px' }}>{currT.phoneNumber}</th>
+                  <th style={{ padding: '12px 8px' }}>{`EN ${currT.rateSuffix}`}</th>
+                  <th style={{ padding: '12px 8px' }}>{`RU ${currT.rateSuffix}`}</th>
+                  <th style={{ padding: '12px 8px' }}>{`UZ ${currT.rateSuffix}`}</th>
+                  <th style={{ padding: '12px 8px' }}>{`ES ${currT.rateSuffix}`}</th>
+                  <th style={{ padding: '12px 8px' }}>{`FR ${currT.rateSuffix}`}</th>
+                  <th style={{ padding: '12px 8px', textAlign: 'center' }}>{currT.actions}</th>
                 </tr>
               </thead>
               <tbody>
@@ -1187,8 +1643,8 @@ export default function AdminPage() {
                             <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
                               {isEditing ? (
                                 <>
-                                  <button onClick={() => handleUpdateGuide(g.id)} style={{ padding: '4px 8px', background: '#10b981', color: '#000', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>Save</button>
-                                  <button onClick={() => setEditingResource(null)} style={{ padding: '4px 8px', background: '#64748b', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Cancel</button>
+                                  <button onClick={() => handleUpdateGuide(g.id)} style={{ padding: '4px 8px', background: '#10b981', color: '#000', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>{currT.save}</button>
+                                  <button onClick={() => setEditingResource(null)} style={{ padding: '4px 8px', background: '#64748b', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>{currT.cancel}</button>
                                 </>
                               ) : (
                                 <>
