@@ -62,12 +62,15 @@ export async function POST(req) {
     const lang = customerLanguage || 'EN';
 
     const bypassSupabase = req.headers.get('x-bypass-supabase') === 'true';
-    const isDbActive = supabaseConfigured && !bypassSupabase;
+    let isDbActive = supabaseConfigured && !bypassSupabase;
 
-    // 1. Double-booking prevention check (Availability Check)
+    // 1. Double-booking prevention check (Availability & Capacity Check)
+    let conflicts = [];
+    let capacity = 5;
+
     if (isDbActive) {
       try {
-        const { data: conflicts, error: conflictErr } = await supabase
+        const { data: dbConflicts, error: conflictErr } = await supabase
           .from('bookings')
           .select(`
             id,
@@ -83,61 +86,127 @@ export async function POST(req) {
           .or(`guide_id.eq.${guideId},vehicle_id.eq.${vehicleId}`);
 
         if (conflictErr) throw conflictErr;
+        conflicts = dbConflicts || [];
 
-        // Filter out expired pending bookings (older than 10 minutes) so they do not block guide/vehicle availability
-        const activeConflicts = (conflicts || []).filter(c => {
-          if (c.status === 'pending') {
-            const createdAtTime = new Date(c.created_at || Date.now()).getTime();
-            const isExpired = Date.now() - createdAtTime > 10 * 60 * 1000;
-            return !isExpired;
+        // Fetch vehicle capacity
+        const { data: vehicleData } = await supabase
+          .from('vehicles')
+          .select('capacity')
+          .eq('id', vehicleId)
+          .single();
+
+        if (vehicleData) {
+          capacity = vehicleData.capacity;
+        }
+      } catch (err) {
+        console.warn('⚠️ Exception querying Supabase, falling back to mock store:', err.message);
+        isDbActive = false;
+      }
+    }
+
+    if (!isDbActive) {
+      // Mock storage fallback
+      if (global.mockBookingsStore) {
+        const mockList = Array.from(global.mockBookingsStore.values())
+          .filter(b => b.booking_date === bookingDate && b.status !== 'cancelled' && (b.guide_id === guideId || b.vehicle_id === vehicleId));
+        conflicts = mockList;
+      }
+      
+      const mockVehicles = {
+        1: { capacity: 5 },
+        2: { capacity: 5 },
+        3: { capacity: 5 },
+        4: { capacity: 8 },
+        5: { capacity: 20 }
+      };
+      const mockVeh = mockVehicles[vehicleId] || mockVehicles[1];
+      capacity = mockVeh.capacity;
+    }
+
+    // Filter out expired pending bookings (older than 10 minutes) so they do not block guide/vehicle availability
+    const activeConflicts = conflicts.filter(c => {
+      if (c.status === 'pending') {
+        const createdAtTime = new Date(c.created_at || Date.now()).getTime();
+        const isExpired = Date.now() - createdAtTime > 10 * 60 * 1000;
+        return !isExpired;
+      }
+      return true;
+    });
+
+    if (activeConflicts.length > 0) {
+      // A. Vehicle Capacity Check for the Selected Vehicle
+      const sameVehicleBookings = activeConflicts.filter(c => c.vehicle_id === vehicleId);
+      const bookedSeats = sameVehicleBookings.reduce((sum, c) => sum + (c.passenger_count || 1), 0);
+      const availableSeats = capacity - bookedSeats;
+
+      if (passengerCount > availableSeats) {
+        const errorMsg = lang === 'RU'
+          ? `У этого водителя недостаточно свободных мест (Осталось свободных мест: ${availableSeats}). Пожалуйста, выберите другого водителя или закажите более крупный транспорт (Минивен).`
+          : lang === 'UZ'
+            ? `Ushbu haydovchida joy yetarli emas (Mavjud bo'sh joy: ${availableSeats} ta). Iltimos, boshqa haydovchi tanlang yoki kattaroq transport (Miniven) buyurtma qiling.`
+            : `This driver does not have enough seats (Available seats: ${availableSeats}). Please choose another driver or order a larger transport (Minivan).`;
+        
+        return NextResponse.json({ message: errorMsg }, { status: 409 });
+      }
+
+      // B. Guide availability / Pooling check
+      const guideConflicts = activeConflicts.filter(c => c.guide_id === guideId);
+      if (guideConflicts.length > 0) {
+        let hasPoolableMatch = false;
+
+        let conflictItems = [];
+        if (isDbActive) {
+          try {
+            const conflictIds = guideConflicts.map(c => c.id);
+            const { data: dbItems } = await supabase
+              .from('booking_items')
+              .select('booking_id, location_id')
+              .in('booking_id', conflictIds);
+            conflictItems = dbItems || [];
+          } catch (err) {
+            console.error('Error fetching conflict items:', err.message);
           }
-          return true;
-        });
+        } else {
+          // Mock locations
+          guideConflicts.forEach(c => {
+            if (c.locations) {
+              c.locations.forEach(loc => {
+                conflictItems.push({ booking_id: c.id, location_id: loc.locationId || loc.id });
+              });
+            }
+          });
+        }
 
-        if (activeConflicts.length > 0) {
-          const conflictIds = activeConflicts.map(c => c.id);
-          const { data: conflictItems, error: itemsErr } = await supabase
-            .from('booking_items')
-            .select('booking_id, location_id')
-            .in('booking_id', conflictIds);
+        const newLocIdsStr = (locations || [])
+          .map(l => l.locationId || l.location_id)
+          .sort((a, b) => a - b)
+          .join(',');
 
-          if (itemsErr) throw itemsErr;
-
-          const newLocIdsStr = (locations || [])
-            .map(l => l.locationId || l.location_id)
+        for (const conflict of guideConflicts) {
+          const conflictLocs = conflictItems
+            .filter(item => item.booking_id === conflict.id)
+            .map(item => item.location_id)
             .sort((a, b) => a - b)
             .join(',');
 
-          let hasPoolableMatch = false;
+          const isSameRoute = conflictLocs === newLocIdsStr;
+          const isSameLanguage = conflict.customer_language === lang;
+          const combinedPassengers = (conflict.passenger_count || 1) + (passengerCount || 1);
 
-          for (const conflict of activeConflicts) {
-            const conflictLocs = (conflictItems || [])
-              .filter(item => item.booking_id === conflict.id)
-              .map(item => item.location_id)
-              .sort((a, b) => a - b)
-              .join(',');
-
-            const isSameRoute = conflictLocs === newLocIdsStr;
-            const isSameLanguage = conflict.customer_language === lang;
-            const combinedPassengers = (conflict.passenger_count || 1) + (passengerCount || 1);
-
-            if (isSameRoute && isSameLanguage && combinedPassengers <= 20) {
-              hasPoolableMatch = true;
-              break;
-            }
-          }
-
-          if (!hasPoolableMatch) {
-            const errorMsg = lang === 'RU'
-              ? 'Выбранный гид или водитель уже заняты на эту дату. Пожалуйста, выберите другого гида/водителя или измените дату поездки.'
-              : 'The selected guide or driver is already booked on this date. Please choose another date or service provider.';
-            return NextResponse.json({ message: errorMsg }, { status: 409 });
-          } else {
-            console.log(`[Double-Booking Check] Allowed booking submit as it is poolable with existing booking(s).`);
+          if (isSameRoute && isSameLanguage && combinedPassengers <= 20) {
+            hasPoolableMatch = true;
+            break;
           }
         }
-      } catch (checkErr) {
-        console.error('Failed running double-booking check:', checkErr.message);
+
+        if (!hasPoolableMatch) {
+          const errorMsg = lang === 'RU'
+            ? 'Выбранный гид уже занят на эту дату на другой маршрут или язык. Пожалуйста, выберите другого гида.'
+            : lang === 'UZ'
+              ? 'Tanlangan gid ushbu sanada boshqa yo‘nalish yoki til uchun band. Iltimos, boshqa gid tanlang.'
+              : 'The selected guide is already booked on this date for a different route or language. Please choose another guide.';
+          return NextResponse.json({ message: errorMsg }, { status: 409 });
+        }
       }
     }
 
