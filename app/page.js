@@ -279,6 +279,22 @@ export default function Home() {
     }
   };
 
+  const handleResendOtp = async (bookingId) => {
+    const res = await fetch('/api/bookings/resend', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ bookingId }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.message || 'Failed to resend code.');
+    }
+    setBookingData((prev) => ({
+      ...prev,
+      otpCode: data.otpCode
+    }));
+  };
+
   const handleCancelBooking = async () => {
     if (!createdBookingId) return;
     setIsCancelling(true);
@@ -911,6 +927,8 @@ export default function Home() {
         language={language}
         emailSent={bookingData?.emailSent}
         otpCode={bookingData?.otpCode}
+        bookingId={createdBookingId}
+        onResendOtp={handleResendOtp}
       />
 
       <footer style={{

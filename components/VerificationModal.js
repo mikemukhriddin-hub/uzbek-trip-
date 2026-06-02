@@ -13,8 +13,14 @@ export default function VerificationModal({
   language = 'EN',
   emailSent = true,
   otpCode: propOtpCode = '',
+  bookingId = null,
+  onResendOtp = null,
 }) {
   const [otpCode, setOtpCode] = useState('');
+  const [timeLeft, setTimeLeft] = useState(120);
+  const [canResend, setCanResend] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+  const [resendMessage, setResendMessage] = useState('');
 
   useEffect(() => {
     if (emailSent === false && propOtpCode) {
@@ -22,7 +28,59 @@ export default function VerificationModal({
     }
   }, [emailSent, propOtpCode]);
 
+  // Start the countdown timer when modal is opened
+  useEffect(() => {
+    if (!isOpen) return;
+
+    setTimeLeft(120);
+    setCanResend(false);
+    setResendMessage('');
+
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          setCanResend(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isOpen]);
+
   if (!isOpen) return null;
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const handleResend = async () => {
+    if (!canResend || !onResendOtp || !bookingId) return;
+    setIsResending(true);
+    setResendMessage('');
+    try {
+      await onResendOtp(bookingId);
+      // Reset countdown
+      setTimeLeft(120);
+      setCanResend(false);
+      setOtpCode('');
+      setResendMessage(
+        language === 'UZ' 
+          ? 'Yangi kod yuborildi!' 
+          : language === 'RU' 
+          ? 'Новый код отправлен!' 
+          : 'New code sent!'
+      );
+    } catch (err) {
+      setResendMessage(err.message || 'Error resending code.');
+    } finally {
+      setIsResending(false);
+    }
+  };
 
   const t = {
     title: language === 'UZ' ? 'Pochtaning tasdiqlanishi (OTP)' : language === 'RU' ? 'Подтверждение почты (OTP)' : 'Email Verification (OTP)',
@@ -199,6 +257,65 @@ export default function VerificationModal({
               }}
             />
           </div>
+
+          {/* Timer & Resend Button */}
+          {emailSent !== false && (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', fontSize: '12px', marginTop: '-4px', marginBottom: '4px' }}>
+              {!canResend ? (
+                <span style={{ color: '#94a3b8' }}>
+                  {language === 'UZ' 
+                    ? `Kodni qayta yuborish (${formatTime(timeLeft)})` 
+                    : language === 'RU'
+                    ? `Повторная отправка через (${formatTime(timeLeft)})`
+                    : `Resend code in (${formatTime(timeLeft)})`}
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleResend}
+                  disabled={isResending}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#d4af37',
+                    textDecoration: 'underline',
+                    cursor: isResending ? 'not-allowed' : 'pointer',
+                    fontWeight: '600',
+                    fontSize: '13px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}
+                  onMouseEnter={(e) => e.target.style.color = '#fff'}
+                  onMouseLeave={(e) => e.target.style.color = '#d4af37'}
+                >
+                  {isResending ? (
+                    <>
+                      <Loader2 size={12} className="animate-spin" style={{ color: '#d4af37' }} />
+                      <span style={{ color: '#cbd5e1' }}>Sending...</span>
+                    </>
+                  ) : (
+                    <span>
+                      {language === 'UZ' 
+                        ? "Kodni qayta yuborish" 
+                        : language === 'RU'
+                        ? "Отправить код повторно"
+                        : "Resend verification code"}
+                    </span>
+                  )}
+                </button>
+              )}
+              {resendMessage && (
+                <span style={{ 
+                  color: resendMessage.includes('!') ? '#10b981' : '#ef4444', 
+                  fontSize: '11px',
+                  fontWeight: '500'
+                }}>
+                  {resendMessage}
+                </span>
+              )}
+            </div>
+          )}
 
           {/* Verification Shield Alert */}
           <div style={{

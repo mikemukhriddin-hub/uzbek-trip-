@@ -54,9 +54,9 @@ export async function POST(req) {
           if (match) {
             cleanTouristName = match[1];
             storedCode = match[2];
-            // Expiry is 10 minutes from created_at
+            // Expiry is 2 minutes from created_at
             const createdAtTime = new Date(bookingDetails.created_at || Date.now()).getTime();
-            expiry = createdAtTime + 10 * 60 * 1000;
+            expiry = createdAtTime + 2 * 60 * 1000;
           }
         }
       } catch (err) {

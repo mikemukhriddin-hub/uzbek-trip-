@@ -134,11 +134,11 @@ export async function POST(req) {
       capacity = mockVeh.capacity;
     }
 
-    // Filter out expired pending bookings (older than 10 minutes) so they do not block guide/vehicle availability
+    // Filter out expired pending bookings (older than 2 minutes) so they do not block guide/vehicle availability
     const activeConflicts = conflicts.filter(c => {
       if (c.status === 'pending') {
         const createdAtTime = new Date(c.created_at || Date.now()).getTime();
-        const isExpired = Date.now() - createdAtTime > 10 * 60 * 1000;
+        const isExpired = Date.now() - createdAtTime > 2 * 60 * 1000;
         return !isExpired;
       }
       return true;
@@ -306,8 +306,8 @@ export async function POST(req) {
       console.log(`Mock Booking created: ID=${bookingId}, Date=${bookingDate}, Passengers=${passengerCount || 1}`);
     }
 
-    // 3. Store OTP in global memory with 10 minutes lifespan
-    const expiry = Date.now() + 10 * 60 * 1000;
+    // 3. Store OTP in global memory with 2 minutes lifespan
+    const expiry = Date.now() + 2 * 60 * 1000;
     global.otpStore.set(bookingId.toString(), { code: otpCode, expiry });
     
     // Store mock booking details for offline verification & pooling testing
@@ -354,7 +354,7 @@ export async function POST(req) {
               <div style="background-color: #f1f5f9; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; letter-spacing: 5px; text-align: center; margin: 20px 0; border: 1px solid #e2e8f0;">
                 ${otpCode}
               </div>
-              <p>Ushbu kod 10 daqiqa davomida amal qiladi.</p>
+              <p>Ushbu kod 2 daqiqa davomida amal qiladi.</p>
               <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
               <p style="font-size: 12px; color: #64748b;">Agar siz ushbu kodni so'ramagan bo'lsangiz, xabarni shunchaki e'tiborsiz qoldiring.</p>
             </div>`
@@ -367,7 +367,7 @@ export async function POST(req) {
                 <div style="background-color: #f1f5f9; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; letter-spacing: 5px; text-align: center; margin: 20px 0; border: 1px solid #e2e8f0;">
                   ${otpCode}
                 </div>
-                <p>Этот код действителен в течение 10 минут.</p>
+                <p>Этот код действителен в течение 2 минут.</p>
                 <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
                 <p style="font-size: 12px; color: #64748b;">Если вы не запрашивали этот код, просто проигнорируйте это письмо.</p>
               </div>`
@@ -379,7 +379,7 @@ export async function POST(req) {
                 <div style="background-color: #f1f5f9; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; letter-spacing: 5px; text-align: center; margin: 20px 0; border: 1px solid #e2e8f0;">
                   ${otpCode}
                 </div>
-                <p>This code is valid for 10 minutes.</p>
+                <p>This code is valid for 2 minutes.</p>
                 <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
                 <p style="font-size: 12px; color: #64748b;">If you did not request this code, please ignore this email.</p>
               </div>`;
