@@ -36,17 +36,17 @@ const PaymentPortal = dynamic(() => import('@/components/PaymentPortal'), { ssr:
 
 // MOCK FALLBACK DATA (matching seed SQL)
 const MOCK_LOCATIONS = [
-  { id: 1, name_en: 'Registan Square', name_ru: 'Площадь Регистан', description_en: 'The heart of ancient Samarkand, featuring three magnificent madrasahs.', description_ru: 'Сердце древнего Самарканда, украшенное тремя величественными медресе.', latitude: 39.6548, longitude: 66.9757, category: 'historical', is_out_of_city: false },
-  { id: 2, name_en: 'Gur-e-Amir Mausoleum', name_ru: 'Мавзолей Гур-Эмир', description_en: 'The final resting place of Amir Temur (Tamerlane).', description_ru: 'Усыпальница Амира Темура (Тамерлана), шедевр архитектуры.', latitude: 39.6483, longitude: 66.9692, category: 'historical', is_out_of_city: false },
-  { id: 3, name_en: 'Shah-i-Zinda', name_ru: 'Шахи Зинда', description_en: 'A breathtaking avenue of blue-domed mausoleums.', description_ru: 'Улица лазурных мавзолеев XI–XV веков.', latitude: 39.6625, longitude: 66.9878, category: 'historical', is_out_of_city: false },
-  { id: 4, name_en: 'Bibi-Khanym Mosque', name_ru: 'Мечеть Биби-Ханым', description_en: 'One of the largest mosques of the 15th century.', description_ru: 'Одна из крупнейших мечетей XV века, построенная в честь любимой жены.', latitude: 39.6593, longitude: 66.9791, category: 'historical', is_out_of_city: false },
-  { id: 5, name_en: 'Ulugh Beg Observatory', name_ru: 'Обсерватория Улугбека', description_en: 'Built in 1420, this observatory was a marvel of the Islamic world.', description_ru: 'Историческая обсерватория, бывшая одной из лучших в исламском мире.', latitude: 39.6744, longitude: 67.0062, category: 'historical', is_out_of_city: false },
-  { id: 6, name_en: 'Urgut Mountain Bazaar & Hills', name_ru: 'Ургутский горный базар и горы', description_en: 'Explore traditional crafts at the market and hike through scenic Urgut mountain ranges.', description_ru: 'Посетите традиционный базар и прогуляйтесь по живописным горам Ургута.', latitude: 39.4045, longitude: 67.2435, category: 'alternative', is_out_of_city: true },
-  { id: 7, name_en: 'Omonqo\'ton Pass & Pines', name_ru: 'Перевал Омонкотон', description_en: 'A majestic pine forest and mountain pass with ancient caves.', description_ru: 'Величественный сосновый лес и горный перевал с древними пещерами.', latitude: 39.3082, longitude: 66.9038, category: 'alternative', is_out_of_city: true },
-  { id: 8, name_en: 'Konigil Paper Mill', name_ru: 'Бумажная фабрика Конигиль', description_en: 'A peaceful eco-village showcasing the ancient art of Samarkand mulberry paper.', description_ru: 'Эко-деревня, демонстрирующая искусство изготовления шелковой бумаги.', latitude: 39.6800, longitude: 67.0180, category: 'alternative', is_out_of_city: true },
-  { id: 9, name_en: 'National Osh House', name_ru: 'Национальный центр плова', description_en: 'Authentic Samarkand Osh prepared in giant cauldrons.', description_ru: 'Настоящий самаркандский плов, приготовленный в огромных казанах.', latitude: 39.6500, longitude: 66.9800, category: 'food', is_out_of_city: false },
-  { id: 10, name_en: 'Samarkand Bread Bakery', name_ru: 'Пекарня самаркандских лепешек', description_en: 'Watch bakers prepare the famous, shiny Samarkand bread in tandyr ovens.', description_ru: 'Наблюдайте за приготовлением знаменитых самаркандских лепешек в тандырах.', latitude: 39.6600, longitude: 66.9780, category: 'food', is_out_of_city: false },
-  { id: 11, name_en: 'Karimbek Restaurant', name_ru: 'Ресторан Каримбек', description_en: 'Elegant dining featuring traditional shashlik, manti, and music.', description_ru: 'Ресторан с традиционными шашлыками, мантами и музыкой.', latitude: 39.6521, longitude: 66.9587, category: 'food', is_out_of_city: false }
+  { id: 1, name_en: 'Registan Square', name_ru: 'Площадь Регистан', description_en: 'The heart of ancient Samarkand, featuring three magnificent madrasahs.', description_ru: 'Сердце древнего Самарканда, украшенное тремя величественными медресе.', latitude: 39.6548, longitude: 66.9757, category: 'historical', is_out_of_city: false, estimated_duration: 120 },
+  { id: 2, name_en: 'Gur-e-Amir Mausoleum', name_ru: 'Мавзолей Гур-Эмир', description_en: 'The final resting place of Amir Temur (Tamerlane).', description_ru: 'Усыпальница Амира Темура (Тамерлана), шедевр архитектуры.', latitude: 39.6483, longitude: 66.9692, category: 'historical', is_out_of_city: false, estimated_duration: 90 },
+  { id: 3, name_en: 'Shah-i-Zinda', name_ru: 'Шахи Зинда', description_en: 'A breathtaking avenue of blue-domed mausoleums.', description_ru: 'Улица лазурных мавзолеев XI–XV веков.', latitude: 39.6625, longitude: 66.9878, category: 'historical', is_out_of_city: false, estimated_duration: 90 },
+  { id: 4, name_en: 'Bibi-Khanym Mosque', name_ru: 'Мечеть Биби-Ханым', description_en: 'One of the largest mosques of the 15th century.', description_ru: 'Одна из крупнейших мечетей XV века, построенная в честь любимой жены.', latitude: 39.6593, longitude: 66.9791, category: 'historical', is_out_of_city: false, estimated_duration: 60 },
+  { id: 5, name_en: 'Ulugh Beg Observatory', name_ru: 'Обсерватория Улугбека', description_en: 'Built in 1420, this observatory was a marvel of the Islamic world.', description_ru: 'Историческая обсерватория, бывшая одной из лучших в исламском мире.', latitude: 39.6744, longitude: 67.0062, category: 'historical', is_out_of_city: false, estimated_duration: 60 },
+  { id: 6, name_en: 'Urgut Mountain Bazaar & Hills', name_ru: 'Ургутский горный базар и горы', description_en: 'Explore traditional crafts at the market and hike through scenic Urgut mountain ranges.', description_ru: 'Посетите традиционный базар и прогуляйтесь по живописным горам Ургута.', latitude: 39.4045, longitude: 67.2435, category: 'alternative', is_out_of_city: true, estimated_duration: 240 },
+  { id: 7, name_en: 'Omonqo\'ton Pass & Pines', name_ru: 'Перевал Омонкотон', description_en: 'A majestic pine forest and mountain pass with ancient caves.', description_ru: 'Величественный сосновый лес и горный перевал с древними пещерами.', latitude: 39.3082, longitude: 66.9038, category: 'alternative', is_out_of_city: true, estimated_duration: 180 },
+  { id: 8, name_en: 'Konigil Paper Mill', name_ru: 'Бумажная фабрика Конигиль', description_en: 'A peaceful eco-village showcasing the ancient art of Samarkand mulberry paper.', description_ru: 'Эко-деревня, демонстрирующая искусство изготовления шелковой бумаги.', latitude: 39.6800, longitude: 67.0180, category: 'alternative', is_out_of_city: true, estimated_duration: 120 },
+  { id: 9, name_en: 'National Osh House', name_ru: 'Национальный центр плова', description_en: 'Authentic Samarkand Osh prepared in giant cauldrons.', description_ru: 'Настоящий самаркандский плов, приготовленный в огромных казанах.', latitude: 39.6500, longitude: 66.9800, category: 'food', is_out_of_city: false, estimated_duration: 60 },
+  { id: 10, name_en: 'Samarkand Bread Bakery', name_ru: 'Пекарня самаркандских лепешек', description_en: 'Watch bakers prepare the famous, shiny Samarkand bread in tandyr ovens.', description_ru: 'Наблюдайте за приготовлением знаменитых самаркандских лепешек в тандырах.', latitude: 39.6600, longitude: 66.9780, category: 'food', is_out_of_city: false, estimated_duration: 45 },
+  { id: 11, name_en: 'Karimbek Restaurant', name_ru: 'Ресторан Каримбек', description_en: 'Elegant dining featuring traditional shashlik, manti, and music.', description_ru: 'Ресторан с традиционными шашлыками, мантами и музыкой.', latitude: 39.6521, longitude: 66.9587, category: 'food', is_out_of_city: false, estimated_duration: 90 }
 ];
 
 const MOCK_GUIDES = [
@@ -142,6 +142,33 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
 
   // Determine if route includes any mountain/out-of-city zones
   const isOutOfCityRoute = selectedLocations.some((loc) => loc.is_out_of_city);
+
+  const totalDuration = selectedLocations.reduce((sum, loc) => sum + (loc.estimated_duration || 0), 0);
+
+  const formatTotalDuration = (mins, lang) => {
+    if (!mins) return '';
+    const hours = mins / 60;
+    const wholeHours = Math.floor(hours);
+    const remMins = mins % 60;
+    if (wholeHours === 0) {
+      if (lang === 'UZ') return `${remMins} daqiqa`;
+      if (lang === 'RU') return `${remMins} мин.`;
+      return `${remMins} mins`;
+    }
+    if (lang === 'UZ') {
+      return remMins > 0 
+        ? `${wholeHours} soat ${remMins} daqiqa`
+        : `${wholeHours} soat`;
+    } else if (lang === 'RU') {
+      return remMins > 0 
+        ? `${wholeHours} ч. ${remMins} мин.`
+        : `${wholeHours} ч.`;
+    } else {
+      return remMins > 0 
+        ? `${wholeHours} hrs ${remMins} mins`
+        : `${wholeHours} hrs`;
+    }
+  };
 
   const toggleLanguage = () => {
     setLanguage((prev) => (prev === 'EN' ? 'RU' : 'EN'));
@@ -312,6 +339,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
     successBack: language === 'UZ' ? 'Yangi tur yaratish' : language === 'RU' ? 'Создать новый тур' : 'Create Another Tour',
     disclaimer: language === 'UZ' ? 'Lokatsiya tafsilotlarini o\'qish uchun xaritadagi belgilarni bosing.' : language === 'RU' ? 'Нажмите на маркеры карты, чтобы прочитать детали локаций.' : 'Click map markers to read location details.',
     selectedCount: language === 'UZ' ? 'Tanlangan joylar soni:' : language === 'RU' ? 'Выбрано мест:' : 'Selected locations:',
+    totalDurationLabel: language === 'UZ' ? 'Umumiy sayohat vaqti:' : language === 'RU' ? 'Общее время:' : 'Total duration:',
   };
 
   if (successPage) {
@@ -824,8 +852,15 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 <AlertCircle size={12} style={{ color: '#009b9e' }} />
                 <span>{t.disclaimer}</span>
               </div>
-              <div style={{ fontSize: '13px', fontWeight: '600', color: '#fff' }}>
-                {t.selectedCount} <span style={{ color: '#d4af37', backgroundColor: 'rgba(212,175,55,0.1)', padding: '2px 8px', borderRadius: '10px' }}>{selectedLocations.length}</span>
+              <div style={{ display: 'flex', gap: '16px', alignItems: 'center', fontSize: '13px', fontWeight: '600', color: '#fff', flexWrap: 'wrap' }}>
+                <div>
+                  {t.selectedCount} <span style={{ color: '#d4af37', backgroundColor: 'rgba(212,175,55,0.1)', padding: '2px 8px', borderRadius: '10px' }}>{selectedLocations.length}</span>
+                </div>
+                {selectedLocations.length > 0 && (
+                  <div>
+                    {t.totalDurationLabel} <span style={{ color: '#009b9e', backgroundColor: 'rgba(0,155,158,0.1)', padding: '2px 8px', borderRadius: '10px' }}>⏱️ {formatTotalDuration(totalDuration, language)}</span>
+                  </div>
+                )}
               </div>
               <RouteBuilder
                 locations={locations}

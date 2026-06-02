@@ -46,6 +46,24 @@ function getLocationImage(id, imageUrl) {
   return imageUrl || LOCATION_IMAGES[id] || '/images/locations/registan.webp';
 }
 
+const formatDuration = (mins, lang) => {
+  if (!mins) return '';
+  const hours = mins / 60;
+  if (lang === 'UZ') {
+    return hours >= 1 
+      ? `${Number(hours.toFixed(1))} soat` 
+      : `${mins} daqiqa`;
+  } else if (lang === 'RU') {
+    return hours >= 1 
+      ? `${Number(hours.toFixed(1))} ч.` 
+      : `${mins} мин.`;
+  } else {
+    return hours >= 1 
+      ? `${Number(hours.toFixed(1))} hrs` 
+      : `${mins} mins`;
+  }
+};
+
 export default function RouteBuilder({ 
   locations = [], 
   selectedLocations = [], 
@@ -159,6 +177,23 @@ export default function RouteBuilder({
                               border: '1px solid rgba(212, 175, 55, 0.2)'
                             }}>
                               {t.mountainArea}
+                            </span>
+                          )}
+
+                          {loc.estimated_duration && (
+                            <span style={{
+                              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                              color: 'var(--text-secondary)',
+                              fontSize: '11px',
+                              fontWeight: '500',
+                              padding: '2px 6px',
+                              borderRadius: '4px',
+                              border: '1px solid rgba(255, 255, 255, 0.1)',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px'
+                            }}>
+                              ⏱️ {formatDuration(loc.estimated_duration, language)}
                             </span>
                           )}
                         </div>

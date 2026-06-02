@@ -23,3 +23,17 @@ CREATE TABLE IF NOT EXISTS payment_transactions (
     reason INT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+-- 3. Add estimated_duration field to locations table
+ALTER TABLE locations ADD COLUMN IF NOT EXISTS estimated_duration INT DEFAULT 90;
+UPDATE locations SET estimated_duration = 120 WHERE name_en = 'Registan Square';
+UPDATE locations SET estimated_duration = 90 WHERE name_en = 'Gur-e-Amir Mausoleum';
+UPDATE locations SET estimated_duration = 90 WHERE name_en = 'Shah-i-Zinda';
+UPDATE locations SET estimated_duration = 60 WHERE name_en = 'Bibi-Khanym Mosque';
+UPDATE locations SET estimated_duration = 60 WHERE name_en = 'Ulugh Beg Observatory';
+UPDATE locations SET estimated_duration = 240 WHERE name_en = 'Urgut Mountain Bazaar & Hills';
+UPDATE locations SET estimated_duration = 180 WHERE name_en = 'Omonqo''ton Pass & Pines';
+UPDATE locations SET estimated_duration = 120 WHERE name_en = 'Konigil Paper Mill';
+UPDATE locations SET estimated_duration = 60 WHERE name_en = 'National Osh House';
+UPDATE locations SET estimated_duration = 45 WHERE name_en = 'Samarkand Bread Bakery';
+UPDATE locations SET estimated_duration = 90 WHERE name_en = 'Karimbek Restaurant';

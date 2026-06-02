@@ -123,6 +123,8 @@ export default function AdminPage() {
       yes: "Yes",
       no: "No",
       confirmDeleteLoc: "Are you sure you want to delete this location?",
+      durationCol: "Duration (min)",
+      estDurationPlaceholder: "Estimated Duration (minutes)*",
 
       addVehicle: "Add New Driver / Transport",
       driverName: "Driver Name*",
@@ -223,6 +225,8 @@ export default function AdminPage() {
       yes: "Да",
       no: "Нет",
       confirmDeleteLoc: "Вы уверены, что хотите удалить эту локацию?",
+      durationCol: "Время (мин)",
+      estDurationPlaceholder: "Расчетное время (минуты)*",
 
       addVehicle: "Добавить нового водителя / транспорт",
       driverName: "Имя водителя*",
@@ -323,6 +327,8 @@ export default function AdminPage() {
       yes: "Ha",
       no: "Yo'q",
       confirmDeleteLoc: "Ushbu joyni o'chirmoqchimisiz?",
+      durationCol: "Vaqt (daq)",
+      estDurationPlaceholder: "Taxminiy vaqt (daqiqalarda)*",
 
       addVehicle: "Yangi haydovchi / transport qo'shish",
       driverName: "Haydovchi ismi*",
@@ -377,7 +383,7 @@ export default function AdminPage() {
   const [locationForm, setLocationForm] = useState({
     name_en: '', name_ru: '', name_uz: '', description_en: '', description_ru: '', description_uz: '',
     latitude: '', longitude: '', category: 'historical', is_out_of_city: false,
-    image_url: ''
+    image_url: '', estimated_duration: 90
   });
 
   // Vehicles state
@@ -604,7 +610,7 @@ export default function AdminPage() {
           setLocationForm({
             name_en: '', name_ru: '', description_en: '', description_ru: '',
             latitude: '', longitude: '', category: 'historical', is_out_of_city: false,
-            image_url: ''
+            image_url: '', estimated_duration: 90
           });
           alert('Location added successfully!');
         } else {
@@ -1302,6 +1308,7 @@ export default function AdminPage() {
               <input type="text" placeholder={currT.nameEn} value={locationForm.name_en} onChange={e => setLocationForm({...locationForm, name_en: e.target.value})} required />
               <input type="text" placeholder={currT.nameRu} value={locationForm.name_ru} onChange={e => setLocationForm({...locationForm, name_ru: e.target.value})} required />
               <input type="text" placeholder={currT.nameUz} value={locationForm.name_uz} onChange={e => setLocationForm({...locationForm, name_uz: e.target.value})} required />
+              <input type="number" placeholder={currT.estDurationPlaceholder} value={locationForm.estimated_duration} onChange={e => setLocationForm({...locationForm, estimated_duration: e.target.value})} required />
               <input type="text" placeholder={currT.lat} value={locationForm.latitude} onChange={e => setLocationForm({...locationForm, latitude: e.target.value})} />
               <input type="text" placeholder={currT.lng} value={locationForm.longitude} onChange={e => setLocationForm({...locationForm, longitude: e.target.value})} />
               <select value={locationForm.category} onChange={e => setLocationForm({...locationForm, category: e.target.value})}>
@@ -1331,6 +1338,7 @@ export default function AdminPage() {
                   <th style={{ padding: '12px 8px' }}>{currT.photo}</th>
                   <th style={{ padding: '12px 8px' }}>{currT.category}</th>
                   <th style={{ padding: '12px 8px' }}>{currT.nameEnRuUz}</th>
+                  <th style={{ padding: '12px 8px' }}>{currT.durationCol}</th>
                   <th style={{ padding: '12px 8px' }}>{currT.coordinates}</th>
                   <th style={{ padding: '12px 8px' }}>{currT.outOfCityCol}</th>
                   <th style={{ padding: '12px 8px', textAlign: 'center' }}>{currT.actions}</th>
@@ -1398,6 +1406,13 @@ export default function AdminPage() {
                             <div style={{ color: '#94a3b8', fontSize: '12px' }}>{loc.name_ru}</div>
                             <div style={{ color: '#d4af37', fontSize: '12px' }}>{loc.name_uz || ''}</div>
                           </div>
+                        )}
+                      </td>
+                      <td style={{ padding: '14px 8px' }}>
+                        {isEditing ? (
+                          <input type="number" value={editingResource.data.estimated_duration || 90} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, estimated_duration: parseInt(e.target.value, 10) || 0}})} style={{ width: '80px', padding: '4px', fontSize: '12px' }} required />
+                        ) : (
+                          <span>{loc.estimated_duration || 90} min</span>
                         )}
                       </td>
                       <td style={{ padding: '14px 8px', fontSize: '13px' }}>
