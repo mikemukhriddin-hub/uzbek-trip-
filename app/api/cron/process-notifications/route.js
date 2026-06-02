@@ -302,7 +302,7 @@ export async function GET(req) {
 
           // Populate guide, vehicle, and locations for mock bookings
           filteredMock.forEach(b => {
-            b.guide = mockGuides[b.guide_id] || mockGuides[1];
+            b.guide = b.guide_id ? (mockGuides[b.guide_id] || null) : null;
             b.vehicle = mockVehicles[b.vehicle_id] || mockVehicles[1];
             
             if (b.locations && Array.isArray(b.locations)) {
@@ -370,8 +370,14 @@ export async function GET(req) {
       const language = groupBookings[0].customer_language || 'EN';
       const isRu = language === 'RU';
 
-      // Pick Guide from first booking in the group
-      const finalGuide = groupBookings[0].guide || mockGuides[groupBookings[0].guide_id] || mockGuides[1];
+      // Pick Guide from first booking in the group that has a guide assigned
+      let finalGuide = null;
+      for (const b of groupBookings) {
+        if (b.guide_id) {
+          finalGuide = b.guide || mockGuides[b.guide_id] || null;
+          if (finalGuide) break;
+        }
+      }
 
       // Assign dynamic vehicle based on capacity
       let finalVehicle = null;
@@ -410,7 +416,7 @@ export async function GET(req) {
               `🌐 *Язык обслуживания:* ${language}\n` +
               `👥 *Пассажиров:* ${totalPassengers} чел (${groupBookings.map(b => `${b.tourist_name} (${b.passenger_count || 1} чел)`).join(', ')})\n\n` +
               `🛣 *Маршрут:* \n${groupBookings[0].locations.map((loc, idx) => `${idx + 1}. ${loc.name_ru || loc.name_en}`).join('\n')}\n\n` +
-              `👤 *Гид:* ${finalGuide.full_name} (${finalGuide.phone_number})\n` +
+              `👤 *Гид:* ${finalGuide ? `${finalGuide.full_name} (${finalGuide.phone_number})` : (isRu ? 'Без гида' : 'No guide')}\n` +
               `🚗 *Водитель:* ${finalVehicle.driver_name} (${finalVehicle.driver_phone})\n` +
               `🚘 *Автомобиль:* ${finalVehicle.car_model} (${finalVehicle.car_number})\n\n` +
               `💵 *Стоимость броней:* \n${groupBookings.map(b => `- Заказ #${b.id} (${b.tourist_name}): $${parseFloat(b.total_price).toFixed(2)}`).join('\n')}\n\n` +
@@ -421,7 +427,7 @@ export async function GET(req) {
               `🌐 *Language:* ${language}\n` +
               `👥 *Total Passengers:* ${totalPassengers} Pax (${groupBookings.map(b => `${b.tourist_name} (${b.passenger_count || 1} Pax)`).join(', ')})\n\n` +
               `🛣 *Itinerary:* \n${groupBookings[0].locations.map((loc, idx) => `${idx + 1}. ${loc.name_en}`).join('\n')}\n\n` +
-              `👤 *Guide:* ${finalGuide.full_name} (${finalGuide.phone_number})\n` +
+              `👤 *Guide:* ${finalGuide ? `${finalGuide.full_name} (${finalGuide.phone_number})` : 'No guide'}\n` +
               `🚗 *Driver:* ${finalVehicle.driver_name} (${finalVehicle.driver_phone})\n` +
               `🚘 *Vehicle:* ${finalVehicle.car_model} (${finalVehicle.car_number})\n\n` +
               `💵 *Payments summary:* \n${groupBookings.map(b => `- Booking #${b.id} (${b.tourist_name}): $${parseFloat(b.total_price).toFixed(2)}`).join('\n')}\n\n` +
@@ -434,7 +440,7 @@ export async function GET(req) {
               `🌐 *Язык обслуживания:* ${language}\n` +
               `👥 *Пассажиров:* ${totalPassengers} чел (${groupBookings.map(b => `${b.tourist_name} (${b.passenger_count || 1} чел)`).join(', ')})\n\n` +
               `🛣 *Маршрут:* \n${groupBookings[0].locations.map((loc, idx) => `${idx + 1}. ${loc.name_ru || loc.name_en}`).join('\n')}\n\n` +
-              `👤 *Гид:* ${finalGuide.full_name} (${finalGuide.phone_number})\n` +
+              `👤 *Гид:* ${finalGuide ? `${finalGuide.full_name} (${finalGuide.phone_number})` : (isRu ? 'Без гида' : 'No guide')}\n` +
               `🚗 *Водитель:* ${finalVehicle.driver_name} (${finalVehicle.driver_phone})\n` +
               `🚘 *Автомобиль:* ${finalVehicle.car_model} (${finalVehicle.car_number})\n\n` +
               `💵 *Стоимость броней:* \n${groupBookings.map(b => `- Заказ #${b.id} (${b.tourist_name}): $${parseFloat(b.total_price).toFixed(2)}`).join('\n')}\n\n` +
@@ -445,7 +451,7 @@ export async function GET(req) {
               `🌐 *Language:* ${language}\n` +
               `👥 *Total Passengers:* ${totalPassengers} Pax (${groupBookings.map(b => `${b.tourist_name} (${b.passenger_count || 1} Pax)`).join(', ')})\n\n` +
               `🛣 *Itinerary:* \n${groupBookings[0].locations.map((loc, idx) => `${idx + 1}. ${loc.name_en}`).join('\n')}\n\n` +
-              `👤 *Guide:* ${finalGuide.full_name} (${finalGuide.phone_number})\n` +
+              `👤 *Guide:* ${finalGuide ? `${finalGuide.full_name} (${finalGuide.phone_number})` : 'No guide'}\n` +
               `🚗 *Driver:* ${finalVehicle.driver_name} (${finalVehicle.driver_phone})\n` +
               `🚘 *Vehicle:* ${finalVehicle.car_model} (${finalVehicle.car_number})\n\n` +
               `💵 *Payments summary:* \n${groupBookings.map(b => `- Booking #${b.id} (${b.tourist_name}): $${parseFloat(b.total_price).toFixed(2)}`).join('\n')}\n\n` +
@@ -459,7 +465,7 @@ export async function GET(req) {
             `🌐 *Язык обслуживания:* ${language}\n` +
             `👥 *Пассажиров:* ${totalPassengers} чел (${b.tourist_name})\n\n` +
             `🛣 *Маршрут:* \n${b.locations.map((loc, idx) => `${idx + 1}. ${loc.name_ru || loc.name_en}`).join('\n')}\n\n` +
-            `👤 *Гид:* ${finalGuide.full_name} (${finalGuide.phone_number})\n` +
+            `👤 *Гид:* ${finalGuide ? `${finalGuide.full_name} (${finalGuide.phone_number})` : (isRu ? 'Без гида' : 'No guide')}\n` +
             `🚗 *Водитель:* ${finalVehicle.driver_name} (${finalVehicle.driver_phone})\n` +
             `🚘 *Автомобиль:* ${finalVehicle.car_model} (${finalVehicle.car_number})\n\n` +
             `💵 *Стоимость заказа #${b.id}:* $${parseFloat(b.total_price).toFixed(2)}\n\n` +
@@ -469,7 +475,7 @@ export async function GET(req) {
             `🌐 *Language:* ${language}\n` +
             `👥 *Passengers:* ${totalPassengers} Pax (${b.tourist_name})\n\n` +
             `🛣 *Itinerary:* \n${b.locations.map((loc, idx) => `${idx + 1}. ${loc.name_en}`).join('\n')}\n\n` +
-            `👤 *Guide:* ${finalGuide.full_name} (${finalGuide.phone_number})\n` +
+            `👤 *Guide:* ${finalGuide ? `${finalGuide.full_name} (${finalGuide.phone_number})` : 'No guide'}\n` +
             `🚗 *Driver:* ${finalVehicle.driver_name} (${finalVehicle.driver_phone})\n` +
             `🚘 *Vehicle:* ${finalVehicle.car_model} (${finalVehicle.car_number})\n\n` +
             `💵 *Payment for Booking #${b.id}:* $${parseFloat(b.total_price).toFixed(2)}\n\n` +
@@ -545,7 +551,7 @@ export async function GET(req) {
           const { error: syncErr } = await supabase
             .from('bookings')
             .update({
-              guide_id: finalGuide.id,
+              guide_id: finalGuide ? finalGuide.id : null,
               vehicle_id: finalVehicle.id
             })
             .in('id', allGroupBookingIds);
@@ -553,7 +559,7 @@ export async function GET(req) {
           if (syncErr) {
             console.error('[Cron Processor] Failed to sync group guide/vehicle in DB:', syncErr.message);
           } else {
-            console.log(`[Cron Processor] Synced Booking IDs [${allGroupBookingIds.join(', ')}] to Guide ID ${finalGuide.id} and Vehicle ID ${finalVehicle.id} in database.`);
+            console.log(`[Cron Processor] Synced Booking IDs [${allGroupBookingIds.join(', ')}] to Guide ID ${finalGuide ? finalGuide.id : null} and Vehicle ID ${finalVehicle.id} in database.`);
           }
         } catch (syncExc) {
           console.error('[Cron Processor] Exception syncing group guide/vehicle:', syncExc.message);
@@ -563,9 +569,9 @@ export async function GET(req) {
           allGroupBookingIds.forEach(id => {
             const rawMock = global.mockBookingsStore.get(id.toString());
             if (rawMock) {
-              rawMock.guide_id = finalGuide.id;
+              rawMock.guide_id = finalGuide ? finalGuide.id : null;
               rawMock.vehicle_id = finalVehicle.id;
-              rawMock.guide = finalGuide;
+              rawMock.guide = finalGuide || null;
               rawMock.vehicle = finalVehicle;
             }
           });

@@ -52,7 +52,7 @@ export async function POST(req) {
     } = body;
 
     // Basic Validation
-    if (!touristName || !touristEmail || !bookingDate || !guideId || !vehicleId) {
+    if (!touristName || !touristEmail || !bookingDate || !vehicleId) {
       return NextResponse.json(
         { message: 'Missing required booking fields.' },
         { status: 400 }
@@ -70,7 +70,7 @@ export async function POST(req) {
 
     if (isDbActive) {
       try {
-        const { data: dbConflicts, error: conflictErr } = await supabase
+        let query = supabase
           .from('bookings')
           .select(`
             id,
@@ -82,8 +82,15 @@ export async function POST(req) {
             created_at
           `)
           .eq('booking_date', bookingDate)
-          .neq('status', 'cancelled')
-          .or(`guide_id.eq.${guideId},vehicle_id.eq.${vehicleId}`);
+          .neq('status', 'cancelled');
+
+        if (guideId) {
+          query = query.or(`guide_id.eq.${guideId},vehicle_id.eq.${vehicleId}`);
+        } else {
+          query = query.eq('vehicle_id', vehicleId);
+        }
+
+        const { data: dbConflicts, error: conflictErr } = await query;
 
         if (conflictErr) throw conflictErr;
         conflicts = dbConflicts || [];
@@ -108,7 +115,7 @@ export async function POST(req) {
       // Mock storage fallback
       if (global.mockBookingsStore) {
         const mockList = Array.from(global.mockBookingsStore.values())
-          .filter(b => b.booking_date === bookingDate && b.status !== 'cancelled' && (b.guide_id === guideId || b.vehicle_id === vehicleId));
+          .filter(b => b.booking_date === bookingDate && b.status !== 'cancelled' && (b.vehicle_id === vehicleId || (guideId && b.guide_id === guideId)));
         conflicts = mockList;
       }
       
@@ -224,7 +231,7 @@ export async function POST(req) {
             tourist_name: `${touristName}||OTP:${otpCode}`,
             tourist_email: touristEmail,
             tourist_phone: touristPhone,
-            guide_id: guideId,
+            guide_id: guideId || null,
             vehicle_id: vehicleId,
             total_price: totalPrice,
             booking_date: bookingDate,
@@ -262,7 +269,7 @@ export async function POST(req) {
           tourist_name: touristName,
           tourist_email: touristEmail,
           tourist_phone: touristPhone,
-          guide_id: guideId,
+          guide_id: guideId || null,
           vehicle_id: vehicleId,
           total_price: totalPrice,
           booking_date: bookingDate,
@@ -289,7 +296,7 @@ export async function POST(req) {
       tourist_name: touristName,
       tourist_email: touristEmail,
       tourist_phone: touristPhone,
-      guide_id: guideId,
+      guide_id: guideId || null,
       vehicle_id: vehicleId,
       total_price: totalPrice,
       booking_date: bookingDate,

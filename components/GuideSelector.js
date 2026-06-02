@@ -96,13 +96,15 @@ export default function GuideSelector({
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '14px' }}>
+
         {filteredGuides.length === 0 ? (
           <div style={{
             padding: '24px',
             textAlign: 'center',
             color: 'var(--text-secondary)',
             border: '1px dashed var(--border-card)',
-            borderRadius: '12px'
+            borderRadius: '12px',
+            gridColumn: '1 / -1'
           }}>
             {t.noGuides}
           </div>

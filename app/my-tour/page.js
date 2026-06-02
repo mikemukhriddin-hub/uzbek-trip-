@@ -112,10 +112,16 @@ function MyTourContent() {
     backBtn: language === 'UZ' ? 'Bosh sahifaga' : language === 'RU' ? 'На главную' : 'Back to Home',
     cancelConfirmTitle: language === 'UZ' ? 'Orzungizdagi sayohatni bekor qilasizmi?' : language === 'RU' ? 'Отменить поездку вашей мечты?' : 'Cancel Your Dream Trip?',
     cancelConfirmDesc: language === 'UZ'
-      ? `Sizning gidingiz (${booking?.guide?.full_name || 'N/A'}) va haydovchingiz (${booking?.vehicle?.driver_name || 'N/A'}) ushbu kunni aynan siz uchun band qilishgan. Agar bekor qilsangiz, ular ish kunini yo'qotishadi. Ishonchingiz komilmi?`
+      ? booking?.guide
+        ? `Sizning gidingiz (${booking.guide.full_name}) va haydovchingiz (${booking?.vehicle?.driver_name || 'N/A'}) ushbu kunni aynan siz uchun band qilishgan. Agar bekor qilsangiz, ular ish kunini yo'qotishadi. Ishonchingiz komilmi?`
+        : `Sizning haydovchingiz (${booking?.vehicle?.driver_name || 'N/A'}) ushbu kunni aynan siz uchun band qilgan. Agar bekor qilsangiz, u ish kunini yo'qotadi. Ishonchingiz komilmi?`
       : language === 'RU' 
-      ? `Ваш гид (${booking?.guide?.full_name || 'N/A'}) и водитель (${booking?.vehicle?.driver_name || 'N/A'}) забронировали этот день специально для вас. Если вы отмените, они останутся без работы. Вы уверены?`
-      : `Your guide (${booking?.guide?.full_name || 'N/A'}) and driver (${booking?.vehicle?.driver_name || 'N/A'}) have reserved their day for you. If you cancel, they will lose their schedule. Are you sure you want to cancel?`,
+      ? booking?.guide
+        ? `Ваш гид (${booking.guide.full_name}) и водитель (${booking?.vehicle?.driver_name || 'N/A'}) забронировали этот день специально для вас. Если вы отмените, они останутся без работы. Вы уверены?`
+        : `Ваш водитель (${booking?.vehicle?.driver_name || 'N/A'}) забронировал этот день специально для вас. Если вы отмените, он останется без работы. Вы уверены?`
+      : booking?.guide
+        ? `Your guide (${booking.guide.full_name}) and driver (${booking?.vehicle?.driver_name || 'N/A'}) have reserved their day for you. If you cancel, they will lose their schedule. Are you sure you want to cancel?`
+        : `Your driver (${booking?.vehicle?.driver_name || 'N/A'}) has reserved their day for you. If you cancel, they will lose their schedule. Are you sure you want to cancel?`,
     cancelKeep: language === 'UZ' ? 'Yo\'q, bandlikni saqlash' : language === 'RU' ? 'Нет, сохранить бронь' : 'No, Keep My Booking',
     cancelConfirmYes: language === 'UZ' ? 'Ha, buyurtmani bekor qilish' : language === 'RU' ? 'Да, отменить бронирование' : 'Yes, Cancel Booking',
     cancelSuccess: language === 'UZ' ? 'Buyurtma muvaffaqiyatli bekor qilindi.' : language === 'RU' ? 'Бронирование успешно отменено.' : 'Booking successfully cancelled.',
@@ -233,7 +239,9 @@ function MyTourContent() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', backgroundColor: 'rgba(10,15,29,0.5)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.04)' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <span style={{ fontSize: '12px', color: '#94a3b8' }}>{t.guideTitle}</span>
-            <strong style={{ fontSize: '14px', color: '#fff' }}>{booking.guide?.full_name || 'N/A'}</strong>
+            <strong style={{ fontSize: '14px', color: '#fff' }}>
+              {booking.guide ? booking.guide.full_name : (language === 'UZ' ? 'Gidsiz sayohat' : language === 'RU' ? 'Без гида' : 'No Guide')}
+            </strong>
             {booking.guide?.phone_number && (
               <span style={{ fontSize: '12px', color: '#009b9e' }}>📞 {booking.guide.phone_number}</span>
             )}

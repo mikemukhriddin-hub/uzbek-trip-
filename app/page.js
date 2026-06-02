@@ -193,7 +193,7 @@ export default function Home() {
   };
 
   const handleSelectGuide = (guide) => {
-    setSelectedGuide(guide);
+    setSelectedGuide((prev) => (prev && prev.id === guide?.id) ? null : guide);
   };
 
   const handleSelectGuideLanguage = (langCode) => {
@@ -353,10 +353,16 @@ export default function Home() {
               
               <p style={{ fontSize: '15px', color: '#94a3b8', lineHeight: 1.6 }}>
                 {language === 'UZ'
-                  ? `Sayohat bekor qilindi. Gidingiz ${selectedGuide?.full_name} va haydovchingiz ${selectedVehicle?.driver_name} bu haqda ogohlantirildi.`
+                  ? selectedGuide
+                    ? `Sayohat bekor qilindi. Gidingiz ${selectedGuide.full_name} va haydovchingiz ${selectedVehicle?.driver_name} bu haqda ogohlantirildi.`
+                    : `Sayohat bekor qilindi. Haydovchingiz ${selectedVehicle?.driver_name} bu haqda ogohlantirildi.`
                   : language === 'RU'
-                  ? `Поездка отменена. Ваш гид ${selectedGuide?.full_name} и водитель ${selectedVehicle?.driver_name} были оповещены и освобождены.`
-                  : `Your trip has been cancelled. Your guide ${selectedGuide?.full_name} and driver ${selectedVehicle?.driver_name} have been notified.`}
+                  ? selectedGuide
+                    ? `Поездка отменена. Ваш гид ${selectedGuide.full_name} и водитель ${selectedVehicle?.driver_name} были оповещены и освобождены.`
+                    : `Поездка отменена. Ваш водитель ${selectedVehicle?.driver_name} был оповещен и освобожден.`
+                  : selectedGuide
+                    ? `Your trip has been cancelled. Your guide ${selectedGuide.full_name} and driver ${selectedVehicle?.driver_name} have been notified.`
+                    : `Your trip has been cancelled. Your driver ${selectedVehicle?.driver_name} has been notified.`}
               </p>
             </>
           ) : (
@@ -395,9 +401,13 @@ export default function Home() {
                 <h4 style={{ fontWeight: '700', color: '#d4af37', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '6px' }}>
                   {t.successDetailTitle}
                 </h4>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: '#94a3b8' }}>{t.successGuide}</span>
-                  <strong style={{ color: '#fff' }}>{selectedGuide?.full_name} ({selectedGuideLanguage})</strong>
+                  <strong style={{ color: '#fff' }}>
+                    {selectedGuide 
+                      ? `${selectedGuide.full_name} (${selectedGuideLanguage})` 
+                      : (language === 'UZ' ? 'Gidsiz' : language === 'RU' ? 'Без гида' : 'No guide')}
+                  </strong>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: '#94a3b8' }}>{t.successDriver}</span>
@@ -495,11 +505,17 @@ export default function Home() {
                   {language === 'UZ' ? 'Orzungizdagi sayohatni bekor qilasizmi?' : language === 'RU' ? 'Отменить поездку вашей мечты?' : 'Cancel Your Dream Trip?'}
                 </h3>
                 <p style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: 1.6 }}>
-                  {language === 'UZ'
-                    ? `Sizning tajribali gidingiz (${selectedGuide?.full_name}) va haydovchingiz (${selectedVehicle?.driver_name}) ushbu kunni aynan siz uchun band qilishgan. Agar bekor qilsangiz, ular kunlik ishidan mahrum bo'lishadi. Ishonchingiz komilmi?`
+                 {language === 'UZ'
+                    ? selectedGuide
+                      ? `Sizning tajribali gidingiz (${selectedGuide.full_name}) va haydovchingiz (${selectedVehicle?.driver_name}) ushbu kunni aynan siz uchun band qilishgan. Agar bekor qilsangiz, ular kunlik ishidan mahrum bo'lishadi. Ishonchingiz komilmi?`
+                      : `Sizning haydovchingiz (${selectedVehicle?.driver_name}) ushbu kunni aynan siz uchun band qilgan. Agar bekor qilsangiz, u kunlik ishidan mahrum bo'ladi. Ishonchingiz komilmi?`
                     : language === 'RU'
-                    ? `Ваш опытный гид (${selectedGuide?.full_name}) и водитель (${selectedVehicle?.driver_name}) уже забронировали свой день для вас. Если вы отмените, они потеряют этот рабочий день. Вы уверены?`
-                    : `Your guide (${selectedGuide?.full_name}) and driver (${selectedVehicle?.driver_name}) have reserved their day for you. If you cancel, they will lose their schedule. Are you sure you want to cancel?`}
+                    ? selectedGuide
+                      ? `Ваш опытный гид (${selectedGuide.full_name}) и водитель (${selectedVehicle?.driver_name}) уже забронировали свой день для вас. Если вы отмените, они потеряют этот рабочий день. Вы уверены?`
+                      : `Ваш водитель (${selectedVehicle?.driver_name}) уже забронировал свой день для вас. Если вы отмените, он потеряет этот рабочий день. Вы уверены?`
+                    : selectedGuide
+                      ? `Your guide (${selectedGuide.full_name}) and driver (${selectedVehicle?.driver_name}) have reserved their day for you. If you cancel, they will lose their schedule. Are you sure you want to cancel?`
+                      : `Your driver (${selectedVehicle?.driver_name}) has reserved their day for you. If you cancel, they will lose their schedule. Are you sure you want to cancel?`}
                 </p>
               </div>
 
