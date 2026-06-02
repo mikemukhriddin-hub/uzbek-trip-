@@ -74,7 +74,9 @@ export async function POST(req) {
             guide_id,
             vehicle_id,
             customer_language,
-            passenger_count
+            passenger_count,
+            status,
+            created_at
           `)
           .eq('booking_date', bookingDate)
           .neq('status', 'cancelled')
@@ -82,8 +84,18 @@ export async function POST(req) {
 
         if (conflictErr) throw conflictErr;
 
-        if (conflicts && conflicts.length > 0) {
-          const conflictIds = conflicts.map(c => c.id);
+        // Filter out expired pending bookings (older than 10 minutes) so they do not block guide/vehicle availability
+        const activeConflicts = (conflicts || []).filter(c => {
+          if (c.status === 'pending') {
+            const createdAtTime = new Date(c.created_at || Date.now()).getTime();
+            const isExpired = Date.now() - createdAtTime > 10 * 60 * 1000;
+            return !isExpired;
+          }
+          return true;
+        });
+
+        if (activeConflicts.length > 0) {
+          const conflictIds = activeConflicts.map(c => c.id);
           const { data: conflictItems, error: itemsErr } = await supabase
             .from('booking_items')
             .select('booking_id, location_id')
@@ -98,7 +110,7 @@ export async function POST(req) {
 
           let hasPoolableMatch = false;
 
-          for (const conflict of conflicts) {
+          for (const conflict of activeConflicts) {
             const conflictLocs = (conflictItems || [])
               .filter(item => item.booking_id === conflict.id)
               .map(item => item.location_id)
