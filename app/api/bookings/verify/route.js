@@ -303,14 +303,17 @@ export async function POST(req) {
       console.log('SMTP credentials not configured. Skipping confirmation email sending.');
     }
 
-    // Trigger notification processing in the background (asynchronously) immediately after verification
-    fetch(`${baseUrl}/api/cron/process-notifications`, {
-      headers: { 
-        'x-bypass-supabase': bypassSupabase ? 'true' : 'false'
-      }
-    }).catch(err => {
+    // Trigger notification processing immediately after verification
+    try {
+      await fetch(`${baseUrl}/api/cron/process-notifications`, {
+        headers: { 
+          'x-bypass-supabase': bypassSupabase ? 'true' : 'false'
+        }
+      });
+      console.log('Notification processor triggered successfully.');
+    } catch (err) {
       console.error('Failed to trigger background notification processor:', err.message);
-    });
+    }
 
     return NextResponse.json({
       message: 'Email successfully verified. Booking submitted for review.',
