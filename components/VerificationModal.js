@@ -24,7 +24,9 @@ export default function VerificationModal({
 
   useEffect(() => {
     if (emailSent === false && propOtpCode) {
-      setOtpCode(propOtpCode);
+      Promise.resolve().then(() => {
+        setOtpCode(propOtpCode);
+      });
     }
   }, [emailSent, propOtpCode]);
 
@@ -32,9 +34,11 @@ export default function VerificationModal({
   useEffect(() => {
     if (!isOpen) return;
 
-    setTimeLeft(120);
-    setCanResend(false);
-    setResendMessage('');
+    Promise.resolve().then(() => {
+      setTimeLeft(120);
+      setCanResend(false);
+      setResendMessage('');
+    });
 
     const interval = setInterval(() => {
       setTimeLeft((prev) => {

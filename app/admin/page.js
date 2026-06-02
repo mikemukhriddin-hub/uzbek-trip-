@@ -50,7 +50,11 @@ export default function AdminPage() {
 
   useEffect(() => {
     const saved = localStorage.getItem('site_lang');
-    if (saved) setLanguage(saved);
+    if (saved) {
+      Promise.resolve().then(() => {
+        setLanguage(saved);
+      });
+    }
   }, []);
 
   const t = {
@@ -458,6 +462,7 @@ export default function AdminPage() {
         fetchAllData(savedToken);
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleLogin = (e) => {

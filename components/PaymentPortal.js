@@ -16,6 +16,12 @@ import {
 
 const USD_TO_UZS = 13000;
 
+// Random ID Generators moved outside render to maintain component purity
+const generateClickTransId = () => Math.floor(200000000 + Math.random() * 800000000).toString();
+const generatePaymeTxId = () => 'payme_tx_' + Math.random().toString(36).substring(2, 15);
+const generateStripeTxId = () => 'ch_stripe_' + Math.random().toString(36).substring(2, 15);
+const generatePaypalTxId = () => 'PAYID-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+
 export default function PaymentPortal({
   isOpen = false,
   onClose,
@@ -46,16 +52,18 @@ export default function PaymentPortal({
 
   useEffect(() => {
     if (isOpen) {
-      setResidency(null);
-      setPaymentMethod(null);
-      setStep('select');
-      setErrorMsg('');
-      setPhone('');
-      setSmsCode('');
-      setCardHolder('');
-      setCardNumber('');
-      setCardExpiry('');
-      setCardCvc('');
+      Promise.resolve().then(() => {
+        setResidency(null);
+        setPaymentMethod(null);
+        setStep('select');
+        setErrorMsg('');
+        setPhone('');
+        setSmsCode('');
+        setCardHolder('');
+        setCardNumber('');
+        setCardExpiry('');
+        setCardCvc('');
+      });
     }
   }, [isOpen]);
 
@@ -109,7 +117,7 @@ export default function PaymentPortal({
     setLoading(true);
     setErrorMsg('');
     try {
-      const clickTransId = Math.floor(200000000 + Math.random() * 800000000).toString();
+      const clickTransId = generateClickTransId();
       const serviceId = '4521';
       const clickSecret = 'click_secret_key_mock';
       const amount = depositUzs;
@@ -194,7 +202,7 @@ export default function PaymentPortal({
     const authHeader = `Basic ${credentials}`;
 
     try {
-      const paymeTxId = 'payme_tx_' + Math.random().toString(36).substring(2, 15);
+      const paymeTxId = generatePaymeTxId();
       const amountInTiyins = depositUzs * 100;
       
       if (actionType === 'send_sms') {
@@ -317,7 +325,7 @@ export default function PaymentPortal({
 
     try {
       // Simulate Stripe charge call
-      const stripeTxId = 'ch_stripe_' + Math.random().toString(36).substring(2, 15);
+      const stripeTxId = generateStripeTxId();
       
       const res = await fetch('/api/bookings/payment/confirm', {
         method: 'POST',
@@ -357,8 +365,8 @@ export default function PaymentPortal({
     setErrorMsg('');
 
     try {
-      const paypalTxId = 'PAYID-' + Math.random().toString(36).substring(2, 10).toUpperCase();
-
+      const paypalTxId = generatePaypalTxId();
+      
       const res = await fetch('/api/bookings/payment/confirm', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

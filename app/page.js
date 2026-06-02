@@ -125,7 +125,9 @@ export default function Home() {
   useEffect(() => {
     const savedLang = localStorage.getItem('site_lang');
     if (savedLang) {
-      setLanguage(savedLang);
+      Promise.resolve().then(() => {
+        setLanguage(savedLang);
+      });
     }
   }, []);
 
