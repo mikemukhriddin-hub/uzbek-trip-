@@ -31,6 +31,7 @@ import GuideSelector from '@/components/GuideSelector';
 import CheckoutForm from '@/components/CheckoutForm';
 import VerificationModal from '@/components/VerificationModal';
 import BackgroundGraphics from '@/components/BackgroundGraphics';
+import PaymentPortal from '@/components/PaymentPortal';
 
 // MOCK FALLBACK DATA (matching seed SQL)
 const MOCK_LOCATIONS = [
@@ -113,6 +114,7 @@ export default function Home() {
   const [createdBookingId, setCreatedBookingId] = useState(null);
   const [verificationError, setVerificationError] = useState('');
   const [successPage, setSuccessPage] = useState(false);
+  const [paymentOpen, setPaymentOpen] = useState(false);
   
   // Cancellation states
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
@@ -271,7 +273,7 @@ export default function Home() {
       }
 
       setOtpModalOpen(false);
-      setSuccessPage(true);
+      setPaymentOpen(true);
     } catch (err) {
       setVerificationError(err.message);
     } finally {
@@ -436,8 +438,28 @@ export default function Home() {
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: '#94a3b8' }}>{t.successTotal}</span>
-                  <strong style={{ color: '#d4af37', fontSize: '16px' }}>${bookingData?.totalPrice?.toFixed(2)}</strong>
+                  <strong style={{ color: '#fff' }}>${bookingData?.totalPrice?.toFixed(2)}</strong>
                 </div>
+                {bookingData?.depositAmount !== undefined && (
+                  <>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: '#94a3b8' }}>
+                        {language === 'UZ' ? 'To\'langan depozit (20%):' : language === 'RU' ? 'Оплаченный депозит (20%):' : 'Paid Deposit (20%):'}
+                      </span>
+                      <strong style={{ color: '#10b981' }}>
+                        ${bookingData.depositAmount.toFixed(2)} ({bookingData.paymentMethod?.toUpperCase()})
+                      </strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: '#94a3b8' }}>
+                        {language === 'UZ' ? 'Qoldiq (joyida to\'lanadi):' : language === 'RU' ? 'Остаток к оплате (на месте):' : 'Remaining Balance (to pay in cash):'}
+                      </span>
+                      <strong style={{ color: '#fbbf24' }}>
+                        ${(bookingData.totalPrice - bookingData.depositAmount).toFixed(2)}
+                      </strong>
+                    </div>
+                  </>
+                )}
               </div>
 
               <div style={{ marginTop: '10px' }}>
@@ -929,6 +951,25 @@ export default function Home() {
         otpCode={bookingData?.otpCode}
         bookingId={createdBookingId}
         onResendOtp={handleResendOtp}
+      />
+
+      {/* Payment Portal Modal Overlay */}
+      <PaymentPortal
+        isOpen={paymentOpen}
+        onClose={() => setPaymentOpen(false)}
+        bookingId={createdBookingId}
+        totalPrice={bookingData?.totalPrice || 0}
+        language={language}
+        onPaymentSuccess={(paymentInfo) => {
+          setBookingData((prev) => ({
+            ...prev,
+            paymentMethod: paymentInfo.paymentMethod,
+            paymentTxId: paymentInfo.paymentTxId,
+            depositAmount: paymentInfo.depositAmount,
+          }));
+          setPaymentOpen(false);
+          setSuccessPage(true);
+        }}
       />
 
       <footer style={{

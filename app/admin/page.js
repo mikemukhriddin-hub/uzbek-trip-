@@ -1177,6 +1177,7 @@ export default function AdminPage() {
                     <th style={{ padding: '12px 8px' }}>{currT.routeSights}</th>
                     <th style={{ padding: '12px 8px' }}>{currT.guideDriver}</th>
                     <th style={{ padding: '12px 8px' }}>{currT.totalPrice}</th>
+                    <th style={{ padding: '12px 8px' }}>{language === 'UZ' ? 'To\'lov' : language === 'RU' ? 'Оплата' : 'Payment'}</th>
                     <th style={{ padding: '12px 8px' }}>{currT.status}</th>
                     <th style={{ padding: '12px 8px', textAlign: 'center' }}>{currT.actions}</th>
                   </tr>
@@ -1228,6 +1229,22 @@ export default function AdminPage() {
                           <div><span style={{ color: '#64748b' }}>{currT.driver}: </span>{booking.vehicle?.driver_name || 'N/A'}</div>
                         </td>
                         <td style={{ padding: '16px 8px', fontWeight: '800', color: '#d4af37' }}>${parseFloat(booking.total_price).toFixed(2)}</td>
+                        <td style={{ padding: '16px 8px' }}>
+                          {booking.payment_status === 'deposit_paid' ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                              <span style={{ color: '#10b981', fontWeight: '700', fontSize: '11px' }}>
+                                {language === 'UZ' ? 'Depozit (20%)' : language === 'RU' ? 'Депозит 20%' : 'Paid 20%'}
+                              </span>
+                              <span style={{ fontSize: '10px', color: '#cbd5e1' }}>
+                                ${parseFloat(booking.deposit_amount || 0).toFixed(2)} ({booking.payment_method?.toUpperCase()})
+                              </span>
+                            </div>
+                          ) : (
+                            <span style={{ color: '#ef4444', fontWeight: '600', fontSize: '11px' }}>
+                              {language === 'UZ' ? 'To\'lanmagan' : language === 'RU' ? 'Не оплачено' : 'Unpaid'}
+                            </span>
+                          )}
+                        </td>
                         <td style={{ padding: '16px 8px' }}>
                           <span style={{ padding: '4px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: '700', color: colors.text, backgroundColor: colors.bg, border: `1px solid ${colors.border}` }}>
                             {currT[booking.status] || booking.status}

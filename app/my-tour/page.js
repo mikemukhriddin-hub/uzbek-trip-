@@ -15,7 +15,8 @@ import {
   MapPin, 
   DollarSign, 
   Phone,
-  HelpCircle
+  HelpCircle,
+  Coins
 } from 'lucide-react';
 
 const getStatusColor = (status) => {
@@ -254,6 +255,72 @@ function MyTourContent() {
               <span style={{ fontSize: '12px', color: '#009b9e' }}>📞 {booking.vehicle.driver_phone}</span>
             )}
           </div>
+        </div>
+
+        {/* Payment Summary */}
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '10px',
+          backgroundColor: 'rgba(255, 255, 255, 0.02)',
+          padding: '16px',
+          borderRadius: '12px',
+          border: '1px solid rgba(255, 255, 255, 0.05)',
+          fontSize: '13px'
+        }}>
+          <h4 style={{ margin: '0 0 6px 0', fontSize: '14px', color: '#d4af37', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Coins size={15} />
+            {language === 'UZ' ? 'To\'lov hisoboti' : language === 'RU' ? 'Платежный баланс' : 'Payment Summary'}
+          </h4>
+          
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span style={{ color: '#94a3b8' }}>
+              {language === 'UZ' ? 'To\'lov holati:' : language === 'RU' ? 'Статус оплаты:' : 'Payment Status:'}
+            </span>
+            <span style={{
+              padding: '2px 8px',
+              borderRadius: '6px',
+              fontWeight: '700',
+              fontSize: '11px',
+              backgroundColor: booking.payment_status === 'deposit_paid' ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)',
+              color: booking.payment_status === 'deposit_paid' ? '#10b981' : '#ef4444',
+              border: booking.payment_status === 'deposit_paid' ? '1px solid rgba(16, 185, 129, 0.2)' : '1px solid rgba(239, 68, 68, 0.2)',
+              textTransform: 'uppercase'
+            }}>
+              {booking.payment_status === 'deposit_paid' 
+                ? (language === 'UZ' ? 'Depozit to\'langan (20%)' : language === 'RU' ? 'Депозит оплачен (20%)' : 'Deposit Paid (20%)')
+                : (language === 'UZ' ? 'To\'lanmagan' : language === 'RU' ? 'Не оплачено' : 'Unpaid')
+              }
+            </span>
+          </div>
+
+          {booking.payment_status === 'deposit_paid' && (
+            <>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#94a3b8' }}>
+                  {language === 'UZ' ? 'To\'langan depozit:' : language === 'RU' ? 'Оплаченный депозит:' : 'Deposit Paid:'}
+                </span>
+                <strong style={{ color: '#10b981' }}>
+                  ${parseFloat(booking.deposit_amount || 0).toFixed(2)} 
+                  <span style={{ fontSize: '11px', color: '#94a3b8', fontWeight: '500', marginLeft: '4px' }}>
+                    ({booking.payment_method?.toUpperCase()})
+                  </span>
+                </strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#94a3b8' }}>
+                  {language === 'UZ' ? 'Qoldiq (joyida to\'lanadi):' : language === 'RU' ? 'Остаток (оплата наличными):' : 'Remaining Balance (to guide/driver):'}
+                </span>
+                <strong style={{ color: '#fbbf24' }}>
+                  ${(parseFloat(booking.total_price) - parseFloat(booking.deposit_amount || 0)).toFixed(2)}
+                </strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#64748b' }}>
+                <span>Tx ID:</span>
+                <span>{booking.payment_tx_id || 'N/A'}</span>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Cost and Actions */}
