@@ -18,20 +18,21 @@ const mockVehicles = {
 };
 
 const mockLocations = {
-  1: { id: 1, name_en: 'Registan Square', name_ru: 'Площадь Регистан', description_en: 'The heart of ancient Samarkand, featuring three magnificent madrasahs.', description_ru: 'Сердце древнего Самарканда, украшенное тремя величественными медресе.' },
-  2: { id: 2, name_en: 'Gur-e-Amir Mausoleum', name_ru: 'Мавзолей Гур-Эмир', description_en: 'The final resting place of Amir Temur (Tamerlane), a masterpiece of Persian-Mongolian architecture.', description_ru: 'Усыпальница Амира Темура (Тамерлана), шедевр персидско-монгольской архитектуры.' },
-  3: { id: 3, name_en: 'Shah-i-Zinda', name_ru: 'Шахи Зинда', description_en: 'A breathtaking avenue of blue-domed mausoleums dating back to the 11th-15th centuries.', description_ru: 'Улица лазурных мавзолеев XI–XV веков, поражающая своей красотой.' },
-  4: { id: 4, name_en: 'Bibi-Khanym Mosque', name_ru: 'Мечеть Биби-Ханым', description_en: 'One of the largest mosques of the 15th century, built by Tamerlane in honor of his favorite wife.', description_ru: 'Одна из крупнейших мечетей XV века, построенная Тамерланом в честь любимой жены.' },
-  5: { id: 5, name_en: 'Ulugh Beg Observatory', name_ru: 'Обсерватория Улугбека', description_en: 'Built in 1420, this observatory was one of the finest in the Islamic world.', description_ru: 'Обсерватория, построенная в 1420 году, бывшая одной из лучших в исламском мире.' },
-  6: { id: 6, name_en: 'Urgut Mountain Bazaar & Hills', name_ru: 'Ургутский горный базар и горы', description_en: 'Explore traditional crafts at the market and hike through scenic Urgut mountain ranges.', description_ru: 'Посетите традиционный ремесленный базар и прогуляйтесь по живописным горам Ургута.' },
-  7: { id: 7, name_en: 'Omonqo\'ton Pass & Pines', name_ru: 'Перевал Омонкоoton', description_en: 'A majestic pine forest and mountain pass with ancient caves and fresh springs.', description_ru: 'Величественный сосновый лес и горный перевал с древними пещерами и источниками.' },
-  8: { id: 8, name_en: 'Konigil Paper Mill', name_ru: 'Бумажная фабрика Конигиль', description_en: 'A peaceful eco-village showcasing the ancient art of Samarkand mulberry paper making.', description_ru: 'Тихая эко-деревня, демонстрирующая древнее искусство изготовления самаркандской шелковой бумаги.' },
-  9: { id: 9, name_en: 'National Osh House', name_ru: 'Национальный центр плова', description_en: 'Authentic Samarkand Osh prepared in giant cauldrons using traditional recipes.', description_ru: 'Настоящий самаркандский плов, приготовленный в огромных казанах по старинным рецептам.' },
-  10: { id: 10, name_en: 'Samarkand Bread Bakery', name_ru: 'Пекарня самаркандских лепешек', description_en: 'Watch bakers prepare the famous, shiny Samarkand bread in traditional clay ovens.', description_ru: 'Наблюдайте за приготовлением знаменитых блестящих самаркандских лепешек в тандырах.' },
-  11: { id: 11, name_en: 'Karimbek Restaurant', name_ru: 'Ресторан Каримбек', description_en: 'Elegant dining featuring traditional shashlik, manti, and vibrant Uzbek music.', description_ru: 'Элегантный ресторан с традиционными шашлыками, мантами и живой узбекской музыкой.' }
+  1: { id: 1, name_en: 'Registan Square', name_ru: 'Площадь Регистан', name_uz: 'Registon maydoni', description_en: 'The heart of ancient Samarkand, featuring three magnificent madrasahs.', description_ru: 'Сердце древнего Самарканда, украшенное тремя величественными медресе.', description_uz: 'Uchta muhtasham madrasadan iborat qadimiy Samarqandning yuragi.' },
+  2: { id: 2, name_en: 'Gur-e-Amir Mausoleum', name_ru: 'Мавзолей Гур-Эмир', name_uz: 'Go\'ri Amir maqbarasi', description_en: 'The final resting place of Amir Temur (Tamerlane), a masterpiece of Persian-Mongolian architecture.', description_ru: 'Усыпальница Амира Темура (Тамерлана), шедевр персидско-монгольской архитектуры.', description_uz: 'Amir Temur (Tamerlan) ning so\'nggi qo\'nim topgan joyi, me\'moriy durdona.' },
+  3: { id: 3, name_en: 'Shah-i-Zinda', name_ru: 'Шахи Зинда', name_uz: 'Shohi Zinda', description_en: 'A breathtaking avenue of blue-domed mausoleums dating back to the 11th-15th centuries.', description_ru: 'Улица лазурных мавзолеев XI–XV веков, поражающая своей красотой.', description_uz: 'Moviy gumbazli maqbaralardan iborat hayratlanarli xiyobon.' },
+  4: { id: 4, name_en: 'Bibi-Khanym Mosque', name_ru: 'Мечеть Биби-Ханым', name_uz: 'Bibi Xonim masjidi', description_en: 'One of the largest mosques of the 15th century, built by Tamerlane in honor of his favorite wife.', description_ru: 'Одна из крупнейших мечетей XV века, построенная Тамерланом в честь любимой жены.', description_uz: 'Amir Temurning sevimli rafiqasi sharafiga qurilgan XV asrning eng yirik masjidlaridan biri.' },
+  5: { id: 5, name_en: 'Ulugh Beg Observatory', name_ru: 'Обсерватория Улугбека', name_uz: 'Ulug\'bek rasadxonasi', description_en: 'Built in 1420, this observatory was one of the finest in the Islamic world.', description_ru: 'Обсерватория, построенная в 1420 году, бывшая одной из лучших в исламском мире.', description_uz: '1420-yilda qurilgan ushbu rasadxona islom dunyosining ajoyib mo\'jizalaridan biri bo\'lgan.' },
+  6: { id: 6, name_en: 'Urgut Mountain Bazaar & Hills', name_ru: 'Ургутский горный базар и горы', name_uz: 'Urgut tog\' bozori va adirlari', description_en: 'Explore traditional crafts at the market and hike through scenic Urgut mountain ranges.', description_ru: 'Посетите традиционный ремесленный базар и прогуляйтесь по живописным горам Ургута.', description_uz: 'Bozorda an\'anaviy hunarmandchilik bilan tanishing va Urgutning go\'zal tog\' tizmalari bo\'ylab sayr qiling.' },
+  7: { id: 7, name_en: 'Omonqo\'ton Pass & Pines', name_ru: 'Перевал Омонкоoton', name_uz: 'Omonqo\'ton dovoni va qarag\'aylari', description_en: 'A majestic pine forest and mountain pass with ancient caves and fresh springs.', description_ru: 'Величественный сосновый лес и горный перевал с древними пещерами и источниками.', description_uz: 'Qadimiy g\'orlar va toza buloqlarga ega muhtasham qarag\'ayzor hamda tog\' dovoni.' },
+  8: { id: 8, name_en: 'Konigil Paper Mill', name_ru: 'Бумажная фабрика Конигиль', name_uz: 'Konigil qog\'oz fabrikasi', description_en: 'A peaceful eco-village showcasing the ancient art of Samarkand mulberry paper making.', description_ru: 'Тихая эко-деревня, демонстрирующая древнее искусство изготовления самаркандской шелковой бумаги.', description_uz: 'Samarqand tut qog\'ozini tayyorlashning qadimiy san\'atini namoyish etuvchi tinch eko-qishloq.' },
+  9: { id: 9, name_en: 'National Osh House', name_ru: 'Национальный центр плова', name_uz: 'Milliy palov markazi', description_en: 'Authentic Samarkand Osh prepared in giant cauldrons using traditional recipes.', description_ru: 'Настоящий самаркандский плов, приготовленный в огромных казанах по старинным рецептам.', description_uz: 'Katta qozonlarda an\'anaviy retseptlar bo\'yicha tayyorlangan haqiqiy Samarqand palovi.' },
+  10: { id: 10, name_en: 'Samarkand Bread Bakery', name_ru: 'Пекарня самаркандских лепешек', name_uz: 'Samarqand nonvoyxonasi', description_en: 'Watch bakers prepare the famous, shiny Samarkand bread in traditional clay ovens.', description_ru: 'Наблюдайте за приготовлением знаменитых блестящих самаркандских лепешек в тандырах.', description_uz: 'Nonvoylar tandirda mashhur, yaltiroq Samarqand nonlarini yopishini kuzating.' },
+  11: { id: 11, name_en: 'Karimbek Restaurant', name_ru: 'Ресторан Каримбек', name_uz: 'Karimbek restorani', description_en: 'Elegant dining featuring traditional shashlik, manti, and vibrant Uzbek music.', description_ru: 'Элегантный ресторан с традиционными шашлыками, мантами и живой узбекской музыкой.', description_uz: 'An\'anaviy kabob, manti va jonli milliy musiqa taklif etuvchi ajoyib restoran.' }
 };
 
 function generateEmailHtml(booking, groupBookings, finalGuide, finalVehicle, isGrouped) {
+  const isUz = booking.customer_language === 'UZ';
   const isRu = booking.customer_language === 'RU';
   const totalPassengers = groupBookings.reduce((sum, b) => sum + (b.passenger_count || 1), 0);
   
@@ -41,35 +42,41 @@ function generateEmailHtml(booking, groupBookings, finalGuide, finalVehicle, isG
   const textColor = '#334155';    // Charcoal Text
   const lightBg = '#f8fafc';      // Light Gray Background
   const borderColor = '#e2e8f0';
-
+ 
   // Tour type badge
-  const badgeText = isGrouped 
-    ? (isRu ? 'ГРУППОВОЙ ТУР' : 'GROUP TOUR') 
-    : (isRu ? 'ИНДИВИДУАЛЬНЫЙ ТУР' : 'PRIVATE TOUR');
+  const badgeText = isUz
+    ? (isGrouped ? 'GURUH TUR' : 'SHAXSIY TUR')
+    : isRu 
+      ? (isGrouped ? 'ГРУППОВОЙ ТУР' : 'ИНДИВИДУАЛЬНЫЙ ТУР') 
+      : (isGrouped ? 'GROUP TOUR' : 'PRIVATE TOUR');
   const badgeBg = isGrouped ? '#0284c7' : '#059669';
-
-  const headerSubtitle = isRu 
-    ? 'ОФИЦИАЛЬНЫЙ ТУРИСТИЧЕСКИЙ ВАУЧЕР И МАРШРУТ'
-    : 'OFFICIAL TRAVEL VOUCHER & ITINERARY';
-
+ 
+  const headerSubtitle = isUz
+    ? 'RASMIY SAYOHAT VAUCHERI VA MARSHRUT'
+    : isRu 
+      ? 'ОФИЦИАЛЬНЫЙ ТУРИСТИЧЕСКИЙ ВАУЧЕР И МАРШРУТ'
+      : 'OFFICIAL TRAVEL VOUCHER & ITINERARY';
+ 
   // Tourist rows
   const touristRows = groupBookings.map((b, idx) => {
-    const priceLabel = isRu 
-      ? `Стоимость: $${parseFloat(b.total_price).toFixed(2)} (Заказ #${b.id})` 
-      : `Price: $${parseFloat(b.total_price).toFixed(2)} (Booking #${b.id})`;
+    const priceLabel = isUz
+      ? `Narxi: $${parseFloat(b.total_price).toFixed(2)} (Buyurtma #${b.id})`
+      : isRu 
+        ? `Стоимость: $${parseFloat(b.total_price).toFixed(2)} (Заказ #${b.id})` 
+        : `Price: $${parseFloat(b.total_price).toFixed(2)} (Booking #${b.id})`;
     return `
       <div style="margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px dashed ${borderColor};">
         <strong style="color: ${primaryColor}; font-size: 14px;">${idx + 1}. ${b.tourist_name}</strong><br/>
-        <span style="font-size: 12px; color: #64748b;">Email: ${b.tourist_email} | Phone: ${b.tourist_phone || 'N/A'}</span><br/>
+        <span style="font-size: 12px; color: #64748b;">Email: ${b.tourist_email} | ${isUz ? 'Telefon' : isRu ? 'Тел.' : 'Phone'}: ${b.tourist_phone || 'N/A'}</span><br/>
         <span style="font-size: 13px; color: ${accentColor}; font-weight: bold;">${priceLabel}</span>
       </div>
     `;
   }).join('');
-
+ 
   // Itinerary list
   const itineraryList = (groupBookings[0].locations || []).map((loc, idx) => {
-    const locName = isRu ? (loc.name_ru || loc.name_en) : loc.name_en;
-    const locDesc = isRu ? (loc.description_ru || loc.description_en || '') : (loc.description_en || '');
+    const locName = isUz ? (loc.name_uz || loc.name_en) : isRu ? (loc.name_ru || loc.name_en) : loc.name_en;
+    const locDesc = isUz ? (loc.description_uz || loc.description_en || '') : isRu ? (loc.description_ru || loc.description_en || '') : (loc.description_en || '');
     return `
       <div style="margin-bottom: 15px; padding-left: 15px; border-left: 2px solid ${accentColor};">
         <strong style="color: ${primaryColor}; font-size: 14px;">${idx + 1}. ${locName}</strong>
@@ -77,30 +84,40 @@ function generateEmailHtml(booking, groupBookings, finalGuide, finalVehicle, isG
       </div>
     `;
   }).join('');
-
-  const guideLabel = isRu ? 'ГИД / ЭКСКУРСОВОД' : 'ASSIGNED GUIDE';
-  const driverLabel = isRu ? 'ВОДИТЕЛЬ И ТРАНСПОРТ' : 'DRIVER & VEHICLE';
+ 
+  const guideLabel = isUz ? 'TAYINLANGAN GID' : isRu ? 'ГИД / ЭКСКУРСОВОД' : 'ASSIGNED GUIDE';
+  const driverLabel = isUz ? 'HAYDOVCHI VA TRANSPORT' : isRu ? 'ВОДИТЕЛЬ И ТРАНСПОРТ' : 'DRIVER & VEHICLE';
   
   const introText = isGrouped
-    ? (isRu 
-        ? `Мы рады сообщить, что ваша совместная поездка на <strong>${booking.booking_date}</strong> успешно подтверждена и объединена в групповой тур! Ниже приведены детали вашего тура.`
-        : `We are pleased to inform you that your tour on <strong>${booking.booking_date}</strong> is confirmed and has been grouped into a shared tour! Below are your tour details.`)
-    : (isRu
-        ? `Ваша индивидуальная поездка на <strong>${booking.booking_date}</strong> успешно подтверждена. Ниже приведены детали вашего тура.`
-        : `Your private tour on <strong>${booking.booking_date}</strong> is confirmed. Below are your tour details.`);
-
+    ? (isUz
+        ? `Sizning <strong>${booking.booking_date}</strong> sanasidagi sayohatingiz muvaffaqiyatli tasdiqlandi va guruh turiga birlashtirildi! Quyida sayohat tafsilotlari keltirilgan.`
+        : isRu 
+          ? `Мы рады сообщить, что ваша совместная поездка на <strong>${booking.booking_date}</strong> успешно подтверждена и объединена в групповой тур! Ниже приведены детали вашего тура.`
+          : `We are pleased to inform you that your tour on <strong>${booking.booking_date}</strong> is confirmed and has been grouped into a shared tour! Below are your tour details.`)
+    : (isUz
+        ? `Sizning <strong>${booking.booking_date}</strong> sanasidagi shaxsiy sayohatingiz muvaffaqiyatli tasdiqlandi. Quyida sayohat tafsilotlari keltirilgan.`
+        : isRu
+          ? `Ваша индивидуальная поездка на <strong>${booking.booking_date}</strong> успешно подтверждена. Ниже приведены детали вашего тура.`
+          : `Your private tour on <strong>${booking.booking_date}</strong> is confirmed. Below are your tour details.`);
+ 
   const updateNotice = isGrouped
-    ? (isRu 
-        ? `<p style="font-size: 12px; color: #64748b; margin-top: 15px; font-style: italic;">*Примечание: Если к вашей группе присоединятся новые участники, вам будет выслано обновленное расписание.</p>`
-        : `<p style="font-size: 12px; color: #64748b; margin-top: 15px; font-style: italic;">*Note: If new partners join your travel group, an updated itinerary will be sent to you.</p>`)
-    : (isRu
-        ? `<p style="font-size: 12px; color: #64748b; margin-top: 15px; font-style: italic;">*Примечание: Если к вашему туру присоединятся другие участники на аналогичный маршрут, вы будете объединены в группу и вам вышлют обновленный ваучер.</p>`
-        : `<p style="font-size: 12px; color: #64748b; margin-top: 15px; font-style: italic;">*Note: If other travellers join your tour for a matching route, you will be pooled into a shared group and an updated voucher will be sent to you.</p>`);
-
-  const footerText = isRu 
-    ? 'Спасибо, что выбрали Samarqand CrafTour. Пожалуйста, будьте в лобби вашего отеля за 10 минут до назначенного времени.<br/>Для любых вопросов обращайтесь по номеру службы поддержки или напрямую к вашему гиду.'
-    : 'Thank you for choosing Samarqand CrafTour. Please be ready at your hotel lobby 10 minutes prior to departure.<br/>For support or questions, contact customer service or your assigned guide directly.';
-
+    ? (isUz
+        ? `<p style="font-size: 12px; color: #64748b; margin-top: 15px; font-style: italic;">*Eslatma: Agar guruhingizga yangi sayyohlar qo'shilsa, sizga yangilangan marshrut yuboriladi.</p>`
+        : isRu 
+          ? `<p style="font-size: 12px; color: #64748b; margin-top: 15px; font-style: italic;">*Примечание: Если к вашей группе присоединятся новые участники, вам будет выслано обновленное расписание.</p>`
+          : `<p style="font-size: 12px; color: #64748b; margin-top: 15px; font-style: italic;">*Note: If new partners join your travel group, an updated itinerary will be sent to you.</p>`)
+    : (isUz
+        ? `<p style="font-size: 12px; color: #64748b; margin-top: 15px; font-style: italic;">*Eslatma: Agar xuddi shu marshrut bo'yicha boshqa sayyohlar qo'shilsa, siz guruh turiga birlashtirilasiz va sizga yangilangan vaucher yuboriladi.</p>`
+        : isRu
+          ? `<p style="font-size: 12px; color: #64748b; margin-top: 15px; font-style: italic;">*Примечание: Если к вашему туру присоединятся другие участники на аналогичный маршрут, вы будете объединены в группу и вам вышлют обновленный ваучер.</p>`
+          : `<p style="font-size: 12px; color: #64748b; margin-top: 15px; font-style: italic;">*Note: If other travellers join your tour for a matching route, you will be pooled into a shared group and an updated voucher will be sent to you.</p>`);
+ 
+  const footerText = isUz
+    ? 'Samarqand CrafTour xizmatini tanlaganingiz uchun rahmat. Iltimos, belgilangan vaqtdan 10 daqiqa oldin mehmonxona foyesida tayyor turing.<br/>Savollar yuzasidan qo\'llab-quvvatlash xizmati yoki gid bilan bevosita bog\'lanishingiz mumkin.'
+    : isRu 
+      ? 'Спасибо, что выбрали Samarqand CrafTour. Пожалуйста, будьте в лобби вашего отеля за 10 минут до назначенного времени.<br/>Для любых вопросов обращайтесь по номеру службы поддержки или напрямую к вашему гиду.'
+      : 'Thank you for choosing Samarqand CrafTour. Please be ready at your hotel lobby 10 minutes prior to departure.<br/>For support or questions, contact customer service or your assigned guide directly.';
+ 
   return `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 0; margin: 0; background-color: #f1f5f9;">
       <table cellpadding="0" cellspacing="0" width="100%" style="background-color: #f1f5f9; padding: 20px 0;">
@@ -115,24 +132,24 @@ function generateEmailHtml(booking, groupBookings, finalGuide, finalVehicle, isG
                   <p style="color: #94a3b8; font-size: 11px; margin: 8px 0 0 0; letter-spacing: 1px; font-weight: 600;">${headerSubtitle}</p>
                 </td>
               </tr>
-
+ 
               <!-- Main Content -->
               <tr>
                 <td style="padding: 30px; color: ${textColor}; line-height: 1.6;">
                   <h3 style="color: ${primaryColor}; margin-top: 0; font-size: 18px;">
-                    ${isRu ? 'Подтверждение бронирования' : 'Booking Confirmation'}
+                    ${isUz ? 'Buyurtma tasdiqlanishi' : isRu ? 'Подтверждение бронирования' : 'Booking Confirmation'}
                   </h3>
                   <p>
-                    ${isRu ? 'Здравствуйте' : 'Hello'} <strong>${booking.tourist_name}</strong>,
+                    ${isUz ? 'Assalomu alaykum' : isRu ? 'Здравствуйте' : 'Hello'} <strong>${booking.tourist_name}</strong>,
                   </p>
                   <p>${introText}</p>
-
+ 
                   <!-- Summary Badges -->
                   <table cellpadding="0" cellspacing="0" width="100%" style="background-color: ${lightBg}; border: 1px solid ${borderColor}; border-radius: 8px; margin: 20px 0; padding: 15px;">
                     <tr>
                       <td width="50%" style="padding: 5px;">
                         <span style="font-size: 11px; color: #64748b; font-weight: bold; text-transform: uppercase;">
-                          ${isRu ? 'ДАТА ПОЕЗДКИ' : 'TRAVEL DATE'}
+                          ${isUz ? 'SAYOHAT SANASI' : isRu ? 'ДАТА ПОЕЗДКИ' : 'TRAVEL DATE'}
                         </span><br/>
                         <strong style="color: ${primaryColor}; font-size: 15px;">${booking.booking_date}</strong>
                       </td>
@@ -145,28 +162,28 @@ function generateEmailHtml(booking, groupBookings, finalGuide, finalVehicle, isG
                     <tr>
                       <td width="50%" style="padding: 5px; border-top: 1px solid ${borderColor}; margin-top: 10px;">
                         <span style="font-size: 11px; color: #64748b; font-weight: bold; text-transform: uppercase;">
-                          ${isRu ? 'ЯЗЫК ТУРА' : 'TOUR LANGUAGE'}
+                          ${isUz ? 'SAYOHAT TILI' : isRu ? 'ЯЗЫК ТУРА' : 'TOUR LANGUAGE'}
                         </span><br/>
                         <strong style="color: ${primaryColor}; font-size: 15px;">${booking.customer_language}</strong>
                       </td>
                       <td width="50%" style="padding: 5px; text-align: right; border-top: 1px solid ${borderColor}; margin-top: 10px;">
                         <span style="font-size: 11px; color: #64748b; font-weight: bold; text-transform: uppercase;">
-                          ${isRu ? 'КОЛИЧЕСТВО УЧАСТНИКОВ' : 'TOTAL PASSENGERS'}
+                          ${isUz ? 'JAMI YO\'LOVCHILAR' : isRu ? 'КОЛИЧЕСТВО УЧАСТНИКОВ' : 'TOTAL PASSENGERS'}
                         </span><br/>
-                        <strong style="color: ${primaryColor}; font-size: 15px;">${totalPassengers} ${isRu ? 'чел' : 'Pax'}</strong>
+                        <strong style="color: ${primaryColor}; font-size: 15px;">${totalPassengers} ${isUz ? 'ta' : isRu ? 'чел' : 'Pax'}</strong>
                       </td>
                     </tr>
                   </table>
-
+ 
                   <!-- Tourist Details -->
                   <h4 style="color: ${primaryColor}; font-size: 15px; margin: 25px 0 10px 0; border-bottom: 2px solid ${primaryColor}; padding-bottom: 5px;">
-                    ${isRu ? 'Информация о туристах' : 'Tourist Details'}
+                    ${isUz ? 'Sayyohlar ma\'lumotlari' : isRu ? 'Информация о туристах' : 'Tourist Details'}
                   </h4>
                   ${touristRows}
-
+ 
                   <!-- Guide & Driver Section -->
                   <h4 style="color: ${primaryColor}; font-size: 15px; margin: 25px 0 10px 0; border-bottom: 2px solid ${primaryColor}; padding-bottom: 5px;">
-                    ${isRu ? 'Назначенный персонал' : 'Assigned Staff'}
+                    ${isUz ? 'Xizmat ko\'rsatuvchi xodimlar' : isRu ? 'Назначенный персонал' : 'Assigned Staff'}
                   </h4>
                   <table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 20px;">
                     <tr>
@@ -187,17 +204,17 @@ function generateEmailHtml(booking, groupBookings, finalGuide, finalVehicle, isG
                       </td>
                     </tr>
                   </table>
-
+ 
                   <!-- Route Details -->
                   <h4 style="color: ${primaryColor}; font-size: 15px; margin: 25px 0 10px 0; border-bottom: 2px solid ${primaryColor}; padding-bottom: 5px;">
-                    ${isRu ? 'Маршрут поездки' : 'Tour Itinerary'}
+                    ${isUz ? 'Sayohat marshruti' : isRu ? 'Маршрут поездки' : 'Tour Itinerary'}
                   </h4>
                   ${itineraryList}
-
+ 
                   ${updateNotice}
                 </td>
               </tr>
-
+ 
               <!-- Footer -->
               <tr>
                 <td style="background-color: ${primaryColor}; padding: 30px; text-align: center; color: #94a3b8; font-size: 12px; line-height: 1.5;">
@@ -207,7 +224,7 @@ function generateEmailHtml(booking, groupBookings, finalGuide, finalVehicle, isG
                   </div>
                 </td>
               </tr>
-
+ 
             </table>
           </td>
         </tr>
@@ -409,77 +426,42 @@ export async function GET(req) {
       let tgText = '';
       if (isGrouped) {
         if (isGroupUpdate) {
-          tgText = isRu
-            ? `🔄 *SAMARQAND CRAFTOUR - ОБНОВЛЕНИЕ ГРУППЫ (POOLING)* 🔄\n\n` +
-              `👥 *К вашей группе присоединился новый участник!*\n\n` +
-              `📅 *Дата:* ${groupBookings[0].booking_date}\n` +
-              `🌐 *Язык обслуживания:* ${language}\n` +
-              `👥 *Пассажиров:* ${totalPassengers} чел (${groupBookings.map(b => `${b.tourist_name} (${b.passenger_count || 1} чел)`).join(', ')})\n\n` +
-              `🛣 *Маршрут:* \n${groupBookings[0].locations.map((loc, idx) => `${idx + 1}. ${loc.name_ru || loc.name_en}`).join('\n')}\n\n` +
-              `👤 *Гид:* ${finalGuide ? `${finalGuide.full_name} (${finalGuide.phone_number})` : (isRu ? 'Без гида' : 'No guide')}\n` +
-              `🚗 *Водитель:* ${finalVehicle.driver_name} (${finalVehicle.driver_phone})\n` +
-              `🚘 *Автомобиль:* ${finalVehicle.car_model} (${finalVehicle.car_number})\n\n` +
-              `💵 *Стоимость броней:* \n${groupBookings.map(b => `- Заказ #${b.id} (${b.tourist_name}): $${parseFloat(b.total_price).toFixed(2)}`).join('\n')}\n\n` +
-              `📄 *Детали обновлены. Все клиенты уведомлены по Email.*`
-            : `🔄 *SAMARQAND CRAFTOUR - RIDE POOLING GROUP UPDATE* 🔄\n\n` +
-              `👥 *A new partner has joined your travel group!*\n\n` +
-              `📅 *Date:* ${groupBookings[0].booking_date}\n` +
-              `🌐 *Language:* ${language}\n` +
-              `👥 *Total Passengers:* ${totalPassengers} Pax (${groupBookings.map(b => `${b.tourist_name} (${b.passenger_count || 1} Pax)`).join(', ')})\n\n` +
-              `🛣 *Itinerary:* \n${groupBookings[0].locations.map((loc, idx) => `${idx + 1}. ${loc.name_en}`).join('\n')}\n\n` +
-              `👤 *Guide:* ${finalGuide ? `${finalGuide.full_name} (${finalGuide.phone_number})` : 'No guide'}\n` +
-              `🚗 *Driver:* ${finalVehicle.driver_name} (${finalVehicle.driver_phone})\n` +
-              `🚘 *Vehicle:* ${finalVehicle.car_model} (${finalVehicle.car_number})\n\n` +
-              `💵 *Payments summary:* \n${groupBookings.map(b => `- Booking #${b.id} (${b.tourist_name}): $${parseFloat(b.total_price).toFixed(2)}`).join('\n')}\n\n` +
-              `📄 *Details updated. All customers have been notified via Email.*`;
+          tgText = `🔄 *SAMARQAND CRAFTOUR - GURUH YANGILANISHI (POOLING)* 🔄\n\n` +
+            `👥 *Guruhingizga yangi sayyoh qo'shildi!*\n\n` +
+            `📅 *Sana:* ${groupBookings[0].booking_date}\n` +
+            `🌐 *Mijoz tili:* ${language}\n` +
+            `👥 *Jami yo'lovchilar:* ${totalPassengers} ta (${groupBookings.map(b => `${b.tourist_name} (${b.passenger_count || 1} ta)`).join(', ')})\n\n` +
+            `🛣 *Marshrut:* \n${groupBookings[0].locations.map((loc, idx) => `${idx + 1}. ${loc.name_uz || loc.name_en}`).join('\n')}\n\n` +
+            `👤 *Gid:* ${finalGuide ? `${finalGuide.full_name} (${finalGuide.phone_number})` : "Gid belgilanmagan"}\n` +
+            `🚗 *Haydovchi:* ${finalVehicle.driver_name} (${finalVehicle.driver_phone})\n` +
+            `🚘 *Avtomobil:* ${finalVehicle.car_model} (${finalVehicle.car_number})\n\n` +
+            `💵 *Buyurtmalar to'lovi:* \n${groupBookings.map(b => `- Buyurtma #${b.id} (${b.tourist_name}): $${parseFloat(b.total_price).toFixed(2)}`).join('\n')}\n\n` +
+            `📄 *Tafsilotlar yangilandi. Barcha mijozlarga elektron pochta orqali xabar yuborildi.*`;
         } else {
-          tgText = isRu
-            ? `🌟 *SAMARQAND CRAFTOUR - ГРУППОВАЯ ПОЕЗДКА (POOLING)* 🌟\n\n` +
-              `👥 *Создана объединенная группа для совместной поездки!*\n\n` +
-              `📅 *Дата:* ${groupBookings[0].booking_date}\n` +
-              `🌐 *Язык обслуживания:* ${language}\n` +
-              `👥 *Пассажиров:* ${totalPassengers} чел (${groupBookings.map(b => `${b.tourist_name} (${b.passenger_count || 1} чел)`).join(', ')})\n\n` +
-              `🛣 *Маршрут:* \n${groupBookings[0].locations.map((loc, idx) => `${idx + 1}. ${loc.name_ru || loc.name_en}`).join('\n')}\n\n` +
-              `👤 *Гид:* ${finalGuide ? `${finalGuide.full_name} (${finalGuide.phone_number})` : (isRu ? 'Без гида' : 'No guide')}\n` +
-              `🚗 *Водитель:* ${finalVehicle.driver_name} (${finalVehicle.driver_phone})\n` +
-              `🚘 *Автомобиль:* ${finalVehicle.car_model} (${finalVehicle.car_number})\n\n` +
-              `💵 *Стоимость броней:* \n${groupBookings.map(b => `- Заказ #${b.id} (${b.tourist_name}): $${parseFloat(b.total_price).toFixed(2)}`).join('\n')}\n\n` +
-              `📄 *Бронирование подтверждено. Все клиенты уведомлены по Email.*`
-            : `🌟 *SAMARQAND CRAFTOUR - GROUP RIDE POOLING* 🌟\n\n` +
-              `👥 *New pooled ride sharing group has been formed!*\n\n` +
-              `📅 *Date:* ${groupBookings[0].booking_date}\n` +
-              `🌐 *Language:* ${language}\n` +
-              `👥 *Total Passengers:* ${totalPassengers} Pax (${groupBookings.map(b => `${b.tourist_name} (${b.passenger_count || 1} Pax)`).join(', ')})\n\n` +
-              `🛣 *Itinerary:* \n${groupBookings[0].locations.map((loc, idx) => `${idx + 1}. ${loc.name_en}`).join('\n')}\n\n` +
-              `👤 *Guide:* ${finalGuide ? `${finalGuide.full_name} (${finalGuide.phone_number})` : 'No guide'}\n` +
-              `🚗 *Driver:* ${finalVehicle.driver_name} (${finalVehicle.driver_phone})\n` +
-              `🚘 *Vehicle:* ${finalVehicle.car_model} (${finalVehicle.car_number})\n\n` +
-              `💵 *Payments summary:* \n${groupBookings.map(b => `- Booking #${b.id} (${b.tourist_name}): $${parseFloat(b.total_price).toFixed(2)}`).join('\n')}\n\n` +
-              `📄 *Booking confirmed. All customers have been notified via Email.*`;
+          tgText = `🌟 *SAMARQAND CRAFTOUR - GURUH TUR (POOLING)* 🌟\n\n` +
+            `👥 *Birgalikda sayohat qilish uchun guruh shakllantirildi!*\n\n` +
+            `📅 *Sana:* ${groupBookings[0].booking_date}\n` +
+            `🌐 *Mijoz tili:* ${language}\n` +
+            `👥 *Jami yo'lovchilar:* ${totalPassengers} ta (${groupBookings.map(b => `${b.tourist_name} (${b.passenger_count || 1} ta)`).join(', ')})\n\n` +
+            `🛣 *Marshrut:* \n${groupBookings[0].locations.map((loc, idx) => `${idx + 1}. ${loc.name_uz || loc.name_en}`).join('\n')}\n\n` +
+            `👤 *Gid:* ${finalGuide ? `${finalGuide.full_name} (${finalGuide.phone_number})` : "Gid belgilanmagan"}\n` +
+            `🚗 *Haydovchi:* ${finalVehicle.driver_name} (${finalVehicle.driver_phone})\n` +
+            `🚘 *Avtomobil:* ${finalVehicle.car_model} (${finalVehicle.car_number})\n\n` +
+            `💵 *Buyurtmalar to'lovi:* \n${groupBookings.map(b => `- Buyurtma #${b.id} (${b.tourist_name}): $${parseFloat(b.total_price).toFixed(2)}`).join('\n')}\n\n` +
+            `📄 *Buyurtma tasdiqlandi. Barcha mijozlarga elektron pochta orqali xabar yuborildi.*`;
         }
       } else {
         const b = groupBookings[0];
-        tgText = isRu
-          ? `✨ *SAMARQAND CRAFTOUR - ИНДИВИДУАЛЬНАЯ ПОЕЗДКА* ✨\n\n` +
-            `📅 *Дата:* ${b.booking_date}\n` +
-            `🌐 *Язык обслуживания:* ${language}\n` +
-            `👥 *Пассажиров:* ${totalPassengers} чел (${b.tourist_name})\n\n` +
-            `🛣 *Маршрут:* \n${b.locations.map((loc, idx) => `${idx + 1}. ${loc.name_ru || loc.name_en}`).join('\n')}\n\n` +
-            `👤 *Гид:* ${finalGuide ? `${finalGuide.full_name} (${finalGuide.phone_number})` : (isRu ? 'Без гида' : 'No guide')}\n` +
-            `🚗 *Водитель:* ${finalVehicle.driver_name} (${finalVehicle.driver_phone})\n` +
-            `🚘 *Автомобиль:* ${finalVehicle.car_model} (${finalVehicle.car_number})\n\n` +
-            `💵 *Стоимость заказа #${b.id}:* $${parseFloat(b.total_price).toFixed(2)}\n\n` +
-            `📄 *Бронирование подтверждено. Клиент уведомлен по Email.*`
-          : `✨ *SAMARQAND CRAFTOUR - INDIVIDUAL PRIVATE TOUR* ✨\n\n` +
-            `📅 *Date:* ${b.booking_date}\n` +
-            `🌐 *Language:* ${language}\n` +
-            `👥 *Passengers:* ${totalPassengers} Pax (${b.tourist_name})\n\n` +
-            `🛣 *Itinerary:* \n${b.locations.map((loc, idx) => `${idx + 1}. ${loc.name_en}`).join('\n')}\n\n` +
-            `👤 *Guide:* ${finalGuide ? `${finalGuide.full_name} (${finalGuide.phone_number})` : 'No guide'}\n` +
-            `🚗 *Driver:* ${finalVehicle.driver_name} (${finalVehicle.driver_phone})\n` +
-            `🚘 *Vehicle:* ${finalVehicle.car_model} (${finalVehicle.car_number})\n\n` +
-            `💵 *Payment for Booking #${b.id}:* $${parseFloat(b.total_price).toFixed(2)}\n\n` +
-            `📄 *Booking confirmed. Customer has been notified via Email.*`;
+        tgText = `✨ *SAMARQAND CRAFTOUR - SHAXSIY SAYOHAT* ✨\n\n` +
+          `📅 *Sana:* ${b.booking_date}\n` +
+          `🌐 *Mijoz tili:* ${language}\n` +
+          `👥 *Yo'lovchilar:* ${totalPassengers} ta (${b.tourist_name})\n\n` +
+          `🛣 *Marshrut:* \n${b.locations.map((loc, idx) => `${idx + 1}. ${loc.name_uz || loc.name_en}`).join('\n')}\n\n` +
+          `👤 *Gid:* ${finalGuide ? `${finalGuide.full_name} (${finalGuide.phone_number})` : "Gid belgilanmagan"}\n` +
+          `🚗 *Haydovchi:* ${finalVehicle.driver_name} (${finalVehicle.driver_phone})\n` +
+          `🚘 *Avtomobil:* ${finalVehicle.car_model} (${finalVehicle.car_number})\n\n` +
+          `💵 *Buyurtma #${b.id} narxi:* $${parseFloat(b.total_price).toFixed(2)}\n\n` +
+          `📄 *Buyurtma tasdiqlandi. Mijozga elektron pochta orqali xabar yuborildi.*`;
       }
 
       // Always print text output to console logs for verification and auditing
@@ -524,10 +506,13 @@ export async function GET(req) {
           });
 
           for (const booking of groupBookings) {
+            const isBookingUz = booking.customer_language === 'UZ';
             const isBookingRu = booking.customer_language === 'RU';
-            const emailSubject = isBookingRu
-              ? 'Ваш туристический ваучер - Samarqand CrafTour'
-              : 'Your Travel Voucher - Samarqand CrafTour';
+            const emailSubject = isBookingUz
+              ? 'Sizning sayohat vaucheringiz - Samarqand CrafTour'
+              : isBookingRu
+                ? 'Ваш туристический ваучер - Samarqand CrafTour'
+                : 'Your Travel Voucher - Samarqand CrafTour';
 
             const emailHtml = generateEmailHtml(booking, groupBookings, finalGuide, finalVehicle, isGrouped);
 

@@ -69,14 +69,14 @@ export async function POST(req) {
         const driverName = supabaseConfigured ? bookingDetails?.vehicle?.driver_name : 'Alisher aka';
         const totalPrice = supabaseConfigured ? `$${bookingDetails?.total_price}` : '$135.00';
 
-        const tgText = `❌ *BOOKING CANCELLED BY TOURIST* ❌\n\n` +
-          `🆔 *Booking ID:* #${bookingId}\n` +
-          `👤 *Tourist:* ${touristName}\n` +
-          `📅 *Date:* ${bookingDate}\n\n` +
-          `👤 *Assigned Guide:* ${guideName}\n` +
-          `🚗 *Assigned Driver:* ${driverName}\n` +
-          `💵 *Total Price:* ${totalPrice}\n\n` +
-          `⚠️ *Status:* Booking has been successfully cancelled in database. Gid va haydovchi jadvalidan bo'shatildi.`;
+        const tgText = `❌ *MIJOZ TOMONIDAN SAYOHAT BEKOR QILINDI* ❌\n\n` +
+          `🆔 *Buyurtma ID:* #${bookingId}\n` +
+          `👤 *Sayyoh:* ${touristName}\n` +
+          `📅 *Sana:* ${bookingDate}\n\n` +
+          `👤 *Tayinlangan gid:* ${guideName}\n` +
+          `🚗 *Tayinlangan haydovchi:* ${driverName}\n` +
+          `💵 *Umumiy narx:* ${totalPrice}\n\n` +
+          `⚠️ *Holat:* Ma'lumotlar bazasida buyurtma muvaffaqiyatli bekor qilindi. Gid va haydovchi jadvalidan bo'shatildi.`;
 
         await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
           method: 'POST',

@@ -339,35 +339,50 @@ export async function POST(req) {
     const smtpPassword = process.env.SMTP_PASSWORD;
     if (smtpUser && smtpPassword) {
       try {
-        const emailSubject = lang === 'RU' 
-          ? 'Samarqand CrafTour - Подтверждение заказа'
-          : 'Samarqand CrafTour - Booking Verification';
+        const emailSubject = lang === 'UZ'
+          ? 'Samarqand CrafTour - Elektron pochtani tasdiqlash'
+          : lang === 'RU'
+            ? 'Samarqand CrafTour - Подтверждение заказа'
+            : 'Samarqand CrafTour - Booking Verification';
           
-        const emailHtml = lang === 'RU'
+        const emailHtml = lang === 'UZ'
           ? `<div style="font-family: sans-serif; padding: 20px; color: #1e293b;">
               <h2 style="color: #d4af37;">Samarqand CrafTour</h2>
-              <p>Здравствуйте, <strong>${touristName}</strong>!</p>
-              <p>Спасибо за создание маршрута для вашего путешествия в Самарканд.</p>
-              <p>Пожалуйста, используйте следующий код для подтверждения вашего адреса электронной почты:</p>
+              <p>Assalomu alaykum, <strong>${touristName}</strong>!</p>
+              <p>Samarqand bo'ylab shaxsiy sayohatingizni shakllantirganingiz uchun tashakkur bildiramiz.</p>
+              <p>Elektron pochta manzilingizni tasdiqlash uchun quyidagi tasdiqlash kodidan foydalaning:</p>
               <div style="background-color: #f1f5f9; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; letter-spacing: 5px; text-align: center; margin: 20px 0; border: 1px solid #e2e8f0;">
                 ${otpCode}
               </div>
-              <p>Этот код действителен в течение 10 минут.</p>
+              <p>Ushbu kod 10 daqiqa davomida amal qiladi.</p>
               <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
-              <p style="font-size: 12px; color: #64748b;">Если вы не запрашивали этот код, просто проигнорируйте это письмо.</p>
+              <p style="font-size: 12px; color: #64748b;">Agar siz ushbu kodni so'ramagan bo'lsangiz, xabarni shunchaki e'tiborsiz qoldiring.</p>
             </div>`
-          : `<div style="font-family: sans-serif; padding: 20px; color: #1e293b;">
-              <h2 style="color: #d4af37;">Samarqand CrafTour</h2>
-              <p>Hello <strong>${touristName}</strong>,</p>
-              <p>Thank you for crafting your custom tour of Samarkand.</p>
-              <p>Please use the following verification code to confirm your email address:</p>
-              <div style="background-color: #f1f5f9; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; letter-spacing: 5px; text-align: center; margin: 20px 0; border: 1px solid #e2e8f0;">
-                ${otpCode}
-              </div>
-              <p>This code is valid for 10 minutes.</p>
-              <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
-              <p style="font-size: 12px; color: #64748b;">If you did not request this code, please ignore this email.</p>
-            </div>`;
+          : lang === 'RU'
+            ? `<div style="font-family: sans-serif; padding: 20px; color: #1e293b;">
+                <h2 style="color: #d4af37;">Samarqand CrafTour</h2>
+                <p>Здравствуйте, <strong>${touristName}</strong>!</p>
+                <p>Спасибо за создание маршрута для вашего путешествия в Самарканд.</p>
+                <p>Пожалуйста, используйте следующий код для подтверждения вашего адреса электронной почты:</p>
+                <div style="background-color: #f1f5f9; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; letter-spacing: 5px; text-align: center; margin: 20px 0; border: 1px solid #e2e8f0;">
+                  ${otpCode}
+                </div>
+                <p>Этот код действителен в течение 10 минут.</p>
+                <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
+                <p style="font-size: 12px; color: #64748b;">Если вы не запрашивали этот код, просто проигнорируйте это письмо.</p>
+              </div>`
+            : `<div style="font-family: sans-serif; padding: 20px; color: #1e293b;">
+                <h2 style="color: #d4af37;">Samarqand CrafTour</h2>
+                <p>Hello <strong>${touristName}</strong>,</p>
+                <p>Thank you for crafting your custom tour of Samarkand.</p>
+                <p>Please use the following verification code to confirm your email address:</p>
+                <div style="background-color: #f1f5f9; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; letter-spacing: 5px; text-align: center; margin: 20px 0; border: 1px solid #e2e8f0;">
+                  ${otpCode}
+                </div>
+                <p>This code is valid for 10 minutes.</p>
+                <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
+                <p style="font-size: 12px; color: #64748b;">If you did not request this code, please ignore this email.</p>
+              </div>`;
 
         const transporter = nodemailer.createTransport({
           service: 'gmail',
