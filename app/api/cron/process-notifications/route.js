@@ -1,11 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabase, supabaseConfigured } from '@/lib/supabase';
 import nodemailer from 'nodemailer';
-import PDFDocument from 'pdfkit';
-
-// Global cache for Roboto font buffers to avoid redownloading on every request
-global.robotoRegular = global.robotoRegular || null;
-global.robotoBold = global.robotoBold || null;
 
 // Mock data lookup dictionaries for offline / mock testing mode
 const mockGuides = {
@@ -36,179 +31,189 @@ const mockLocations = {
   11: { id: 11, name_en: 'Karimbek Restaurant', name_ru: 'Ресторан Каримбек', description_en: 'Elegant dining featuring traditional shashlik, manti, and vibrant Uzbek music.', description_ru: 'Элегантный ресторан с традиционными шашлыками, мантами и живой узбекской музыкой.' }
 };
 
-// Font loading helper
-async function loadFonts() {
-  if (global.robotoRegular && global.robotoBold) {
-    return { robotoRegular: global.robotoRegular, robotoBold: global.robotoBold };
-  }
-  try {
-    const [regRes, boldRes] = await Promise.all([
-      fetch('https://raw.githubusercontent.com/google/fonts/main/ofl/roboto/Roboto-Regular.ttf'),
-      fetch('https://raw.githubusercontent.com/google/fonts/main/ofl/roboto/Roboto-Bold.ttf')
-    ]);
-    if (regRes.ok && boldRes.ok) {
-      global.robotoRegular = Buffer.from(await regRes.arrayBuffer());
-      global.robotoBold = Buffer.from(await boldRes.arrayBuffer());
-      console.log('Fonts loaded successfully and cached globally.');
-    }
-  } catch (err) {
-    console.error('Failed to load Google Fonts, falling back to system fonts:', err.message);
-  }
-  return { robotoRegular: global.robotoRegular, robotoBold: global.robotoBold };
-}
+function generateEmailHtml(booking, groupBookings, finalGuide, finalVehicle, isGrouped) {
+  const isRu = booking.customer_language === 'RU';
+  const totalPassengers = groupBookings.reduce((sum, b) => sum + (b.passenger_count || 1), 0);
+  
+  // Styling constants
+  const primaryColor = '#0f172a'; // Deep Slate Navy
+  const accentColor = '#d4af37';  // Gold Accent
+  const textColor = '#334155';    // Charcoal Text
+  const lightBg = '#f8fafc';      // Light Gray Background
+  const borderColor = '#e2e8f0';
 
-// PDF Generation function
-function generateVoucherPdf(groupBookings, finalGuide, finalVehicle, language, { robotoRegular, robotoBold }) {
-  return new Promise((resolve, reject) => {
-    try {
-      const doc = new PDFDocument({ size: 'A4', margin: 50 });
-      const chunks = [];
-      doc.on('data', (chunk) => chunks.push(chunk));
-      doc.on('end', () => resolve(Buffer.concat(chunks)));
-      doc.on('error', (err) => reject(err));
+  // Tour type badge
+  const badgeText = isGrouped 
+    ? (isRu ? 'ГРУППОВОЙ ТУР' : 'GROUP TOUR') 
+    : (isRu ? 'ИНДИВИДУАЛЬНЫЙ ТУР' : 'PRIVATE TOUR');
+  const badgeBg = isGrouped ? '#0284c7' : '#059669';
 
-      const hasRoboto = !!(robotoRegular && robotoBold);
-      if (hasRoboto) {
-        doc.registerFont('Roboto', robotoRegular);
-        doc.registerFont('Roboto-Bold', robotoBold);
-        doc.font('Roboto');
-      } else {
-        doc.font('Helvetica');
-      }
+  const headerSubtitle = isRu 
+    ? 'ОФИЦИАЛЬНЫЙ ТУРИСТИЧЕСКИЙ ВАУЧЕР И МАРШРУТ'
+    : 'OFFICIAL TRAVEL VOUCHER & ITINERARY';
 
-      // Colors
-      const primaryColor = '#0f172a'; // Deep Slate Navy
-      const accentColor = '#d4af37';  // Gold Accent
-      const textColor = '#334155';    // Charcoal Text
-      const lightBg = '#f8fafc';      // Light Gray Background
-      const white = '#ffffff';
+  // Tourist rows
+  const touristRows = groupBookings.map((b, idx) => {
+    const priceLabel = isRu 
+      ? `Стоимость: $${parseFloat(b.total_price).toFixed(2)} (Заказ #${b.id})` 
+      : `Price: $${parseFloat(b.total_price).toFixed(2)} (Booking #${b.id})`;
+    return `
+      <div style="margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px dashed ${borderColor};">
+        <strong style="color: ${primaryColor}; font-size: 14px;">${idx + 1}. ${b.tourist_name}</strong><br/>
+        <span style="font-size: 12px; color: #64748b;">Email: ${b.tourist_email} | Phone: ${b.tourist_phone || 'N/A'}</span><br/>
+        <span style="font-size: 13px; color: ${accentColor}; font-weight: bold;">${priceLabel}</span>
+      </div>
+    `;
+  }).join('');
 
-      // --- HEADER BACKGROUND ---
-      doc.rect(0, 0, 595, 120).fill(primaryColor);
+  // Itinerary list
+  const itineraryList = (groupBookings[0].locations || []).map((loc, idx) => {
+    const locName = isRu ? (loc.name_ru || loc.name_en) : loc.name_en;
+    const locDesc = isRu ? (loc.description_ru || loc.description_en || '') : (loc.description_en || '');
+    return `
+      <div style="margin-bottom: 15px; padding-left: 15px; border-left: 2px solid ${accentColor};">
+        <strong style="color: ${primaryColor}; font-size: 14px;">${idx + 1}. ${locName}</strong>
+        ${locDesc ? `<p style="margin: 4px 0 0 0; font-size: 12px; color: #64748b; line-height: 1.4;">${locDesc}</p>` : ''}
+      </div>
+    `;
+  }).join('');
 
-      // --- HEADER TEXT ---
-      doc.fillColor(accentColor);
-      if (hasRoboto) {
-        doc.font('Roboto-Bold').fontSize(22).text('SAMARQAND CRAFTOUR', 50, 35, { letterSpacing: 2 });
-      } else {
-        doc.font('Helvetica-Bold').fontSize(22).text('SAMARQAND CRAFTOUR', 50, 35);
-      }
+  const guideLabel = isRu ? 'ГИД / ЭКСКУРСОВОД' : 'ASSIGNED GUIDE';
+  const driverLabel = isRu ? 'ВОДИТЕЛЬ И ТРАНСПОРТ' : 'DRIVER & VEHICLE';
+  
+  const introText = isGrouped
+    ? (isRu 
+        ? `Мы рады сообщить, что ваша совместная поездка на <strong>${booking.booking_date}</strong> успешно подтверждена и объединена в групповой тур! Ниже приведены детали вашего тура.`
+        : `We are pleased to inform you that your tour on <strong>${booking.booking_date}</strong> is confirmed and has been grouped into a shared tour! Below are your tour details.`)
+    : (isRu
+        ? `Ваша индивидуальная поездка на <strong>${booking.booking_date}</strong> успешно подтверждена. Ниже приведены детали вашего тура.`
+        : `Your private tour on <strong>${booking.booking_date}</strong> is confirmed. Below are your tour details.`);
 
-      doc.fillColor('#94a3b8');
-      const isRu = language === 'RU';
-      const headerSubtitle = isRu 
-        ? 'ОФИЦИАЛЬНЫЙ ТУРИСТИЧЕСКИЙ ВАУЧЕР И МАРШРУТ'
-        : 'OFFICIAL TRAVEL VOUCHER & ITINERARY';
-      doc.font(hasRoboto ? 'Roboto' : 'Helvetica').fontSize(10).text(headerSubtitle, 50, 65, { letterSpacing: 1 });
+  const updateNotice = isGrouped
+    ? (isRu 
+        ? `<p style="font-size: 12px; color: #64748b; margin-top: 15px; font-style: italic;">*Примечание: Если к вашей группе присоединятся новые участники, вам будет выслано обновленное расписание.</p>`
+        : `<p style="font-size: 12px; color: #64748b; margin-top: 15px; font-style: italic;">*Note: If new partners join your travel group, an updated itinerary will be sent to you.</p>`)
+    : (isRu
+        ? `<p style="font-size: 12px; color: #64748b; margin-top: 15px; font-style: italic;">*Примечание: Если к вашему туру присоединятся другие участники на аналогичный маршрут, вы будете объединены в группу и вам вышлют обновленный ваучер.</p>`
+        : `<p style="font-size: 12px; color: #64748b; margin-top: 15px; font-style: italic;">*Note: If other travellers join your tour for a matching route, you will be pooled into a shared group and an updated voucher will be sent to you.</p>`);
 
-      // Badge: Group or Private
-      const isGroup = groupBookings.length > 1;
-      const badgeText = isGroup 
-        ? (isRu ? 'ГРУППОВОЙ ТУР' : 'GROUP TOUR') 
-        : (isRu ? 'ИНДИВИДУАЛЬНЫЙ ТУР' : 'PRIVATE TOUR');
-      
-      doc.rect(430, 42, 115, 24).fill(isGroup ? '#0284c7' : '#059669');
-      doc.fillColor(white).font(hasRoboto ? 'Roboto-Bold' : 'Helvetica-Bold').fontSize(9).text(badgeText, 430, 50, { width: 115, align: 'center' });
+  const footerText = isRu 
+    ? 'Спасибо, что выбрали Samarqand CrafTour. Пожалуйста, будьте в лобби вашего отеля за 10 минут до назначенного времени.<br/>Для любых вопросов обращайтесь по номеру службы поддержки или напрямую к вашему гиду.'
+    : 'Thank you for choosing Samarqand CrafTour. Please be ready at your hotel lobby 10 minutes prior to departure.<br/>For support or questions, contact customer service or your assigned guide directly.';
 
-      // Reset Font
-      doc.font(hasRoboto ? 'Roboto' : 'Helvetica');
+  return `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 0; margin: 0; background-color: #f1f5f9;">
+      <table cellpadding="0" cellspacing="0" width="100%" style="background-color: #f1f5f9; padding: 20px 0;">
+        <tr>
+          <td align="center">
+            <table cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border: 1px solid ${borderColor}; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">
+              
+              <!-- Header Banner -->
+              <tr>
+                <td style="background-color: ${primaryColor}; padding: 30px; text-align: center;">
+                  <h1 style="color: ${accentColor}; font-size: 24px; margin: 0; letter-spacing: 2px; font-weight: 800;">SAMARQAND CRAFTOUR</h1>
+                  <p style="color: #94a3b8; font-size: 11px; margin: 8px 0 0 0; letter-spacing: 1px; font-weight: 600;">${headerSubtitle}</p>
+                </td>
+              </tr>
 
-      // --- TOUR BASIC DETAILS BLOCK ---
-      doc.rect(50, 140, 495, 65).fill(lightBg);
-      doc.rect(50, 140, 495, 65).stroke('#e2e8f0');
+              <!-- Main Content -->
+              <tr>
+                <td style="padding: 30px; color: ${textColor}; line-height: 1.6;">
+                  <h3 style="color: ${primaryColor}; margin-top: 0; font-size: 18px;">
+                    ${isRu ? 'Подтверждение бронирования' : 'Booking Confirmation'}
+                  </h3>
+                  <p>
+                    ${isRu ? 'Здравствуйте' : 'Hello'} <strong>${booking.tourist_name}</strong>,
+                  </p>
+                  <p>${introText}</p>
 
-      // Col 1: Travel Date
-      doc.fillColor('#64748b').fontSize(8).text(isRu ? 'ДАТА ПОЕЗДКИ' : 'TRAVEL DATE', 70, 152);
-      doc.fillColor(primaryColor).font(hasRoboto ? 'Roboto-Bold' : 'Helvetica-Bold').fontSize(12).text(groupBookings[0].booking_date, 70, 168);
+                  <!-- Summary Badges -->
+                  <table cellpadding="0" cellspacing="0" width="100%" style="background-color: ${lightBg}; border: 1px solid ${borderColor}; border-radius: 8px; margin: 20px 0; padding: 15px;">
+                    <tr>
+                      <td width="50%" style="padding: 5px;">
+                        <span style="font-size: 11px; color: #64748b; font-weight: bold; text-transform: uppercase;">
+                          ${isRu ? 'ДАТА ПОЕЗДКИ' : 'TRAVEL DATE'}
+                        </span><br/>
+                        <strong style="color: ${primaryColor}; font-size: 15px;">${booking.booking_date}</strong>
+                      </td>
+                      <td width="50%" style="padding: 5px; text-align: right;">
+                        <span style="display: inline-block; background-color: ${badgeBg}; color: #ffffff; font-size: 11px; font-weight: bold; padding: 4px 10px; border-radius: 4px;">
+                          ${badgeText}
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td width="50%" style="padding: 5px; border-top: 1px solid ${borderColor}; margin-top: 10px;">
+                        <span style="font-size: 11px; color: #64748b; font-weight: bold; text-transform: uppercase;">
+                          ${isRu ? 'ЯЗЫК ТУРА' : 'TOUR LANGUAGE'}
+                        </span><br/>
+                        <strong style="color: ${primaryColor}; font-size: 15px;">${booking.customer_language}</strong>
+                      </td>
+                      <td width="50%" style="padding: 5px; text-align: right; border-top: 1px solid ${borderColor}; margin-top: 10px;">
+                        <span style="font-size: 11px; color: #64748b; font-weight: bold; text-transform: uppercase;">
+                          ${isRu ? 'КОЛИЧЕСТВО УЧАСТНИКОВ' : 'TOTAL PASSENGERS'}
+                        </span><br/>
+                        <strong style="color: ${primaryColor}; font-size: 15px;">${totalPassengers} ${isRu ? 'чел' : 'Pax'}</strong>
+                      </td>
+                    </tr>
+                  </table>
 
-      // Col 2: Language
-      doc.font(hasRoboto ? 'Roboto' : 'Helvetica').fillColor('#64748b').fontSize(8).text(isRu ? 'ЯЗЫК ТУРА' : 'TOUR LANGUAGE', 220, 152);
-      doc.fillColor(primaryColor).font(hasRoboto ? 'Roboto-Bold' : 'Helvetica-Bold').fontSize(12).text(language, 220, 168);
+                  <!-- Tourist Details -->
+                  <h4 style="color: ${primaryColor}; font-size: 15px; margin: 25px 0 10px 0; border-bottom: 2px solid ${primaryColor}; padding-bottom: 5px;">
+                    ${isRu ? 'Информация о туристах' : 'Tourist Details'}
+                  </h4>
+                  ${touristRows}
 
-      // Col 3: Group Size
-      const totalPassengers = groupBookings.reduce((sum, b) => sum + (b.passenger_count || 1), 0);
-      doc.font(hasRoboto ? 'Roboto' : 'Helvetica').fillColor('#64748b').fontSize(8).text(isRu ? 'КОЛИЧЕСТВО УЧАСТНИКОВ' : 'TOTAL PASSENGERS', 360, 152);
-      doc.fillColor(primaryColor).font(hasRoboto ? 'Roboto-Bold' : 'Helvetica-Bold').fontSize(12).text(`${totalPassengers} ${isRu ? 'чел' : 'Pax'}`, 360, 168);
+                  <!-- Guide & Driver Section -->
+                  <h4 style="color: ${primaryColor}; font-size: 15px; margin: 25px 0 10px 0; border-bottom: 2px solid ${primaryColor}; padding-bottom: 5px;">
+                    ${isRu ? 'Назначенный персонал' : 'Assigned Staff'}
+                  </h4>
+                  <table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 20px;">
+                    <tr>
+                      <td width="48%" valign="top" style="background-color: ${lightBg}; border: 1px solid ${borderColor}; border-radius: 8px; padding: 12px;">
+                        <span style="color: ${accentColor}; font-size: 10px; font-weight: bold; display: block; margin-bottom: 4px;">${guideLabel}</span>
+                        <strong style="color: ${primaryColor}; font-size: 14px; display: block;">${finalGuide.full_name}</strong>
+                        <span style="font-size: 12px; color: ${textColor}; display: block; margin-top: 4px;">${finalGuide.phone_number}</span>
+                      </td>
+                      <td width="4%">&nbsp;</td>
+                      <td width="48%" valign="top" style="background-color: ${lightBg}; border: 1px solid ${borderColor}; border-radius: 8px; padding: 12px;">
+                        <span style="color: ${accentColor}; font-size: 10px; font-weight: bold; display: block; margin-bottom: 4px;">${driverLabel}</span>
+                        <strong style="color: ${primaryColor}; font-size: 14px; display: block;">${finalVehicle.driver_name}</strong>
+                        <span style="font-size: 11px; color: ${textColor}; display: block; margin-top: 4px; line-height: 1.3;">
+                          ${finalVehicle.car_model}<br/>
+                          No: ${finalVehicle.car_number}<br/>
+                          Tel: ${finalVehicle.driver_phone}
+                        </span>
+                      </td>
+                    </tr>
+                  </table>
 
-      // Reset font to regular
-      doc.font(hasRoboto ? 'Roboto' : 'Helvetica').fillColor(textColor);
+                  <!-- Route Details -->
+                  <h4 style="color: ${primaryColor}; font-size: 15px; margin: 25px 0 10px 0; border-bottom: 2px solid ${primaryColor}; padding-bottom: 5px;">
+                    ${isRu ? 'Маршрут поездки' : 'Tour Itinerary'}
+                  </h4>
+                  ${itineraryList}
 
-      let currentY = 225;
+                  ${updateNotice}
+                </td>
+              </tr>
 
-      // --- SECTION: TOURIST DETAILS ---
-      doc.font(hasRoboto ? 'Roboto-Bold' : 'Helvetica-Bold').fontSize(12).fillColor(primaryColor).text(isRu ? 'Информация о туристах' : 'Tourist Details', 50, currentY);
-      doc.moveTo(50, currentY + 16).lineTo(545, currentY + 16).strokeColor('#e2e8f0').stroke();
-      currentY += 25;
+              <!-- Footer -->
+              <tr>
+                <td style="background-color: ${primaryColor}; padding: 30px; text-align: center; color: #94a3b8; font-size: 12px; line-height: 1.5;">
+                  ${footerText}
+                  <div style="margin-top: 20px; border-top: 1px solid #334155; padding-top: 15px; font-size: 10px; color: #64748b;">
+                    © 2026 Samarqand CrafTour. All rights reserved.
+                  </div>
+                </td>
+              </tr>
 
-      groupBookings.forEach((b, idx) => {
-        doc.font(hasRoboto ? 'Roboto-Bold' : 'Helvetica-Bold').fontSize(10).fillColor(textColor).text(`${idx + 1}. ${b.tourist_name}`, 55, currentY);
-        doc.font(hasRoboto ? 'Roboto' : 'Helvetica').fontSize(9).fillColor('#64748b').text(`Email: ${b.tourist_email}  |  Phone: ${b.tourist_phone || 'N/A'}`, 70, currentY + 14);
-        
-        const priceLabel = isRu 
-          ? `Стоимость: $${parseFloat(b.total_price).toFixed(2)} (Заказ #${b.id})` 
-          : `Price: $${parseFloat(b.total_price).toFixed(2)} (Booking #${b.id})`;
-        doc.font(hasRoboto ? 'Roboto-Bold' : 'Helvetica-Bold').fontSize(9).fillColor(accentColor).text(priceLabel, 370, currentY + 3);
-        
-        currentY += 38;
-      });
-
-      currentY += 10;
-
-      // --- SECTION: ASSIGNED SERVICES (GUIDE & DRIVER) ---
-      doc.font(hasRoboto ? 'Roboto-Bold' : 'Helvetica-Bold').fontSize(12).fillColor(primaryColor).text(isRu ? 'Назначенный персонал' : 'Assigned Guide & Driver', 50, currentY);
-      doc.moveTo(50, currentY + 16).lineTo(545, currentY + 16).strokeColor('#e2e8f0').stroke();
-      currentY += 25;
-
-      // Guide Card
-      doc.rect(50, currentY, 235, 75).fill(lightBg).stroke('#e2e8f0');
-      doc.fillColor(accentColor).font(hasRoboto ? 'Roboto-Bold' : 'Helvetica-Bold').fontSize(9).text(isRu ? 'ГИД / ЭКСКУРСОВОД' : 'ASSIGNED GUIDE', 65, currentY + 12);
-      doc.fillColor(primaryColor).font(hasRoboto ? 'Roboto-Bold' : 'Helvetica-Bold').fontSize(11).text(finalGuide.full_name, 65, currentY + 28);
-      doc.fillColor(textColor).font(hasRoboto ? 'Roboto' : 'Helvetica').fontSize(9).text(finalGuide.phone_number, 65, currentY + 46);
-
-      // Driver/Vehicle Card
-      doc.rect(310, currentY, 235, 75).fill(lightBg).stroke('#e2e8f0');
-      doc.fillColor(accentColor).font(hasRoboto ? 'Roboto-Bold' : 'Helvetica-Bold').fontSize(9).text(isRu ? 'ВОДИТЕЛЬ И ТРАНСПОРТ' : 'DRIVER & VEHICLE', 325, currentY + 12);
-      doc.fillColor(primaryColor).font(hasRoboto ? 'Roboto-Bold' : 'Helvetica-Bold').fontSize(11).text(finalVehicle.driver_name, 325, currentY + 28);
-      doc.fillColor(textColor).font(hasRoboto ? 'Roboto' : 'Helvetica').fontSize(8.5).text(`${finalVehicle.car_model}\nNo: ${finalVehicle.car_number} | Tel: ${finalVehicle.driver_phone}`, 325, currentY + 44);
-
-      currentY += 95;
-
-      // --- SECTION: ROUTE & ITINERARY ---
-      doc.font(hasRoboto ? 'Roboto-Bold' : 'Helvetica-Bold').fontSize(12).fillColor(primaryColor).text(isRu ? 'Маршрут поездки' : 'Tour Itinerary', 50, currentY);
-      doc.moveTo(50, currentY + 16).lineTo(545, currentY + 16).strokeColor('#e2e8f0').stroke();
-      currentY += 30;
-
-      const locations = groupBookings[0].locations || [];
-      locations.forEach((loc, idx) => {
-        // Draw timeline circle
-        doc.circle(65, currentY + 6, 4).fill(accentColor);
-        if (idx < locations.length - 1) {
-          doc.moveTo(65, currentY + 10).lineTo(65, currentY + 36).strokeColor('#cbd5e1').stroke();
-        }
-
-        const locName = isRu ? (loc.name_ru || loc.name_en) : loc.name_en;
-        doc.fillColor(primaryColor).font(hasRoboto ? 'Roboto-Bold' : 'Helvetica-Bold').fontSize(10).text(locName, 80, currentY);
-        
-        const locDesc = isRu ? (loc.description_ru || loc.description_en || '') : (loc.description_en || '');
-        if (locDesc) {
-          doc.fillColor('#64748b').font(hasRoboto ? 'Roboto' : 'Helvetica').fontSize(8.5).text(locDesc.substring(0, 110) + (locDesc.length > 110 ? '...' : ''), 80, currentY + 14, { width: 440 });
-        }
-        currentY += 38;
-      });
-
-      // --- FOOTER BLOCK ---
-      doc.rect(0, 770, 595, 72).fill(primaryColor);
-      doc.fillColor('#94a3b8').fontSize(7.5);
-      const footerText = isRu 
-        ? 'Спасибо, что выбрали Samarqand CrafTour. Пожалуйста, будьте в лобби вашего отеля за 10 минут до назначенного времени.\nДля любых вопросов обращайтесь по номеру службы поддержки или напрямую к вашему гиду.'
-        : 'Thank you for choosing Samarqand CrafTour. Please be ready at your hotel lobby 10 minutes prior to departure.\nFor support or questions, contact customer service or your assigned guide directly.';
-      doc.text(footerText, 50, 785, { width: 495, align: 'center', lineGap: 3 });
-
-      doc.end();
-    } catch (err) {
-      reject(err);
-    }
-  });
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+  `;
 }
 
 export async function GET(req) {
@@ -341,9 +346,6 @@ export async function GET(req) {
     const smtpUser = process.env.SMTP_USER;
     const smtpPassword = process.env.SMTP_PASSWORD;
 
-    // Load custom Cyrillic-supporting fonts from Google Fonts raw repository CDN
-    const fonts = await loadFonts();
-
     // 3. Process each group
     for (const groupKey in groups) {
       const groupBookings = groups[groupKey];
@@ -397,11 +399,7 @@ export async function GET(req) {
         }
       }
 
-      // Generate Voucher PDF
-      console.log(`[Cron Processor] Generating travel voucher PDF for ${totalPassengers} passengers.`);
-      const pdfBuffer = await generateVoucherPdf(groupBookings, finalGuide, finalVehicle, language, fonts);
-
-      // Assemble Telegram text caption
+      // Assemble Telegram text caption (Rich Text message alert)
       let tgText = '';
       if (isGrouped) {
         if (isGroupUpdate) {
@@ -416,7 +414,7 @@ export async function GET(req) {
               `🚗 *Водитель:* ${finalVehicle.driver_name} (${finalVehicle.driver_phone})\n` +
               `🚘 *Автомобиль:* ${finalVehicle.car_model} (${finalVehicle.car_number})\n\n` +
               `💵 *Стоимость броней:* \n${groupBookings.map(b => `- Заказ #${b.id} (${b.tourist_name}): $${parseFloat(b.total_price).toFixed(2)}`).join('\n')}\n\n` +
-              `📄 *Обновленный официальный PDF-ваучер прикреплен к этому сообщению.*`
+              `📄 *Детали обновлены. Все клиенты уведомлены по Email.*`
             : `🔄 *SAMARQAND CRAFTOUR - RIDE POOLING GROUP UPDATE* 🔄\n\n` +
               `👥 *A new partner has joined your travel group!*\n\n` +
               `📅 *Date:* ${groupBookings[0].booking_date}\n` +
@@ -427,7 +425,7 @@ export async function GET(req) {
               `🚗 *Driver:* ${finalVehicle.driver_name} (${finalVehicle.driver_phone})\n` +
               `🚘 *Vehicle:* ${finalVehicle.car_model} (${finalVehicle.car_number})\n\n` +
               `💵 *Payments summary:* \n${groupBookings.map(b => `- Booking #${b.id} (${b.tourist_name}): $${parseFloat(b.total_price).toFixed(2)}`).join('\n')}\n\n` +
-              `📄 *Updated official travel voucher PDF is attached below.*`;
+              `📄 *Details updated. All customers have been notified via Email.*`;
         } else {
           tgText = isRu
             ? `🌟 *SAMARQAND CRAFTOUR - ГРУППОВАЯ ПОЕЗДКА (POOLING)* 🌟\n\n` +
@@ -440,7 +438,7 @@ export async function GET(req) {
               `🚗 *Водитель:* ${finalVehicle.driver_name} (${finalVehicle.driver_phone})\n` +
               `🚘 *Автомобиль:* ${finalVehicle.car_model} (${finalVehicle.car_number})\n\n` +
               `💵 *Стоимость броней:* \n${groupBookings.map(b => `- Заказ #${b.id} (${b.tourist_name}): $${parseFloat(b.total_price).toFixed(2)}`).join('\n')}\n\n` +
-              `📄 *Официальный PDF-ваучер прикреплен к этому сообщению.*`
+              `📄 *Бронирование подтверждено. Все клиенты уведомлены по Email.*`
             : `🌟 *SAMARQAND CRAFTOUR - GROUP RIDE POOLING* 🌟\n\n` +
               `👥 *New pooled ride sharing group has been formed!*\n\n` +
               `📅 *Date:* ${groupBookings[0].booking_date}\n` +
@@ -451,7 +449,7 @@ export async function GET(req) {
               `🚗 *Driver:* ${finalVehicle.driver_name} (${finalVehicle.driver_phone})\n` +
               `🚘 *Vehicle:* ${finalVehicle.car_model} (${finalVehicle.car_number})\n\n` +
               `💵 *Payments summary:* \n${groupBookings.map(b => `- Booking #${b.id} (${b.tourist_name}): $${parseFloat(b.total_price).toFixed(2)}`).join('\n')}\n\n` +
-              `📄 *Official travel voucher PDF is attached below.*`;
+              `📄 *Booking confirmed. All customers have been notified via Email.*`;
         }
       } else {
         const b = groupBookings[0];
@@ -465,7 +463,7 @@ export async function GET(req) {
             `🚗 *Водитель:* ${finalVehicle.driver_name} (${finalVehicle.driver_phone})\n` +
             `🚘 *Автомобиль:* ${finalVehicle.car_model} (${finalVehicle.car_number})\n\n` +
             `💵 *Стоимость заказа #${b.id}:* $${parseFloat(b.total_price).toFixed(2)}\n\n` +
-            `📄 *Официальный PDF-ваучер прикреплен к этому сообщению.*`
+            `📄 *Бронирование подтверждено. Клиент уведомлен по Email.*`
           : `✨ *SAMARQAND CRAFTOUR - INDIVIDUAL PRIVATE TOUR* ✨\n\n` +
             `📅 *Date:* ${b.booking_date}\n` +
             `🌐 *Language:* ${language}\n` +
@@ -475,7 +473,7 @@ export async function GET(req) {
             `🚗 *Driver:* ${finalVehicle.driver_name} (${finalVehicle.driver_phone})\n` +
             `🚘 *Vehicle:* ${finalVehicle.car_model} (${finalVehicle.car_number})\n\n` +
             `💵 *Payment for Booking #${b.id}:* $${parseFloat(b.total_price).toFixed(2)}\n\n` +
-            `📄 *Official travel voucher PDF is attached below.*`;
+            `📄 *Booking confirmed. Customer has been notified via Email.*`;
       }
 
       // Always print text output to console logs for verification and auditing
@@ -484,35 +482,31 @@ export async function GET(req) {
       console.log(tgText);
       console.log('==========================================');
 
-      // Send document to Telegram bot
+      // Send text message to Telegram bot
       if (botToken && chatId) {
         try {
-          const formData = new FormData();
-          formData.append('chat_id', chatId);
-          formData.append('caption', tgText.slice(0, 1020)); // Keep within caption limits
-          formData.append('parse_mode', 'Markdown');
-
-          const blob = new Blob([pdfBuffer], { type: 'application/pdf' });
-          const fileName = `CrafTour_Voucher_${groupBookings[0].booking_date}_${language}.pdf`;
-          formData.append('document', blob, fileName);
-
-          const tgRes = await fetch(`https://api.telegram.org/bot${botToken}/sendDocument`, {
+          const tgRes = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
             method: 'POST',
-            body: formData
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              chat_id: chatId,
+              text: tgText,
+              parse_mode: 'Markdown'
+            })
           });
 
           if (!tgRes.ok) {
             const errText = await tgRes.text();
-            console.error('[Cron Processor] Telegram file upload failed:', errText);
+            console.error('[Cron Processor] Telegram notification failed:', errText);
           } else {
-            console.log(`[Cron Processor] PDF Document successfully sent to Telegram chat: ${chatId}`);
+            console.log(`[Cron Processor] Telegram message successfully sent to chat: ${chatId}`);
           }
         } catch (tgErr) {
           console.error('[Cron Processor] Failed to notify Telegram:', tgErr.message);
         }
       }
 
-      // Send email notifications via Nodemailer SMTP with PDF attachment
+      // Send email notifications via Nodemailer SMTP with premium HTML template
       if (smtpUser && smtpPassword) {
         try {
           const transporter = nodemailer.createTransport({
@@ -529,58 +523,15 @@ export async function GET(req) {
               ? 'Ваш туристический ваучер - Samarqand CrafTour'
               : 'Your Travel Voucher - Samarqand CrafTour';
 
-            const emailHtml = isGrouped
-              ? (isBookingRu 
-                  ? `<div style="font-family: sans-serif; padding: 20px; color: #1e293b; max-width: 600px; border: 1px solid #e2e8f0; border-radius: 8px;">
-                      <h2 style="color: #0f172a;">Samarqand CrafTour</h2>
-                      <p>Здравствуйте, <strong>${booking.tourist_name}</strong>!</p>
-                      <p>Мы рады сообщить, что ваша поездка на <strong>${booking.booking_date}</strong> успешно подтверждена и объединена в групповой тур!</p>
-                      <p>Мы прикрепили к этому письму ваш официальный туристический ваучер (PDF) с подробным расписанием, а также контактами гида и водителя.</p>
-                      <p>Приятного вам путешествия по Самарканду!</p>
-                      <p style="font-size: 12px; color: #64748b; margin-top: 15px;">*Примечание: Если к вашей группе присоединятся новые участники, вам будет выслан обновленный ваучер.</p>
-                    </div>`
-                  : `<div style="font-family: sans-serif; padding: 20px; color: #1e293b; max-width: 600px; border: 1px solid #e2e8f0; border-radius: 8px;">
-                      <h2 style="color: #0f172a;">Samarqand CrafTour</h2>
-                      <p>Hello <strong>${booking.tourist_name}</strong>,</p>
-                      <p>We are pleased to inform you that your tour on <strong>${booking.booking_date}</strong> is confirmed and has been grouped into a shared tour!</p>
-                      <p>Your official travel voucher (PDF) is attached to this email, complete with the detailed itinerary, guide, and driver contact details.</p>
-                      <p>Have a wonderful trip to Samarkand!</p>
-                      <p style="font-size: 12px; color: #64748b; margin-top: 15px;">*Note: If new partners join your travel group, an updated travel voucher will be sent to you.</p>
-                    </div>`
-                )
-              : (isBookingRu
-                  ? `<div style="font-family: sans-serif; padding: 20px; color: #1e293b; max-width: 600px; border: 1px solid #e2e8f0; border-radius: 8px;">
-                      <h2 style="color: #0f172a;">Samarqand CrafTour</h2>
-                      <p>Здравствуйте, <strong>${booking.tourist_name}</strong>!</p>
-                      <p>Ваша индивидуальная поездка на <strong>${booking.booking_date}</strong> успешно подтверждена.</p>
-                      <p>Ваш официальный туристический ваучер (PDF) с подробным расписанием и деталями прикреплен к этому письму.</p>
-                      <p>Приятного вам путешествия по Самарканду!</p>
-                      <p style="font-size: 12px; color: #64748b; margin-top: 15px;">*Примечание: Если к вашему туру присоединятся другие участники на аналогичный маршрут, вы будете объединены в группу и вам вышлют обновленный ваучер.</p>
-                    </div>`
-                  : `<div style="font-family: sans-serif; padding: 20px; color: #1e293b; max-width: 600px; border: 1px solid #e2e8f0; border-radius: 8px;">
-                      <h2 style="color: #0f172a;">Samarqand CrafTour</h2>
-                      <p>Hello <strong>${booking.tourist_name}</strong>,</p>
-                      <p>Your private tour on <strong>${booking.booking_date}</strong> is confirmed.</p>
-                      <p>Your official travel voucher (PDF) with the detailed itinerary and guide/driver details is attached to this email.</p>
-                      <p>Have a wonderful trip to Samarkand!</p>
-                      <p style="font-size: 12px; color: #64748b; margin-top: 15px;">*Note: If other travellers join your tour for a matching route, you will be pooled into a shared group and an updated voucher will be sent to you.</p>
-                    </div>`
-                );
+            const emailHtml = generateEmailHtml(booking, groupBookings, finalGuide, finalVehicle, isGrouped);
 
             await transporter.sendMail({
               from: `"Samarqand CrafTour" <${smtpUser}>`,
               to: booking.tourist_email,
               subject: emailSubject,
-              html: emailHtml,
-              attachments: [
-                {
-                  filename: `CrafTour_Voucher_${booking.id}.pdf`,
-                  content: pdfBuffer,
-                  contentType: 'application/pdf'
-                }
-              ]
+              html: emailHtml
             });
-            console.log(`[Cron Processor] Confirmation email with PDF successfully sent to: ${booking.tourist_email}`);
+            console.log(`[Cron Processor] Confirmation email successfully sent to: ${booking.tourist_email}`);
           }
         } catch (emailErr) {
           console.error('[Cron Processor] Failed to send email confirmation:', emailErr.message);
