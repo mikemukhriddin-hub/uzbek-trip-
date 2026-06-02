@@ -538,6 +538,40 @@ export async function GET(req) {
         }
       }
 
+      // Synchronize guide and vehicle assignments for all bookings in this pooled group
+      const allGroupBookingIds = groupBookings.map(b => b.id);
+      if (isDbActive) {
+        try {
+          const { error: syncErr } = await supabase
+            .from('bookings')
+            .update({
+              guide_id: finalGuide.id,
+              vehicle_id: finalVehicle.id
+            })
+            .in('id', allGroupBookingIds);
+
+          if (syncErr) {
+            console.error('[Cron Processor] Failed to sync group guide/vehicle in DB:', syncErr.message);
+          } else {
+            console.log(`[Cron Processor] Synced Booking IDs [${allGroupBookingIds.join(', ')}] to Guide ID ${finalGuide.id} and Vehicle ID ${finalVehicle.id} in database.`);
+          }
+        } catch (syncExc) {
+          console.error('[Cron Processor] Exception syncing group guide/vehicle:', syncExc.message);
+        }
+      } else {
+        if (global.mockBookingsStore) {
+          allGroupBookingIds.forEach(id => {
+            const rawMock = global.mockBookingsStore.get(id.toString());
+            if (rawMock) {
+              rawMock.guide_id = finalGuide.id;
+              rawMock.vehicle_id = finalVehicle.id;
+              rawMock.guide = finalGuide;
+              rawMock.vehicle = finalVehicle;
+            }
+          });
+        }
+      }
+
       // Mark processed bookings as notification_sent = true in DB/Memory
       const bookingIdsToMark = newBookingsInGroup.map(b => b.id);
       if (isDbActive) {
