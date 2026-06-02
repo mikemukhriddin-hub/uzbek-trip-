@@ -24,7 +24,7 @@ import BackgroundGraphics from '@/components/BackgroundGraphics';
 
 const SLIDES = [
   {
-    image: '/images/discover/uzb_nature_slide1.png',
+    image: '/images/discover/uzb_nature_slide1.webp',
     title_en: 'Majestic Urgut Mountains',
     title_ru: 'Величественные горы Ургута',
     title_uz: 'Muhtasham Urgut tog\'lari',
@@ -33,7 +33,7 @@ const SLIDES = [
     desc_uz: 'Samarqand viloyati adirlarining go\'zal baland tog\'li qarag\'ayzorlari, qadimiy g\'orlari va shifobaxsh sovuq buloqlarini kashf eting.'
   },
   {
-    image: '/images/discover/uzb_culture_slide2.png',
+    image: '/images/discover/uzb_culture_slide2.webp',
     title_en: 'Traditional Crafts & Ceramics',
     title_ru: 'Традиционные ремесла и керамика',
     title_uz: 'An\'anaviy hunarmandchilik va kulolchilik',
@@ -42,7 +42,7 @@ const SLIDES = [
     desc_uz: 'O\'zbek hunarmandchiligining boy merosi: nafis ko\'k Rishton kulolchiligi va qadimiy naqshlar bilan to\'qilgan zardo\'zlik namunalari.'
   },
   {
-    image: '/images/discover/uzb_registan_slide3.png',
+    image: '/images/discover/uzb_registan_slide3.webp',
     title_en: 'Golden Sunset at Registan',
     title_ru: 'Золотой закат на Регистане',
     title_uz: 'Registonda oltin shafaq',

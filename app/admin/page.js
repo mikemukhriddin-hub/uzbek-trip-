@@ -1340,17 +1340,17 @@ export default function AdminPage() {
                 {locations.map((loc) => {
                   const isEditing = editingResource?.type === 'location' && editingResource?.id === loc.id;
                   const defaultImages = {
-                    1: '/images/locations/registan.png',
-                    2: '/images/locations/gureamir.png',
-                    3: '/images/locations/shahizinda.png',
-                    4: '/images/locations/bibikhanym.png',
-                    5: '/images/locations/ulughbeg.png',
-                    6: '/images/locations/urgut_mountains.png',
-                    7: '/images/locations/omonqoton.png',
-                    8: '/images/locations/konigil.png',
-                    9: '/images/locations/osh_center.png',
-                    10: '/images/locations/bread_bakery.png',
-                    11: '/images/locations/karimbek_restaurant.png'
+                    1: '/images/locations/registan.webp',
+                    2: '/images/locations/gureamir.webp',
+                    3: '/images/locations/shahizinda.webp',
+                    4: '/images/locations/bibikhanym.webp',
+                    5: '/images/locations/ulughbeg.webp',
+                    6: '/images/locations/urgut_mountains.webp',
+                    7: '/images/locations/omonqoton.webp',
+                    8: '/images/locations/konigil.webp',
+                    9: '/images/locations/osh_center.webp',
+                    10: '/images/locations/bread_bakery.webp',
+                    11: '/images/locations/karimbek_restaurant.webp'
                   };
                   const displayImg = loc.image_url || defaultImages[loc.id];
                   
