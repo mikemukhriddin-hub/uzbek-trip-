@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { MailCheck, X, ShieldCheck, Loader2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { MailCheck, X, ShieldCheck, Loader2, AlertCircle } from 'lucide-react';
 
 export default function VerificationModal({
   email = '',
@@ -11,8 +11,16 @@ export default function VerificationModal({
   isVerifying = false,
   error = '',
   language = 'EN',
+  emailSent = true,
+  otpCode: propOtpCode = '',
 }) {
   const [otpCode, setOtpCode] = useState('');
+
+  useEffect(() => {
+    if (emailSent === false && propOtpCode) {
+      setOtpCode(propOtpCode);
+    }
+  }, [emailSent, propOtpCode]);
 
   if (!isOpen) return null;
 
@@ -99,11 +107,57 @@ export default function VerificationModal({
             <MailCheck size={28} />
           </div>
           
-          <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#fff' }}>{t.title}</h3>
+          <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#fff' }}>
+            {emailSent === false 
+              ? (language === 'UZ' ? 'Buyurtma qabul qilindi' : language === 'RU' ? 'Заказ принят' : 'Booking Received')
+              : t.title
+            }
+          </h3>
           
-          <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: 1.5 }}>
-            {t.intro} <strong style={{ color: '#fff' }}>{email}</strong>
-          </p>
+          {emailSent === false ? (
+            <div style={{
+              fontSize: '13px',
+              color: '#cbd5e1',
+              lineHeight: 1.6,
+              padding: '16px',
+              borderRadius: '8px',
+              backgroundColor: 'rgba(212, 175, 55, 0.05)',
+              border: '1px solid rgba(212, 175, 55, 0.25)',
+              marginTop: '8px',
+              textAlign: 'center',
+              width: '100%'
+            }}>
+              <p style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#fff' }}>
+                {language === 'UZ' 
+                  ? 'Buyurtmangiz muvaffaqiyatli qabul qilindi.'
+                  : language === 'RU'
+                  ? 'Ваш заказ успешно принят.'
+                  : 'Your booking has been successfully received.'
+                }
+              </p>
+              <p style={{ margin: '0 0 12px 0', fontSize: '14px', color: '#cbd5e1' }}>
+                {language === 'UZ' 
+                  ? `Tasdiqlash kodingiz: `
+                  : language === 'RU'
+                  ? `Код подтверждения: `
+                  : `Verification code: `
+                }
+                <strong style={{ color: '#d4af37', fontSize: '16px', letterSpacing: '1px' }}>{propOtpCode}</strong>
+              </p>
+              <p style={{ margin: '0', fontWeight: '500', color: '#009b9e' }}>
+                {language === 'UZ'
+                  ? 'Operator tez orada siz bilan aloqaga chiqadi.'
+                  : language === 'RU'
+                  ? 'Оператор свяжется с вами в ближайшее время.'
+                  : 'The operator will contact you shortly.'
+                }
+              </p>
+            </div>
+          ) : (
+            <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: 1.5 }}>
+              {t.intro} <strong style={{ color: '#fff' }}>{email}</strong>
+            </p>
+          )}
         </div>
 
         {/* Form */}

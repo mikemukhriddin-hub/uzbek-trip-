@@ -236,7 +236,11 @@ export default function Home() {
       }
 
       setCreatedBookingId(data.bookingId);
-      setBookingData(payload);
+      setBookingData({
+        ...payload,
+        emailSent: data.emailSent,
+        otpCode: data.otpCode
+      });
       setOtpModalOpen(true);
     } catch (err) {
       alert(`Error: ${err.message}`);
@@ -905,6 +909,8 @@ export default function Home() {
         isVerifying={isVerifying}
         error={verificationError}
         language={language}
+        emailSent={bookingData?.emailSent}
+        otpCode={bookingData?.otpCode}
       />
 
       <footer style={{

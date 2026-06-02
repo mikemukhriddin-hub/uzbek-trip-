@@ -333,6 +333,8 @@ export async function POST(req) {
     console.log('==========================================');
 
     // 3.5 Send OTP email directly via Gmail SMTP (Nodemailer)
+    let emailSent = false;
+    let emailError = null;
     const smtpUser = process.env.SMTP_USER;
     const smtpPassword = process.env.SMTP_PASSWORD;
     if (smtpUser && smtpPassword) {
@@ -382,12 +384,15 @@ export async function POST(req) {
           html: emailHtml
         });
 
+        emailSent = true;
         console.log(`OTP Email successfully sent to ${touristEmail} via Gmail SMTP.`);
       } catch (emailErr) {
         console.error('Error sending email via Gmail SMTP:', emailErr.message);
+        emailError = emailErr.message;
       }
     } else {
       console.log('SMTP credentials not configured. Skipping direct email sending.');
+      emailError = 'SMTP credentials not configured';
     }
 
     // 4. Trigger n8n Webhook Node
@@ -420,8 +425,11 @@ export async function POST(req) {
     }
 
     return NextResponse.json({
-      message: 'Booking created, verification code sent.',
+      message: emailSent ? 'Booking created, verification code sent.' : 'Booking created, email sending failed.',
       bookingId,
+      emailSent,
+      emailError,
+      otpCode,
     });
 
   } catch (err) {
