@@ -156,6 +156,13 @@ export default function AdminPage() {
       name: "Name",
       rateSuffix: "Rate",
       confirmDeleteGuide: "Are you sure you want to delete this guide?",
+      telegramChatIdCol: "Telegram Chat ID",
+      botStatusCol: "Bot Status",
+      active: "Active",
+      inactive: "Inactive",
+      guideResponse: "Guide Response",
+      driverResponse: "Driver Response",
+      rejected: "Rejected",
 
       save: "Save",
       cancel: "Cancel"
@@ -258,6 +265,13 @@ export default function AdminPage() {
       name: "Имя",
       rateSuffix: "Тариф",
       confirmDeleteGuide: "Вы уверены, что хотите удалить этого гида?",
+      telegramChatIdCol: "Telegram Chat ID",
+      botStatusCol: "Статус бота",
+      active: "Активен",
+      inactive: "Неактивен",
+      guideResponse: "Ответ гида",
+      driverResponse: "Ответ водителя",
+      rejected: "Отклонено",
 
       save: "Сохранить",
       cancel: "Отмена"
@@ -360,6 +374,13 @@ export default function AdminPage() {
       name: "Ism",
       rateSuffix: "Tarif",
       confirmDeleteGuide: "Ushbu gidni o'chirmoqchimisiz?",
+      telegramChatIdCol: "Telegram Chat ID",
+      botStatusCol: "Bot holati",
+      active: "Faol",
+      inactive: "Nofaol",
+      guideResponse: "Gid javobi",
+      driverResponse: "Haydovchi javobi",
+      rejected: "Rad etildi",
 
       save: "Saqlash",
       cancel: "Bekor qilish"
@@ -390,7 +411,7 @@ export default function AdminPage() {
   const [vehicles, setVehicles] = useState([]);
   const [vehicleForm, setVehicleForm] = useState({
     driver_name: '', driver_phone: '', car_model: '', car_number: '',
-    city_rate: '', out_of_city_rate: ''
+    city_rate: '', out_of_city_rate: '', telegram_chat_id: '', bot_active: false
   });
 
   // Guides state
@@ -403,7 +424,9 @@ export default function AdminPage() {
     ru_rate: '',
     uz_rate: '',
     es_rate: '',
-    fr_rate: ''
+    fr_rate: '',
+    telegram_chat_id: '',
+    bot_active: false
   });
 
   // Editing state
@@ -689,7 +712,7 @@ export default function AdminPage() {
           setVehicles(prev => [...prev, data.data || data.mockData]);
           setVehicleForm({
             driver_name: '', driver_phone: '', car_model: '', car_number: '',
-            city_rate: '', out_of_city_rate: ''
+            city_rate: '', out_of_city_rate: '', telegram_chat_id: '', bot_active: false
           });
           alert('Vehicle added successfully!');
         } else {
@@ -770,7 +793,9 @@ export default function AdminPage() {
       body: JSON.stringify({
         full_name: guideForm.full_name,
         phone_number: guideForm.phone_number,
-        tariffs: guideTariffs
+        tariffs: guideTariffs,
+        telegram_chat_id: guideForm.telegram_chat_id,
+        bot_active: guideForm.bot_active
       })
     })
       .then(async (res) => {
@@ -788,7 +813,7 @@ export default function AdminPage() {
             }));
             setTariffs(prev => [...prev, ...tempTariffs]);
           }
-          setGuideForm({ full_name: '', phone_number: '', en_rate: '', ru_rate: '', uz_rate: '', es_rate: '', fr_rate: '' });
+          setGuideForm({ full_name: '', phone_number: '', en_rate: '', ru_rate: '', uz_rate: '', es_rate: '', fr_rate: '', telegram_chat_id: '', bot_active: false });
           alert('Guide added successfully!');
         } else {
           alert('Error: ' + data.message);
@@ -820,12 +845,14 @@ export default function AdminPage() {
         id: guideId,
         full_name: updateData.full_name,
         phone_number: updateData.phone_number,
-        tariffs: newTariffs
+        tariffs: newTariffs,
+        telegram_chat_id: updateData.telegram_chat_id,
+        bot_active: updateData.bot_active
       })
     })
       .then(async (res) => {
         if (res.ok) {
-          setGuides(prev => prev.map(g => g.id === guideId ? { id: g.id, full_name: updateData.full_name, phone_number: updateData.phone_number } : g));
+          setGuides(prev => prev.map(g => g.id === guideId ? { id: g.id, full_name: updateData.full_name, phone_number: updateData.phone_number, telegram_chat_id: updateData.telegram_chat_id, bot_active: updateData.bot_active } : g));
           
           // Re-update local tariffs
           setTariffs(prev => {
@@ -1236,8 +1263,30 @@ export default function AdminPage() {
                           )) || <span style={{ color: '#64748b' }}>None</span>}
                         </td>
                         <td style={{ padding: '16px 8px', fontSize: '12px' }}>
-                          <div><span style={{ color: '#64748b' }}>{currT.guide}: </span>{booking.guide?.full_name || 'N/A'}</div>
-                          <div><span style={{ color: '#64748b' }}>{currT.driver}: </span>{booking.vehicle?.driver_name || 'N/A'}</div>
+                          <div>
+                            <span style={{ color: '#64748b' }}>{currT.guide}: </span>
+                            {booking.guide?.full_name || 'N/A'}
+                            {booking.guide && (
+                              <span style={{ marginLeft: '4px' }}>
+                                {booking.guide_response === 'confirmed' ? '🟢' : booking.guide_response === 'rejected' ? '🔴' : '🟡'}
+                                <span style={{ fontSize: '10px', color: booking.guide_response === 'confirmed' ? '#10b981' : booking.guide_response === 'rejected' ? '#ef4444' : '#f59e0b', marginLeft: '2px' }}>
+                                  {currT[booking.guide_response] || booking.guide_response}
+                                </span>
+                              </span>
+                            )}
+                          </div>
+                          <div>
+                            <span style={{ color: '#64748b' }}>{currT.driver}: </span>
+                            {booking.vehicle?.driver_name || 'N/A'}
+                            {booking.vehicle && (
+                              <span style={{ marginLeft: '4px' }}>
+                                {booking.vehicle_response === 'confirmed' ? '🟢' : booking.vehicle_response === 'rejected' ? '🔴' : '🟡'}
+                                <span style={{ fontSize: '10px', color: booking.vehicle_response === 'confirmed' ? '#10b981' : booking.vehicle_response === 'rejected' ? '#ef4444' : '#f59e0b', marginLeft: '2px' }}>
+                                  {currT[booking.vehicle_response] || booking.vehicle_response}
+                                </span>
+                              </span>
+                            )}
+                          </div>
                         </td>
                         <td style={{ padding: '16px 8px', fontWeight: '800', color: '#d4af37' }}>${parseFloat(booking.total_price).toFixed(2)}</td>
                         <td style={{ padding: '16px 8px' }}>
@@ -1472,6 +1521,11 @@ export default function AdminPage() {
               <input type="text" placeholder={currT.carNumber} value={vehicleForm.car_number} onChange={e => setVehicleForm({...vehicleForm, car_number: e.target.value})} required />
               <input type="number" placeholder={currT.cityRate} value={vehicleForm.city_rate} onChange={e => setVehicleForm({...vehicleForm, city_rate: e.target.value})} required />
               <input type="number" placeholder={currT.outOfCityRate} value={vehicleForm.out_of_city_rate} onChange={e => setVehicleForm({...vehicleForm, out_of_city_rate: e.target.value})} required />
+              <input type="number" placeholder={currT.telegramChatIdCol} value={vehicleForm.telegram_chat_id || ''} onChange={e => setVehicleForm({...vehicleForm, telegram_chat_id: e.target.value})} />
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#94a3b8', fontSize: '14px', cursor: 'pointer' }}>
+                <input type="checkbox" checked={!!vehicleForm.bot_active} onChange={e => setVehicleForm({...vehicleForm, bot_active: e.target.checked})} style={{ width: 'auto' }} />
+                {currT.botStatusCol} ({currT.active})
+              </label>
               <button type="submit" className="btn-gold" style={{ padding: '10px 24px', gridColumn: '1 / -1', alignSelf: 'start', justifySelf: 'start' }} disabled={loading}>
                 {loading ? <Loader2 size={16} className="animate-spin" /> : currT.saveDriver}
               </button>
@@ -1488,6 +1542,8 @@ export default function AdminPage() {
                   <th style={{ padding: '12px 8px' }}>{currT.carDetails}</th>
                   <th style={{ padding: '12px 8px' }}>{currT.cityRateCol}</th>
                   <th style={{ padding: '12px 8px' }}>{currT.outOfCityRateCol}</th>
+                  <th style={{ padding: '12px 8px' }}>{currT.telegramChatIdCol}</th>
+                  <th style={{ padding: '12px 8px' }}>{currT.botStatusCol}</th>
                   <th style={{ padding: '12px 8px', textAlign: 'center' }}>{currT.actions}</th>
                 </tr>
               </thead>
@@ -1535,6 +1591,26 @@ export default function AdminPage() {
                           <input type="number" value={editingResource.data.out_of_city_rate} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, out_of_city_rate: e.target.value}})} style={{ width: '80px', padding: '4px', fontSize: '12px' }} />
                         ) : (
                           <span>${parseFloat(v.out_of_city_rate).toFixed(2)}</span>
+                        )}
+                      </td>
+                      <td style={{ padding: '14px 8px' }}>
+                        {isEditing ? (
+                          <input type="text" placeholder="Chat ID" value={editingResource.data.telegram_chat_id || ''} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, telegram_chat_id: e.target.value}})} style={{ width: '110px', padding: '4px', fontSize: '12px' }} />
+                        ) : (
+                          <span style={{ color: '#94a3b8' }}>{v.telegram_chat_id || '-'}</span>
+                        )}
+                      </td>
+                      <td style={{ padding: '14px 8px' }}>
+                        {isEditing ? (
+                          <input type="checkbox" checked={!!editingResource.data.bot_active} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, bot_active: e.target.checked}})} style={{ width: 'auto' }} />
+                        ) : (
+                          <span style={{ 
+                            padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '700',
+                            backgroundColor: v.bot_active ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)',
+                            color: v.bot_active ? '#10b981' : '#ef4444'
+                          }}>
+                            {v.bot_active ? currT.active : currT.inactive}
+                          </span>
                         )}
                       </td>
                       <td style={{ padding: '14px 8px', textAlign: 'center' }}>
@@ -1597,6 +1673,16 @@ export default function AdminPage() {
                   <span style={{ fontSize: '12px', color: '#64748b' }}>{currT.frRate}</span>
                   <input type="number" placeholder="e.g. 65" value={guideForm.fr_rate} onChange={e => setGuideForm({...guideForm, fr_rate: e.target.value})} />
                 </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <span style={{ fontSize: '12px', color: '#64748b' }}>{currT.telegramChatIdCol}</span>
+                  <input type="number" placeholder="e.g. 123456789" value={guideForm.telegram_chat_id || ''} onChange={e => setGuideForm({...guideForm, telegram_chat_id: e.target.value})} />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', justifyContent: 'center' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#94a3b8', fontSize: '14px', cursor: 'pointer', marginTop: '16px' }}>
+                    <input type="checkbox" checked={!!guideForm.bot_active} onChange={e => setGuideForm({...guideForm, bot_active: e.target.checked})} style={{ width: 'auto' }} />
+                    {currT.botStatusCol} ({currT.active})
+                  </label>
+                </div>
 
                 <button type="submit" className="btn-gold" style={{ padding: '10px 24px', gridColumn: '1 / -1', alignSelf: 'start', justifySelf: 'start' }} disabled={loading}>
                   {loading ? <Loader2 size={16} className="animate-spin" /> : currT.saveGuide}
@@ -1620,6 +1706,8 @@ export default function AdminPage() {
                   <th style={{ padding: '12px 8px' }}>{`UZ ${currT.rateSuffix}`}</th>
                   <th style={{ padding: '12px 8px' }}>{`ES ${currT.rateSuffix}`}</th>
                   <th style={{ padding: '12px 8px' }}>{`FR ${currT.rateSuffix}`}</th>
+                  <th style={{ padding: '12px 8px' }}>{currT.telegramChatIdCol}</th>
+                  <th style={{ padding: '12px 8px' }}>{currT.botStatusCol}</th>
                   <th style={{ padding: '12px 8px', textAlign: 'center' }}>{currT.actions}</th>
                 </tr>
               </thead>
@@ -1691,6 +1779,30 @@ export default function AdminPage() {
                           )}
                         </td>
 
+                        {/* Telegram Chat ID */}
+                        <td style={{ padding: '14px 8px' }}>
+                          {isEditing ? (
+                            <input type="text" placeholder="Chat ID" value={editingResource.data.telegram_chat_id || ''} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, telegram_chat_id: e.target.value}})} style={{ width: '110px', padding: '4px', fontSize: '12px' }} />
+                          ) : (
+                            <span style={{ color: '#94a3b8' }}>{g.telegram_chat_id || '-'}</span>
+                          )}
+                        </td>
+
+                        {/* Bot Status */}
+                        <td style={{ padding: '14px 8px' }}>
+                          {isEditing ? (
+                            <input type="checkbox" checked={!!editingResource.data.bot_active} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, bot_active: e.target.checked}})} style={{ width: 'auto' }} />
+                          ) : (
+                            <span style={{ 
+                              padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '700',
+                              backgroundColor: g.bot_active ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)',
+                              color: g.bot_active ? '#10b981' : '#ef4444'
+                            }}>
+                              {g.bot_active ? currT.active : currT.inactive}
+                            </span>
+                          )}
+                        </td>
+
                         <td style={{ padding: '14px 8px', textAlign: 'center' }}>
                           {actionLoading === g.id ? <Loader2 size={16} className="animate-spin" /> : (
                             <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
@@ -1711,7 +1823,9 @@ export default function AdminPage() {
                                       ru_rate: getGuideRateForLang(g.id, 'RU'),
                                       uz_rate: getGuideRateForLang(g.id, 'UZ'),
                                       es_rate: getGuideRateForLang(g.id, 'ES'),
-                                      fr_rate: getGuideRateForLang(g.id, 'FR')
+                                      fr_rate: getGuideRateForLang(g.id, 'FR'),
+                                      telegram_chat_id: g.telegram_chat_id || '',
+                                      bot_active: !!g.bot_active
                                     } 
                                   })} style={{ padding: '4px', background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer' }}><Edit3 size={16} /></button>
                                   {userRole === 'admin' && (

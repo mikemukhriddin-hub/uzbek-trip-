@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabase, supabaseConfigured } from '@/lib/supabase';
 import { generateMagicToken } from '@/lib/token';
+import { notifyPartnersForBooking } from '@/lib/telegram';
 import nodemailer from 'nodemailer';
 
 export async function POST(req) {
@@ -27,9 +28,12 @@ export async function POST(req) {
           .from('bookings')
           .select(`
             *,
-            guide:guides(full_name, phone_number),
-            vehicle:vehicles(driver_name, driver_phone, car_model, car_number, capacity),
-            booking_items(location_id)
+            guide:guides(id, full_name, phone_number, telegram_chat_id, bot_active),
+            vehicle:vehicles(id, driver_name, driver_phone, car_model, car_number, capacity, telegram_chat_id, bot_active),
+            booking_items(
+              visit_order,
+              location:locations(id, name_en, name_uz, name_ru)
+            )
           `)
           .eq('id', bookingId)
           .single();
@@ -87,6 +91,16 @@ export async function POST(req) {
 
         if (updateErr) throw updateErr;
         console.log(`Booking ID #${bookingId} confirmed and marked paid in database.`);
+
+        // Dispatch Telegram Notifications to partners
+        try {
+          if (bookingDetails) {
+            // Re-fetch or assign fresh guide/vehicle info to ensure chat ID is correct
+            await notifyPartnersForBooking(bookingDetails);
+          }
+        } catch (tgErr) {
+          console.error('⚠️ Failed to send Telegram partner notifications:', tgErr.message);
+        }
       } catch (dbErr) {
         console.error('Database update failed in confirm API:', dbErr.message);
       }

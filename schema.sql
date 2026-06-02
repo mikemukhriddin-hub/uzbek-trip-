@@ -11,6 +11,7 @@ DROP TABLE IF EXISTS guide_language_tariffs CASCADE;
 DROP TABLE IF EXISTS guides CASCADE;
 DROP TABLE IF EXISTS locations CASCADE;
 DROP TYPE IF EXISTS booking_status CASCADE;
+DROP TYPE IF EXISTS partner_response_status CASCADE;
 
 -- 1. Lokatsiyalar jadvali (Ko'p tilli)
 CREATE TABLE locations (
@@ -33,7 +34,9 @@ CREATE TABLE locations (
 CREATE TABLE guides (
     id SERIAL PRIMARY KEY,
     full_name VARCHAR(255) NOT NULL,
-    phone_number VARCHAR(50) NOT NULL
+    phone_number VARCHAR(50) NOT NULL,
+    telegram_chat_id BIGINT UNIQUE,
+    bot_active BOOLEAN DEFAULT FALSE
 );
 
 -- 3. Gidlar tillari va tariflari
@@ -54,11 +57,15 @@ CREATE TABLE vehicles (
     car_number VARCHAR(20) NOT NULL,
     city_rate DECIMAL(10, 2) NOT NULL,
     out_of_city_rate DECIMAL(10, 2) NOT NULL,
-    capacity INT DEFAULT 5
+    capacity INT DEFAULT 5,
+    telegram_chat_id BIGINT UNIQUE,
+    bot_active BOOLEAN DEFAULT FALSE
 );
 
 -- 5. Buyurtmalar bosh jadvali
 CREATE TYPE booking_status AS ENUM ('pending', 'confirmed', 'completed', 'cancelled');
+CREATE TYPE partner_response_status AS ENUM ('pending', 'confirmed', 'rejected');
+
 CREATE TABLE bookings (
     id SERIAL PRIMARY KEY,
     tourist_name VARCHAR(255) NOT NULL,
@@ -72,6 +79,8 @@ CREATE TABLE bookings (
     status booking_status DEFAULT 'pending',
     passenger_count INT DEFAULT 1,
     booking_type VARCHAR(10) NOT NULL DEFAULT 'private' CHECK (booking_type IN ('private', 'shared')),
+    guide_response partner_response_status DEFAULT 'pending',
+    vehicle_response partner_response_status DEFAULT 'pending',
     notification_sent BOOLEAN DEFAULT FALSE,
     verified_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP

@@ -50,7 +50,7 @@ export async function POST(req) {
 
   try {
     const body = await req.json();
-    const { full_name, phone_number, tariffs } = body;
+    const { full_name, phone_number, tariffs, telegram_chat_id, bot_active } = body;
 
     if (!full_name || !phone_number) {
       return NextResponse.json({ message: 'Missing guide name or phone' }, { status: 400 });
@@ -59,13 +59,18 @@ export async function POST(req) {
     if (!supabaseConfigured) {
       return NextResponse.json({ 
         message: 'Mock mode: Guide created successfully', 
-        data: { id: Math.floor(100 + Math.random() * 900), full_name, phone_number, tariffs } 
+        data: { id: Math.floor(100 + Math.random() * 900), full_name, phone_number, tariffs, telegram_chat_id, bot_active } 
       });
     }
 
     const { data: guide, error: guideErr } = await supabase
       .from('guides')
-      .insert({ full_name, phone_number })
+      .insert({
+        full_name,
+        phone_number,
+        telegram_chat_id: telegram_chat_id ? parseInt(telegram_chat_id, 10) : null,
+        bot_active: !!bot_active
+      })
       .select()
       .single();
 
@@ -105,7 +110,7 @@ export async function PATCH(req) {
 
   try {
     const body = await req.json();
-    const { id, full_name, phone_number, tariffs } = body;
+    const { id, full_name, phone_number, tariffs, telegram_chat_id, bot_active } = body;
 
     if (!id) {
       return NextResponse.json({ message: 'Missing guide ID' }, { status: 400 });
@@ -122,7 +127,12 @@ export async function PATCH(req) {
 
     const { data: guide, error: guideErr } = await supabase
       .from('guides')
-      .update({ full_name, phone_number })
+      .update({
+        full_name,
+        phone_number,
+        telegram_chat_id: telegram_chat_id !== undefined ? (telegram_chat_id ? parseInt(telegram_chat_id, 10) : null) : undefined,
+        bot_active: bot_active !== undefined ? !!bot_active : undefined
+      })
       .eq('id', id)
       .select()
       .single();

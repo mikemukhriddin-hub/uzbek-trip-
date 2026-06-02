@@ -14,7 +14,7 @@ export async function POST(req) {
 
   try {
     const body = await req.json();
-    const { driver_name, driver_phone, car_model, car_number, city_rate, out_of_city_rate } = body;
+    const { driver_name, driver_phone, car_model, car_number, city_rate, out_of_city_rate, telegram_chat_id, bot_active } = body;
 
     if (!driver_name || !driver_phone || !car_model || !car_number || city_rate === undefined || out_of_city_rate === undefined) {
       return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
@@ -32,7 +32,9 @@ export async function POST(req) {
         car_model,
         car_number,
         city_rate: parseFloat(city_rate),
-        out_of_city_rate: parseFloat(out_of_city_rate)
+        out_of_city_rate: parseFloat(out_of_city_rate),
+        telegram_chat_id: telegram_chat_id ? parseInt(telegram_chat_id, 10) : null,
+        bot_active: !!bot_active
       })
       .select()
       .single();
@@ -53,7 +55,7 @@ export async function PATCH(req) {
 
   try {
     const body = await req.json();
-    const { id, driver_name, driver_phone, car_model, car_number, city_rate, out_of_city_rate } = body;
+    const { id, driver_name, driver_phone, car_model, car_number, city_rate, out_of_city_rate, telegram_chat_id, bot_active } = body;
 
     if (!id) {
       return NextResponse.json({ message: 'Missing vehicle ID' }, { status: 400 });
@@ -71,7 +73,9 @@ export async function PATCH(req) {
         car_model,
         car_number,
         city_rate: city_rate !== undefined ? parseFloat(city_rate) : undefined,
-        out_of_city_rate: out_of_city_rate !== undefined ? parseFloat(out_of_city_rate) : undefined
+        out_of_city_rate: out_of_city_rate !== undefined ? parseFloat(out_of_city_rate) : undefined,
+        telegram_chat_id: telegram_chat_id !== undefined ? (telegram_chat_id ? parseInt(telegram_chat_id, 10) : null) : undefined,
+        bot_active: bot_active !== undefined ? !!bot_active : undefined
       })
       .eq('id', id)
       .select()
