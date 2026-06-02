@@ -23,33 +23,35 @@ export default function CheckoutForm({
   const [errors, setErrors] = useState({});
 
   const t = {
-    title: language === 'RU' ? 'Детали бронирования и оплата' : 'Booking Details & Invoice',
-    nameLabel: language === 'RU' ? 'Имя и фамилия' : 'Full Name',
-    emailLabel: language === 'RU' ? 'Электронная почта' : 'Email Address',
-    phoneLabel: language === 'RU' ? 'Телефон / WhatsApp' : 'Phone / WhatsApp Number',
-    dateLabel: language === 'RU' ? 'Дата поездки' : 'Travel Date',
-    passengerCountLabel: language === 'RU' ? 'Количество путешественников' : 'Number of Travelers',
+    title: language === 'UZ' ? 'Buyurtma tafsilotlari va hisob-kitob' : language === 'RU' ? 'Детали бронирования и оплата' : 'Booking Details & Invoice',
+    nameLabel: language === 'UZ' ? 'Ism va familiyangiz' : language === 'RU' ? 'Имя и фамилия' : 'Full Name',
+    emailLabel: language === 'UZ' ? 'Elektron pochta manzili' : language === 'RU' ? 'Электронная почта' : 'Email Address',
+    phoneLabel: language === 'UZ' ? 'Telefon raqami / WhatsApp' : language === 'RU' ? 'Телефон / WhatsApp' : 'Phone / WhatsApp Number',
+    dateLabel: language === 'UZ' ? 'Sayohat sanasi' : language === 'RU' ? 'Дата поездки' : 'Travel Date',
+    passengerCountLabel: language === 'UZ' ? 'Sayohatchilar soni' : language === 'RU' ? 'Количество путешественников' : 'Number of Travelers',
     
     // Invoice Breakdown
-    invoiceTitle: language === 'RU' ? 'Детализация счета' : 'Invoice Breakdown',
-    guideCost: language === 'RU' ? 'Услуги гида' : 'Guide Service',
-    guideLang: language === 'RU' ? 'язык:' : 'language:',
-    transportCost: language === 'RU' ? 'Транспорт и водитель' : 'Transport & Driver',
-    platformFee: language === 'RU' ? 'Сбор платформы' : 'Platform Fee',
-    totalPrice: language === 'RU' ? 'Итого к оплате' : 'Total Price',
+    invoiceTitle: language === 'UZ' ? 'Hisob tafsilotlari' : language === 'RU' ? 'Детализация счета' : 'Invoice Breakdown',
+    guideCost: language === 'UZ' ? 'Gid xizmati' : language === 'RU' ? 'Услуги гида' : 'Guide Service',
+    guideLang: language === 'UZ' ? 'tili:' : language === 'RU' ? 'язык:' : 'language:',
+    transportCost: language === 'UZ' ? 'Transport va haydovchi' : language === 'RU' ? 'Транспорт и водитель' : 'Transport & Driver',
+    platformFee: language === 'UZ' ? 'Platforma to\'lovi' : language === 'RU' ? 'Сбор платформы' : 'Platform Fee',
+    totalPrice: language === 'UZ' ? 'Jami to\'lov' : language === 'RU' ? 'Итого к оплате' : 'Total Price',
     
     // Disclaimer
-    disclaimerTitle: language === 'RU' ? '📜 Условия оплаты (Без предоплаты)' : '📜 Payment Policy (No Pre-payment)',
-    disclaimerDesc: language === 'RU'
+    disclaimerTitle: language === 'UZ' ? '📜 To\'lov shartlari (Oldindan to\'lovsiz)' : language === 'RU' ? '📜 Условия оплаты (Без предоплаты)' : '📜 Payment Policy (No Pre-payment)',
+    disclaimerDesc: language === 'UZ'
+      ? 'Oldindan to\'lov talab qilinmaydi. Sayohat yakunida to\'lovni naqd pulda (USD yoki UZS) to\'g\'ridan-to\'g\'ri gid va haydovchiga to\'laysiz.'
+      : language === 'RU'
       ? 'Предоплата не требуется. Вы платите наличными (USD или UZS) непосредственно гиду и водителю в конце тура.'
       : 'No pre-payment required. Pay in cash (USD or UZS) directly to your guide and driver at the end of the tour.',
       
     // Button
-    bookBtn: language === 'RU' ? 'Подтвердить и заказать' : 'Book Now & Verify',
-    fillRequired: language === 'RU' ? 'Пожалуйста, заполните все обязательные поля' : 'Please fill all required fields',
-    selectGuideAndCar: language === 'RU' ? 'Пожалуйста, выберите гида и автомобиль' : 'Please select a guide and a vehicle first',
-    selectLocations: language === 'RU' ? 'Пожалуйста, добавьте хотя бы одну локацию в маршрут' : 'Please add at least one location to your route',
-    datePlaceholder: language === 'RU' ? 'Выберите дату' : 'Select date',
+    bookBtn: language === 'UZ' ? 'Tasdiqlash va buyurtma qilish' : language === 'RU' ? 'Подтвердить и заказать' : 'Book Now & Verify',
+    fillRequired: language === 'UZ' ? 'Iltimos, barcha majburiy maydonlarni to\'ldiring' : language === 'RU' ? 'Пожалуйста, заполните все обязательные поля' : 'Please fill all required fields',
+    selectGuideAndCar: language === 'UZ' ? 'Iltimos, avval gid va transportni tanlang' : language === 'RU' ? 'Пожалуйста, выберите гида и автомобиль' : 'Please select a guide and a vehicle first',
+    selectLocations: language === 'UZ' ? 'Iltimos, marshrutga kamida bitta joyni qo\'shing' : language === 'RU' ? 'Пожалуйста, добавьте хотя бы одну локацию в маршрут' : 'Please add at least one location to your route',
+    datePlaceholder: language === 'UZ' ? 'Sanani tanlang' : language === 'RU' ? 'Выберите дату' : 'Select date',
   };
 
   // Pricing calculations
@@ -71,10 +73,10 @@ export default function CheckoutForm({
   const handleFormSubmit = (e) => {
     e.preventDefault();
     const newErrors = {};
-    if (!formData.name.trim()) newErrors.name = language === 'RU' ? 'Обязательное поле' : 'Required field';
-    if (!formData.email.trim()) newErrors.email = language === 'RU' ? 'Обязательное поле' : 'Required field';
-    if (!formData.phone.trim()) newErrors.phone = language === 'RU' ? 'Обязательное pole' : 'Required field';
-    if (!formData.date) newErrors.date = language === 'RU' ? 'Укажите дату' : 'Select date';
+    if (!formData.name.trim()) newErrors.name = language === 'UZ' ? 'Majburiy maydon' : language === 'RU' ? 'Обязательное поле' : 'Required field';
+    if (!formData.email.trim()) newErrors.email = language === 'UZ' ? 'Majburiy maydon' : language === 'RU' ? 'Обязательное поле' : 'Required field';
+    if (!formData.phone.trim()) newErrors.phone = language === 'UZ' ? 'Majburiy maydon' : language === 'RU' ? 'Обязательное поле' : 'Required field';
+    if (!formData.date) newErrors.date = language === 'UZ' ? 'Sanani ko\'rsating' : language === 'RU' ? 'Укажите дату' : 'Select date';
 
     if (selectedLocations.length === 0) {
       newErrors.general = t.selectLocations;
@@ -169,7 +171,7 @@ export default function CheckoutForm({
           >
             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 20, 25, 30, 40, 50].map(num => (
               <option key={num} value={num} style={{ backgroundColor: '#0f172a', color: '#fff' }}>
-                {num} {num === 1 ? (language === 'RU' ? 'человек' : 'person') : (language === 'RU' ? 'человек' : 'people')}
+                {num} {num === 1 ? (language === 'UZ' ? 'kishi' : language === 'RU' ? 'человек' : 'person') : (language === 'UZ' ? 'kishi' : language === 'RU' ? 'человек' : 'people')}
               </option>
             ))}
           </select>

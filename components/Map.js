@@ -47,8 +47,8 @@ export default function Map({ locations = [], selectedLocations = [], language =
 
       // Add markers for all locations
       locations.forEach((loc) => {
-        const name = language === 'RU' ? loc.name_ru : loc.name_en;
-        const desc = language === 'RU' ? loc.description_ru : loc.description_en;
+        const name = language === 'RU' ? loc.name_ru : language === 'UZ' ? (loc.name_uz || loc.name_en) : loc.name_en;
+        const desc = language === 'RU' ? loc.description_ru : language === 'UZ' ? (loc.description_uz || loc.description_en) : loc.description_en;
         const isSelected = selectedLocations.some((sel) => sel.id === loc.id);
 
         // Marker color code: Historical (Blue), Alternative (Teal/Turquoise), Food (Gold)
@@ -78,8 +78,8 @@ export default function Map({ locations = [], selectedLocations = [], language =
             <p style="margin: 6px 0 0 0; font-size: 12px; line-height: 1.4; color: #94a3b8;">${desc}</p>
             <div style="margin-top: 8px; font-weight: bold; font-size: 11px; color: ${isSelected ? '#10b981' : '#64748b'};">
               ${isSelected 
-                ? (language === 'RU' ? '✓ В маршруте' : '✓ In Route') 
-                : (language === 'RU' ? 'Не выбрано' : 'Not Selected')}
+                ? (language === 'UZ' ? '✓ Marshrutda' : language === 'RU' ? '✓ В маршруте' : '✓ In Route') 
+                : (language === 'UZ' ? 'Tanlanmagan' : language === 'RU' ? 'Не выбрано' : 'Not Selected')}
             </div>
           </div>
         `;

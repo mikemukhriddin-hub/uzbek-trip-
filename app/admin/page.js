@@ -79,6 +79,7 @@ export default function AdminPage() {
     phone_number: '',
     en_rate: '',
     ru_rate: '',
+    uz_rate: '',
     es_rate: '',
     fr_rate: ''
   });
@@ -431,6 +432,7 @@ export default function AdminPage() {
     const guideTariffs = [];
     if (guideForm.en_rate) guideTariffs.push({ language_code: 'EN', daily_rate: guideForm.en_rate });
     if (guideForm.ru_rate) guideTariffs.push({ language_code: 'RU', daily_rate: guideForm.ru_rate });
+    if (guideForm.uz_rate) guideTariffs.push({ language_code: 'UZ', daily_rate: guideForm.uz_rate });
     if (guideForm.es_rate) guideTariffs.push({ language_code: 'ES', daily_rate: guideForm.es_rate });
     if (guideForm.fr_rate) guideTariffs.push({ language_code: 'FR', daily_rate: guideForm.fr_rate });
 
@@ -461,7 +463,7 @@ export default function AdminPage() {
             }));
             setTariffs(prev => [...prev, ...tempTariffs]);
           }
-          setGuideForm({ full_name: '', phone_number: '', en_rate: '', ru_rate: '', es_rate: '', fr_rate: '' });
+          setGuideForm({ full_name: '', phone_number: '', en_rate: '', ru_rate: '', uz_rate: '', es_rate: '', fr_rate: '' });
           alert('Guide added successfully!');
         } else {
           alert('Error: ' + data.message);
@@ -479,6 +481,7 @@ export default function AdminPage() {
     const newTariffs = [];
     if (updateData.en_rate) newTariffs.push({ language_code: 'EN', daily_rate: updateData.en_rate });
     if (updateData.ru_rate) newTariffs.push({ language_code: 'RU', daily_rate: updateData.ru_rate });
+    if (updateData.uz_rate) newTariffs.push({ language_code: 'UZ', daily_rate: updateData.uz_rate });
     if (updateData.es_rate) newTariffs.push({ language_code: 'ES', daily_rate: updateData.es_rate });
     if (updateData.fr_rate) newTariffs.push({ language_code: 'FR', daily_rate: updateData.fr_rate });
 
@@ -752,7 +755,7 @@ export default function AdminPage() {
                         </td>
                         <td style={{ padding: '16px 8px', maxWidth: '280px' }}>
                           {booking.booking_items?.sort((x,y) => x.visit_order - y.visit_order).map((item, idx) => (
-                            <div key={idx} style={{ fontSize: '12px', color: '#e2e8f0' }}>{item.visit_order}. {booking.customer_language === 'RU' ? item.location?.name_ru : item.location?.name_en}</div>
+                            <div key={idx} style={{ fontSize: '12px', color: '#e2e8f0' }}>{item.visit_order}. {booking.customer_language === 'UZ' ? (item.location?.name_uz || item.location?.name_en) : booking.customer_language === 'RU' ? item.location?.name_ru : item.location?.name_en}</div>
                           )) || <span style={{ color: '#64748b' }}>None</span>}
                         </td>
                         <td style={{ padding: '16px 8px', fontSize: '12px' }}>
@@ -1074,6 +1077,10 @@ export default function AdminPage() {
                   <input type="number" placeholder="e.g. 40" value={guideForm.ru_rate} onChange={e => setGuideForm({...guideForm, ru_rate: e.target.value})} />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <span style={{ fontSize: '12px', color: '#64748b' }}>Uzbek Daily Rate ($)</span>
+                  <input type="number" placeholder="e.g. 35" value={guideForm.uz_rate} onChange={e => setGuideForm({...guideForm, uz_rate: e.target.value})} />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                   <span style={{ fontSize: '12px', color: '#64748b' }}>Spanish Daily Rate ($)</span>
                   <input type="number" placeholder="e.g. 70" value={guideForm.es_rate} onChange={e => setGuideForm({...guideForm, es_rate: e.target.value})} />
                 </div>
@@ -1101,6 +1108,7 @@ export default function AdminPage() {
                   <th style={{ padding: '12px 8px' }}>Phone Number</th>
                   <th style={{ padding: '12px 8px' }}>English Rate</th>
                   <th style={{ padding: '12px 8px' }}>Russian Rate</th>
+                  <th style={{ padding: '12px 8px' }}>Uzbek Rate</th>
                   <th style={{ padding: '12px 8px' }}>Spanish Rate</th>
                   <th style={{ padding: '12px 8px' }}>French Rate</th>
                   <th style={{ padding: '12px 8px', textAlign: 'center' }}>Actions</th>
@@ -1147,6 +1155,15 @@ export default function AdminPage() {
                           )}
                         </td>
 
+                        {/* Uzbek Rate */}
+                        <td style={{ padding: '14px 8px', fontWeight: '600', color: '#d4af37' }}>
+                          {isEditing ? (
+                            <input type="number" value={editingResource.data.uz_rate} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, uz_rate: e.target.value}})} style={{ width: '70px', padding: '4px', fontSize: '12px' }} />
+                          ) : (
+                            <span>{getGuideRateForLang(g.id, 'UZ') ? `$${getGuideRateForLang(g.id, 'UZ')}` : '-'}</span>
+                          )}
+                        </td>
+
                         {/* Spanish Rate */}
                         <td style={{ padding: '14px 8px', fontWeight: '600', color: '#d4af37' }}>
                           {isEditing ? (
@@ -1183,6 +1200,7 @@ export default function AdminPage() {
                                       phone_number: g.phone_number,
                                       en_rate: getGuideRateForLang(g.id, 'EN'),
                                       ru_rate: getGuideRateForLang(g.id, 'RU'),
+                                      uz_rate: getGuideRateForLang(g.id, 'UZ'),
                                       es_rate: getGuideRateForLang(g.id, 'ES'),
                                       fr_rate: getGuideRateForLang(g.id, 'FR')
                                     } 

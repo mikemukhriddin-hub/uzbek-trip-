@@ -8,18 +8,21 @@ const CATEGORIES = {
   historical: {
     EN: 'Historical Sights',
     RU: 'Исторические достопримечательности',
+    UZ: 'Tarixiy obidalar',
     icon: ThreeDHistorical,
     color: '#0070c0',
   },
   alternative: {
     EN: 'Alternative & Nature',
     RU: 'Альтернативные места и Природа',
+    UZ: 'Tabiat va madaniyat',
     icon: ThreeDNature,
     color: '#009b9e',
   },
   food: {
     EN: 'Local Food & Dining',
     RU: 'Национальная кухня',
+    UZ: 'Milliy taomlar',
     icon: ThreeDDining,
     color: '#d4af37',
   },
@@ -58,9 +61,9 @@ export default function RouteBuilder({
   }, {});
 
   const t = {
-    addToRoute: language === 'RU' ? 'Добавить в маршрут' : 'Add to Route',
-    inRoute: language === 'RU' ? 'В маршруте' : 'In Route',
-    mountainArea: language === 'RU' ? '🏔 Горный тариф' : '🏔 Mountain Rate',
+    addToRoute: language === 'UZ' ? 'Marshrutga qo\'shish' : language === 'RU' ? 'Добавить в маршрут' : 'Add to Route',
+    inRoute: language === 'UZ' ? 'Marshrutda' : language === 'RU' ? 'В маршруте' : 'In Route',
+    mountainArea: language === 'UZ' ? '🏔 Tog\' tarifi' : language === 'RU' ? '🏔 Горный тариф' : '🏔 Mountain Rate',
   };
 
   return (
@@ -70,7 +73,7 @@ export default function RouteBuilder({
         if (catLocations.length === 0) return null;
 
         const IconComponent = catInfo.icon;
-        const categoryTitle = language === 'RU' ? catInfo.RU : catInfo.EN;
+        const categoryTitle = catInfo[language] || catInfo.EN;
 
         return (
           <div key={catKey} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>

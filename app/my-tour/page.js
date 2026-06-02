@@ -98,25 +98,27 @@ function MyTourContent() {
   };
 
   const t = {
-    title: language === 'RU' ? 'Детали моей поездки' : 'My Custom Tour Details',
-    notFound: language === 'RU' ? 'Заказ не найден или срок действия ссылки истек.' : 'Booking not found or magic link has expired.',
-    status: language === 'RU' ? 'Статус:' : 'Status:',
-    touristName: language === 'RU' ? 'Имя туриста:' : 'Tourist Name:',
-    travelDate: language === 'RU' ? 'Дата поездки:' : 'Travel Date:',
-    routeSights: language === 'RU' ? 'Маршрут:' : 'Route Sights:',
-    guideTitle: language === 'RU' ? 'Ваш гид:' : 'Your Guide:',
-    driverTitle: language === 'RU' ? 'Ваш водитель:' : 'Your Driver:',
-    carModel: language === 'RU' ? 'Автомобиль:' : 'Vehicle:',
-    estimatedCost: language === 'RU' ? 'Итоговая стоимость:' : 'Estimated Cost:',
-    cancelBtn: language === 'RU' ? 'Отменить это бронирование' : 'Cancel My Booking',
-    backBtn: language === 'RU' ? 'На главную' : 'Back to Home',
-    cancelConfirmTitle: language === 'RU' ? 'Отменить поездку вашей мечты?' : 'Cancel Your Dream Trip?',
-    cancelConfirmDesc: language === 'RU' 
+    title: language === 'UZ' ? 'Sayohatim tafsilotlari' : language === 'RU' ? 'Детали моей поездки' : 'My Custom Tour Details',
+    notFound: language === 'UZ' ? 'Buyurtma topilmadi yoki havola muddati tugagan.' : language === 'RU' ? 'Заказ не найден или срок действия ссылки истек.' : 'Booking not found or magic link has expired.',
+    status: language === 'UZ' ? 'Holat:' : language === 'RU' ? 'Статус:' : 'Status:',
+    touristName: language === 'UZ' ? 'Sayyoh ismi:' : language === 'RU' ? 'Имя туриста:' : 'Tourist Name:',
+    travelDate: language === 'UZ' ? 'Sayohat sanasi:' : language === 'RU' ? 'Дата поездки:' : 'Travel Date:',
+    routeSights: language === 'UZ' ? 'Marshrut:' : language === 'RU' ? 'Маршрут:' : 'Route Sights:',
+    guideTitle: language === 'UZ' ? 'Sizning gidingiz:' : language === 'RU' ? 'Ваш гид:' : 'Your Guide:',
+    driverTitle: language === 'UZ' ? 'Sizning haydovchingiz:' : language === 'RU' ? 'Ваш водитель:' : 'Your Driver:',
+    carModel: language === 'UZ' ? 'Transport:' : language === 'RU' ? 'Автомобиль:' : 'Vehicle:',
+    estimatedCost: language === 'UZ' ? 'Umumiy qiymat:' : language === 'RU' ? 'Итоговая стоимость:' : 'Estimated Cost:',
+    cancelBtn: language === 'UZ' ? 'Ushbu buyurtmani bekor qilish' : language === 'RU' ? 'Отменить это бронирование' : 'Cancel My Booking',
+    backBtn: language === 'UZ' ? 'Bosh sahifaga' : language === 'RU' ? 'На главную' : 'Back to Home',
+    cancelConfirmTitle: language === 'UZ' ? 'Orzungizdagi sayohatni bekor qilasizmi?' : language === 'RU' ? 'Отменить поездку вашей мечты?' : 'Cancel Your Dream Trip?',
+    cancelConfirmDesc: language === 'UZ'
+      ? `Sizning gidingiz (${booking?.guide?.full_name || 'N/A'}) va haydovchingiz (${booking?.vehicle?.driver_name || 'N/A'}) ushbu kunni aynan siz uchun band qilishgan. Agar bekor qilsangiz, ular ish kunini yo'qotishadi. Ishonchingiz komilmi?`
+      : language === 'RU' 
       ? `Ваш гид (${booking?.guide?.full_name || 'N/A'}) и водитель (${booking?.vehicle?.driver_name || 'N/A'}) забронировали этот день специально для вас. Если вы отмените, они останутся без работы. Вы уверены?`
       : `Your guide (${booking?.guide?.full_name || 'N/A'}) and driver (${booking?.vehicle?.driver_name || 'N/A'}) have reserved their day for you. If you cancel, they will lose their schedule. Are you sure you want to cancel?`,
-    cancelKeep: language === 'RU' ? 'Нет, сохранить бронь' : 'No, Keep My Booking',
-    cancelConfirmYes: language === 'RU' ? 'Да, отменить бронирование' : 'Yes, Cancel Booking',
-    cancelSuccess: language === 'RU' ? 'Бронирование успешно отменено.' : 'Booking successfully cancelled.',
+    cancelKeep: language === 'UZ' ? 'Yo\'q, bandlikni saqlash' : language === 'RU' ? 'Нет, сохранить бронь' : 'No, Keep My Booking',
+    cancelConfirmYes: language === 'UZ' ? 'Ha, buyurtmani bekor qilish' : language === 'RU' ? 'Да, отменить бронирование' : 'Yes, Cancel Booking',
+    cancelSuccess: language === 'UZ' ? 'Buyurtma muvaffaqiyatli bekor qilindi.' : language === 'RU' ? 'Бронирование успешно отменено.' : 'Booking successfully cancelled.',
   };
 
   if (loading) {
@@ -221,7 +223,7 @@ function MyTourContent() {
           <div style={{ paddingLeft: '24px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
             {booking.booking_items?.sort((a,b) => a.visit_order - b.visit_order).map((item, idx) => (
               <div key={idx} style={{ color: '#e2e8f0' }}>
-                {item.visit_order}. {language === 'RU' ? item.location?.name_ru : item.location?.name_en}
+                {item.visit_order}. {language === 'UZ' ? (item.location?.name_uz || item.location?.name_en) : language === 'RU' ? item.location?.name_ru : item.location?.name_en}
               </div>
             )) || <span style={{ color: '#64748b' }}>None</span>}
           </div>
@@ -368,7 +370,7 @@ function MyTourContent() {
                   opacity: isCancelling ? 0.6 : 1
                 }}
               >
-                {isCancelling ? 'Cancelling...' : t.cancelConfirmYes}
+                {isCancelling ? (language === 'UZ' ? 'Bekor qilinmoqda...' : language === 'RU' ? 'Отмена...' : 'Cancelling...') : t.cancelConfirmYes}
               </button>
             </div>
           </div>

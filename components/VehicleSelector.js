@@ -13,19 +13,21 @@ export default function VehicleSelector({
 }) {
 
   const t = {
-    title: language === 'RU' ? 'Выберите транспорт и водителя' : 'Select Transport & Driver',
-    model: language === 'RU' ? 'Модель:' : 'Model:',
-    plate: language === 'RU' ? 'Гос. номер:' : 'License Plate:',
-    driver: language === 'RU' ? 'Водитель:' : 'Driver:',
-    phone: language === 'RU' ? 'Телефон:' : 'Phone:',
-    rateType: language === 'RU' ? 'Применяемый тариф' : 'Applied Rate Type',
-    cityRate: language === 'RU' ? '🏙 Городской тариф' : '🏙 City Tariff',
-    mountainRate: language === 'RU' ? '🏔 Горный / Загородный тариф' : '🏔 Mountain / Out-of-city Tariff',
-    rateReason: language === 'RU' 
+    title: language === 'UZ' ? 'Transport va haydovchini tanlang' : language === 'RU' ? 'Выберите транспорт и водителя' : 'Select Transport & Driver',
+    model: language === 'UZ' ? 'Model:' : language === 'RU' ? 'Модель:' : 'Model:',
+    plate: language === 'UZ' ? 'Davlat raqami:' : language === 'RU' ? 'Гос. номер:' : 'License Plate:',
+    driver: language === 'UZ' ? 'Haydovchi:' : language === 'RU' ? 'Водитель:' : 'Driver:',
+    phone: language === 'UZ' ? 'Telefon:' : language === 'RU' ? 'Телефон:' : 'Phone:',
+    rateType: language === 'UZ' ? 'Qo\'llanilgan tarif turi' : language === 'RU' ? 'Применяемый тариф' : 'Applied Rate Type',
+    cityRate: language === 'UZ' ? '🏙 Shahar tarifi' : language === 'RU' ? '🏙 Городской тариф' : '🏙 City Tariff',
+    mountainRate: language === 'UZ' ? '🏔 Tog\' / Shahardan tashqari tarif' : language === 'RU' ? '🏔 Горный / Загородный тариф' : '🏔 Mountain / Out-of-city Tariff',
+    rateReason: language === 'UZ' 
+      ? 'Marshrutda shahardan tashqari hududlar bor (Urgut/Omonqo\'ton). Tog\' tarifi faollashtirildi.'
+      : language === 'RU' 
       ? 'В маршруте есть загородные зоны (Ургут/Омонкотон). Применен горный тариф.'
       : 'Your route includes mountain/out-of-town areas (Urgut/Omonqoton). Mountain rate is active.',
-    selectCar: language === 'RU' ? 'Выбрать' : 'Select Vehicle',
-    selectedCar: language === 'RU' ? 'Выбран' : 'Selected',
+    selectCar: language === 'UZ' ? 'Tanlash' : language === 'RU' ? 'Выбрать' : 'Select Vehicle',
+    selectedCar: language === 'UZ' ? 'Tanlandi' : language === 'RU' ? 'Выбран' : 'Selected',
   };
 
   return (

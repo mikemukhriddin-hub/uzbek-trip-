@@ -5,10 +5,11 @@ import { Check, MessageSquare, Languages } from 'lucide-react';
 import { ThreeDGuide } from './icons/ThreeDIcons';
 
 const LANGUAGES = [
-  { code: 'EN', label: { EN: '🇬🇧 English', RU: '🇬🇧 Английский' } },
-  { code: 'RU', label: { EN: '🇷🇺 Russian', RU: '🇷🇺 Русский' } },
-  { code: 'FR', label: { EN: '🇫🇷 French', RU: '🇫🇷 Французский' } },
-  { code: 'ES', label: { EN: '🇪🇸 Spanish', RU: '🇪🇸 Испанский' } },
+  { code: 'EN', label: { EN: '🇬🇧 English', RU: '🇬🇧 Английский', UZ: '🇬🇧 Ingliz tili' } },
+  { code: 'RU', label: { EN: '🇷🇺 Russian', RU: '🇷🇺 Русский', UZ: '🇷🇺 Rus tili' } },
+  { code: 'FR', label: { EN: '🇫🇷 French', RU: '🇫🇷 Французский', UZ: '🇫🇷 Fransuz tili' } },
+  { code: 'ES', label: { EN: '🇪🇸 Spanish', RU: '🇪🇸 Испанский', UZ: '🇪🇸 Ispan tili' } },
+  { code: 'UZ', label: { EN: '🇺🇿 Uzbek', RU: '🇺🇿 Узбекский', UZ: '🇺🇿 O\'zbek tili' } },
 ];
 
 export default function GuideSelector({
@@ -22,13 +23,13 @@ export default function GuideSelector({
 }) {
 
   const t = {
-    title: language === 'RU' ? 'Выберите гида и язык ведения экскурсии' : 'Select Guide & Speaking Language',
-    langSelect: language === 'RU' ? 'Язык экскурсии:' : 'Tour language:',
-    dailyRate: language === 'RU' ? 'в день' : 'per day',
-    noGuides: language === 'RU' ? 'Нет доступных гидов для этого языка' : 'No guides available for this language',
-    selectGuide: language === 'RU' ? 'Выбрать' : 'Select Guide',
-    selectedGuide: language === 'RU' ? 'Выбран' : 'Selected',
-    speaks: language === 'RU' ? 'Говорит на:' : 'Speaks:',
+    title: language === 'UZ' ? 'Gid va ekskursiya tilini tanlang' : language === 'RU' ? 'Выберите гида и язык ведения экскурсии' : 'Select Guide & Speaking Language',
+    langSelect: language === 'UZ' ? 'Ekskursiya tili:' : language === 'RU' ? 'Язык экскурсии:' : 'Tour language:',
+    dailyRate: language === 'UZ' ? 'kuniga' : language === 'RU' ? 'в день' : 'per day',
+    noGuides: language === 'UZ' ? 'Ushbu til bo\'yicha gidlar topilmadi' : language === 'RU' ? 'Нет доступных гидов для этого языка' : 'No guides available for this language',
+    selectGuide: language === 'UZ' ? 'Tanlash' : language === 'RU' ? 'Выбрать' : 'Select Guide',
+    selectedGuide: language === 'UZ' ? 'Tanlandi' : language === 'RU' ? 'Выбран' : 'Selected',
+    speaks: language === 'UZ' ? 'Gapirish tillari:' : language === 'RU' ? 'Говорит на:' : 'Speaks:',
   };
 
   // Filter tariffs by selected guide language code
@@ -87,7 +88,7 @@ export default function GuideSelector({
                 }}
               >
                 <Languages size={14} />
-                <span>{language === 'RU' ? lang.label.RU : lang.label.EN}</span>
+                <span>{lang.label[language] || lang.label.EN}</span>
               </button>
             );
           })}

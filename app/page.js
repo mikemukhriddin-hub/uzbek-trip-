@@ -71,9 +71,30 @@ const MOCK_VEHICLES = [
   { id: 5, driver_name: 'Jahongir aka', driver_phone: '+998909876543', car_model: 'Isuzu Bus (Turquoise)', car_number: '01 B 999 BB', city_rate: 120.00, out_of_city_rate: 180.00, capacity: 20 }
 ];
 
+const UZ_LOCATIONS = {
+  1: { name: 'Registon maydoni', desc: 'Uchta muhtasham madrasadan iborat qadimiy Samarqandning yuragi.' },
+  2: { name: 'Go\'ri Amir maqbarasi', desc: 'Amir Temur (Tamerlan) ning so\'nggi qo\'nim topgan joyi, me\'moriy durdona.' },
+  3: { name: 'Shohi Zinda', desc: 'Moviy gumbazli maqbaralardan iborat hayratlanarli xiyobon.' },
+  4: { name: 'Bibi Xonim masjidi', desc: 'Amir Temurning sevimli rafiqasi sharafiga qurilgan XV asrning eng yirik masjidlaridan biri.' },
+  5: { name: 'Ulug\'bek rasadxonasi', desc: '1420-yilda qurilgan ushbu rasadxona islom dunyosining ajoyib mo\'jizalaridan biri bo\'lgan.' },
+  6: { name: 'Urgut tog\' bozori va adirlari', desc: 'Bozorda an\'anaviy hunarmandchilik bilan tanishing va Urgutning go\'zal tog\' tizmalari bo\'ylab sayr qiling.' },
+  7: { name: 'Omonqo\'ton dovoni va qarag\'aylari', desc: 'Qadimiy g\'orlar va toza buloqlarga ega muhtasham qarag\'ayzor hamda tog\' dovoni.' },
+  8: { name: 'Konigil qog\'oz fabrikasi', desc: 'Samarqand tut qog\'ozini tayyorlashning qadimiy san\'atini namoyish etuvchi tinch eko-qishloq.' },
+  9: { name: 'Milliy palov markazi', desc: 'Katta qozonlarda an\'anaviy retseptlar bo\'yicha tayyorlangan haqiqiy Samarqand palovi.' },
+  10: { name: 'Samarqand nonvoyxonasi', desc: 'Nonvoylar tandirda mashhur, yaltiroq Samarqand nonlarini yopishini kuzating.' },
+  11: { name: 'Karimbek restorani', desc: 'An\'anaviy kabob, manti va jonli milliy musiqa taklif etuvchi ajoyib restoran.' }
+};
+
 export default function Home() {
   const [language, setLanguage] = useState('EN'); // Site UI Language
-  const [locations, setLocations] = useState(MOCK_LOCATIONS);
+  const [showLangDropdown, setShowLangDropdown] = useState(false);
+  const [locations, setLocations] = useState(() => {
+    return MOCK_LOCATIONS.map(loc => ({
+      ...loc,
+      name_uz: loc.name_uz || UZ_LOCATIONS[loc.id]?.name || loc.name_en,
+      description_uz: loc.description_uz || UZ_LOCATIONS[loc.id]?.desc || loc.description_en
+    }));
+  });
   const [guides, setGuides] = useState(MOCK_GUIDES);
   const [tariffs, setTariffs] = useState(MOCK_TARIFFS);
   const [vehicles, setVehicles] = useState(MOCK_VEHICLES);
@@ -98,6 +119,14 @@ export default function Home() {
   const [isCancelling, setIsCancelling] = useState(false);
   const [bookingCancelled, setBookingCancelled] = useState(false);
 
+  // Sync state loaded from localStorage if user has a preference saved
+  useEffect(() => {
+    const savedLang = localStorage.getItem('site_lang');
+    if (savedLang) {
+      setLanguage(savedLang);
+    }
+  }, []);
+
   // Fetch initial data from database on mount (falls back to mock if not configured)
   useEffect(() => {
     const fetchData = async () => {
@@ -105,7 +134,14 @@ export default function Home() {
         const resL = await fetch('/api/locations');
         if (resL.ok) {
           const data = await resL.json();
-          if (data && data.length > 0) setLocations(data);
+          if (data && data.length > 0) {
+            const enriched = data.map(loc => ({
+              ...loc,
+              name_uz: loc.name_uz || UZ_LOCATIONS[loc.id]?.name || loc.name_en,
+              description_uz: loc.description_uz || UZ_LOCATIONS[loc.id]?.desc || loc.description_en
+            }));
+            setLocations(enriched);
+          }
         }
         const resG = await fetch('/api/guides');
         if (resG.ok) {
@@ -263,24 +299,28 @@ export default function Home() {
 
   const t = {
     heroTitle: language === 'RU' ? 'Самарканд CrafTour' : 'Samarqand CrafTour',
-    heroSubtitle: language === 'RU' 
+    heroSubtitle: language === 'UZ'
+      ? 'Afsonaviy Samarqand bo\'ylab shaxsiy sayohatingizni o\'zingiz yarating'
+      : language === 'RU' 
       ? 'Сконструируйте собственное идеальное путешествие в легендарный Самарканд'
       : 'Craft your own tailor-made adventure in legendary Samarkand',
-    step1: language === 'RU' ? '🗺 Шаг 1: Спланируйте маршрут' : '🗺 Step 1: Craft Your Route',
-    step2: language === 'RU' ? '🚗 Шаг 2: Выберите транспорт' : '🚗 Step 2: Choose Transport',
-    step3: language === 'RU' ? '🗣 Шаг 3: Выберите гида' : '🗣 Step 3: Choose Expert Guide',
-    step4: language === 'RU' ? '👤 Шаг 4: Подтвердите заказ' : '👤 Step 4: Checkout',
-    successTitle: language === 'RU' ? '🎉 Заявка отправлена!' : '🎉 Booking Submitted!',
-    successSub: language === 'RU' 
+    step1: language === 'UZ' ? '🗺 1-qadam: Marshrutni shakllantiring' : language === 'RU' ? '🗺 Шаг 1: Спланируйте маршрут' : '🗺 Step 1: Craft Your Route',
+    step2: language === 'UZ' ? '🚗 2-qadam: Transportni tanlang' : language === 'RU' ? '🚗 Шаг 2: Выберите транспорт' : '🚗 Step 2: Choose Transport',
+    step3: language === 'UZ' ? '🗣 3-qadam: Gidni tanlang' : language === 'RU' ? '🗣 Шаг 3: Выберите гида' : '🗣 Step 3: Choose Expert Guide',
+    step4: language === 'UZ' ? '👤 4-qadam: Buyurtmani rasmiylashtiring' : language === 'RU' ? '👤 Шаг 4: Подтвердите заказ' : '👤 Step 4: Checkout',
+    successTitle: language === 'UZ' ? '🎉 Buyurtma yuborildi!' : language === 'RU' ? '🎉 Заявка отправлена!' : '🎉 Booking Submitted!',
+    successSub: language === 'UZ'
+      ? 'Elektron pochtangiz tasdiqlandi. Batafsil ma\'lumotlarni kelishib olish uchun menejerimiz tez orada siz bilan WhatsApp orqali bog\'lanadi.'
+      : language === 'RU' 
       ? 'Ваша почта подтверждена. Наш менеджер скоро свяжется с вами по WhatsApp для окончательного подтверждения.' 
       : 'Your email has been verified. Our manager will contact you shortly on WhatsApp to finalize details.',
-    successDetailTitle: language === 'RU' ? 'Детали тура:' : 'Tour Details:',
-    successGuide: language === 'RU' ? 'Гид:' : 'Guide:',
-    successDriver: language === 'RU' ? 'Водитель:' : 'Driver:',
-    successTotal: language === 'RU' ? 'Стоимость:' : 'Estimated Cost:',
-    successBack: language === 'RU' ? 'Создать новый тур' : 'Create Another Tour',
-    disclaimer: language === 'RU' ? 'Нажмите на маркеры карты, чтобы прочитать детали локаций.' : 'Click map markers to read location details.',
-    selectedCount: language === 'RU' ? 'Выбрано мест:' : 'Selected locations:',
+    successDetailTitle: language === 'UZ' ? 'Tur tafsilotlari:' : language === 'RU' ? 'Детали тура:' : 'Tour Details:',
+    successGuide: language === 'UZ' ? 'Gid:' : language === 'RU' ? 'Гид:' : 'Guide:',
+    successDriver: language === 'UZ' ? 'Haydovchi:' : language === 'RU' ? 'Водитель:' : 'Driver:',
+    successTotal: language === 'UZ' ? 'Taxminiy qiymat:' : language === 'RU' ? 'Стоимость:' : 'Estimated Cost:',
+    successBack: language === 'UZ' ? 'Yangi tur yaratish' : language === 'RU' ? 'Создать новый тур' : 'Create Another Tour',
+    disclaimer: language === 'UZ' ? 'Lokatsiya tafsilotlarini o\'qish uchun xaritadagi belgilarni bosing.' : language === 'RU' ? 'Нажмите на маркеры карты, чтобы прочитать детали локаций.' : 'Click map markers to read location details.',
+    selectedCount: language === 'UZ' ? 'Tanlangan joylar soni:' : language === 'RU' ? 'Выбрано мест:' : 'Selected locations:',
   };
 
   if (successPage) {
@@ -308,11 +348,13 @@ export default function Home() {
               </div>
 
               <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#fff' }}>
-                {language === 'RU' ? '❌ Бронирование отменено' : '❌ Booking Cancelled'}
+                {language === 'UZ' ? '❌ Buyurtma bekor qilindi' : language === 'RU' ? '❌ Бронирование отменено' : '❌ Booking Cancelled'}
               </h2>
               
               <p style={{ fontSize: '15px', color: '#94a3b8', lineHeight: 1.6 }}>
-                {language === 'RU'
+                {language === 'UZ'
+                  ? `Sayohat bekor qilindi. Gidingiz ${selectedGuide?.full_name} va haydovchingiz ${selectedVehicle?.driver_name} bu haqda ogohlantirildi.`
+                  : language === 'RU'
                   ? `Поездка отменена. Ваш гид ${selectedGuide?.full_name} и водитель ${selectedVehicle?.driver_name} были оповещены и освобождены.`
                   : `Your trip has been cancelled. Your guide ${selectedGuide?.full_name} and driver ${selectedVehicle?.driver_name} have been notified.`}
               </p>
@@ -383,7 +425,7 @@ export default function Home() {
                   onMouseEnter={(e) => e.target.style.color = '#ef4444'}
                   onMouseLeave={(e) => e.target.style.color = '#64748b'}
                 >
-                  {language === 'RU' ? 'Отменить это бронирование?' : 'Need to cancel this booking?'}
+                  {language === 'UZ' ? 'Ushbu buyurtmani bekor qilish?' : language === 'RU' ? 'Отменить это бронирование?' : 'Need to cancel this booking?'}
                 </button>
               </div>
             </>
@@ -450,10 +492,12 @@ export default function Home() {
 
               <div>
                 <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#fff', marginBottom: '8px' }}>
-                  {language === 'RU' ? 'Отменить поездку вашей мечты?' : 'Cancel Your Dream Trip?'}
+                  {language === 'UZ' ? 'Orzungizdagi sayohatni bekor qilasizmi?' : language === 'RU' ? 'Отменить поездку вашей мечты?' : 'Cancel Your Dream Trip?'}
                 </h3>
                 <p style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: 1.6 }}>
-                  {language === 'RU'
+                  {language === 'UZ'
+                    ? `Sizning tajribali gidingiz (${selectedGuide?.full_name}) va haydovchingiz (${selectedVehicle?.driver_name}) ushbu kunni aynan siz uchun band qilishgan. Agar bekor qilsangiz, ular kunlik ishidan mahrum bo'lishadi. Ishonchingiz komilmi?`
+                    : language === 'RU'
                     ? `Ваш опытный гид (${selectedGuide?.full_name}) и водитель (${selectedVehicle?.driver_name}) уже забронировали свой день для вас. Если вы отмените, они потеряют этот рабочий день. Вы уверены?`
                     : `Your guide (${selectedGuide?.full_name}) and driver (${selectedVehicle?.driver_name}) have reserved their day for you. If you cancel, they will lose their schedule. Are you sure you want to cancel?`}
                 </p>
@@ -474,7 +518,7 @@ export default function Home() {
                     color: '#0a0f1d'
                   }}
                 >
-                  {language === 'RU' ? 'Нет, сохранить бронь' : 'No, Keep My Booking'}
+                  {language === 'UZ' ? 'Yo\'q, bandlikni saqlash' : language === 'RU' ? 'Нет, сохранить бронь' : 'No, Keep My Booking'}
                 </button>
                 
                 <button
@@ -493,8 +537,8 @@ export default function Home() {
                   }}
                 >
                   {isCancelling 
-                    ? (language === 'RU' ? 'Отмена...' : 'Cancelling...') 
-                    : (language === 'RU' ? 'Да, отменить бронирование' : 'Yes, Cancel Booking')}
+                    ? (language === 'UZ' ? 'Bekor qilinmoqda...' : language === 'RU' ? 'Отмена...' : 'Cancelling...') 
+                    : (language === 'UZ' ? 'Ha, buyurtmani bekor qilish' : language === 'RU' ? 'Да, отменить бронирование' : 'Yes, Cancel Booking')}
                 </button>
               </div>
             </div>
@@ -562,30 +606,87 @@ export default function Home() {
             onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'rgba(212, 175, 55, 0.1)'; }}
           >
             <Info size={14} />
-            <span>{language === 'EN' ? 'Discover' : 'Инфо'}</span>
+            <span>{language === 'UZ' ? 'Ma\'lumot' : language === 'RU' ? 'Инфо' : 'Discover'}</span>
           </Link>
 
-          {/* Language Switcher Button */}
-          <button
-            onClick={toggleLanguage}
-            style={{
-              padding: '8px 16px',
-              borderRadius: '10px',
-              backgroundColor: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              color: '#fff',
-              fontSize: '13px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            <Languages size={14} style={{ color: '#d4af37' }} />
-            <span>{language === 'EN' ? 'Русский (RU)' : 'English (EN)'}</span>
-          </button>
+          {/* Premium Dropdown Language Switcher */}
+          <div style={{ position: 'relative' }}>
+            <button
+              onClick={() => setShowLangDropdown(!showLangDropdown)}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '10px',
+                backgroundColor: 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                color: '#fff',
+                fontSize: '13px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <Languages size={14} style={{ color: '#d4af37' }} />
+              <span>{language === 'EN' ? '🇬🇧 EN' : language === 'RU' ? '🇷🇺 RU' : '🇺🇿 UZ'}</span>
+            </button>
+            {showLangDropdown && (
+              <div style={{
+                position: 'absolute',
+                top: 'calc(100% + 8px)',
+                right: 0,
+                backgroundColor: '#0f172a',
+                border: '1px solid rgba(212,175,55,0.25)',
+                borderRadius: '10px',
+                padding: '4px',
+                zIndex: 1000,
+                boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '2px',
+                minWidth: '130px'
+              }}>
+                {['EN', 'RU', 'UZ'].map((langCode) => (
+                  <button
+                    key={langCode}
+                    onClick={() => {
+                      setLanguage(langCode);
+                      setShowLangDropdown(false);
+                      localStorage.setItem('site_lang', langCode);
+                    }}
+                    style={{
+                      padding: '8px 12px',
+                      border: 'none',
+                      background: language === langCode ? 'rgba(212,175,55,0.1)' : 'transparent',
+                      color: language === langCode ? '#d4af37' : '#94a3b8',
+                      textAlign: 'left',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      borderRadius: '6px',
+                      transition: 'all 0.2s ease',
+                      width: '100%'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (language !== langCode) {
+                        e.currentTarget.style.color = '#fff';
+                        e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (language !== langCode) {
+                        e.currentTarget.style.color = '#94a3b8';
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                      }
+                    }}
+                  >
+                    {langCode === 'EN' ? '🇬🇧 English' : langCode === 'RU' ? '🇷🇺 Русский' : '🇺🇿 O\'zbekcha'}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
@@ -651,10 +752,10 @@ export default function Home() {
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                   <span style={{ fontSize: '15px', fontWeight: '800', color: '#fff' }}>
-                    {language === 'EN' ? 'Samarkand Today: 28°C' : 'Самарканд сегодня: 28°C'}
+                    {language === 'UZ' ? 'Bugun Samarqandda: 28°C' : language === 'RU' ? 'Самарканд сегодня: 28°C' : 'Samarkand Today: 28°C'}
                   </span>
                   <span style={{ fontSize: '12px', color: '#009b9e', fontWeight: '500' }}>
-                    {language === 'EN' ? '☀️ Clear skies & sunny forecast' : '☀️ Ясно, солнечно и тепло'}
+                    {language === 'UZ' ? '☀️ Havo ochiq va quyoshli' : language === 'RU' ? '☀️ Ясно, солнечно и тепло' : '☀️ Clear skies & sunny forecast'}
                   </span>
                 </div>
               </div>
@@ -685,7 +786,7 @@ export default function Home() {
                   e.currentTarget.style.boxShadow = '0 0 15px rgba(212, 175, 55, 0.15)';
                 }}
               >
-                <span>{language === 'EN' ? 'Discover Guide ➔' : 'Открыть путеводитель ➔'}</span>
+                <span>{language === 'UZ' ? 'Yo\'l ko\'rsatkichni ochish ➔' : language === 'RU' ? 'Открыть путеводитель ➔' : 'Discover Guide ➔'}</span>
               </Link>
             </div>
 

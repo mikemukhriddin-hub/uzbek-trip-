@@ -17,15 +17,19 @@ export default function VerificationModal({
   if (!isOpen) return null;
 
   const t = {
-    title: language === 'RU' ? 'Подтверждение почты (OTP)' : 'Email Verification (OTP)',
-    intro: language === 'RU' 
+    title: language === 'UZ' ? 'Pochtaning tasdiqlanishi (OTP)' : language === 'RU' ? 'Подтверждение почты (OTP)' : 'Email Verification (OTP)',
+    intro: language === 'UZ'
+      ? `Biz tasdiqlash kodini (6 xonali) quyidagi manzilga yubordik:`
+      : language === 'RU' 
       ? `Мы отправили 6-значный код подтверждения на адрес` 
       : `We have sent a 6-digit verification code to`,
-    enterCode: language === 'RU' ? 'Введите код подтверждения:' : 'Enter Verification Code:',
-    verifyBtn: language === 'RU' ? 'Проверить и подтвердить' : 'Verify & Confirm',
+    enterCode: language === 'UZ' ? 'Tasdiqlash kodini kiriting:' : language === 'RU' ? 'Введите код подтверждения:' : 'Enter Verification Code:',
+    verifyBtn: language === 'UZ' ? 'Tekshirish va tasdiqlash' : language === 'RU' ? 'Проверить и подтвердить' : 'Verify & Confirm',
     placeholder: '123456',
-    cancel: language === 'RU' ? 'Отмена' : 'Cancel',
-    safetyNotice: language === 'RU'
+    cancel: language === 'UZ' ? 'Bekor qilish' : language === 'RU' ? 'Отмена' : 'Cancel',
+    safetyNotice: language === 'UZ'
+      ? 'Bu tizimni soxta buyurtmalardan himoya qiladi. Buyurtma faqat to\'g\'ri kod kiritilgandan so\'ng faollashadi.'
+      : language === 'RU'
       ? 'Это защищает систему от ложных бронирований. Заявка будет активна после ввода правильного кода.'
       : 'This protects our guides/drivers from fake bookings. The booking is activated once verified.',
   };

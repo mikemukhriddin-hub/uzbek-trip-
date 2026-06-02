@@ -15,8 +15,8 @@ const MOCK_BOOKING = {
   guide: { full_name: 'Sherzod Alimov', phone_number: '+998901234567' },
   vehicle: { driver_name: 'Alisher aka', driver_phone: '+998909998877', car_model: 'Chevrolet Cobalt (White)', car_number: '01 A 777 BA' },
   booking_items: [
-    { visit_order: 1, location: { name_en: 'Registan Square', name_ru: 'Площадь Регистан' } },
-    { visit_order: 2, location: { name_en: 'Gur-e-Amir Mausoleum', name_ru: 'Мавзолей Гур-Эмир' } }
+    { visit_order: 1, location: { name_en: 'Registan Square', name_ru: 'Площадь Регистан', name_uz: 'Registon maydoni' } },
+    { visit_order: 2, location: { name_en: 'Gur-e-Amir Mausoleum', name_ru: 'Мавзолей Гур-Эмир', name_uz: 'Go\'ri Amir maqbarasi' } }
   ]
 };
 
@@ -48,7 +48,7 @@ export async function GET(req) {
         vehicle:vehicles(driver_name, driver_phone, car_model, car_number),
         booking_items(
           visit_order,
-          location:locations(id, name_en, name_ru)
+          location:locations(id, name_en, name_ru, name_uz)
         )
       `)
       .eq('id', bookingId)
