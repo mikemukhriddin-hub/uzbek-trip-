@@ -220,47 +220,60 @@ export async function GET(req) {
 
     let bookings = [];
 
-    // 1. Fetch confirmed bookings with unsent notifications
+    // 1. Fetch confirmed bookings
     if (isDbActive) {
       try {
-        const { data: dbBookings, error: dbErr } = await supabase
+        // Step 1.1: Fetch pending confirmed bookings with notification_sent = false
+        const { data: unsentBookings, error: dbErr } = await supabase
           .from('bookings')
-          .select(`
-            *,
-            guide:guides(*),
-            vehicle:vehicles(*)
-          `)
+          .select('booking_date')
           .eq('status', 'confirmed')
           .eq('notification_sent', false);
 
-        if (dbErr) {
-          console.warn('⚠️ Supabase error fetching bookings, falling back to mock store:', dbErr.message);
-          isDbActive = false;
-        } else if (dbBookings && dbBookings.length > 0) {
-          // Fetch locations for these bookings
-          const bookingIds = dbBookings.map(b => b.id);
-          const { data: items, error: itemsErr } = await supabase
-            .from('booking_items')
-            .select(`
-              booking_id,
-              location_id,
-              visit_order,
-              location:locations(*)
-            `)
-            .in('booking_id', bookingIds);
+        if (dbErr) throw dbErr;
 
-          if (itemsErr) {
-            console.error('Error fetching booking items:', itemsErr.message);
-          } else {
-            // Attach sorted locations to bookings
-            dbBookings.forEach(b => {
-              const locItems = items.filter(item => item.booking_id === b.id);
-              b.locations = locItems
-                .sort((a, b) => a.visit_order - b.visit_order)
-                .map(item => item.location);
-            });
+        if (unsentBookings && unsentBookings.length > 0) {
+          const uniqueDates = Array.from(new Set(unsentBookings.map(b => b.booking_date)));
+
+          // Step 1.2: Fetch all confirmed bookings for these dates (to see if they are part of a pool)
+          const { data: dbBookings, error: fetchAllErr } = await supabase
+            .from('bookings')
+            .select(`
+              *,
+              guide:guides(*),
+              vehicle:vehicles(*)
+            `)
+            .eq('status', 'confirmed')
+            .in('booking_date', uniqueDates);
+
+          if (fetchAllErr) throw fetchAllErr;
+
+          if (dbBookings && dbBookings.length > 0) {
+            // Fetch locations for these bookings
+            const bookingIds = dbBookings.map(b => b.id);
+            const { data: items, error: itemsErr } = await supabase
+              .from('booking_items')
+              .select(`
+                booking_id,
+                location_id,
+                visit_order,
+                location:locations(*)
+              `)
+              .in('booking_id', bookingIds);
+
+            if (itemsErr) {
+              console.error('Error fetching booking items:', itemsErr.message);
+            } else {
+              // Attach sorted locations to bookings
+              dbBookings.forEach(b => {
+                const locItems = items.filter(item => item.booking_id === b.id);
+                b.locations = locItems
+                  .sort((a, b) => a.visit_order - b.visit_order)
+                  .map(item => item.location);
+              });
+            }
+            bookings = dbBookings;
           }
-          bookings = dbBookings;
         }
       } catch (err) {
         console.warn('⚠️ Exception querying Supabase, falling back to mock store:', err.message);
@@ -272,22 +285,31 @@ export async function GET(req) {
       // Offline mock storage fallback
       if (global.mockBookingsStore) {
         const mockList = Array.from(global.mockBookingsStore.values())
-          .filter(b => b.status === 'confirmed' && b.notification_sent !== true);
+          .filter(b => b.status === 'confirmed');
 
-        // Populate guide, vehicle, and locations for mock bookings
-        mockList.forEach(b => {
-          b.guide = mockGuides[b.guide_id] || mockGuides[1];
-          b.vehicle = mockVehicles[b.vehicle_id] || mockVehicles[1];
-          
-          if (b.locations && Array.isArray(b.locations)) {
-            b.locations = b.locations
-              .sort((a, b) => (a.visitOrder || a.visit_order || 0) - (b.visitOrder || b.visit_order || 0))
-              .map(item => mockLocations[item.locationId || item.location_id] || mockLocations[1]);
-          } else {
-            b.locations = [mockLocations[1]];
-          }
-        });
-        bookings = mockList;
+        const unsentMockDates = new Set(
+          mockList.filter(b => b.notification_sent !== true).map(b => b.booking_date)
+        );
+
+        if (unsentMockDates.size > 0) {
+          // Keep all mock bookings on those dates
+          const filteredMock = mockList.filter(b => unsentMockDates.has(b.booking_date));
+
+          // Populate guide, vehicle, and locations for mock bookings
+          filteredMock.forEach(b => {
+            b.guide = mockGuides[b.guide_id] || mockGuides[1];
+            b.vehicle = mockVehicles[b.vehicle_id] || mockVehicles[1];
+            
+            if (b.locations && Array.isArray(b.locations)) {
+              b.locations = b.locations
+                .sort((a, b) => (a.visitOrder || a.visit_order || 0) - (b.visitOrder || b.visit_order || 0))
+                .map(item => mockLocations[item.locationId || item.location_id] || mockLocations[1]);
+            } else {
+              b.locations = [mockLocations[1]];
+            }
+          });
+          bookings = filteredMock;
+        }
       }
     }
 
@@ -295,7 +317,7 @@ export async function GET(req) {
       return NextResponse.json({ message: 'No pending bookings to process.' });
     }
 
-    console.log(`[Cron Processor] Found ${bookings.length} verified bookings to process.`);
+    console.log(`[Cron Processor] Found ${bookings.length} confirmed bookings on active dates to process.`);
 
     // 2. Group bookings by travel date + customer language + exact locations (sorted IDs)
     const groups = {};
@@ -325,21 +347,21 @@ export async function GET(req) {
     // 3. Process each group
     for (const groupKey in groups) {
       const groupBookings = groups[groupKey];
-      const isGrouped = groupBookings.length > 1;
 
-      // Group wait validation: If it is a single booking, check if it has waited for at least 3 minutes
-      if (!isGrouped) {
-        const single = groupBookings[0];
-        const verifiedTime = new Date(single.verified_at || single.created_at || now);
-        const waitingMinutes = (now - verifiedTime) / (1000 * 60);
-
-        if (waitingMinutes < 3.0) {
-          console.log(`[Cron Processor] Skipping Single Booking ID #${single.id} (waited ${waitingMinutes.toFixed(1)} mins, requires 3.0).`);
-          continue;
-        }
+      // Check if this group has at least one booking that has NOT been notified yet
+      const newBookingsInGroup = groupBookings.filter(b => b.notification_sent !== true);
+      if (newBookingsInGroup.length === 0) {
+        // Skip this group because all bookings in it have already been processed
+        continue;
       }
 
-      console.log(`[Cron Processor] Processing group key "${groupKey}" containing Booking IDs: ${groupBookings.map(b => b.id).join(', ')}`);
+      // Check if any booking in this group was ALREADY notified (meaning this is a group update!)
+      const previouslyNotifiedBookings = groupBookings.filter(b => b.notification_sent === true);
+      const isGroupUpdate = previouslyNotifiedBookings.length > 0;
+      
+      const isGrouped = groupBookings.length > 1;
+
+      console.log(`[Cron Processor] Processing group key "${groupKey}" containing Booking IDs: ${groupBookings.map(b => b.id).join(', ')}. Is Group Update: ${isGroupUpdate}`);
 
       // Determine consolidated details for the group
       const totalPassengers = groupBookings.reduce((sum, b) => sum + (b.passenger_count || 1), 0);
@@ -382,29 +404,55 @@ export async function GET(req) {
       // Assemble Telegram text caption
       let tgText = '';
       if (isGrouped) {
-        tgText = isRu
-          ? `🌟 *SAMARQAND CRAFTOUR - ГРУППОВАЯ ПОЕЗДКА (POOLING)* 🌟\n\n` +
-            `👥 *Создана объединенная группа для совместной поездки!*\n\n` +
-            `📅 *Дата:* ${groupBookings[0].booking_date}\n` +
-            `🌐 *Язык обслуживания:* ${language}\n` +
-            `👥 *Пассажиров:* ${totalPassengers} чел (${groupBookings.map(b => `${b.tourist_name} (${b.passenger_count || 1} чел)`).join(', ')})\n\n` +
-            `🛣 *Маршрут:* \n${groupBookings[0].locations.map((loc, idx) => `${idx + 1}. ${loc.name_ru || loc.name_en}`).join('\n')}\n\n` +
-            `👤 *Гид:* ${finalGuide.full_name} (${finalGuide.phone_number})\n` +
-            `🚗 *Водитель:* ${finalVehicle.driver_name} (${finalVehicle.driver_phone})\n` +
-            `🚘 *Автомобиль:* ${finalVehicle.car_model} (${finalVehicle.car_number})\n\n` +
-            `💵 *Стоимость броней:* \n${groupBookings.map(b => `- Заказ #${b.id} (${b.tourist_name}): $${parseFloat(b.total_price).toFixed(2)}`).join('\n')}\n\n` +
-            `📄 *Официальный PDF-ваучер прикреплен к этому сообщению.*`
-          : `🌟 *SAMARQAND CRAFTOUR - GROUP RIDE POOLING* 🌟\n\n` +
-            `👥 *New pooled ride sharing group has been formed!*\n\n` +
-            `📅 *Date:* ${groupBookings[0].booking_date}\n` +
-            `🌐 *Language:* ${language}\n` +
-            `👥 *Total Passengers:* ${totalPassengers} Pax (${groupBookings.map(b => `${b.tourist_name} (${b.passenger_count || 1} Pax)`).join(', ')})\n\n` +
-            `🛣 *Itinerary:* \n${groupBookings[0].locations.map((loc, idx) => `${idx + 1}. ${loc.name_en}`).join('\n')}\n\n` +
-            `👤 *Guide:* ${finalGuide.full_name} (${finalGuide.phone_number})\n` +
-            `🚗 *Driver:* ${finalVehicle.driver_name} (${finalVehicle.driver_phone})\n` +
-            `🚘 *Vehicle:* ${finalVehicle.car_model} (${finalVehicle.car_number})\n\n` +
-            `💵 *Payments summary:* \n${groupBookings.map(b => `- Booking #${b.id} (${b.tourist_name}): $${parseFloat(b.total_price).toFixed(2)}`).join('\n')}\n\n` +
-            `📄 *Official travel voucher PDF is attached below.*`;
+        if (isGroupUpdate) {
+          tgText = isRu
+            ? `🔄 *SAMARQAND CRAFTOUR - ОБНОВЛЕНИЕ ГРУППЫ (POOLING)* 🔄\n\n` +
+              `👥 *К вашей группе присоединился новый участник!*\n\n` +
+              `📅 *Дата:* ${groupBookings[0].booking_date}\n` +
+              `🌐 *Язык обслуживания:* ${language}\n` +
+              `👥 *Пассажиров:* ${totalPassengers} чел (${groupBookings.map(b => `${b.tourist_name} (${b.passenger_count || 1} чел)`).join(', ')})\n\n` +
+              `🛣 *Маршрут:* \n${groupBookings[0].locations.map((loc, idx) => `${idx + 1}. ${loc.name_ru || loc.name_en}`).join('\n')}\n\n` +
+              `👤 *Гид:* ${finalGuide.full_name} (${finalGuide.phone_number})\n` +
+              `🚗 *Водитель:* ${finalVehicle.driver_name} (${finalVehicle.driver_phone})\n` +
+              `🚘 *Автомобиль:* ${finalVehicle.car_model} (${finalVehicle.car_number})\n\n` +
+              `💵 *Стоимость броней:* \n${groupBookings.map(b => `- Заказ #${b.id} (${b.tourist_name}): $${parseFloat(b.total_price).toFixed(2)}`).join('\n')}\n\n` +
+              `📄 *Обновленный официальный PDF-ваучер прикреплен к этому сообщению.*`
+            : `🔄 *SAMARQAND CRAFTOUR - RIDE POOLING GROUP UPDATE* 🔄\n\n` +
+              `👥 *A new partner has joined your travel group!*\n\n` +
+              `📅 *Date:* ${groupBookings[0].booking_date}\n` +
+              `🌐 *Language:* ${language}\n` +
+              `👥 *Total Passengers:* ${totalPassengers} Pax (${groupBookings.map(b => `${b.tourist_name} (${b.passenger_count || 1} Pax)`).join(', ')})\n\n` +
+              `🛣 *Itinerary:* \n${groupBookings[0].locations.map((loc, idx) => `${idx + 1}. ${loc.name_en}`).join('\n')}\n\n` +
+              `👤 *Guide:* ${finalGuide.full_name} (${finalGuide.phone_number})\n` +
+              `🚗 *Driver:* ${finalVehicle.driver_name} (${finalVehicle.driver_phone})\n` +
+              `🚘 *Vehicle:* ${finalVehicle.car_model} (${finalVehicle.car_number})\n\n` +
+              `💵 *Payments summary:* \n${groupBookings.map(b => `- Booking #${b.id} (${b.tourist_name}): $${parseFloat(b.total_price).toFixed(2)}`).join('\n')}\n\n` +
+              `📄 *Updated official travel voucher PDF is attached below.*`;
+        } else {
+          tgText = isRu
+            ? `🌟 *SAMARQAND CRAFTOUR - ГРУППОВАЯ ПОЕЗДКА (POOLING)* 🌟\n\n` +
+              `👥 *Создана объединенная группа для совместной поездки!*\n\n` +
+              `📅 *Дата:* ${groupBookings[0].booking_date}\n` +
+              `🌐 *Язык обслуживания:* ${language}\n` +
+              `👥 *Пассажиров:* ${totalPassengers} чел (${groupBookings.map(b => `${b.tourist_name} (${b.passenger_count || 1} чел)`).join(', ')})\n\n` +
+              `🛣 *Маршрут:* \n${groupBookings[0].locations.map((loc, idx) => `${idx + 1}. ${loc.name_ru || loc.name_en}`).join('\n')}\n\n` +
+              `👤 *Гид:* ${finalGuide.full_name} (${finalGuide.phone_number})\n` +
+              `🚗 *Водитель:* ${finalVehicle.driver_name} (${finalVehicle.driver_phone})\n` +
+              `🚘 *Автомобиль:* ${finalVehicle.car_model} (${finalVehicle.car_number})\n\n` +
+              `💵 *Стоимость броней:* \n${groupBookings.map(b => `- Заказ #${b.id} (${b.tourist_name}): $${parseFloat(b.total_price).toFixed(2)}`).join('\n')}\n\n` +
+              `📄 *Официальный PDF-ваучер прикреплен к этому сообщению.*`
+            : `🌟 *SAMARQAND CRAFTOUR - GROUP RIDE POOLING* 🌟\n\n` +
+              `👥 *New pooled ride sharing group has been formed!*\n\n` +
+              `📅 *Date:* ${groupBookings[0].booking_date}\n` +
+              `🌐 *Language:* ${language}\n` +
+              `👥 *Total Passengers:* ${totalPassengers} Pax (${groupBookings.map(b => `${b.tourist_name} (${b.passenger_count || 1} Pax)`).join(', ')})\n\n` +
+              `🛣 *Itinerary:* \n${groupBookings[0].locations.map((loc, idx) => `${idx + 1}. ${loc.name_en}`).join('\n')}\n\n` +
+              `👤 *Guide:* ${finalGuide.full_name} (${finalGuide.phone_number})\n` +
+              `🚗 *Driver:* ${finalVehicle.driver_name} (${finalVehicle.driver_phone})\n` +
+              `🚘 *Vehicle:* ${finalVehicle.car_model} (${finalVehicle.car_number})\n\n` +
+              `💵 *Payments summary:* \n${groupBookings.map(b => `- Booking #${b.id} (${b.tourist_name}): $${parseFloat(b.total_price).toFixed(2)}`).join('\n')}\n\n` +
+              `📄 *Official travel voucher PDF is attached below.*`;
+        }
       } else {
         const b = groupBookings[0];
         tgText = isRu
@@ -489,6 +537,7 @@ export async function GET(req) {
                       <p>Мы рады сообщить, что ваша поездка на <strong>${booking.booking_date}</strong> успешно подтверждена и объединена в групповой тур!</p>
                       <p>Мы прикрепили к этому письму ваш официальный туристический ваучер (PDF) с подробным расписанием, а также контактами гида и водителя.</p>
                       <p>Приятного вам путешествия по Самарканду!</p>
+                      <p style="font-size: 12px; color: #64748b; margin-top: 15px;">*Примечание: Если к вашей группе присоединятся новые участники, вам будет выслан обновленный ваучер.</p>
                     </div>`
                   : `<div style="font-family: sans-serif; padding: 20px; color: #1e293b; max-width: 600px; border: 1px solid #e2e8f0; border-radius: 8px;">
                       <h2 style="color: #0f172a;">Samarqand CrafTour</h2>
@@ -496,6 +545,7 @@ export async function GET(req) {
                       <p>We are pleased to inform you that your tour on <strong>${booking.booking_date}</strong> is confirmed and has been grouped into a shared tour!</p>
                       <p>Your official travel voucher (PDF) is attached to this email, complete with the detailed itinerary, guide, and driver contact details.</p>
                       <p>Have a wonderful trip to Samarkand!</p>
+                      <p style="font-size: 12px; color: #64748b; margin-top: 15px;">*Note: If new partners join your travel group, an updated travel voucher will be sent to you.</p>
                     </div>`
                 )
               : (isBookingRu
@@ -505,6 +555,7 @@ export async function GET(req) {
                       <p>Ваша индивидуальная поездка на <strong>${booking.booking_date}</strong> успешно подтверждена.</p>
                       <p>Ваш официальный туристический ваучер (PDF) с подробным расписанием и деталями прикреплен к этому письму.</p>
                       <p>Приятного вам путешествия по Самарканду!</p>
+                      <p style="font-size: 12px; color: #64748b; margin-top: 15px;">*Примечание: Если к вашему туру присоединятся другие участники на аналогичный маршрут, вы будете объединены в группу и вам вышлют обновленный ваучер.</p>
                     </div>`
                   : `<div style="font-family: sans-serif; padding: 20px; color: #1e293b; max-width: 600px; border: 1px solid #e2e8f0; border-radius: 8px;">
                       <h2 style="color: #0f172a;">Samarqand CrafTour</h2>
@@ -512,6 +563,7 @@ export async function GET(req) {
                       <p>Your private tour on <strong>${booking.booking_date}</strong> is confirmed.</p>
                       <p>Your official travel voucher (PDF) with the detailed itinerary and guide/driver details is attached to this email.</p>
                       <p>Have a wonderful trip to Samarkand!</p>
+                      <p style="font-size: 12px; color: #64748b; margin-top: 15px;">*Note: If other travellers join your tour for a matching route, you will be pooled into a shared group and an updated voucher will be sent to you.</p>
                     </div>`
                 );
 
@@ -536,30 +588,31 @@ export async function GET(req) {
       }
 
       // Mark processed bookings as notification_sent = true in DB/Memory
+      const bookingIdsToMark = newBookingsInGroup.map(b => b.id);
       if (isDbActive) {
         const { error: markErr } = await supabase
           .from('bookings')
           .update({ notification_sent: true })
-          .in('id', groupBookings.map(b => b.id));
+          .in('id', bookingIdsToMark);
 
         if (markErr) {
           console.error('[Cron Processor] Failed to update bookings state in DB:', markErr.message);
         } else {
-          console.log(`[Cron Processor] Marked Booking IDs [${groupBookings.map(b => b.id).join(', ')}] as notification_sent = true in database.`);
+          console.log(`[Cron Processor] Marked Booking IDs [${bookingIdsToMark.join(', ')}] as notification_sent = true in database.`);
         }
       } else {
         if (global.mockBookingsStore) {
-          groupBookings.forEach(b => {
-            const rawMock = global.mockBookingsStore.get(b.id.toString());
+          bookingIdsToMark.forEach(id => {
+            const rawMock = global.mockBookingsStore.get(id.toString());
             if (rawMock) {
               rawMock.notification_sent = true;
             }
           });
         }
-        console.log(`[Cron Processor] Offline Mock mode: Marked Booking IDs [${groupBookings.map(b => b.id).join(', ')}] as notification_sent = true in memory.`);
+        console.log(`[Cron Processor] Offline Mock mode: Marked Booking IDs [${bookingIdsToMark.join(', ')}] as notification_sent = true in memory.`);
       }
 
-      processedGroupIds.push(...groupBookings.map(b => b.id));
+      processedGroupIds.push(...bookingIdsToMark);
     }
 
     return NextResponse.json({
