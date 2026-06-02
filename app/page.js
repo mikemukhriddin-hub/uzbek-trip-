@@ -215,6 +215,7 @@ export default function Home() {
       totalPrice: formData.totalPrice,
       customerLanguage: language,
       passengerCount: formData.passengerCount || 1,
+      bookingType: formData.bookingType || 'private',
       locations: selectedLocations.map((loc, idx) => ({
         locationId: loc.id,
         visitOrder: idx + 1,

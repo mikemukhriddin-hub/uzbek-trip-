@@ -48,8 +48,12 @@ export async function POST(req) {
       totalPrice,
       customerLanguage,
       passengerCount,
+      bookingType,
       locations,
     } = body;
+
+    // Bron turi: 'private' yoki 'shared' (default: 'private')
+    const resolvedBookingType = (bookingType === 'shared') ? 'shared' : 'private';
 
     // Basic Validation
     if (!touristName || !touristEmail || !bookingDate || !vehicleId) {
@@ -159,6 +163,18 @@ export async function POST(req) {
       // B. Guide availability / Pooling check
       const guideConflicts = activeConflicts.filter(c => c.guide_id === guideId);
       if (guideConflicts.length > 0) {
+
+        // 🔒 PRIVATE bron: gid allaqachon band bo'lsa — qat'iyan rad etish
+        if (resolvedBookingType === 'private') {
+          const errorMsg = lang === 'RU'
+            ? 'Выбранный гид уже занят на эту дату. Для приватного тура выберите другого гида или другую дату.'
+            : lang === 'UZ'
+              ? 'Tanlangan gid ushbu sanada band. Shaxsiy tur uchun boshqa gid yoki sana tanlang.'
+              : 'The selected guide is already booked on this date. For a private tour, please choose another guide or date.';
+          return NextResponse.json({ message: errorMsg }, { status: 409 });
+        }
+
+        // 🤝 SHARED bron: faqat boshqa "shared" bronlar bilan birlashtirish mumkin
         let hasPoolableMatch = false;
 
         let conflictItems = [];
@@ -190,6 +206,9 @@ export async function POST(req) {
           .join(',');
 
         for (const conflict of guideConflicts) {
+          // Faqat 'shared' bronlar bilan birlashtiriladi
+          if (conflict.booking_type === 'private') continue;
+
           const conflictLocs = conflictItems
             .filter(item => item.booking_id === conflict.id)
             .map(item => item.location_id)
@@ -208,10 +227,10 @@ export async function POST(req) {
 
         if (!hasPoolableMatch) {
           const errorMsg = lang === 'RU'
-            ? 'Выбранный гид уже занят на эту дату на другой маршрут или язык. Пожалуйста, выберите другого гида.'
+            ? 'Выбранный гид уже занят на эту дату на другой маршрут, язык или приватный тур. Пожалуйста, выберите другого гида.'
             : lang === 'UZ'
-              ? 'Tanlangan gid ushbu sanada boshqa yo‘nalish yoki til uchun band. Iltimos, boshqa gid tanlang.'
-              : 'The selected guide is already booked on this date for a different route or language. Please choose another guide.';
+              ? 'Tanlangan gid ushbu sanada boshqa yo\'nalish, til yoki shaxsiy tur uchun band. Iltimos, boshqa gid tanlang.'
+              : 'The selected guide is already booked on this date for a different route, language, or private tour. Please choose another guide.';
           return NextResponse.json({ message: errorMsg }, { status: 409 });
         }
       }
@@ -238,6 +257,7 @@ export async function POST(req) {
             customer_language: lang,
             status: 'pending',
             passenger_count: passengerCount || 1,
+            booking_type: resolvedBookingType,
           })
           .select('id')
           .single();
@@ -275,6 +295,7 @@ export async function POST(req) {
           booking_date: bookingDate,
           customer_language: lang,
           passenger_count: passengerCount || 1,
+          booking_type: resolvedBookingType,
           locations: locations || []
         });
       }
@@ -302,6 +323,7 @@ export async function POST(req) {
       booking_date: bookingDate,
       customer_language: lang,
       passenger_count: passengerCount || 1,
+      booking_type: resolvedBookingType,
       locations: locations || []
     });
 

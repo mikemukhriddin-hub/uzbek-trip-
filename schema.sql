@@ -70,10 +70,15 @@ CREATE TABLE bookings (
     customer_language VARCHAR(5) DEFAULT 'EN', -- 'EN', 'RU', 'UZ'
     status booking_status DEFAULT 'pending',
     passenger_count INT DEFAULT 1,
+    booking_type VARCHAR(10) NOT NULL DEFAULT 'private' CHECK (booking_type IN ('private', 'shared')),
     notification_sent BOOLEAN DEFAULT FALSE,
     verified_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+-- ⬆️ MAVJUD BAZAGA MIGRATSIYA (Supabase SQL Editor da ishga tushiring):
+-- ALTER TABLE bookings ADD COLUMN IF NOT EXISTS booking_type VARCHAR(10) NOT NULL DEFAULT 'private'
+--   CHECK (booking_type IN ('private', 'shared'));
 
 -- 6. Buyurtma marshrut elementlari
 CREATE TABLE booking_items (

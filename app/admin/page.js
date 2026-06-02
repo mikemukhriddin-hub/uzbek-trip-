@@ -1201,6 +1201,22 @@ export default function AdminPage() {
                         <td style={{ padding: '16px 8px' }}>
                           <div>{booking.booking_date}</div>
                           <span style={{ fontSize: '10px', color: '#64748b' }}>Lang: {booking.customer_language}</span>
+                          <div style={{ marginTop: '4px' }}>
+                            <span style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              padding: '2px 8px',
+                              borderRadius: '20px',
+                              fontSize: '10px',
+                              fontWeight: '700',
+                              backgroundColor: booking.booking_type === 'shared' ? 'rgba(0,155,158,0.15)' : 'rgba(212,175,55,0.12)',
+                              color: booking.booking_type === 'shared' ? '#009b9e' : '#d4af37',
+                              border: booking.booking_type === 'shared' ? '1px solid rgba(0,155,158,0.3)' : '1px solid rgba(212,175,55,0.25)',
+                            }}>
+                              {booking.booking_type === 'shared' ? '🤝 Shared' : '🔒 Private'}
+                            </span>
+                          </div>
                         </td>
                         <td style={{ padding: '16px 8px', maxWidth: '280px' }}>
                           {booking.booking_items?.sort((x,y) => x.visit_order - y.visit_order).map((item, idx) => (
