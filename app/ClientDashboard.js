@@ -697,6 +697,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
           }}
         >
           <source src="/videos/bg-loop.webm" type="video/webm" />
+          <source src="/videos/bg-loop.mp4" type="video/mp4" />
         </video>
       </div>
       
