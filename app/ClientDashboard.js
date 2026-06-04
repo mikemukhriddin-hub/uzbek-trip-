@@ -681,7 +681,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
           left: 0,
           width: '100%',
           height: '100%',
-          background: 'linear-gradient(to bottom, rgba(10, 15, 29, 0.35) 0%, rgba(10, 15, 29, 0.70) 100%)',
+          background: 'linear-gradient(to bottom, rgba(10, 15, 29, 0.15) 0%, rgba(10, 15, 29, 0.45) 100%)',
           zIndex: 1
         }} />
         <video
@@ -693,7 +693,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            opacity: 0.45,
+            opacity: 0.65,
           }}
         >
           <source src="/videos/bg-loop.webm" type="video/webm" />
