@@ -282,7 +282,17 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
       }
 
       setOtpModalOpen(false);
-      setPaymentOpen(true);
+
+      // 🧪 TEST MODE: Skip payment — go directly to success page
+      setBookingData((prev) => ({
+        ...prev,
+        paymentMethod: 'test_skip',
+        paymentTxId: 'TEST_' + Date.now(),
+        depositAmount: 0,
+      }));
+      setSuccessPage(true);
+      // To re-enable payment, comment the 6 lines above and uncomment below:
+      // setPaymentOpen(true);
     } catch (err) {
       setVerificationError(err.message);
     } finally {
