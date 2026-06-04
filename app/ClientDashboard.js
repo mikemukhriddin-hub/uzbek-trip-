@@ -696,7 +696,6 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
             opacity: 0.65,
           }}
         >
-          <source src="/videos/bg-loop.webm" type="video/webm" />
           <source src="/videos/bg-loop.mp4" type="video/mp4" />
         </video>
       </div>
