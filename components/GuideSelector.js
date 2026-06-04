@@ -12,6 +12,12 @@ const LANGUAGES = [
   { code: 'UZ', label: { EN: '🇺🇿 Uzbek', RU: '🇺🇿 Узбекский', UZ: '🇺🇿 O\'zbek tili' } },
 ];
 
+const GUIDE_IMAGES = {
+  1: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=256&q=80', // Sherzod Alimov
+  2: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=256&q=80', // Elena Petrova
+  3: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=256&q=80'  // Jahongir Rustamov
+};
+
 export default function GuideSelector({
   guides = [],
   tariffs = [],
@@ -130,11 +136,27 @@ export default function GuideSelector({
                 }}
               >
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                  {/* Interactive 3D Icon */}
-                  <div className={`icon-3d-container ${isSelected ? 'icon-3d-container-selected' : ''}`}>
-                    <div className={`icon-3d-card ${isSelected ? 'icon-3d-card-selected' : ''}`}>
-                      <ThreeDGuide size={28} className="icon-3d-svg" />
-                    </div>
+                  {/* Visual Guide Avatar Image */}
+                  <div style={{ 
+                    width: '48px', 
+                    height: '48px', 
+                    borderRadius: '50%', 
+                    overflow: 'hidden',
+                    flexShrink: 0,
+                    border: '1.5px solid var(--text-gold)',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+                  }}>
+                    <img 
+                      src={GUIDE_IMAGES[guide.id]} 
+                      alt={guide.full_name} 
+                      style={{ 
+                        width: '100%', 
+                        height: '100%', 
+                        objectFit: 'cover',
+                        transition: 'transform 0.4s ease'
+                      }} 
+                      className="guide-avatar"
+                    />
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>

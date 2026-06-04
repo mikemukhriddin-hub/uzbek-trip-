@@ -4,6 +4,14 @@ import React from 'react';
 import { User, Smartphone, Star, Check } from 'lucide-react';
 import { ThreeDCar } from './icons/ThreeDIcons';
 
+const VEHICLE_IMAGES = {
+  1: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=400&q=80', // White sedan (Cobalt)
+  2: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=400&q=80', // Black sedan (Gentra)
+  3: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=400&q=80', // Silver sedan (Gentra)
+  4: 'https://images.unsplash.com/photo-1508974239320-0a029497e820?auto=format&fit=crop&w=400&q=80', // Minivan (Hyundai H1)
+  5: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=400&q=80'  // Bus (Isuzu)
+};
+
 export default function VehicleSelector({ 
   vehicles = [], 
   selectedVehicleId = null, 
@@ -76,11 +84,27 @@ export default function VehicleSelector({
               }}
             >
               <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                {/* Interactive 3D Icon */}
-                <div className={`icon-3d-container ${isSelected ? 'icon-3d-container-selected' : ''}`}>
-                  <div className={`icon-3d-card ${isSelected ? 'icon-3d-card-selected' : ''}`}>
-                    <ThreeDCar size={28} className="icon-3d-svg" />
-                  </div>
+                {/* Visual Vehicle Image Preview */}
+                <div style={{ 
+                  width: '90px', 
+                  height: '60px', 
+                  borderRadius: '8px', 
+                  overflow: 'hidden',
+                  flexShrink: 0,
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.25)'
+                }}>
+                  <img 
+                    src={VEHICLE_IMAGES[car.id]} 
+                    alt={car.car_model} 
+                    style={{ 
+                      width: '100%', 
+                      height: '100%', 
+                      objectFit: 'cover',
+                      transition: 'transform 0.4s ease'
+                    }} 
+                    className="vehicle-img"
+                  />
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
