@@ -660,8 +660,45 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
   }
 
   return (
-    <main style={{ width: '100%', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <main style={{ width: '100%', minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative' }}>
       <BackgroundGraphics />
+      
+      {/* 🎬 Ambient Video Background Loop */}
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: -5,
+        overflow: 'hidden',
+        pointerEvents: 'none',
+        backgroundColor: '#0a0f1d'
+      }}>
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          background: 'linear-gradient(to bottom, rgba(10, 15, 29, 0.65) 0%, rgba(10, 15, 29, 0.9) 100%)',
+          zIndex: 1
+        }} />
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            opacity: 0.18,
+          }}
+        >
+          <source src="https://assets.mixkit.co/videos/preview/mixkit-mosque-of-abu-al-abbas-al-mursi-in-alexandria-43184-large.mp4" type="video/mp4" />
+        </video>
+      </div>
       
       {/* 🕌 Premium Header */}
       <header className="glass-container" style={{
@@ -822,12 +859,55 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
           {/* Left Column: Constructor Sidebar */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
             
-            {/* Intro Header */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <h1 style={{ fontSize: '28px', fontWeight: 800, color: '#fff', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                {t.heroTitle} <Sparkles size={20} style={{ color: '#d4af37' }} />
+            {/* Intro Header - Elevated Hero Section Banner */}
+            <div 
+              className="glass-container gold-glow"
+              style={{ 
+                padding: '24px 28px', 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: '12px',
+                border: '1px solid rgba(212, 175, 55, 0.2)',
+                background: 'linear-gradient(135deg, rgba(18, 26, 47, 0.6) 0%, rgba(212, 175, 55, 0.04) 100%)',
+                position: 'relative',
+                overflow: 'hidden'
+              }}
+            >
+              <div style={{
+                position: 'absolute',
+                top: '-50px',
+                right: '-50px',
+                width: '150px',
+                height: '150px',
+                borderRadius: '50%',
+                background: 'rgba(212, 175, 55, 0.08)',
+                filter: 'blur(30px)',
+                pointerEvents: 'none'
+              }} />
+              
+              <h1 style={{ 
+                fontSize: '28px', 
+                fontWeight: 900, 
+                color: '#fff', 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '10px',
+                margin: 0,
+                background: 'linear-gradient(to right, #fff 40%, #fef08a 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                letterSpacing: '-0.02em'
+              }}>
+                {t.heroTitle} <Sparkles size={22} style={{ color: '#d4af37', flexShrink: 0 }} />
               </h1>
-              <p style={{ fontSize: '14px', color: '#94a3b8', lineHeight: 1.5 }}>
+              
+              <p style={{ 
+                fontSize: '14px', 
+                color: '#cbd5e1', 
+                lineHeight: 1.6,
+                margin: 0,
+                fontWeight: '500'
+              }}>
                 {t.heroSubtitle}
               </p>
             </div>
