@@ -670,34 +670,42 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
         left: 0,
         right: 0,
         bottom: 0,
-        zIndex: -3,
+        zIndex: -5,
         overflow: 'hidden',
         pointerEvents: 'none',
         backgroundColor: '#0a0f1d'
       }}>
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          background: 'linear-gradient(to bottom, rgba(10, 15, 29, 0.15) 0%, rgba(10, 15, 29, 0.45) 100%)',
-          zIndex: 1
-        }} />
         <video
           autoPlay
           muted
           loop
           playsInline
           style={{
-            width: '100%',
-            height: '100%',
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            minWidth: '100%',
+            minHeight: '100%',
+            width: 'auto',
+            height: 'auto',
+            transform: 'translate(-50%, -50%)',
             objectFit: 'cover',
-            opacity: 0.65,
+            opacity: 0.9,
           }}
         >
           <source src="/videos/bg-loop.mp4" type="video/mp4" />
         </video>
+        {/* Subtle vignette overlay for text readability */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          background: 'linear-gradient(to bottom, rgba(10,15,29,0.3) 0%, rgba(10,15,29,0.1) 30%, rgba(10,15,29,0.1) 70%, rgba(10,15,29,0.4) 100%)',
+          zIndex: 1,
+          pointerEvents: 'none',
+        }} />
       </div>
       
       {/* 🕌 Premium Header */}
