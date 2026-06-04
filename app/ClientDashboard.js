@@ -681,7 +681,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
           left: 0,
           width: '100%',
           height: '100%',
-          background: 'linear-gradient(to bottom, rgba(10, 15, 29, 0.65) 0%, rgba(10, 15, 29, 0.9) 100%)',
+          background: 'linear-gradient(to bottom, rgba(10, 15, 29, 0.35) 0%, rgba(10, 15, 29, 0.70) 100%)',
           zIndex: 1
         }} />
         <video
@@ -693,10 +693,10 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            opacity: 0.18,
+            opacity: 0.45,
           }}
         >
-          <source src="/videos/bg-loop.mp4" type="video/mp4" />
+          <source src="/videos/bg-loop.webm" type="video/webm" />
         </video>
       </div>
       
@@ -868,7 +868,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 flexDirection: 'column', 
                 gap: '12px',
                 border: '1px solid rgba(212, 175, 55, 0.2)',
-                background: 'linear-gradient(135deg, rgba(18, 26, 47, 0.6) 0%, rgba(212, 175, 55, 0.04) 100%)',
+                background: 'linear-gradient(135deg, rgba(10, 15, 29, 0.3) 0%, rgba(212, 175, 55, 0.04) 100%)',
                 position: 'relative',
                 overflow: 'hidden'
               }}
@@ -923,7 +923,6 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 flexWrap: 'wrap',
                 gap: '16px',
                 border: '1px solid rgba(212, 175, 55, 0.25)',
-                backgroundColor: 'rgba(18, 26, 47, 0.45)',
                 borderRadius: '16px'
               }}
             >

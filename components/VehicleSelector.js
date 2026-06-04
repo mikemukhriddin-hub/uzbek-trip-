@@ -80,7 +80,7 @@ export default function VehicleSelector({
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 gap: '16px',
-                backgroundColor: isSelected ? 'rgba(212, 175, 55, 0.05)' : 'rgba(18, 26, 47, 0.7)'
+                backgroundColor: isSelected ? 'rgba(212, 175, 55, 0.05)' : 'rgba(10, 15, 29, 0.3)'
               }}
             >
               <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
