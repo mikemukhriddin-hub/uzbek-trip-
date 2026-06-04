@@ -103,8 +103,6 @@ export default function CheckoutForm({
 
     if (selectedLocations.length === 0) {
       newErrors.general = t.selectLocations;
-    } else if (!selectedVehicle) {
-      newErrors.general = language === 'UZ' ? 'Iltimos, avval transportni tanlang' : language === 'RU' ? 'Пожалуйста, выберите транспорт' : 'Please select a vehicle first';
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -471,9 +469,13 @@ export default function CheckoutForm({
           <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
             <span>
               {t.transportCost}{' '}
-              {selectedVehicle && (
+              {selectedVehicle ? (
                 <span style={{ fontSize: '11px', color: '#009b9e', backgroundColor: 'rgba(0,155,158,0.1)', padding: '1px 5px', borderRadius: '3px', marginLeft: '4px' }}>
                   {selectedVehicle.car_model} ({isOutOfCityRoute ? '🏔 Mountain' : '🏙 City'})
+                </span>
+              ) : (
+                <span style={{ fontSize: '11px', color: '#94a3b8', backgroundColor: 'rgba(255,255,255,0.05)', padding: '1px 5px', borderRadius: '3px', marginLeft: '4px' }}>
+                  {language === 'UZ' ? 'Tanlanmagan (Usiz)' : language === 'RU' ? 'Не выбран (Без транспорта)' : 'Not selected (No transport)'}
                 </span>
               )}
             </span>
@@ -544,7 +546,7 @@ export default function CheckoutForm({
       {/* Submit Button */}
       <button
         type="submit"
-        disabled={isSubmitting || selectedLocations.length === 0 || !selectedVehicle}
+        disabled={isSubmitting || selectedLocations.length === 0}
         className="btn-gold"
         style={{
           width: '100%',
@@ -554,8 +556,8 @@ export default function CheckoutForm({
           alignItems: 'center',
           justifyContent: 'center',
           gap: '8px',
-          opacity: (selectedLocations.length === 0 || !selectedVehicle || isSubmitting) ? 0.5 : 1,
-          cursor: (selectedLocations.length === 0 || !selectedVehicle || isSubmitting) ? 'not-allowed' : 'pointer',
+          opacity: (selectedLocations.length === 0 || isSubmitting) ? 0.5 : 1,
+          cursor: (selectedLocations.length === 0 || isSubmitting) ? 'not-allowed' : 'pointer',
           backgroundColor: bookingType === 'shared' ? '#009b9e' : undefined,
           boxShadow: bookingType === 'shared' ? '0 0 20px rgba(0,155,158,0.25)' : undefined,
           transition: 'background-color 0.3s ease, box-shadow 0.3s ease',

@@ -41,7 +41,8 @@ function MyTourContent() {
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
-  const [language, setLanguage] = useState('EN');
+  const [language, setLanguage] = useState('UZ'); // Default to UZ
+  const [showLangDropdown, setShowLangDropdown] = useState(false);
 
   // Cancel flow states
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
@@ -49,9 +50,32 @@ function MyTourContent() {
   const [bookingCancelled, setBookingCancelled] = useState(false);
 
   useEffect(() => {
+    // Sync state loaded from localStorage if user has a preference saved
+    const savedLang = localStorage.getItem('site_lang');
+    if (savedLang) {
+      setLanguage(savedLang);
+    } else {
+      // Auto-detect browser language
+      const browserLang = typeof navigator !== 'undefined' ? (navigator.language || navigator.userLanguage || '') : '';
+      let defaultLang = 'UZ';
+      if (browserLang.toLowerCase().startsWith('ru')) {
+        defaultLang = 'RU';
+      } else if (browserLang.toLowerCase().startsWith('en')) {
+        defaultLang = 'EN';
+      }
+      setLanguage(defaultLang);
+    }
+  }, []);
+
+  useEffect(() => {
     if (!id || !token) {
       Promise.resolve().then(() => {
-        setErrorMsg('Invalid or missing tour parameters.');
+        const msg = language === 'UZ' 
+          ? 'Yaroqsiz yoki yetishmayotgan tur parametrlari.' 
+          : language === 'RU' 
+            ? 'Неверные или отсутствующие параметры тура.' 
+            : 'Invalid or missing tour parameters.';
+        setErrorMsg(msg);
         setLoading(false);
       });
       return;
@@ -62,18 +86,41 @@ function MyTourContent() {
         const data = await res.json();
         if (res.ok) {
           setBooking(data);
-          setLanguage(data.customer_language || 'EN');
+          const savedLang = localStorage.getItem('site_lang');
+          if (!savedLang && data.customer_language) {
+            setLanguage(data.customer_language);
+          }
         } else {
-          setErrorMsg(data.message || 'Failed to load booking details.');
+          let msg = data.message;
+          if (data.message === 'Missing booking ID or token.') {
+            msg = language === 'UZ' 
+              ? 'Buyurtma ID si yoki tokeni kiritilmagan.' 
+              : language === 'RU' 
+                ? 'Отсутствует ID бронирования или токен.' 
+                : 'Missing booking ID or token.';
+          } else if (data.message === 'Booking not found.') {
+            msg = language === 'UZ' 
+              ? 'Buyurtma topilmadi.' 
+              : language === 'RU' 
+                ? 'Бронирование не найдено.' 
+                : 'Booking not found.';
+          } else if (data.message === 'Invalid or expired token.') {
+            msg = language === 'UZ' 
+              ? 'Yaroqsiz yoki muddati o\'tgan token.' 
+              : language === 'RU' 
+                ? 'Недействительный или истекший токен.' 
+                : 'Invalid or expired token.';
+          }
+          setErrorMsg(msg || (language === 'UZ' ? 'Buyurtma ma\'lumotlarini yuklab bo\'lmadi.' : language === 'RU' ? 'Не удалось загрузить детали бронирования.' : 'Failed to load booking details.'));
         }
       })
       .catch((err) => {
-        setErrorMsg('Connection error: ' + err.message);
+        setErrorMsg(language === 'UZ' ? 'Aloqa xatosi: ' + err.message : language === 'RU' ? 'Ошибка соединения: ' + err.message : 'Connection error: ' + err.message);
       })
       .finally(() => {
         setLoading(false);
       });
-  }, [id, token]);
+  }, [id, token, language]);
 
   const handleCancelBooking = async () => {
     setIsCancelling(true);
@@ -89,10 +136,24 @@ function MyTourContent() {
         setShowCancelConfirm(false);
       } else {
         const d = await res.json();
-        alert(d.message || 'Failed to cancel booking.');
+        let errorMsg = d.message;
+        if (d.message === 'Missing booking ID or token.') {
+          errorMsg = language === 'UZ' 
+            ? 'Buyurtma ID si yoki tokeni kiritilmagan.' 
+            : language === 'RU' 
+              ? 'Отсутствует ID бронирования или токен.' 
+              : 'Missing booking ID or token.';
+        } else if (d.message === 'Forbidden: Invalid token.') {
+          errorMsg = language === 'UZ' 
+            ? 'Ruxsat berilmadi: Yaroqsiz token.' 
+            : language === 'RU' 
+              ? 'Доступ запрещен: Неверный токен.' 
+              : 'Forbidden: Invalid token.';
+        }
+        alert(errorMsg || (language === 'UZ' ? 'Buyurtmani bekor qilib bo\'lmadi.' : language === 'RU' ? 'Не удалось отменить бронирование.' : 'Failed to cancel booking.'));
       }
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      alert(language === 'UZ' ? `Xatolik: ${err.message}` : language === 'RU' ? `Ошибка: ${err.message}` : `Error: ${err.message}`);
     } finally {
       setIsCancelling(false);
     }
@@ -113,16 +174,28 @@ function MyTourContent() {
     backBtn: language === 'UZ' ? 'Bosh sahifaga' : language === 'RU' ? 'На главную' : 'Back to Home',
     cancelConfirmTitle: language === 'UZ' ? 'Orzungizdagi sayohatni bekor qilasizmi?' : language === 'RU' ? 'Отменить поездку вашей мечты?' : 'Cancel Your Dream Trip?',
     cancelConfirmDesc: language === 'UZ'
-      ? booking?.guide
-        ? `Sizning gidingiz (${booking.guide.full_name}) va haydovchingiz (${booking?.vehicle?.driver_name || 'N/A'}) ushbu kunni aynan siz uchun band qilishgan. Agar bekor qilsangiz, ular ish kunini yo'qotishadi. Ishonchingiz komilmi?`
-        : `Sizning haydovchingiz (${booking?.vehicle?.driver_name || 'N/A'}) ushbu kunni aynan siz uchun band qilgan. Agar bekor qilsangiz, u ish kunini yo'qotadi. Ishonchingiz komilmi?`
+      ? (booking?.guide && booking?.vehicle)
+        ? `Sizning gidingiz (${booking.guide.full_name}) va haydovchingiz (${booking.vehicle.driver_name}) ushbu kunni aynan siz uchun band qilishgan. Agar bekor qilsangiz, ular ish kunini yo'qotishadi. Ishonchingiz komilmi?`
+        : booking?.guide
+          ? `Sizning gidingiz (${booking.guide.full_name}) ushbu kunni aynan siz uchun band qilgan. Agar bekor qilsangiz, u ish kunini yo'qotadi. Ishonchingiz komilmi?`
+          : booking?.vehicle
+            ? `Sizning haydovchingiz (${booking.vehicle.driver_name}) ushbu kunni aynan siz uchun band qilgan. Agar bekor qilsangiz, u ish kunini yo'qotadi. Ishonchingiz komilmi?`
+            : `Ushbu sayohat buyurtmasini bekor qilishga ishonchingiz komilmi?`
       : language === 'RU' 
-      ? booking?.guide
-        ? `Ваш гид (${booking.guide.full_name}) и водитель (${booking?.vehicle?.driver_name || 'N/A'}) забронировали этот день специально для вас. Если вы отмените, они останутся без работы. Вы уверены?`
-        : `Ваш водитель (${booking?.vehicle?.driver_name || 'N/A'}) забронировал этот день специально для вас. Если вы отмените, он останется без работы. Вы уверены?`
-      : booking?.guide
-        ? `Your guide (${booking.guide.full_name}) and driver (${booking?.vehicle?.driver_name || 'N/A'}) have reserved their day for you. If you cancel, they will lose their schedule. Are you sure you want to cancel?`
-        : `Your driver (${booking?.vehicle?.driver_name || 'N/A'}) has reserved their day for you. If you cancel, they will lose their schedule. Are you sure you want to cancel?`,
+      ? (booking?.guide && booking?.vehicle)
+        ? `Ваш гид (${booking.guide.full_name}) и водитель (${booking.vehicle.driver_name}) забронировали этот день специально для вас. Если вы отмените, они останутся без работы. Вы уверены?`
+        : booking?.guide
+          ? `Ваш гид (${booking.guide.full_name}) забронировал этот день специально для вас. Если вы отмените, он останется без работы. Вы уверены?`
+          : booking?.vehicle
+            ? `Ваш водитель (${booking.vehicle.driver_name}) забронировал этот день специально для вас. Если вы отмените, он останется без работы. Вы уверены?`
+            : `Вы уверены, что хотите отменить это бронирование?`
+      : (booking?.guide && booking?.vehicle)
+        ? `Your guide (${booking.guide.full_name}) and driver (${booking.vehicle.driver_name}) have reserved their day for you. If you cancel, they will lose their schedule. Are you sure you want to cancel?`
+        : booking?.guide
+          ? `Your guide (${booking.guide.full_name}) has reserved their day for you. If you cancel, they will lose their schedule. Are you sure you want to cancel?`
+          : booking?.vehicle
+            ? `Your driver (${booking.vehicle.driver_name}) has reserved their day for you. If you cancel, they will lose their schedule. Are you sure you want to cancel?`
+            : `Are you sure you want to cancel this booking?`,
     cancelKeep: language === 'UZ' ? 'Yo\'q, bandlikni saqlash' : language === 'RU' ? 'Нет, сохранить бронь' : 'No, Keep My Booking',
     cancelConfirmYes: language === 'UZ' ? 'Ha, buyurtmani bekor qilish' : language === 'RU' ? 'Да, отменить бронирование' : 'Yes, Cancel Booking',
     cancelSuccess: language === 'UZ' ? 'Buyurtma muvaffaqiyatli bekor qilindi.' : language === 'RU' ? 'Бронирование успешно отменено.' : 'Booking successfully cancelled.',
@@ -163,11 +236,86 @@ function MyTourContent() {
     <main style={{ minHeight: '100vh', padding: '40px 24px', backgroundColor: '#0a0f1d', color: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       
       {/* Header */}
-      <header style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '32px' }}>
-        <Compass size={28} style={{ color: '#d4af37' }} />
-        <span style={{ fontSize: '20px', fontWeight: 800, letterSpacing: '0.05em' }}>
-          SAMARQAND <span style={{ color: '#d4af37' }}>CRAFTOUR</span>
-        </span>
+      <header style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        width: '100%', 
+        maxWidth: '600px', 
+        marginBottom: '32px' 
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Compass size={28} style={{ color: '#d4af37' }} />
+          <span style={{ fontSize: '20px', fontWeight: 800, letterSpacing: '0.05em' }}>
+            SAMARQAND <span style={{ color: '#d4af37' }}>CRAFTOUR</span>
+          </span>
+        </div>
+
+        <div style={{ position: 'relative' }}>
+          <button
+            onClick={() => setShowLangDropdown(!showLangDropdown)}
+            style={{
+              padding: '6px 12px',
+              borderRadius: '8px',
+              backgroundColor: 'rgba(255,255,255,0.05)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              color: '#fff',
+              fontSize: '12px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <Languages size={12} style={{ color: '#d4af37' }} />
+            <span>{language === 'EN' ? '🇬🇧 EN' : language === 'RU' ? '🇷🇺 RU' : '🇺🇿 UZ'}</span>
+          </button>
+          {showLangDropdown && (
+            <div style={{
+              position: 'absolute',
+              top: 'calc(100% + 6px)',
+              right: 0,
+              backgroundColor: '#0f172a',
+              border: '1px solid rgba(212,175,55,0.25)',
+              borderRadius: '8px',
+              padding: '4px',
+              zIndex: 1000,
+              boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '2px',
+              minWidth: '120px'
+            }}>
+              {['EN', 'RU', 'UZ'].map((langCode) => (
+                <button
+                  key={langCode}
+                  onClick={() => {
+                    setLanguage(langCode);
+                    setShowLangDropdown(false);
+                    localStorage.setItem('site_lang', langCode);
+                  }}
+                  style={{
+                    padding: '6px 10px',
+                    border: 'none',
+                    background: language === langCode ? 'rgba(212,175,55,0.1)' : 'transparent',
+                    color: language === langCode ? '#d4af37' : '#94a3b8',
+                    textAlign: 'left',
+                    fontSize: '12px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    borderRadius: '4px',
+                    transition: 'all 0.2s ease',
+                    width: '100%'
+                  }}
+                >
+                  {langCode === 'EN' ? '🇬🇧 English' : langCode === 'RU' ? '🇷🇺 Русский' : '🇺🇿 O\'zbekcha'}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </header>
 
       {/* Main Container */}
@@ -249,11 +397,17 @@ function MyTourContent() {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', borderLeft: '1px solid rgba(255,255,255,0.08)', paddingLeft: '16px' }}>
             <span style={{ fontSize: '12px', color: '#94a3b8' }}>{t.driverTitle}</span>
-            <strong style={{ fontSize: '14px', color: '#fff' }}>{booking.vehicle?.driver_name || 'N/A'}</strong>
-            <span style={{ fontSize: '11px', color: '#cbd5e1' }}>{t.carModel} {booking.vehicle?.car_model || 'N/A'}</span>
-            {booking.vehicle?.driver_phone && (
-              <span style={{ fontSize: '12px', color: '#009b9e' }}>📞 {booking.vehicle.driver_phone}</span>
-            )}
+            <strong style={{ fontSize: '14px', color: '#fff' }}>
+              {booking.vehicle ? booking.vehicle.driver_name : (language === 'UZ' ? 'Transportsiz sayohat' : language === 'RU' ? 'Без транспорта' : 'No Vehicle')}
+            </strong>
+            {booking.vehicle ? (
+              <>
+                <span style={{ fontSize: '11px', color: '#cbd5e1' }}>{t.carModel} {booking.vehicle.car_model}</span>
+                {booking.vehicle.driver_phone && (
+                  <span style={{ fontSize: '12px', color: '#009b9e' }}>📞 {booking.vehicle.driver_phone}</span>
+                )}
+              </>
+            ) : null}
           </div>
         </div>
 

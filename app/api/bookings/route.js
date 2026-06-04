@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { supabase, supabaseConfigured } from '@/lib/supabase';
 import nodemailer from 'nodemailer';
+import { generateMagicToken } from '@/lib/token';
+
 
 // In-memory OTP store (global to survive Next.js dev hot-reloads in local environment)
 global.otpStore = global.otpStore || new Map();
@@ -56,7 +58,7 @@ export async function POST(req) {
     const resolvedBookingType = (bookingType === 'shared') ? 'shared' : 'private';
 
     // Basic Validation
-    if (!touristName || !touristEmail || !bookingDate || !vehicleId) {
+    if (!touristName || !touristEmail || !bookingDate) {
       return NextResponse.json(
         { message: 'Missing required booking fields.' },
         { status: 400 }
@@ -88,10 +90,14 @@ export async function POST(req) {
           .eq('booking_date', bookingDate)
           .neq('status', 'cancelled');
 
-        if (guideId) {
+        if (guideId && vehicleId) {
           query = query.or(`guide_id.eq.${guideId},vehicle_id.eq.${vehicleId}`);
-        } else {
+        } else if (guideId) {
+          query = query.eq('guide_id', guideId);
+        } else if (vehicleId) {
           query = query.eq('vehicle_id', vehicleId);
+        } else {
+          query = query.eq('id', 0); // won't match anything
         }
 
         const { data: dbConflicts, error: conflictErr } = await query;
@@ -100,14 +106,16 @@ export async function POST(req) {
         conflicts = dbConflicts || [];
 
         // Fetch vehicle capacity
-        const { data: vehicleData } = await supabase
-          .from('vehicles')
-          .select('capacity')
-          .eq('id', vehicleId)
-          .single();
+        if (vehicleId) {
+          const { data: vehicleData } = await supabase
+            .from('vehicles')
+            .select('capacity')
+            .eq('id', vehicleId)
+            .single();
 
-        if (vehicleData) {
-          capacity = vehicleData.capacity;
+          if (vehicleData) {
+            capacity = vehicleData.capacity;
+          }
         }
       } catch (err) {
         console.warn('⚠️ Exception querying Supabase, falling back to mock store:', err.message);
@@ -119,19 +127,21 @@ export async function POST(req) {
       // Mock storage fallback
       if (global.mockBookingsStore) {
         const mockList = Array.from(global.mockBookingsStore.values())
-          .filter(b => b.booking_date === bookingDate && b.status !== 'cancelled' && (b.vehicle_id === vehicleId || (guideId && b.guide_id === guideId)));
+          .filter(b => b.booking_date === bookingDate && b.status !== 'cancelled' && ((vehicleId && b.vehicle_id === vehicleId) || (guideId && b.guide_id === guideId)));
         conflicts = mockList;
       }
       
-      const mockVehicles = {
-        1: { capacity: 5 },
-        2: { capacity: 5 },
-        3: { capacity: 5 },
-        4: { capacity: 8 },
-        5: { capacity: 20 }
-      };
-      const mockVeh = mockVehicles[vehicleId] || mockVehicles[1];
-      capacity = mockVeh.capacity;
+      if (vehicleId) {
+        const mockVehicles = {
+          1: { capacity: 5 },
+          2: { capacity: 5 },
+          3: { capacity: 5 },
+          4: { capacity: 8 },
+          5: { capacity: 20 }
+        };
+        const mockVeh = mockVehicles[vehicleId] || mockVehicles[1];
+        capacity = mockVeh.capacity;
+      }
     }
 
     // Filter out expired pending bookings (older than 2 minutes) so they do not block guide/vehicle availability
@@ -146,18 +156,20 @@ export async function POST(req) {
 
     if (activeConflicts.length > 0) {
       // A. Vehicle Capacity Check for the Selected Vehicle
-      const sameVehicleBookings = activeConflicts.filter(c => c.vehicle_id === vehicleId);
-      const bookedSeats = sameVehicleBookings.reduce((sum, c) => sum + (c.passenger_count || 1), 0);
-      const availableSeats = capacity - bookedSeats;
+      if (vehicleId) {
+        const sameVehicleBookings = activeConflicts.filter(c => c.vehicle_id === vehicleId);
+        const bookedSeats = sameVehicleBookings.reduce((sum, c) => sum + (c.passenger_count || 1), 0);
+        const availableSeats = capacity - bookedSeats;
 
-      if (passengerCount > availableSeats) {
-        const errorMsg = lang === 'RU'
-          ? `У этого водителя недостаточно свободных мест (Осталось свободных мест: ${availableSeats}). Пожалуйста, выберите другого водителя или закажите более крупный транспорт (Минивен).`
-          : lang === 'UZ'
-            ? `Ushbu haydovchida joy yetarli emas (Mavjud bo'sh joy: ${availableSeats} ta). Iltimos, boshqa haydovchi tanlang yoki kattaroq transport (Miniven) buyurtma qiling.`
-            : `This driver does not have enough seats (Available seats: ${availableSeats}). Please choose another driver or order a larger transport (Minivan).`;
-        
-        return NextResponse.json({ message: errorMsg }, { status: 409 });
+        if (passengerCount > availableSeats) {
+          const errorMsg = lang === 'RU'
+            ? `У этого водителя недостаточно свободных мест (Осталось свободных мест: ${availableSeats}). Пожалуйста, выберите другого водителя или закажите более крупный транспорт (Минивен).`
+            : lang === 'UZ'
+              ? `Ushbu haydovchida joy yetarli emas (Mavjud bo'sh joy: ${availableSeats} ta). Iltimos, boshqa haydovchi tanlang yoki kattaroq transport (Miniven) buyurtma qiling.`
+              : `This driver does not have enough seats (Available seats: ${availableSeats}). Please choose another driver or order a larger transport (Minivan).`;
+          
+          return NextResponse.json({ message: errorMsg }, { status: 409 });
+        }
       }
 
       // B. Guide availability / Pooling check
@@ -439,12 +451,15 @@ export async function POST(req) {
       console.log('N8N_WEBHOOK_URL not configured. Skipping webhook trigger.');
     }
 
+    const token = generateMagicToken(bookingId, touristEmail);
+
     return NextResponse.json({
       message: emailSent ? 'Booking created, verification code sent.' : 'Booking created, email sending failed.',
       bookingId,
       emailSent,
       emailError,
       otpCode,
+      token,
     });
 
   } catch (err) {

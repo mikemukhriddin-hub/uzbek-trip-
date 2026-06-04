@@ -88,7 +88,7 @@ const UZ_LOCATIONS = {
 };
 
 export default function ClientDashboard({ initialLocations = [], initialGuides = [], initialTariffs = [], initialVehicles = [] }) {
-  const [language, setLanguage] = useState('EN'); // Site UI Language
+  const [language, setLanguage] = useState('UZ'); // Site UI Language - default to UZ
   const [showLangDropdown, setShowLangDropdown] = useState(false);
   const [locations, setLocations] = useState(() => {
     const base = initialLocations && initialLocations.length > 0 ? initialLocations : MOCK_LOCATIONS;
@@ -129,6 +129,19 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
     if (savedLang) {
       Promise.resolve().then(() => {
         setLanguage(savedLang);
+      });
+    } else {
+      // Auto-detect browser language
+      const browserLang = typeof navigator !== 'undefined' ? (navigator.language || navigator.userLanguage || '') : '';
+      let defaultLang = 'UZ';
+      if (browserLang.toLowerCase().startsWith('ru')) {
+        defaultLang = 'RU';
+      } else if (browserLang.toLowerCase().startsWith('en')) {
+        defaultLang = 'EN';
+      }
+      Promise.resolve().then(() => {
+        setLanguage(defaultLang);
+        localStorage.setItem('site_lang', defaultLang);
       });
     }
   }, []);
@@ -207,8 +220,8 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
       touristEmail: formData.email,
       touristPhone: formData.phone,
       bookingDate: formData.date,
-      guideId: selectedGuide?.id,
-      vehicleId: selectedVehicle?.id,
+      guideId: selectedGuide?.id || null,
+      vehicleId: selectedVehicle?.id || null,
       totalPrice: formData.totalPrice,
       customerLanguage: language,
       passengerCount: formData.passengerCount || 1,
@@ -236,7 +249,8 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
       setBookingData({
         ...payload,
         emailSent: data.emailSent,
-        otpCode: data.otpCode
+        otpCode: data.otpCode,
+        token: data.token
       });
       setOtpModalOpen(true);
     } catch (err) {
@@ -299,17 +313,31 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
       const res = await fetch('/api/bookings/cancel', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bookingId: createdBookingId }),
+        body: JSON.stringify({ bookingId: createdBookingId, token: bookingData?.token }),
       });
       if (res.ok) {
         setBookingCancelled(true);
         setShowCancelConfirm(false);
       } else {
         const d = await res.json();
-        alert(d.message || 'Failed to cancel booking.');
+        let errorMsg = d.message;
+        if (d.message === 'Missing booking ID or token.') {
+          errorMsg = language === 'UZ' 
+            ? 'Buyurtma ID si yoki tokeni kiritilmagan.' 
+            : language === 'RU' 
+              ? 'Отсутствует ID бронирования или токен.' 
+              : 'Missing booking ID or token.';
+        } else if (d.message === 'Forbidden: Invalid token.') {
+          errorMsg = language === 'UZ' 
+            ? 'Ruxsat berilmadi: Yaroqsiz token.' 
+            : language === 'RU' 
+              ? 'Доступ запрещен: Неверный токен.' 
+              : 'Forbidden: Invalid token.';
+        }
+        alert(errorMsg || (language === 'UZ' ? 'Buyurtmani bekor qilib bo\'lmadi.' : language === 'RU' ? 'Не удалось отменить бронирование.' : 'Failed to cancel booking.'));
       }
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      alert(language === 'UZ' ? `Xatolik: ${err.message}` : language === 'RU' ? `Ошибка: ${err.message}` : `Error: ${err.message}`);
     } finally {
       setIsCancelling(false);
     }
@@ -372,16 +400,28 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
               
               <p style={{ fontSize: '15px', color: '#94a3b8', lineHeight: 1.6 }}>
                 {language === 'UZ'
-                  ? selectedGuide
-                    ? `Sayohat bekor qilindi. Gidingiz ${selectedGuide.full_name} va haydovchingiz ${selectedVehicle?.driver_name} bu haqda ogohlantirildi.`
-                    : `Sayohat bekor qilindi. Haydovchingiz ${selectedVehicle?.driver_name} bu haqda ogohlantirildi.`
+                  ? (selectedGuide && selectedVehicle)
+                    ? `Sayohat bekor qilindi. Gidingiz ${selectedGuide.full_name} va haydovchingiz ${selectedVehicle.driver_name} bu haqda ogohlantirildi.`
+                    : selectedGuide
+                      ? `Sayohat bekor qilindi. Gidingiz ${selectedGuide.full_name} bu haqda ogohlantirildi.`
+                      : selectedVehicle
+                        ? `Sayohat bekor qilindi. Haydovchingiz ${selectedVehicle.driver_name} bu haqda ogohlantirildi.`
+                        : `Sayohat bekor qilindi.`
                   : language === 'RU'
-                  ? selectedGuide
-                    ? `Поездка отменена. Ваш гид ${selectedGuide.full_name} и водитель ${selectedVehicle?.driver_name} были оповещены и освобождены.`
-                    : `Поездка отменена. Ваш водитель ${selectedVehicle?.driver_name} был оповещен и освобожден.`
-                  : selectedGuide
-                    ? `Your trip has been cancelled. Your guide ${selectedGuide.full_name} and driver ${selectedVehicle?.driver_name} have been notified.`
-                    : `Your trip has been cancelled. Your driver ${selectedVehicle?.driver_name} has been notified.`}
+                  ? (selectedGuide && selectedVehicle)
+                    ? `Поездка отменена. Ваш гид ${selectedGuide.full_name} и водитель ${selectedVehicle.driver_name} были оповещены и освобождены.`
+                    : selectedGuide
+                      ? `Поездка отменена. Ваш гид ${selectedGuide.full_name} был оповещен.`
+                      : selectedVehicle
+                        ? `Поездка отменена. Ваш водитель ${selectedVehicle.driver_name} был оповещен.`
+                        : `Поездка отменена.`
+                  : (selectedGuide && selectedVehicle)
+                    ? `Your trip has been cancelled. Your guide ${selectedGuide.full_name} and driver ${selectedVehicle.driver_name} have been notified.`
+                    : selectedGuide
+                      ? `Your trip has been cancelled. Your guide ${selectedGuide.full_name} has been notified.`
+                      : selectedVehicle
+                        ? `Your trip has been cancelled. Your driver ${selectedVehicle.driver_name} has been notified.`
+                        : `Your trip has been cancelled.`}
               </p>
             </>
           ) : (
@@ -430,7 +470,11 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: '#94a3b8' }}>{t.successDriver}</span>
-                  <strong style={{ color: '#fff' }}>{selectedVehicle?.driver_name} ({selectedVehicle?.car_model})</strong>
+                  <strong style={{ color: '#fff' }}>
+                    {selectedVehicle 
+                      ? `${selectedVehicle.driver_name} (${selectedVehicle.car_model})` 
+                      : (language === 'UZ' ? 'Transportsiz (Faqat marshrut)' : language === 'RU' ? 'Без транспорта' : 'No driver (Itinerary only)')}
+                  </strong>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: '#94a3b8' }}>{t.successTotal}</span>
@@ -544,17 +588,29 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                   {language === 'UZ' ? 'Orzungizdagi sayohatni bekor qilasizmi?' : language === 'RU' ? 'Отменить поездку вашей мечты?' : 'Cancel Your Dream Trip?'}
                 </h3>
                 <p style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: 1.6 }}>
-                 {language === 'UZ'
-                    ? selectedGuide
-                      ? `Sizning tajribali gidingiz (${selectedGuide.full_name}) va haydovchingiz (${selectedVehicle?.driver_name}) ushbu kunni aynan siz uchun band qilishgan. Agar bekor qilsangiz, ular kunlik ishidan mahrum bo'lishadi. Ishonchingiz komilmi?`
-                      : `Sizning haydovchingiz (${selectedVehicle?.driver_name}) ushbu kunni aynan siz uchun band qilgan. Agar bekor qilsangiz, u kunlik ishidan mahrum bo'ladi. Ishonchingiz komilmi?`
+                  {language === 'UZ'
+                    ? (selectedGuide && selectedVehicle)
+                      ? `Sizning tajribali gidingiz (${selectedGuide.full_name}) va haydovchingiz (${selectedVehicle.driver_name}) ushbu kunni aynan siz uchun band qilishgan. Agar bekor qilsangiz, ular kunlik ishidan mahrum bo'lishadi. Ishonchingiz komilmi?`
+                      : selectedGuide
+                        ? `Sizning tajribali gidingiz (${selectedGuide.full_name}) ushbu kunni aynan siz uchun band qilgan. Agar bekor qilsangiz, u kunlik ishidan mahrum bo'ladi. Ishonchingiz komilmi?`
+                        : selectedVehicle
+                          ? `Sizning haydovchingiz (${selectedVehicle.driver_name}) ushbu kunni aynan siz uchun band qilgan. Agar bekor qilsangiz, u kunlik ishidan mahrum bo'ladi. Ishonchingiz komilmi?`
+                          : `Ushbu sayohat buyurtmasini bekor qilishga ishonchingiz komilmi?`
                     : language === 'RU'
-                    ? selectedGuide
-                      ? `Ваш опытный гид (${selectedGuide.full_name}) и водитель (${selectedVehicle?.driver_name}) уже забронировали свой день для вас. Если вы отмените, они потеряют этот рабочий день. Вы уверены?`
-                      : `Ваш водитель (${selectedVehicle?.driver_name}) уже забронировал свой день для вас. Если вы отмените, он потеряет этот рабочий день. Вы уверены?`
-                    : selectedGuide
-                      ? `Your guide (${selectedGuide.full_name}) and driver (${selectedVehicle?.driver_name}) have reserved their day for you. If you cancel, they will lose their schedule. Are you sure you want to cancel?`
-                      : `Your driver (${selectedVehicle?.driver_name}) has reserved their day for you. If you cancel, they will lose their schedule. Are you sure you want to cancel?`}
+                    ? (selectedGuide && selectedVehicle)
+                      ? `Ваш опытный гид (${selectedGuide.full_name}) и водитель (${selectedVehicle.driver_name}) уже забронировали свой день для вас. Если вы отмените, они потеряют этот рабочий день. Вы уверены?`
+                      : selectedGuide
+                        ? `Ваш опытный гид (${selectedGuide.full_name}) уже забронировал свой день для вас. Если вы отмените, он потеряет этот рабочий день. Вы уверены?`
+                        : selectedVehicle
+                          ? `Ваш водитель (${selectedVehicle.driver_name}) уже забронировал свой день для вас. Если вы отмените, он потеряет этот рабочий день. Вы уверены?`
+                          : `Вы уверены, что хотите отменить это бронирование?`
+                    : (selectedGuide && selectedVehicle)
+                      ? `Your guide (${selectedGuide.full_name}) and driver (${selectedVehicle.driver_name}) have reserved their day for you. If you cancel, they will lose their schedule. Are you sure you want to cancel?`
+                      : selectedGuide
+                        ? `Your guide (${selectedGuide.full_name}) has reserved their day for you. If you cancel, they will lose their schedule. Are you sure you want to cancel?`
+                        : selectedVehicle
+                          ? `Your driver (${selectedVehicle.driver_name}) has reserved their day for you. If you cancel, they will lose their schedule. Are you sure you want to cancel?`
+                          : `Are you sure you want to cancel this booking?`}
                 </p>
               </div>
 
