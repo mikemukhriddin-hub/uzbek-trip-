@@ -309,5 +309,38 @@ input:focus, select:focus, textarea:focus {
   transform: scale(1.08);
 }
 
+/* Interactive Card Transitions & Hover lifts */
+.glass-container {
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  will-change: transform, box-shadow;
+}
+
+.glass-container:hover {
+  transform: translateY(-4px);
+  background-color: rgba(22, 32, 58, 0.55);
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+}
+
+/* Custom category selections */
+.selected-card-historical {
+  border-color: #0070c0 !important;
+  box-shadow: 0 0 18px rgba(0, 112, 192, 0.35) !important;
+  background: rgba(0, 112, 192, 0.08) !important;
+}
+
+.selected-card-alternative {
+  border-color: #009b9e !important;
+  box-shadow: 0 0 18px rgba(0, 155, 158, 0.35) !important;
+  background: rgba(0, 155, 158, 0.08) !important;
+}
+
+.selected-card-food {
+  border-color: #d4af37 !important;
+  box-shadow: 0 0 18px rgba(212, 175, 55, 0.35) !important;
+  background: rgba(212, 175, 55, 0.08) !important;
+}
+
+
 
 

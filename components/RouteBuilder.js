@@ -114,39 +114,87 @@ export default function RouteBuilder({
               <span>{categoryTitle}</span>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', 
+              gap: '14px' 
+            }}>
               {catLocations.map((loc) => {
                 const isSelected = selectedLocations.some((sel) => sel.id === loc.id);
                 const name = language === 'RU' ? loc.name_ru : language === 'UZ' ? loc.name_uz : loc.name_en;
                 const desc = language === 'RU' ? loc.description_ru : language === 'UZ' ? loc.description_uz : loc.description_en;
+                
+                // Get custom selection class based on location category
+                const selectionClass = isSelected ? `selected-card-${catKey}` : '';
 
                 return (
                   <div 
                     key={loc.id} 
-                    className={`glass-container animate-fade-in ${isSelected ? 'selected-card-glow' : ''}`}
+                    className={`glass-container animate-fade-in ${selectionClass}`}
                     style={{
-                      padding: '12px 16px',
+                      padding: '14px',
                       display: 'flex',
-                      alignItems: 'center',
+                      flexDirection: 'column',
                       justifyContent: 'space-between',
                       gap: '12px',
-                      border: isSelected 
-                        ? `1.5px solid ${catInfo.color}` 
-                        : '1px solid var(--border-card)',
-                      boxShadow: isSelected ? `0 0 12px rgba(${catKey === 'food' ? '212,175,55' : catKey === 'alternative' ? '0,155,158' : '0,112,192'}, 0.15)` : 'none'
+                      borderRadius: '16px',
+                      height: '100%'
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
-                      {/* Location Thumbnail */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
+                      {/* Location Thumbnail Card Header */}
                       <div style={{ 
-                        width: '64px', 
-                        height: '64px', 
-                        borderRadius: '8px', 
+                        width: '100%', 
+                        height: '140px', 
+                        borderRadius: '10px', 
                         overflow: 'hidden', 
                         flexShrink: 0,
-                        border: '1.5px solid var(--border-card)',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.25)'
+                        position: 'relative',
+                        border: '1px solid rgba(255, 255, 255, 0.05)',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
                       }}>
+                        {loc.is_out_of_city && (
+                          <span style={{
+                            position: 'absolute',
+                            top: '8px',
+                            left: '8px',
+                            zIndex: 2,
+                            backgroundColor: 'rgba(212, 175, 55, 0.92)',
+                            color: '#0a0f1d',
+                            fontSize: '10px',
+                            fontWeight: '700',
+                            padding: '3px 8px',
+                            borderRadius: '6px',
+                            border: '1px solid rgba(255, 255, 255, 0.25)',
+                            boxShadow: '0 2px 6px rgba(0,0,0,0.3)'
+                          }}>
+                            {t.mountainArea}
+                          </span>
+                        )}
+
+                        {loc.estimated_duration && (
+                          <span style={{
+                            position: 'absolute',
+                            top: '8px',
+                            right: '8px',
+                            zIndex: 2,
+                            backgroundColor: 'rgba(10, 15, 29, 0.82)',
+                            backdropFilter: 'blur(4px)',
+                            color: '#fff',
+                            fontSize: '10px',
+                            fontWeight: '600',
+                            padding: '3px 8px',
+                            borderRadius: '6px',
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px'
+                          }}>
+                            ⏱️ {formatDuration(loc.estimated_duration, language)}
+                          </span>
+                        )}
+
                         <img 
                           src={getLocationImage(loc.id, loc.image_url)} 
                           alt={name} 
@@ -154,50 +202,25 @@ export default function RouteBuilder({
                             width: '100%',
                             height: '100%',
                             objectFit: 'cover',
-                            transition: 'transform 0.3s ease',
+                            transition: 'transform 0.4s ease',
                           }}
                           className="location-card-img"
                         />
                       </div>
 
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                          <span style={{ fontWeight: 600, fontSize: '15px', color: 'var(--text-primary)' }}>
-                            {name}
-                          </span>
-                          
-                          {loc.is_out_of_city && (
-                            <span style={{
-                              backgroundColor: 'rgba(212, 175, 55, 0.12)',
-                              color: 'var(--text-gold)',
-                              fontSize: '11px',
-                              fontWeight: '600',
-                              padding: '2px 6px',
-                              borderRadius: '4px',
-                              border: '1px solid rgba(212, 175, 55, 0.2)'
-                            }}>
-                              {t.mountainArea}
-                            </span>
-                          )}
-
-                          {loc.estimated_duration && (
-                            <span style={{
-                              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                              color: 'var(--text-secondary)',
-                              fontSize: '11px',
-                              fontWeight: '500',
-                              padding: '2px 6px',
-                              borderRadius: '4px',
-                              border: '1px solid rgba(255, 255, 255, 0.1)',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '4px'
-                            }}>
-                              ⏱️ {formatDuration(loc.estimated_duration, language)}
-                            </span>
-                          )}
-                        </div>
-                        <span style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flex: 1 }}>
+                        <span style={{ fontWeight: 700, fontSize: '15px', color: 'var(--text-primary)' }}>
+                          {name}
+                        </span>
+                        <span style={{ 
+                          fontSize: '12px', 
+                          color: 'var(--text-secondary)', 
+                          lineHeight: 1.45,
+                          display: '-webkit-box',
+                          WebkitLineClamp: 3,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden'
+                        }}>
                           {desc}
                         </span>
                       </div>
@@ -209,25 +232,27 @@ export default function RouteBuilder({
                         backgroundColor: isSelected ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.05)',
                         border: isSelected ? '1px solid #10b981' : '1px solid var(--border-card)',
                         color: isSelected ? '#10b981' : 'var(--text-primary)',
-                        padding: '6px 12px',
+                        padding: '8px 12px',
                         borderRadius: '8px',
-                        fontSize: '12px',
-                        fontWeight: '500',
+                        fontSize: '12.5px',
+                        fontWeight: '600',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '6px',
+                        justifyContent: 'center',
+                        gap: '8px',
                         cursor: 'pointer',
                         transition: 'all 0.2s ease',
+                        width: '100%'
                       }}
                     >
                       {isSelected ? (
                         <>
-                          <Check size={14} />
+                          <Check size={15} />
                           <span>{t.inRoute}</span>
                         </>
                       ) : (
                         <>
-                          <Plus size={14} />
+                          <Plus size={15} />
                           <span>{t.addToRoute}</span>
                         </>
                       )}
