@@ -670,7 +670,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
         left: 0,
         right: 0,
         bottom: 0,
-        zIndex: -5,
+        zIndex: -3,
         overflow: 'hidden',
         pointerEvents: 'none',
         backgroundColor: '#0a0f1d'
@@ -696,7 +696,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
             opacity: 0.18,
           }}
         >
-          <source src="https://assets.mixkit.co/videos/preview/mixkit-mosque-of-abu-al-abbas-al-mursi-in-alexandria-43184-large.mp4" type="video/mp4" />
+          <source src="/videos/bg-loop.mp4" type="video/mp4" />
         </video>
       </div>
       
