@@ -2,6 +2,20 @@
 
 import { useState, useEffect, useRef } from 'react';
 
+const LOCATION_IMAGES = {
+  1: '/images/locations/registan.webp',
+  2: '/images/locations/gureamir.webp',
+  3: '/images/locations/shahizinda.webp',
+  4: '/images/locations/bibikhanym.webp',
+  5: '/images/locations/ulughbeg.webp',
+  6: '/images/locations/urgut_mountains.webp',
+  7: '/images/locations/omonqoton.webp',
+  8: '/images/locations/konigil.webp',
+  9: '/images/locations/osh_center.webp',
+  10: '/images/locations/bread_bakery.webp',
+  11: '/images/locations/karimbek_restaurant.webp'
+};
+
 export default function Map({ locations = [], selectedLocations = [], language = 'EN' }) {
   const [isInteractive, setIsInteractive] = useState(true);
   const mapRef = useRef(null);
@@ -115,8 +129,8 @@ export default function Map({ locations = [], selectedLocations = [], language =
           iconAnchor: isSelected ? [12, 12] : [10, 10],
         });
 
-        // Fallback for location image
-        const imgUrl = loc.image_url || '/images/locations/registan.webp';
+        // Fallback for location image using local assets lookup
+        const imgUrl = loc.image_url || LOCATION_IMAGES[loc.id] || '/images/locations/registan.webp';
 
         const popupText = `
           <div style="width: 220px; font-family: sans-serif; color: #f1f5f9; display: flex; flex-direction: column; overflow: hidden; border-radius: 12px;">
