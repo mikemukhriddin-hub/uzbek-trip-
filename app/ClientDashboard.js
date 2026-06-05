@@ -233,15 +233,31 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
 
       setOtpModalOpen(false);
 
-      // 🧪 TEST MODE: Skip payment — go directly to success page
+      // 🧪 TEST MODE: Auto-confirm booking on the backend to trigger emails/Telegram alerts
+      const testTxId = 'TEST_' + Date.now();
+      try {
+        await fetch('/api/bookings/payment/confirm', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            bookingId: createdBookingId,
+            paymentMethod: 'test_skip',
+            paymentTxId: testTxId,
+            depositAmount: 0,
+          }),
+        });
+      } catch (confirmErr) {
+        console.error('Failed to confirm booking on backend:', confirmErr.message);
+      }
+
       setBookingData((prev) => ({
         ...prev,
         paymentMethod: 'test_skip',
-        paymentTxId: 'TEST_' + Date.now(),
+        paymentTxId: testTxId,
         depositAmount: 0,
       }));
       setSuccessPage(true);
-      // To re-enable payment, comment the 6 lines above and uncomment below:
+      // To re-enable payment, comment the lines above and uncomment below:
       // setPaymentOpen(true);
     } catch (err) {
       setVerificationError(err.message);
