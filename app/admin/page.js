@@ -665,8 +665,8 @@ export default function AdminPage() {
       ...rows.map(row => row.join(','))
     ].join('\n');
 
-    // Create a download link
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    // Create a download link with UTF-8 BOM prefix so Excel opens it with correct encoding
+    const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.setAttribute('href', url);
