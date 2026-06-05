@@ -53,10 +53,19 @@ Determine the correct latitude and longitude of the place as accurately as possi
 For category, choose exactly one of: 'historical', 'alternative', or 'food'.
 Decide if it's out of city (is_out_of_city = true) or in the city (is_out_of_city = false).
 Provide estimated duration in minutes (estimated_duration).
-For image_url, choose a high-quality relevant Unsplash image URL or a query matching the place. Example unsplash formats:
-- Historical sights: 'https://images.unsplash.com/photo-1618218168350-6e7c8137558d?auto=format&fit=crop&w=600&q=80'
-- Nature/Out-of-city: 'https://images.unsplash.com/photo-1501555088652-021faa106b9b?auto=format&fit=crop&w=600&q=80'
-- Food/Dining: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80'`;
+For image_url, you MUST choose exactly one of the following verified working Unsplash URLs that matches the location category and aesthetic best (do NOT generate new Unsplash IDs as they return 404):
+- Registan or premium mosaic tiles: 'https://images.unsplash.com/photo-1618218168350-6e7c8137558d?auto=format&fit=crop&w=600&q=80'
+- Gur-e-Amir or ancient dome: 'https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?auto=format&fit=crop&w=600&q=80'
+- Shah-i-Zinda or mosaic street: 'https://images.unsplash.com/photo-1623940179976-b9952ecbc412?auto=format&fit=crop&w=600&q=80'
+- Bibi-Khanym or large mosque: 'https://images.unsplash.com/photo-1605371924599-2c03d64d0dd3?auto=format&fit=crop&w=600&q=80'
+- General Uzbek ornament/tiles: 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=600&q=80'
+- Urgut or generic scenic mountains/nature: 'https://images.unsplash.com/photo-1501555088652-021faa106b9b?auto=format&fit=crop&w=600&q=80'
+- Omonqoton or pine forest/hiking: 'https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&w=600&q=80'
+- Konigil Paper Mill or traditional eco-village: 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=600&q=80'
+- National Osh Center or pilaf/food: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=600&q=80'
+- Bread Bakery or bread making: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80'
+- Karimbek or restaurant dining table/kebabs: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80'
+- Teahouse or teacup/drinks: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=600&q=80'`;
 
     const response = await fetch(url, {
       method: 'POST',
