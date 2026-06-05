@@ -163,17 +163,19 @@ export default function Map({ locations = [], selectedLocations = [], language =
           lineJoin: 'round',
         }).addTo(map);
 
-        // Dynamic viewport fitting and focusing
+        // Dynamic viewport fitting
+        if (selectedLocations.length > 1) {
+          map.fitBounds(polylineRef.current.getBounds(), { padding: [60, 60] });
+        } else {
+          map.setView(points[0], 13); // Centered and zoomed out slightly for single location
+        }
+
+        // Auto-open popup for the newly added location
         if (newlyAddedId && markersRef.current[newlyAddedId]) {
           const marker = markersRef.current[newlyAddedId];
           setTimeout(() => {
-            map.setView(marker.getLatLng(), 15);
             marker.openPopup();
-          }, 100);
-        } else if (selectedLocations.length > 1) {
-          map.fitBounds(polylineRef.current.getBounds(), { padding: [50, 50] });
-        } else {
-          map.setView(points[0], 14);
+          }, 150);
         }
       }
     };
