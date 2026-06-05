@@ -666,7 +666,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
             height: 'auto',
             transform: 'translate(-50%, -50%)',
             objectFit: 'cover',
-            opacity: 0.9,
+            opacity: 0.5,
           }}
         >
           <source src="/videos/bg-loop.mp4" type="video/mp4" />
@@ -678,7 +678,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
           left: 0,
           width: '100%',
           height: '100%',
-          background: 'linear-gradient(to bottom, rgba(10,15,29,0.3) 0%, rgba(10,15,29,0.1) 30%, rgba(10,15,29,0.1) 70%, rgba(10,15,29,0.4) 100%)',
+          background: 'linear-gradient(to bottom, rgba(10,15,29,0.8) 0%, rgba(10,15,29,0.5) 35%, rgba(10,15,29,0.5) 65%, rgba(10,15,29,0.85) 100%)',
           zIndex: 1,
           pointerEvents: 'none',
         }} />
