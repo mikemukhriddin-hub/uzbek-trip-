@@ -51,7 +51,8 @@ export async function GET(req) {
     }
 
     // 1. Fetch booking details to get the email for token validation
-    const { data: booking, error } = await supabase
+    let booking = null;
+    let { data: fetchedBooking, error } = await supabase
       .from('bookings')
       .select(`
         *,
@@ -65,8 +66,45 @@ export async function GET(req) {
       .eq('id', bookingId)
       .single();
 
-    if (error || !booking) {
-      console.error('Error fetching booking for magic token validation:', error);
+    if (error) {
+      if (error.message && error.message.includes('name_uz')) {
+        console.warn('⚠️ name_uz column not found in locations table, retrying my-tour query without it...');
+        const { data: fallbackBooking, error: fallbackError } = await supabase
+          .from('bookings')
+          .select(`
+            *,
+            guide:guides(full_name, phone_number),
+            vehicle:vehicles(driver_name, driver_phone, car_model, car_number),
+            booking_items(
+              visit_order,
+              location:locations(id, name_en, name_ru)
+            )
+          `)
+          .eq('id', bookingId)
+          .single();
+
+        if (fallbackError) {
+          console.error('Error fetching fallback booking:', fallbackError);
+          return NextResponse.json({ message: 'Booking not found.' }, { status: 404 });
+        }
+        
+        booking = fallbackBooking;
+        if (booking && booking.booking_items) {
+          booking.booking_items.forEach(item => {
+            if (item.location) {
+              item.location.name_uz = item.location.name_en; // fallback
+            }
+          });
+        }
+      } else {
+        console.error('Error fetching booking for magic token validation:', error);
+        return NextResponse.json({ message: 'Booking not found.' }, { status: 404 });
+      }
+    } else {
+      booking = fetchedBooking;
+    }
+
+    if (!booking) {
       return NextResponse.json({ message: 'Booking not found.' }, { status: 404 });
     }
 

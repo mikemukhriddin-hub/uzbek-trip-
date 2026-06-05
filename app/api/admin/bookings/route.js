@@ -112,9 +112,45 @@ export async function GET(req) {
       query = query.eq('guide_id', auth.guideId);
     }
 
-    const { data: bookings, error } = await query.order('created_at', { ascending: false });
+    let { data: bookings, error } = await query.order('created_at', { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      if (error.message && error.message.includes('name_uz')) {
+        console.warn('⚠️ name_uz column not found in locations table, retrying admin bookings query without it...');
+        let fallbackQuery = supabase
+          .from('bookings')
+          .select(`
+            *,
+            guide:guides(full_name, phone_number),
+            vehicle:vehicles(driver_name, driver_phone, car_model, car_number),
+            booking_items(
+              visit_order,
+              location:locations(id, name_en, name_ru)
+            )
+          `);
+
+        if (auth.role === 'guide') {
+          fallbackQuery = fallbackQuery.eq('guide_id', auth.guideId);
+        }
+
+        const { data: fallbackBookings, error: fallbackError } = await fallbackQuery.order('created_at', { ascending: false });
+        if (fallbackError) throw fallbackError;
+        
+        bookings = fallbackBookings || [];
+        bookings.forEach(b => {
+          if (b.booking_items) {
+            b.booking_items.forEach(item => {
+              if (item.location) {
+                item.location.name_uz = item.location.name_en; // fallback
+              }
+            });
+          }
+        });
+      } else {
+        throw error;
+      }
+    }
+
     return NextResponse.json(bookings);
   } catch (err) {
     console.error('Error fetching bookings for admin:', err);

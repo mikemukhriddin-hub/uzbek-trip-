@@ -24,7 +24,7 @@ export async function POST(req) {
     // 1. Fetch booking details to verify it exists
     if (isDbActive) {
       try {
-        const { data: booking, error: fetchErr } = await supabase
+        let { data: booking, error: fetchErr } = await supabase
           .from('bookings')
           .select(`
             *,
@@ -38,7 +38,36 @@ export async function POST(req) {
           .eq('id', bookingId)
           .single();
 
-        if (fetchErr) throw fetchErr;
+        if (fetchErr) {
+          if (fetchErr.message && fetchErr.message.includes('name_uz')) {
+            console.warn('⚠️ name_uz column not found in locations table, retrying payment/confirm query without it...');
+            const { data: fallbackBooking, error: fallbackErr } = await supabase
+              .from('bookings')
+              .select(`
+                *,
+                guide:guides(id, full_name, phone_number, telegram_chat_id, bot_active),
+                vehicle:vehicles(id, driver_name, driver_phone, car_model, car_number, capacity, telegram_chat_id, bot_active),
+                booking_items(
+                  visit_order,
+                  location:locations(id, name_en, name_ru)
+                )
+              `)
+              .eq('id', bookingId)
+              .single();
+
+            if (fallbackErr) throw fallbackErr;
+            booking = fallbackBooking;
+            if (booking && booking.booking_items) {
+              booking.booking_items.forEach(item => {
+                if (item.location) {
+                  item.location.name_uz = item.location.name_en; // fallback
+                }
+              });
+            }
+          } else {
+            throw fetchErr;
+          }
+        }
         bookingDetails = booking;
       } catch (err) {
         console.warn('⚠️ Supabase fetch error in confirm, falling back to mock store:', err.message);
