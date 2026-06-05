@@ -67,49 +67,83 @@ For image_url, you MUST choose exactly one of the following verified working Uns
 - Karimbek or restaurant dining table/kebabs: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80'
 - Teahouse or teacup/drinks: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=600&q=80'`;
 
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+    const schema = {
+      type: 'OBJECT',
+      properties: {
+        name_en: { type: 'STRING' },
+        name_ru: { type: 'STRING' },
+        name_uz: { type: 'STRING' },
+        description_en: { type: 'STRING' },
+        description_ru: { type: 'STRING' },
+        description_uz: { type: 'STRING' },
+        latitude: { type: 'NUMBER' },
+        longitude: { type: 'NUMBER' },
+        category: { type: 'STRING', enum: ['historical', 'alternative', 'food'] },
+        is_out_of_city: { type: 'BOOLEAN' },
+        estimated_duration: { type: 'INTEGER' },
+        image_url: { type: 'STRING' }
       },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
+      required: [
+        'name_en', 'name_ru', 'name_uz', 
+        'description_en', 'description_ru', 'description_uz', 
+        'latitude', 'longitude', 'category', 'is_out_of_city', 
+        'estimated_duration', 'image_url'
+      ]
+    };
+
+    const modelsToTry = [
+      'gemini-2.5-flash',
+      'gemini-2.0-flash',
+      'gemini-flash-latest'
+    ];
+
+    let response = null;
+    let lastError = null;
+
+    for (const model of modelsToTry) {
+      try {
+        console.log(`Attempting generation with model: ${model}`);
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            contents: [
               {
-                text: prompt
+                parts: [
+                  {
+                    text: prompt
+                  }
+                ]
               }
-            ]
-          }
-        ],
-        generationConfig: {
-          responseMimeType: 'application/json',
-          responseSchema: {
-            type: 'OBJECT',
-            properties: {
-              name_en: { type: 'STRING' },
-              name_ru: { type: 'STRING' },
-              name_uz: { type: 'STRING' },
-              description_en: { type: 'STRING' },
-              description_ru: { type: 'STRING' },
-              description_uz: { type: 'STRING' },
-              latitude: { type: 'NUMBER' },
-              longitude: { type: 'NUMBER' },
-              category: { type: 'STRING', enum: ['historical', 'alternative', 'food'] },
-              is_out_of_city: { type: 'BOOLEAN' },
-              estimated_duration: { type: 'INTEGER' },
-              image_url: { type: 'STRING' }
-            },
-            required: [
-              'name_en', 'name_ru', 'name_uz', 
-              'description_en', 'description_ru', 'description_uz', 
-              'latitude', 'longitude', 'category', 'is_out_of_city', 
-              'estimated_duration', 'image_url'
-            ]
-          }
+            ],
+            generationConfig: {
+              responseMimeType: 'application/json',
+              responseSchema: schema
+            }
+          })
+        });
+
+        if (res.ok) {
+          response = res;
+          console.log(`Success with model: ${model}`);
+          break;
+        } else {
+          const errText = await res.text();
+          console.warn(`Model ${model} returned status ${res.status}: ${errText}`);
+          lastError = new Error(`Model ${model} failed: ${res.status} - ${errText}`);
         }
-      })
-    });
+      } catch (err) {
+        console.warn(`Error connecting to model ${model}:`, err.message);
+        lastError = err;
+      }
+    }
+
+    if (!response) {
+      throw lastError || new Error('All models failed to generate content');
+    }
 
     if (!response.ok) {
       const errorText = await response.text();
