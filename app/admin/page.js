@@ -1123,7 +1123,7 @@ export default function AdminPage() {
       }));
   };
 
-  const AnalyticsPanel = () => {
+  const renderAnalyticsPanel = () => {
     if (bookings.length === 0) return null;
 
     const data = getChartData();
@@ -1405,7 +1405,7 @@ export default function AdminPage() {
       {/* ======================================================== */}
       {activeTab === 'bookings' && (
         <>
-          <AnalyticsPanel />
+          {renderAnalyticsPanel()}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
             <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
               {['all', 'pending', 'confirmed', 'completed', 'cancelled'].map((status) => (

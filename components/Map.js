@@ -8,10 +8,13 @@ export default function Map({ locations = [], selectedLocations = [], language =
   const mapInstance = useRef(null);
   const markersRef = useRef({});
   const polylineRef = useRef(null);
+  const prevSelectedIdsRef = useRef([]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      setIsInteractive(window.innerWidth >= 768);
+      setTimeout(() => {
+        setIsInteractive(window.innerWidth >= 768);
+      }, 0);
     }
   }, []);
 
@@ -52,41 +55,86 @@ export default function Map({ locations = [], selectedLocations = [], language =
       });
       markersRef.current = {};
 
+      // Determine if a new location was just added to center/pan to it
+      const prevSelectedIds = prevSelectedIdsRef.current || [];
+      const currentSelectedIds = selectedLocations.map(s => s.id);
+      const newlyAddedId = currentSelectedIds.find(id => !prevSelectedIds.includes(id));
+      prevSelectedIdsRef.current = currentSelectedIds;
+
       // Add markers for all locations
       locations.forEach((loc) => {
         const name = language === 'RU' ? loc.name_ru : language === 'UZ' ? (loc.name_uz || loc.name_en) : loc.name_en;
         const desc = language === 'RU' ? loc.description_ru : language === 'UZ' ? (loc.description_uz || loc.description_en) : loc.description_en;
-        const isSelected = selectedLocations.some((sel) => sel.id === loc.id);
+        
+        const selectedIndex = selectedLocations.findIndex((sel) => sel.id === loc.id);
+        const isSelected = selectedIndex !== -1;
 
         // Marker color code: Historical (Blue), Alternative (Teal/Turquoise), Food (Gold)
         let color = '#0070c0'; // Historical
         if (loc.category === 'alternative') color = '#009b9e';
         if (loc.category === 'food') color = '#d4af37';
 
-        const borderStyle = isSelected 
-          ? `border: 3px solid #ffffff; box-shadow: 0 0 12px ${color}; width: 18px; height: 18px;` 
-          : `border: 2px solid #ffffff; box-shadow: 0 0 6px rgba(0,0,0,0.6); width: 14px; height: 14px;`;
+        // Select specific category icon/emoji for unselected markers
+        let categoryEmoji = '🕌'; // Historical
+        if (loc.category === 'alternative') categoryEmoji = '🌲';
+        if (loc.category === 'food') categoryEmoji = '🍲';
+
+        // Styling for custom divIcon markers
+        const iconHtml = isSelected
+          ? `<div class="custom-route-marker" style="
+              background-color: ${color};
+              border: 2px solid #ffffff;
+              box-shadow: 0 0 14px ${color};
+              width: 24px;
+              height: 24px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: #0a0f1d;
+              font-size: 11px;
+              font-weight: 900;
+            ">${selectedIndex + 1}</div>`
+          : `<div style="
+              background-color: ${color};
+              border-radius: 50%;
+              border: 1.5px solid #ffffff;
+              box-shadow: 0 0 6px rgba(0,0,0,0.5);
+              width: 20px;
+              height: 20px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 10px;
+              transition: all 0.2s ease-in-out;
+            ">${categoryEmoji}</div>`;
 
         const icon = L.divIcon({
           className: `custom-marker-${loc.id}`,
-          html: `<div style="
-            background-color: ${color};
-            border-radius: 50%;
-            transition: all 0.2s ease-in-out;
-            ${borderStyle}
-          "></div>`,
-          iconSize: isSelected ? [18, 18] : [14, 14],
-          iconAnchor: isSelected ? [9, 9] : [7, 7],
+          html: iconHtml,
+          iconSize: isSelected ? [24, 24] : [20, 20],
+          iconAnchor: isSelected ? [12, 12] : [10, 10],
         });
 
+        // Fallback for location image
+        const imgUrl = loc.image_url || '/images/locations/registan.webp';
+
         const popupText = `
-          <div style="font-family: sans-serif; color: #f1f5f9; padding: 4px;">
-            <strong style="font-size: 14px; color: #d4af37;">${name}</strong>
-            <p style="margin: 6px 0 0 0; font-size: 12px; line-height: 1.4; color: #94a3b8;">${desc}</p>
-            <div style="margin-top: 8px; font-weight: bold; font-size: 11px; color: ${isSelected ? '#10b981' : '#64748b'};">
-              ${isSelected 
-                ? (language === 'UZ' ? '✓ Marshrutda' : language === 'RU' ? '✓ В маршруте' : '✓ In Route') 
-                : (language === 'UZ' ? 'Tanlanmagan' : language === 'RU' ? 'Не выбрано' : 'Not Selected')}
+          <div style="width: 220px; font-family: sans-serif; color: #f1f5f9; display: flex; flex-direction: column; overflow: hidden; border-radius: 12px;">
+            <div style="width: 100%; height: 110px; position: relative; overflow: hidden; background-color: #1e293b;">
+              <img src="${imgUrl}" alt="${name}" style="width: 100%; height: 100%; object-fit: cover;" />
+              <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(18,26,47,0.95), transparent); height: 40px;"></div>
+            </div>
+            <div style="padding: 12px; display: flex; flex-direction: column; gap: 6px; background-color: #121a2f;">
+              <strong style="font-size: 13.5px; color: #d4af37; line-height: 1.3;">${name}</strong>
+              <p style="margin: 0; font-size: 11px; line-height: 1.4; color: #cbd5e1;">${desc}</p>
+              <div style="margin-top: 6px; display: flex; justify-content: space-between; align-items: center; font-size: 10.5px;">
+                <span style="color: #94a3b8; font-weight: 500;">⏱️ ${loc.estimated_duration ? (language === 'UZ' ? `${loc.estimated_duration} daq` : language === 'RU' ? `${loc.estimated_duration} мин` : `${loc.estimated_duration}m`) : ''}</span>
+                <span style="font-weight: 700; color: ${isSelected ? '#10b981' : '#64748b'};">
+                  ${isSelected 
+                    ? (language === 'UZ' ? '✓ Marshrutda' : language === 'RU' ? '✓ В маршруте' : '✓ In Route') 
+                    : (language === 'UZ' ? 'Tanlanmagan' : language === 'RU' ? 'Не выбрано' : 'Not Selected')}
+                </span>
+              </div>
             </div>
           </div>
         `;
@@ -111,12 +159,18 @@ export default function Map({ locations = [], selectedLocations = [], language =
           color: '#d4af37', // Gold route line
           weight: 4,
           opacity: 0.85,
-          dashArray: '8, 8', // Dotted dashes
+          className: 'animated-route-line', // Flowing animated class
           lineJoin: 'round',
         }).addTo(map);
 
-        // Dynamic viewport fitting
-        if (selectedLocations.length > 1) {
+        // Dynamic viewport fitting and focusing
+        if (newlyAddedId && markersRef.current[newlyAddedId]) {
+          const marker = markersRef.current[newlyAddedId];
+          setTimeout(() => {
+            map.setView(marker.getLatLng(), 15);
+            marker.openPopup();
+          }, 100);
+        } else if (selectedLocations.length > 1) {
           map.fitBounds(polylineRef.current.getBounds(), { padding: [50, 50] });
         } else {
           map.setView(points[0], 14);

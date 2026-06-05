@@ -52,19 +52,21 @@ function MyTourContent() {
   useEffect(() => {
     // Sync state loaded from localStorage if user has a preference saved
     const savedLang = localStorage.getItem('site_lang');
-    if (savedLang) {
-      setLanguage(savedLang);
-    } else {
-      // Auto-detect browser language
-      const browserLang = typeof navigator !== 'undefined' ? (navigator.language || navigator.userLanguage || '') : '';
-      let defaultLang = 'UZ';
-      if (browserLang.toLowerCase().startsWith('ru')) {
-        defaultLang = 'RU';
-      } else if (browserLang.toLowerCase().startsWith('en')) {
-        defaultLang = 'EN';
+    setTimeout(() => {
+      if (savedLang) {
+        setLanguage(savedLang);
+      } else {
+        // Auto-detect browser language
+        const browserLang = typeof navigator !== 'undefined' ? (navigator.language || navigator.userLanguage || '') : '';
+        let defaultLang = 'UZ';
+        if (browserLang.toLowerCase().startsWith('ru')) {
+          defaultLang = 'RU';
+        } else if (browserLang.toLowerCase().startsWith('en')) {
+          defaultLang = 'EN';
+        }
+        setLanguage(defaultLang);
       }
-      setLanguage(defaultLang);
-    }
+    }, 0);
   }, []);
 
   useEffect(() => {
