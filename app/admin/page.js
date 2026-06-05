@@ -166,7 +166,14 @@ export default function AdminPage() {
       rejected: "Rejected",
 
       save: "Save",
-      cancel: "Cancel"
+      cancel: "Cancel",
+
+      aiAssistantTitle: "AI Auto-fill Assistant",
+      aiQueryPlaceholder: "Enter place name (e.g. Registan Square)...",
+      aiFillButton: "Fill with AI",
+      aiGenerating: "Generating...",
+      aiSuccess: "Form filled successfully!",
+      aiError: "Failed to generate details. Please check your credentials."
     },
     RU: {
       adminTitle: "SAMARQAND CRAFTOUR",
@@ -275,7 +282,14 @@ export default function AdminPage() {
       rejected: "Отклонено",
 
       save: "Сохранить",
-      cancel: "Отмена"
+      cancel: "Отмена",
+
+      aiAssistantTitle: "AI-помощник заполнения",
+      aiQueryPlaceholder: "Введите название места (напр. Площадь Регистан)...",
+      aiFillButton: "Заполнить с AI",
+      aiGenerating: "Генерация...",
+      aiSuccess: "Форма успешно заполнена!",
+      aiError: "Не удалось сгенерировать данные. Проверьте настройки."
     },
     UZ: {
       adminTitle: "SAMARQAND CRAFTOUR",
@@ -384,7 +398,14 @@ export default function AdminPage() {
       rejected: "Rad etildi",
 
       save: "Saqlash",
-      cancel: "Bekor qilish"
+      cancel: "Bekor qilish",
+
+      aiAssistantTitle: "AI To'ldirish Yordamchisi",
+      aiQueryPlaceholder: "Joy nomini kiriting (masalan: Registon maydoni)...",
+      aiFillButton: "AI orqali to'ldirish",
+      aiGenerating: "Yaratilmoqda...",
+      aiSuccess: "Forma muvaffaqiyatli to'ldirildi!",
+      aiError: "Ma'lumotlarni yaratib bo'lmadi. Sozlamalarni tekshiring."
     }
   };
 
@@ -407,6 +428,8 @@ export default function AdminPage() {
     latitude: '', longitude: '', category: 'historical', is_out_of_city: false,
     image_url: '', estimated_duration: 90
   });
+  const [aiQuery, setAiQuery] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
 
   // Vehicles state
   const [vehicles, setVehicles] = useState([]);
@@ -695,10 +718,11 @@ export default function AdminPage() {
         if (res.ok) {
           setLocations(prev => [...prev, data.data || data.mockData]);
           setLocationForm({
-            name_en: '', name_ru: '', description_en: '', description_ru: '',
+            name_en: '', name_ru: '', name_uz: '', description_en: '', description_ru: '', description_uz: '',
             latitude: '', longitude: '', category: 'historical', is_out_of_city: false,
             image_url: '', estimated_duration: 90
           });
+          setAiQuery('');
           alert('Location added successfully!');
         } else {
           alert('Error: ' + data.message);
@@ -706,6 +730,55 @@ export default function AdminPage() {
       })
       .catch(err => alert(err.message))
       .finally(() => setLoading(false));
+  };
+
+  const handleAiFill = (e) => {
+    if (e) e.preventDefault();
+    if (!aiQuery || aiQuery.trim() === '') {
+      alert(currT.aiQueryPlaceholder || 'Enter place name');
+      return;
+    }
+
+    const token = localStorage.getItem('admin_token');
+    setAiLoading(true);
+
+    fetch('/api/admin/generate-location', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': token
+      },
+      body: JSON.stringify({ query: aiQuery })
+    })
+      .then(async (res) => {
+        const data = await res.json();
+        if (res.ok) {
+          const loc = data.data;
+          setLocationForm({
+            name_en: loc.name_en || '',
+            name_ru: loc.name_ru || '',
+            name_uz: loc.name_uz || '',
+            description_en: loc.description_en || '',
+            description_ru: loc.description_ru || '',
+            description_uz: loc.description_uz || '',
+            latitude: loc.latitude !== undefined ? loc.latitude.toString() : '',
+            longitude: loc.longitude !== undefined ? loc.longitude.toString() : '',
+            category: loc.category || 'historical',
+            is_out_of_city: !!loc.is_out_of_city,
+            image_url: loc.image_url || '',
+            estimated_duration: loc.estimated_duration !== undefined ? loc.estimated_duration.toString() : '90'
+          });
+          if (data.isMock) {
+            alert(data.message || 'Filled with mock data. Configure GEMINI_API_KEY in .env.local for real AI details.');
+          } else {
+            alert(currT.aiSuccess || 'Form filled successfully!');
+          }
+        } else {
+          alert('Error: ' + data.message);
+        }
+      })
+      .catch(err => alert(err.message))
+      .finally(() => setAiLoading(false));
   };
 
   const handleUpdateLocation = (locationId) => {
@@ -1634,6 +1707,63 @@ export default function AdminPage() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '24px' }}>
           <div className="glass-container" style={{ padding: '24px' }}>
             <h3 style={{ color: '#6366f1', marginBottom: '16px', fontSize: '18px', display: 'flex', alignItems: 'center', gap: '8px' }}><Plus size={18} /> {currT.addLocation}</h3>
+            
+            {/* AI Auto-fill Assistant */}
+            <div style={{
+              marginBottom: '24px',
+              padding: '16px',
+              borderRadius: '12px',
+              backgroundColor: 'rgba(99, 102, 241, 0.03)',
+              border: '1px dashed rgba(99, 102, 241, 0.2)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px'
+            }}>
+              <span style={{ color: '#818cf8', fontSize: '14px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                ✨ {currT.aiAssistantTitle}
+              </span>
+              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                <input 
+                  type="text" 
+                  placeholder={currT.aiQueryPlaceholder} 
+                  value={aiQuery} 
+                  onChange={e => setAiQuery(e.target.value)} 
+                  style={{ flex: 1, minWidth: '200px', marginBottom: 0 }}
+                  onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAiFill(); } }}
+                />
+                <button 
+                  type="button" 
+                  onClick={handleAiFill} 
+                  className="btn-indigo" 
+                  style={{
+                    padding: '10px 20px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    backgroundColor: '#6366f1',
+                    border: 'none',
+                    borderRadius: '8px',
+                    color: '#fff',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    transition: 'all 0.2s',
+                    width: 'auto'
+                  }}
+                  disabled={aiLoading}
+                >
+                  {aiLoading ? (
+                    <>
+                      <Loader2 size={14} className="animate-spin" />
+                      <span>{currT.aiGenerating}</span>
+                    </>
+                  ) : (
+                    <span>{currT.aiFillButton}</span>
+                  )}
+                </button>
+              </div>
+            </div>
+
             <form onSubmit={handleAddLocation} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
               <input type="text" placeholder={currT.nameEn} value={locationForm.name_en} onChange={e => setLocationForm({...locationForm, name_en: e.target.value})} required />
               <input type="text" placeholder={currT.nameRu} value={locationForm.name_ru} onChange={e => setLocationForm({...locationForm, name_ru: e.target.value})} required />
