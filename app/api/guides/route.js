@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabase, supabaseConfigured } from '@/lib/supabase';
+import { generateGuideToken } from '@/lib/token';
 
 const MOCK_GUIDES = [
   { id: 1, full_name: 'Sherzod Alimov', phone_number: '+998901234567' },
@@ -17,26 +18,51 @@ const MOCK_TARIFFS = [
   { id: 7, guide_id: 3, language_code: 'ES', daily_rate: 70.00 }
 ];
 
-export async function GET() {
+export async function GET(req) {
+  const authHeader = req.headers.get('Authorization');
+  const expectedPassword = process.env.ADMIN_PASSWORD || 'admin123';
+  const isAdmin = authHeader === expectedPassword;
+
+  let guidesList = [];
+  let tariffsList = [];
+
   if (!supabaseConfigured) {
-    return NextResponse.json({ guides: MOCK_GUIDES, tariffs: MOCK_TARIFFS });
+    guidesList = MOCK_GUIDES;
+    tariffsList = MOCK_TARIFFS;
+  } else {
+    try {
+      const { data: guides, error: guidesError } = await supabase
+        .from('guides')
+        .select('*');
+
+      const { data: tariffs, error: tariffsError } = await supabase
+        .from('guide_language_tariffs')
+        .select('*');
+
+      if (guidesError) throw guidesError;
+      if (tariffsError) throw tariffsError;
+
+      guidesList = guides || [];
+      tariffsList = tariffs || [];
+    } catch (err) {
+      console.error('Error fetching guides from Supabase:', err);
+      guidesList = MOCK_GUIDES;
+      tariffsList = MOCK_TARIFFS;
+    }
   }
 
-  try {
-    const { data: guides, error: guidesError } = await supabase
-      .from('guides')
-      .select('*');
+  // Include access token only if admin is authenticated or if it's the guide themselves
+  const processedGuides = guidesList.map(g => {
+    const computedToken = generateGuideToken(g.phone_number);
+    if (isAdmin || authHeader === computedToken) {
+      return {
+        ...g,
+        access_token: computedToken
+      };
+    }
+    return g;
+  });
 
-    const { data: tariffs, error: tariffsError } = await supabase
-      .from('guide_language_tariffs')
-      .select('*');
-
-    if (guidesError) throw guidesError;
-    if (tariffsError) throw tariffsError;
-
-    return NextResponse.json({ guides, tariffs });
-  } catch (err) {
-    console.error('Error fetching guides from Supabase:', err);
-    return NextResponse.json({ guides: MOCK_GUIDES, tariffs: MOCK_TARIFFS });
-  }
+  return NextResponse.json({ guides: processedGuides, tariffs: tariffsList });
 }
+

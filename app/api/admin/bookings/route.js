@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabase, supabaseConfigured } from '@/lib/supabase';
+import { generateGuideToken } from '@/lib/token';
 
 // Mock Bookings for offline testing fallback
 const MOCK_BOOKINGS = [
@@ -49,17 +50,18 @@ async function checkAuth(req) {
     return { authorized: false };
   }
 
-  // Check if it's a guide's phone number
+  // Check if it's a guide's secure token
   if (supabaseConfigured) {
     try {
-      const { data: guide, error } = await supabase
+      const { data: allGuides, error } = await supabase
         .from('guides')
-        .select('id, full_name, phone_number')
-        .eq('phone_number', authHeader)
-        .maybeSingle();
+        .select('id, full_name, phone_number');
 
-      if (guide && !error) {
-        return { authorized: true, role: 'guide', guideId: guide.id, guide };
+      if (allGuides && !error) {
+        const found = allGuides.find(g => generateGuideToken(g.phone_number) === authHeader);
+        if (found) {
+          return { authorized: true, role: 'guide', guideId: found.id, guide: found };
+        }
       }
     } catch (e) {
       console.error('Auth error in bookings:', e);
@@ -71,13 +73,14 @@ async function checkAuth(req) {
       { id: 2, full_name: 'Elena Petrova', phone_number: '+998937654321' },
       { id: 3, full_name: 'Jahongir Rustamov', phone_number: '+998971112233' }
     ];
-    const found = mockGuides.find(g => g.phone_number === authHeader);
+    const found = mockGuides.find(g => generateGuideToken(g.phone_number) === authHeader);
     if (found) {
       return { authorized: true, role: 'guide', guideId: found.id, guide: found };
     }
   }
   return { authorized: false };
 }
+
 
 export async function GET(req) {
   const auth = await checkAuth(req);

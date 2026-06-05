@@ -29,14 +29,20 @@ def create_deck():
         fill.solid()
         fill.fore_color.rgb = C_BG_DARK
         
+        # Add Uzbek Mandala Ornament peeking in the top-right corner
+        try:
+            slide.shapes.add_picture("uzbek_mandala.jpg", Inches(11.0), Inches(-1.0), Inches(3.5), Inches(3.5))
+        except Exception as e:
+            pass
+        
         # Add top decorative golden line
-        top_line = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0), Inches(0), Inches(13.333), Inches(0.15))
+        top_line = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0), Inches(0), Inches(13.333), Inches(0.12))
         top_line.fill.solid()
         top_line.fill.fore_color.rgb = C_GOLD
         top_line.line.fill.background()
         
         # Add bottom subtle brand branding
-        brand_box = slide.shapes.add_textbox(Inches(0.5), Inches(7.1), Inches(12.333), Inches(0.3))
+        brand_box = slide.shapes.add_textbox(Inches(0.8), Inches(7.1), Inches(10.5), Inches(0.3))
         tf = brand_box.text_frame
         tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
         p = tf.paragraphs[0]
@@ -45,6 +51,12 @@ def create_deck():
         p.font.size = Pt(9)
         p.font.color.rgb = C_SLATE_600
         p.font.bold = True
+        
+        # Add small logo in the bottom right corner
+        try:
+            slide.shapes.add_picture("logo.jpg", Inches(12.5), Inches(6.9), Inches(0.5), Inches(0.5))
+        except Exception as e:
+            pass
 
     # 4. Helper to create standard titles
     def add_slide_title(slide, title_text):
@@ -55,7 +67,7 @@ def create_deck():
         p = tf.paragraphs[0]
         p.text = title_text.upper()
         p.font.name = "Georgia"
-        p.font.size = Pt(36)
+        p.font.size = Pt(34)
         p.font.bold = True
         p.font.color.rgb = C_GOLD
         return title_box
@@ -76,7 +88,6 @@ def create_deck():
     # SLIDE 1: MUQOVA (TITLE / COVER SLIDE)
     # ==========================================
     slide_1 = prs.slides.add_slide(blank_layout)
-    # Solid background
     background = slide_1.background
     fill = background.fill
     fill.solid()
@@ -88,20 +99,27 @@ def create_deck():
     frame.line.color.rgb = C_GOLD
     frame.line.width = Pt(2)
     
-    # 3D accent background design (Turquoise gradient replica shape)
-    accent = slide_1.shapes.add_shape(MSO_SHAPE.OVAL, Inches(9), Inches(-2), Inches(6), Inches(6))
-    accent.fill.solid()
-    accent.fill.fore_color.rgb = RGBColor(12, 35, 64)
-    accent.line.fill.background()
+    # Large Floating Uzbek Mandala Plate on the Right
+    try:
+        slide_1.shapes.add_picture("uzbek_mandala.jpg", Inches(7.5), Inches(1.25), Inches(5.0), Inches(5.0))
+    except Exception as e:
+        pass
     
+    # Logo on Cover
+    try:
+        slide_1.shapes.add_picture("logo.jpg", Inches(1.0), Inches(0.8), Inches(1.2), Inches(1.2))
+    except Exception as e:
+        pass
+        
     # Title Box
-    title_box = slide_1.shapes.add_textbox(Inches(1.0), Inches(2.2), Inches(11.333), Inches(2.0))
+    title_box = slide_1.shapes.add_textbox(Inches(1.0), Inches(2.3), Inches(6.2), Inches(4.0))
     tf = title_box.text_frame
     tf.word_wrap = True
+    tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
     p = tf.paragraphs[0]
     p.text = "SAMARQAND CRAFTOUR"
     p.font.name = "Georgia"
-    p.font.size = Pt(54)
+    p.font.size = Pt(46)
     p.font.bold = True
     p.font.color.rgb = C_GOLD
     p.alignment = PP_ALIGN.LEFT
@@ -109,18 +127,18 @@ def create_deck():
     p2 = tf.add_paragraph()
     p2.text = "Moslashuvchan va Shaxsiy Turizm Platformasi"
     p2.font.name = "Segoe UI"
-    p2.font.size = Pt(22)
+    p2.font.size = Pt(18)
     p2.font.color.rgb = C_WHITE
     p2.alignment = PP_ALIGN.LEFT
-    p2.space_before = Pt(10)
+    p2.space_before = Pt(8)
 
     p3 = tf.add_paragraph()
     p3.text = "Sayyohlar uchun interaktiv marshrut konstruktori va shaffof band qilish ekotizimi."
     p3.font.name = "Segoe UI"
-    p3.font.size = Pt(14)
+    p3.font.size = Pt(13)
     p3.font.color.rgb = C_SLATE_400
     p3.alignment = PP_ALIGN.LEFT
-    p3.space_before = Pt(20)
+    p3.space_before = Pt(15)
 
     # Footer on Cover
     cov_foot = slide_1.shapes.add_textbox(Inches(1.0), Inches(5.8), Inches(6.0), Inches(0.8))
@@ -139,7 +157,6 @@ def create_deck():
     apply_background(slide_2)
     add_slide_title(slide_2, "TURIZMDAGI ASOSIY MUAMMOLAR")
 
-    # Muammo 3 ta ustun ko'rinishida
     col_width = Inches(3.6)
     col_height = Inches(4.5)
     gap = Inches(0.4)
@@ -169,15 +186,12 @@ def create_deck():
 
     for i, prob in enumerate(problems):
         left_pos = start_left + i * (col_width + gap)
-        # Background card
         add_card(slide_2, left_pos, top_pos, col_width, col_height)
         
-        # Text inside card
         tb = slide_2.shapes.add_textbox(left_pos + Inches(0.2), top_pos + Inches(0.2), col_width - Inches(0.4), col_height - Inches(0.4))
         tf = tb.text_frame
         tf.word_wrap = True
         
-        # Number indicator
         p_num = tf.paragraphs[0]
         p_num.text = prob["num"]
         p_num.font.name = "Georgia"
@@ -185,7 +199,6 @@ def create_deck():
         p_num.font.bold = True
         p_num.font.color.rgb = C_TURQUOISE
         
-        # Title
         p_title = tf.add_paragraph()
         p_title.text = prob["title"]
         p_title.font.name = "Georgia"
@@ -195,7 +208,6 @@ def create_deck():
         p_title.space_before = Pt(10)
         p_title.space_after = Pt(10)
         
-        # Description
         p_desc = tf.add_paragraph()
         p_desc.text = prob["desc"]
         p_desc.font.name = "Segoe UI"
@@ -203,7 +215,6 @@ def create_deck():
         p_desc.font.color.rgb = C_SLATE_400
         p_desc.space_after = Pt(10)
         
-        # Sub detail
         p_sub = tf.add_paragraph()
         p_sub.text = prob["sub"]
         p_sub.font.name = "Segoe UI"
@@ -218,7 +229,6 @@ def create_deck():
     apply_background(slide_3)
     add_slide_title(slide_3, "YECHIM: SAMARQAND CRAFTOUR PLATFORMASI")
 
-    # Left Column: Big Vision
     left_tb = slide_3.shapes.add_textbox(Inches(0.8), Inches(1.8), Inches(4.5), Inches(4.5))
     tf_l = left_tb.text_frame
     tf_l.word_wrap = True
@@ -244,7 +254,6 @@ def create_deck():
     pl_3.font.size = Pt(13)
     pl_3.font.color.rgb = C_TURQUOISE
 
-    # Right Column: 3 Key Pillar Cards
     right_left = Inches(5.8)
     card_w = Inches(6.7)
     card_h = Inches(1.3)
@@ -294,7 +303,6 @@ def create_deck():
     apply_background(slide_4)
     add_slide_title(slide_4, "MAHSULOT DEMOTSIYASI: 4 TA ODDIY QADAM")
 
-    # 4 ta qadam - gorizontal joylashuv
     step_w = Inches(2.6)
     step_h = Inches(4.5)
     step_gap = Inches(0.3)
@@ -330,15 +338,12 @@ def create_deck():
 
     for i, step in enumerate(steps):
         left_pos = step_start + i * (step_w + step_gap)
-        
-        # Transparent Card
         add_card(slide_4, left_pos, step_top, step_w, step_h)
         
         tb = slide_4.shapes.add_textbox(left_pos + Inches(0.15), step_top + Inches(0.2), step_w - Inches(0.3), step_h - Inches(0.4))
         tf = tb.text_frame
         tf.word_wrap = True
         
-        # Step label
         p_st = tf.paragraphs[0]
         p_st.text = step["step"]
         p_st.font.name = "Segoe UI"
@@ -347,7 +352,6 @@ def create_deck():
         p_st.font.color.rgb = C_TURQUOISE
         p_st.alignment = PP_ALIGN.CENTER
         
-        # Big Icon
         p_ico = tf.add_paragraph()
         p_ico.text = step["icon"]
         p_ico.font.size = Pt(40)
@@ -355,7 +359,6 @@ def create_deck():
         p_ico.space_before = Pt(15)
         p_ico.space_after = Pt(15)
         
-        # Title
         p_title = tf.add_paragraph()
         p_title.text = step["title"]
         p_title.font.name = "Georgia"
@@ -365,7 +368,6 @@ def create_deck():
         p_title.alignment = PP_ALIGN.CENTER
         p_title.space_after = Pt(10)
         
-        # Desc
         p_desc = tf.add_paragraph()
         p_desc.text = step["desc"]
         p_desc.font.name = "Segoe UI"
@@ -380,7 +382,6 @@ def create_deck():
     apply_background(slide_5)
     add_slide_title(slide_5, "BOZOR IMKONIYATLARI VA O'SISH SUR'ATI")
 
-    # Big Metrics Visual Layout
     box_w = Inches(3.6)
     box_h = Inches(2.2)
     top_pos_1 = Inches(1.8)
@@ -392,13 +393,11 @@ def create_deck():
     metrics = [
         {"val": "+45%", "lbl": "Turizm Oqimining Yillik O'sishi", "sub": "Yangi Samarqand xalqaro aeroporti va vizasiz kirish islohotlari natijasida o'sish sur'ati."},
         {"val": "68%", "lbl": "Mustaqil Sayohatchilar Ulushi", "sub": "Zamonaviy sayyohlar an'anaviy guruhlardan voz kechib, shaxsiy marshrutlarni afzal ko'rishmoqda."},
-        {"val": "$1.2B+", "lbl": "O'zbekistondagi Turizm Bozori", "sub": "2026-yil oxiriga kelib ichki va xalqaro turizm xarajatlarining umumiy aylanmasi."},
+        {"val": "$1.2B+", "lbl": "O'zbekistondagi Turizm Bozori", "sub": "2026-yil oxiriga kelib ichki va xalqaro turizm xarajatlarining umumiy aylanmasi."}
     ]
 
     for i, met in enumerate(metrics):
         left_pos = left_1 + i * (box_w + Inches(0.4))
-        
-        # Metric card
         add_card(slide_5, left_pos, top_pos_1, box_w, box_h, border_color=C_TURQUOISE)
         
         tb = slide_5.shapes.add_textbox(left_pos + Inches(0.2), top_pos_1 + Inches(0.15), box_w - Inches(0.4), box_h - Inches(0.3))
@@ -422,7 +421,6 @@ def create_deck():
         p_lbl.alignment = PP_ALIGN.CENTER
         p_lbl.space_before = Pt(5)
 
-    # Sub-text panel for alternative tourism market
     panel_w = Inches(11.733)
     panel_h = Inches(2.0)
     add_card(slide_5, left_1, top_pos_2, panel_w, panel_h)
@@ -452,7 +450,6 @@ def create_deck():
     apply_background(slide_6)
     add_slide_title(slide_6, "BIZNES MODEL VA DAROMAD MANBALARI")
 
-    # 3 ta ustunda daromad manbalari
     col_w = Inches(3.6)
     col_h = Inches(4.5)
     gap = Inches(0.4)
@@ -535,7 +532,6 @@ def create_deck():
     apply_background(slide_7)
     add_slide_title(slide_7, "TEXNOLOGIK STACK VA AVTOMATIZATSIYA (n8n)")
 
-    # Left box: Tech Stack
     box_w = Inches(5.6)
     box_h = Inches(4.5)
     left_1 = Inches(0.8)
@@ -570,14 +566,12 @@ def create_deck():
         p_st.font.bold = True
         p_st.font.color.rgb = C_WHITE
         
-        # Add run for description
         run = p_st.add_run()
         run.text = desc
         run.font.bold = False
         run.font.color.rgb = C_SLATE_400
         p_st.space_after = Pt(10)
 
-    # Right box: n8n Workflow Automation
     add_card(slide_7, left_2, top_pos, box_w, box_h)
     tb_r = slide_7.shapes.add_textbox(left_2 + Inches(0.3), top_pos + Inches(0.3), box_w - Inches(0.6), box_h - Inches(0.6))
     tf_r = tb_r.text_frame
@@ -619,7 +613,6 @@ def create_deck():
     apply_background(slide_8)
     add_slide_title(slide_8, "KELAJAK REJALARI VA INVESTITSIYA")
 
-    # Left Column: Investment Goal
     left_tb = slide_8.shapes.add_textbox(Inches(0.8), Inches(1.8), Inches(5.0), Inches(4.5))
     tf_l = left_tb.text_frame
     tf_l.word_wrap = True
@@ -666,7 +659,6 @@ def create_deck():
         run.font.color.rgb = C_SLATE_400
         p.space_after = Pt(5)
 
-    # Right Column: Future Goals / Contact panel
     right_left = Inches(6.5)
     add_card(slide_8, right_left, Inches(1.8), Inches(6.0), Inches(4.5))
     
@@ -709,6 +701,26 @@ def create_deck():
     output_filename = "Samarqand_CrafTour_Investor_Pitch_Deck.pptx"
     prs.save(output_filename)
     print(f"Presentation saved successfully as '{output_filename}'!")
+
+    # 7. Convert to PDF using win32com if available
+    try:
+        import os
+        import win32com.client
+        
+        print("Converting presentation to PDF...")
+        powerpoint = win32com.client.Dispatch("PowerPoint.Application")
+        pptx_abs = os.path.abspath(output_filename)
+        pdf_filename = "Samarqand_CrafTour_Investor_Pitch_Deck.pdf"
+        pdf_abs = os.path.abspath(pdf_filename)
+        
+        deck = powerpoint.Presentations.Open(pptx_abs, WithWindow=False)
+        # 32 is the format code for PDF export in PowerPoint SaveAs
+        deck.SaveAs(pdf_abs, 32)
+        deck.Close()
+        powerpoint.Quit()
+        print(f"Presentation successfully converted and saved as '{pdf_filename}'!")
+    except Exception as e:
+        print(f"Notice: Could not automatically convert PPTX to PDF via win32com: {e}")
 
 if __name__ == "__main__":
     create_deck()

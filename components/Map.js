@@ -1,12 +1,19 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export default function Map({ locations = [], selectedLocations = [], language = 'EN' }) {
+  const [isInteractive, setIsInteractive] = useState(true);
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
   const markersRef = useRef({});
   const polylineRef = useRef(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsInteractive(window.innerWidth >= 768);
+    }
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -120,12 +127,55 @@ export default function Map({ locations = [], selectedLocations = [], language =
     initMap();
 
     return () => {
-      // Cleanup is handled gracefully by React
+      if (mapInstance.current) {
+        mapInstance.current.remove();
+        mapInstance.current = null;
+      }
     };
   }, [locations, selectedLocations, language]);
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', minHeight: '400px' }}>
+      {!isInteractive && (
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundColor: 'rgba(10, 15, 29, 0.75)',
+          backdropFilter: 'blur(3px)',
+          zIndex: 1000,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '12px',
+          borderRadius: '16px',
+          padding: '24px',
+          textAlign: 'center'
+        }}>
+          <span style={{ color: '#fff', fontSize: '13px', fontWeight: '500' }}>
+            {language === 'UZ' ? 'Xaritani aylantirish uchun faollashtiring' : language === 'RU' ? 'Активируйте карту для перемещения' : 'Activate map to explore'}
+          </span>
+          <button 
+            onClick={() => setIsInteractive(true)}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#d4af37',
+              color: '#0a0f1d',
+              border: 'none',
+              borderRadius: '8px',
+              fontWeight: '700',
+              cursor: 'pointer',
+              fontSize: '12px',
+              boxShadow: '0 4px 12px rgba(212, 175, 55, 0.3)'
+            }}
+          >
+            {language === 'UZ' ? 'Faollashtirish' : language === 'RU' ? 'Активировать' : 'Activate'}
+          </button>
+        </div>
+      )}
       <div 
         ref={mapRef} 
         style={{ 
@@ -133,9 +183,11 @@ export default function Map({ locations = [], selectedLocations = [], language =
           height: '100%', 
           minHeight: '400px', 
           borderRadius: '16px', 
-          border: '1px solid rgba(212,175,55,0.2)' 
+          border: '1px solid rgba(212,175,55,0.2)',
+          pointerEvents: isInteractive ? 'auto' : 'none'
         }} 
       />
     </div>
   );
 }
+

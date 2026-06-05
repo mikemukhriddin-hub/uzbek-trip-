@@ -14,9 +14,9 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "Samarqand CrafTour - Custom Samarqand Tour Constructor",
-  description: "Build your own personalized travel adventure in Samarkand. Choose historical sights, local dining, vehicles, and expert guides in English or Russian.",
-  keywords: "Samarkand, tour builder, Uzbekistan travel, customize tour, Samarkand guide, Samarkand driver, Samarkand bread, Urgut mountains",
+  title: "Samarqand CrafTour - Custom Tour Constructor & Trip Planner",
+  description: "Samarqand bo'ylab shaxsiy sayohatingizni yarating. Спланируйте свое путешествие в Самарканд. Build your own personalized travel adventure in Samarkand.",
+  keywords: "Samarkand, tour builder, Uzbekistan travel, customize tour, Samarkand guide, Samarkand driver, Samarkand bread, Urgut mountains, Samarqand sayohat, Самарканд гид, самаркандский плов",
 };
 
 export default function RootLayout({ children }) {
