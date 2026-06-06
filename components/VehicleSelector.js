@@ -95,7 +95,7 @@ export default function VehicleSelector({
                   boxShadow: '0 2px 8px rgba(0,0,0,0.25)'
                 }}>
                   <img 
-                    src={VEHICLE_IMAGES[car.id]} 
+                    src={car.image_url || VEHICLE_IMAGES[car.id] || 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=400&q=80'} 
                     alt={car.car_model} 
                     style={{ 
                       width: '100%', 

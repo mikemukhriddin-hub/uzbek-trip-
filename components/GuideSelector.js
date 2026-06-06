@@ -147,7 +147,7 @@ export default function GuideSelector({
                     boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
                   }}>
                     <img 
-                      src={GUIDE_IMAGES[guide.id]} 
+                      src={guide.image_url || GUIDE_IMAGES[guide.id] || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80'} 
                       alt={guide.full_name} 
                       style={{ 
                         width: '100%', 

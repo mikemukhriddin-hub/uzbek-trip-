@@ -2,6 +2,14 @@ import { NextResponse } from 'next/server';
 import { supabase, supabaseConfigured } from '@/lib/supabase';
 import { generateGuideToken } from '@/lib/token';
 
+const DEFAULT_AVATARS = [
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80',
+  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=256&q=80',
+  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=256&q=80',
+  'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=256&q=80',
+  'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=256&q=80'
+];
+
 async function checkAuth(req) {
   const authHeader = req.headers.get('Authorization');
   const adminPass = process.env.ADMIN_PASSWORD || 'admin123';
@@ -54,16 +62,18 @@ export async function POST(req) {
 
   try {
     const body = await req.json();
-    const { full_name, phone_number, tariffs, telegram_chat_id, bot_active } = body;
+    const { full_name, phone_number, tariffs, telegram_chat_id, bot_active, image_url } = body;
 
     if (!full_name || !phone_number) {
       return NextResponse.json({ message: 'Missing guide name or phone' }, { status: 400 });
     }
 
+    const finalImageUrl = image_url || DEFAULT_AVATARS[Math.floor(Math.random() * DEFAULT_AVATARS.length)];
+
     if (!supabaseConfigured) {
       return NextResponse.json({ 
         message: 'Mock mode: Guide created successfully', 
-        data: { id: Math.floor(100 + Math.random() * 900), full_name, phone_number, tariffs, telegram_chat_id, bot_active } 
+        data: { id: Math.floor(100 + Math.random() * 900), full_name, phone_number, tariffs, telegram_chat_id, bot_active, image_url: finalImageUrl } 
       });
     }
 
@@ -73,7 +83,8 @@ export async function POST(req) {
         full_name,
         phone_number,
         telegram_chat_id: telegram_chat_id ? parseInt(telegram_chat_id, 10) : null,
-        bot_active: !!bot_active
+        bot_active: !!bot_active,
+        image_url: finalImageUrl
       })
       .select()
       .single();
@@ -114,7 +125,7 @@ export async function PATCH(req) {
 
   try {
     const body = await req.json();
-    const { id, full_name, phone_number, tariffs, telegram_chat_id, bot_active } = body;
+    const { id, full_name, phone_number, tariffs, telegram_chat_id, bot_active, image_url } = body;
 
     if (!id) {
       return NextResponse.json({ message: 'Missing guide ID' }, { status: 400 });
@@ -135,7 +146,8 @@ export async function PATCH(req) {
         full_name,
         phone_number,
         telegram_chat_id: telegram_chat_id !== undefined ? (telegram_chat_id ? parseInt(telegram_chat_id, 10) : null) : undefined,
-        bot_active: bot_active !== undefined ? !!bot_active : undefined
+        bot_active: bot_active !== undefined ? !!bot_active : undefined,
+        image_url: image_url !== undefined ? (image_url || null) : undefined
       })
       .eq('id', id)
       .select()

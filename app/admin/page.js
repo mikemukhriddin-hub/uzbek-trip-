@@ -26,6 +26,53 @@ import {
   Download
 } from 'lucide-react';
 
+const VEHICLE_IMAGES = {
+  1: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=400&q=80',
+  2: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=400&q=80',
+  3: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=400&q=80',
+  4: 'https://images.unsplash.com/photo-1508974239320-0a029497e820?auto=format&fit=crop&w=400&q=80',
+  5: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=400&q=80'
+};
+
+const DEFAULT_VEHICLE_IMAGES = {
+  sedan: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80',
+  gentra: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80',
+  cobalt: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=600&q=80',
+  minivan: 'https://images.unsplash.com/photo-1508974239320-0a029497e820?auto=format&fit=crop&w=600&q=80',
+  bus: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80'
+};
+
+function getFallbackVehicleImage(carModel = '') {
+  const model = (carModel || '').toLowerCase();
+  if (model.includes('bus') || model.includes('sprinter') || model.includes('microbus') || model.includes('yutong') || model.includes('van')) {
+    return DEFAULT_VEHICLE_IMAGES.bus;
+  }
+  if (model.includes('minivan') || model.includes('carnival') || model.includes('h1') || model.includes('hyundai') || model.includes('staria')) {
+    return DEFAULT_VEHICLE_IMAGES.minivan;
+  }
+  if (model.includes('gentra') || model.includes('lacetti')) {
+    return DEFAULT_VEHICLE_IMAGES.gentra;
+  }
+  if (model.includes('cobalt')) {
+    return DEFAULT_VEHICLE_IMAGES.cobalt;
+  }
+  return DEFAULT_VEHICLE_IMAGES.sedan;
+}
+
+const GUIDE_IMAGES = {
+  1: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=256&q=80', // Sherzod Alimov
+  2: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=256&q=80', // Elena Petrova
+  3: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=256&q=80'  // Jahongir Rustamov
+};
+
+const DEFAULT_AVATARS = [
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80',
+  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=256&q=80',
+  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=256&q=80',
+  'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=256&q=80',
+  'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=256&q=80'
+];
+
 const getStatusColor = (status) => {
   switch (status) {
     case 'confirmed':
@@ -435,7 +482,7 @@ export default function AdminPage() {
   const [vehicles, setVehicles] = useState([]);
   const [vehicleForm, setVehicleForm] = useState({
     driver_name: '', driver_phone: '', car_model: '', car_number: '',
-    city_rate: '', out_of_city_rate: '', telegram_chat_id: '', bot_active: false
+    city_rate: '', out_of_city_rate: '', telegram_chat_id: '', bot_active: false, image_url: ''
   });
 
   // Guides state
@@ -450,7 +497,8 @@ export default function AdminPage() {
     es_rate: '',
     fr_rate: '',
     telegram_chat_id: '',
-    bot_active: false
+    bot_active: false,
+    image_url: ''
   });
 
   // Editing state
@@ -849,7 +897,7 @@ export default function AdminPage() {
           setVehicles(prev => [...prev, data.data || data.mockData]);
           setVehicleForm({
             driver_name: '', driver_phone: '', car_model: '', car_number: '',
-            city_rate: '', out_of_city_rate: '', telegram_chat_id: '', bot_active: false
+            city_rate: '', out_of_city_rate: '', telegram_chat_id: '', bot_active: false, image_url: ''
           });
           alert('Vehicle added successfully!');
         } else {
@@ -932,7 +980,8 @@ export default function AdminPage() {
         phone_number: guideForm.phone_number,
         tariffs: guideTariffs,
         telegram_chat_id: guideForm.telegram_chat_id,
-        bot_active: guideForm.bot_active
+        bot_active: guideForm.bot_active,
+        image_url: guideForm.image_url
       })
     })
       .then(async (res) => {
@@ -950,7 +999,7 @@ export default function AdminPage() {
             }));
             setTariffs(prev => [...prev, ...tempTariffs]);
           }
-          setGuideForm({ full_name: '', phone_number: '', en_rate: '', ru_rate: '', uz_rate: '', es_rate: '', fr_rate: '', telegram_chat_id: '', bot_active: false });
+          setGuideForm({ full_name: '', phone_number: '', en_rate: '', ru_rate: '', uz_rate: '', es_rate: '', fr_rate: '', telegram_chat_id: '', bot_active: false, image_url: '' });
           alert('Guide added successfully!');
         } else {
           alert('Error: ' + data.message);
@@ -984,12 +1033,13 @@ export default function AdminPage() {
         phone_number: updateData.phone_number,
         tariffs: newTariffs,
         telegram_chat_id: updateData.telegram_chat_id,
-        bot_active: updateData.bot_active
+        bot_active: updateData.bot_active,
+        image_url: updateData.image_url
       })
     })
       .then(async (res) => {
         if (res.ok) {
-          setGuides(prev => prev.map(g => g.id === guideId ? { id: g.id, full_name: updateData.full_name, phone_number: updateData.phone_number, telegram_chat_id: updateData.telegram_chat_id, bot_active: updateData.bot_active } : g));
+          setGuides(prev => prev.map(g => g.id === guideId ? { id: g.id, full_name: updateData.full_name, phone_number: updateData.phone_number, telegram_chat_id: updateData.telegram_chat_id, bot_active: updateData.bot_active, image_url: updateData.image_url } : g));
           
           // Re-update local tariffs
           setTariffs(prev => {
@@ -1933,6 +1983,38 @@ export default function AdminPage() {
               <input type="number" placeholder={currT.cityRate} value={vehicleForm.city_rate} onChange={e => setVehicleForm({...vehicleForm, city_rate: e.target.value})} required />
               <input type="number" placeholder={currT.outOfCityRate} value={vehicleForm.out_of_city_rate} onChange={e => setVehicleForm({...vehicleForm, out_of_city_rate: e.target.value})} required />
               <input type="number" placeholder={currT.telegramChatIdCol} value={vehicleForm.telegram_chat_id || ''} onChange={e => setVehicleForm({...vehicleForm, telegram_chat_id: e.target.value})} />
+              
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <input 
+                  type="text" 
+                  placeholder={currT.imageUrl} 
+                  value={vehicleForm.image_url || ''} 
+                  onChange={e => setVehicleForm({...vehicleForm, image_url: e.target.value})} 
+                  style={{ flex: 1 }}
+                />
+                <button 
+                  type="button" 
+                  onClick={() => {
+                    const suggestedUrl = getFallbackVehicleImage(vehicleForm.car_model);
+                    setVehicleForm({...vehicleForm, image_url: suggestedUrl});
+                  }}
+                  style={{
+                    padding: '8px 12px',
+                    backgroundColor: 'rgba(99,102,241,0.2)',
+                    border: '1.5px solid #6366f1',
+                    borderRadius: '6px',
+                    color: '#a5b4fc',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                    fontWeight: '600',
+                    transition: 'all 0.2s ease',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  📷 Rasm
+                </button>
+              </div>
+
               <label style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#94a3b8', fontSize: '14px', cursor: 'pointer' }}>
                 <input type="checkbox" checked={!!vehicleForm.bot_active} onChange={e => setVehicleForm({...vehicleForm, bot_active: e.target.checked})} style={{ width: 'auto' }} />
                 {currT.botStatusCol} ({currT.active})
@@ -1948,6 +2030,7 @@ export default function AdminPage() {
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', color: '#94a3b8', fontSize: '13px' }}>
+                  <th style={{ padding: '12px 8px' }}>{currT.photo}</th>
                   <th style={{ padding: '12px 8px' }}>{currT.driver}</th>
                   <th style={{ padding: '12px 8px' }}>{currT.phone}</th>
                   <th style={{ padding: '12px 8px' }}>{currT.carDetails}</th>
@@ -1963,6 +2046,21 @@ export default function AdminPage() {
                   const isEditing = editingResource?.type === 'vehicle' && editingResource?.id === v.id;
                   return (
                     <tr key={v.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '14px' }}>
+                      <td style={{ padding: '14px 8px' }}>
+                        {isEditing ? (
+                          <input 
+                            type="text" 
+                            placeholder="Image URL" 
+                            value={editingResource.data.image_url || ''} 
+                            onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, image_url: e.target.value}})} 
+                            style={{ padding: '4px', fontSize: '12px', width: '120px' }} 
+                          />
+                        ) : (
+                          <div style={{ width: '60px', height: '40px', borderRadius: '4px', overflow: 'hidden', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                            <img src={v.image_url || VEHICLE_IMAGES[v.id] || 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=400&q=80'} alt={v.car_model} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          </div>
+                        )}
+                      </td>
                       <td style={{ padding: '14px 8px' }}>
                         {isEditing ? (
                           <input type="text" value={editingResource.data.driver_name} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, driver_name: e.target.value}})} style={{ padding: '4px', fontSize: '12px' }} />
@@ -2064,6 +2162,37 @@ export default function AdminPage() {
                 <input type="text" placeholder={currT.fullName} value={guideForm.full_name} onChange={e => setGuideForm({...guideForm, full_name: e.target.value})} required />
                 <input type="text" placeholder={currT.phoneNumber} value={guideForm.phone_number} onChange={e => setGuideForm({...guideForm, phone_number: e.target.value})} required />
                 
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <input 
+                    type="text" 
+                    placeholder={currT.imageUrl} 
+                    value={guideForm.image_url || ''} 
+                    onChange={e => setGuideForm({...guideForm, image_url: e.target.value})} 
+                    style={{ flex: 1 }}
+                  />
+                  <button 
+                    type="button" 
+                    onClick={() => {
+                      const randomAvatar = DEFAULT_AVATARS[Math.floor(Math.random() * DEFAULT_AVATARS.length)];
+                      setGuideForm({...guideForm, image_url: randomAvatar});
+                    }}
+                    style={{
+                      padding: '8px 12px',
+                      backgroundColor: 'rgba(99,102,241,0.2)',
+                      border: '1.5px solid #6366f1',
+                      borderRadius: '6px',
+                      color: '#a5b4fc',
+                      cursor: 'pointer',
+                      fontSize: '12px',
+                      fontWeight: '600',
+                      transition: 'all 0.2s ease',
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
+                    👤 Rasm
+                  </button>
+                </div>
+
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                   <span style={{ fontSize: '12px', color: '#64748b' }}>{currT.enRate}</span>
                   <input type="number" placeholder="e.g. 50" value={guideForm.en_rate} onChange={e => setGuideForm({...guideForm, en_rate: e.target.value})} />
@@ -2110,6 +2239,7 @@ export default function AdminPage() {
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', color: '#94a3b8', fontSize: '13px' }}>
+                  <th style={{ padding: '12px 8px' }}>{currT.photo}</th>
                   <th style={{ padding: '12px 8px' }}>{currT.name}</th>
                   <th style={{ padding: '12px 8px' }}>{currT.phoneNumber}</th>
                   {userRole === 'admin' && <th style={{ padding: '12px 8px' }}>Portal Token</th>}
@@ -2131,6 +2261,21 @@ export default function AdminPage() {
                     
                     return (
                       <tr key={g.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '14px' }}>
+                        <td style={{ padding: '14px 8px' }}>
+                          {isEditing ? (
+                            <input 
+                              type="text" 
+                              placeholder="Image URL" 
+                              value={editingResource.data.image_url || ''} 
+                              onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, image_url: e.target.value}})} 
+                              style={{ padding: '4px', fontSize: '12px', width: '120px' }} 
+                            />
+                          ) : (
+                            <div style={{ width: '40px', height: '40px', borderRadius: '50%', overflow: 'hidden', backgroundColor: 'rgba(255,255,255,0.05)', border: '1.5px solid var(--text-gold, #d4af37)', boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }}>
+                              <img src={g.image_url || GUIDE_IMAGES[g.id] || DEFAULT_AVATARS[0]} alt={g.full_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            </div>
+                          )}
+                        </td>
                         <td style={{ padding: '14px 8px' }}>
                           {isEditing ? (
                             <input type="text" value={editingResource.data.full_name} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, full_name: e.target.value}})} style={{ padding: '4px', fontSize: '12px' }} />
@@ -2250,7 +2395,8 @@ export default function AdminPage() {
                                       es_rate: getGuideRateForLang(g.id, 'ES'),
                                       fr_rate: getGuideRateForLang(g.id, 'FR'),
                                       telegram_chat_id: g.telegram_chat_id || '',
-                                      bot_active: !!g.bot_active
+                                      bot_active: !!g.bot_active,
+                                      image_url: g.image_url || ''
                                     } 
                                   })} style={{ padding: '4px', background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer' }}><Edit3 size={16} /></button>
                                   {userRole === 'admin' && (
