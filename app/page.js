@@ -14,7 +14,18 @@ async function getLocations() {
       .select('*')
       .order('id', { ascending: true });
     if (error) throw error;
-    return data && data.length > 0 ? data : MOCK_LOCATIONS;
+
+    let result = (data || []).map(loc => ({ ...loc, region: loc.region || 'samarqand' }));
+    if (result.length === 0) return MOCK_LOCATIONS;
+
+    // Merge missing regions from mock data
+    ['buxoro', 'xorazm', 'shahrisabz'].forEach(region => {
+      if (!result.some(loc => loc.region === region)) {
+        result = [...result, ...MOCK_LOCATIONS.filter(loc => loc.region === region)];
+      }
+    });
+
+    return result;
   } catch (err) {
     console.error('Error fetching locations from Supabase:', err);
     return MOCK_LOCATIONS;
@@ -36,10 +47,22 @@ async function getGuidesData() {
       .select('*');
     if (tError) throw tError;
 
-    return {
-      guides: guides && guides.length > 0 ? guides : MOCK_GUIDES,
-      tariffs: tariffs && tariffs.length > 0 ? tariffs : MOCK_TARIFFS
-    };
+    let guidesList = (guides || []).map(g => ({ ...g, region: g.region || 'samarqand' }));
+    let tariffsList = tariffs || [];
+
+    if (guidesList.length === 0) return fallback;
+
+    // Merge missing regions from mock data
+    ['buxoro', 'xorazm', 'shahrisabz'].forEach(region => {
+      if (!guidesList.some(g => g.region === region)) {
+        const mockG = MOCK_GUIDES.filter(g => g.region === region);
+        guidesList = [...guidesList, ...mockG];
+        const mockT = MOCK_TARIFFS.filter(t => mockG.some(mg => mg.id === t.guide_id));
+        tariffsList = [...tariffsList, ...mockT];
+      }
+    });
+
+    return { guides: guidesList, tariffs: tariffsList };
   } catch (err) {
     console.error('Error fetching guides from Supabase:', err);
     return fallback;
@@ -54,7 +77,18 @@ async function getVehicles() {
       .select('*')
       .order('id', { ascending: true });
     if (error) throw error;
-    return data && data.length > 0 ? data : MOCK_VEHICLES;
+
+    let result = (data || []).map(v => ({ ...v, region: v.region || 'samarqand' }));
+    if (result.length === 0) return MOCK_VEHICLES;
+
+    // Merge missing regions from mock data
+    ['buxoro', 'xorazm', 'shahrisabz'].forEach(region => {
+      if (!result.some(v => v.region === region)) {
+        result = [...result, ...MOCK_VEHICLES.filter(v => v.region === region)];
+      }
+    });
+
+    return result;
   } catch (err) {
     console.error('Error fetching vehicles from Supabase:', err);
     return MOCK_VEHICLES;
