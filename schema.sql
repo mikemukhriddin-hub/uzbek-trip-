@@ -129,7 +129,18 @@ INSERT INTO locations (name_en, name_ru, name_uz, description_en, description_ru
 ('Bukhara Desert Oasis & Dunes', 'Пустынный оазис Бухары', 'Buxoro sahro vohasi va qum barxanlari', 'Experience the vastness of the Kyzylkum Desert with a safari, traditional yurt camps, and camel riding.', 'Почувствуйте просторы пустыни Кызылкум с сафари, юртами и катанием на верблюдах.', 'Qizilqum sahrosida tuya minish, milliy o''tovlarda dam olish va qum barxanlari bo''ylab ajoyib sayohat.', 39.9000, 64.3000, 'alternative', TRUE, 240, 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=600&q=80', 'buxoro'),
 ('Bukhara Spice Market', 'Рынок специй Бухары', 'Buxoro ziravorlar bozori', 'A sensory journey through ancient trading domes, offering exotic spices, dried fruits, and herbal teas.', 'Сенсорное путешествие по древним торговым куполам со специями, сухофруктами и травяными чаями.', 'Qadimgi savdo gumbazlari ostida joylashgan, xushbo''y ziravorlar, quruq mevalar va shifobaxsh choylar bozori.', 39.7745, 64.4172, 'food', FALSE, 60, 'https://images.unsplash.com/photo-1596797038530-2c107229654b?auto=format&fit=crop&w=600&q=80', 'buxoro'),
 ('Labi Hovuz Tea House', 'Чайхана Ляби-Хауз', 'Labi Hovuz choyxonasi', 'Dine by the waters of the historic pond, enjoying Bukhara pilaf and green tea under ancient mulberry trees.', 'Обед у воды исторического пруда, наслаждаясь бухарским пловом и зеленым чаем.', 'Labi Hovuz bo''yidagi asriy chinorlar soyasida milliy buxorocha palov va ko''k choydan bahramand bo''ling.', 39.7733, 64.4206, 'food', FALSE, 90, 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=600&q=80', 'buxoro'),
-('Minzifa Restaurant', 'Ресторан Минзифа', 'Minzifa restorani', 'A fine dining restaurant with a rooftop terrace overlooking the historic domes of Bukhara.', 'Ресторан изысканной кухни с террасой на крыше и видом на исторические купола Бухары.', 'Buxoroning ko''hna gumbazlariga qaragan tom qismidagi ayvonga ega bo''lgan milliy va yevropa taomlari restorani.', 39.7740, 64.4185, 'food', FALSE, 90, 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80', 'buxoro');
+('Minzifa Restaurant', 'Ресторан Минзифа', 'Minzifa restorani', 'A fine dining restaurant with a rooftop terrace overlooking the historic domes of Bukhara.', 'Ресторан изысканной кухни с террасой на крыше и видом на исторические купола Бухары.', 'Buxoroning ko''hna gumbazlariga qaragan tom qismidagi ayvonga ega bo''lgan milliy va yevropa taomlari restorani.', 39.7740, 64.4185, 'food', FALSE, 90, 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80', 'buxoro'),
+('Ichan-Kala Complex', 'Ичан-Кала', 'Ichan Qal''a majmuasi', 'The ancient walled inner city of Khiva, containing over 50 historic monuments and hundreds of houses.', 'Древний внутренний город Хивы, обнесенный стеной, включающий более 50 памятников архитектуры.', 'Xivaning qadimiy devor bilan o''ralgan ichki shahri, 50 dan ortiq tarixiy obidalarni o''z ichiga oladi.', 41.3783, 60.3639, 'historical', FALSE, 120, 'https://images.unsplash.com/photo-1584646098025-97cfbe6cae0d?auto=format&fit=crop&w=600&q=80', 'xorazm'),
+('Kalta-Minor Minaret', 'Минарет Кальта-Минор', 'Kalta Minor minorasi', 'An iconic, unfinished minaret covered in vibrant turquoise glazed tiles and geometric patterns.', 'Культовый недостроенный минарет, полностью покрытый глазурованной бирюзовой плиткой.', 'Yorqin firuza va ko''k rangli sirlangan koshinlar bilan qoplangan Xivaning ramzi bo''lgan chala qolgan minora.', 41.3781, 60.3635, 'historical', FALSE, 45, 'https://images.unsplash.com/photo-1540959733332-eab4deceeaf7?auto=format&fit=crop&w=600&q=80', 'xorazm'),
+('Tash-Khauli Palace', 'Дворец Таш-Хаули', 'Toshhovli saroyi', 'A grand palace of the Khans of Khiva featuring ornate blue wall tiles and fine wood carvings.', 'Дворец хивинских ханов с великолепной синей майоликой и изысканной резьбой по дереву.', 'Moviy koshinlar va nafis yog''och o''ymakorligi bilan bezatilgan Xiva xonlarining hashamatli saroyi.', 41.3788, 60.3644, 'historical', FALSE, 90, 'https://images.unsplash.com/photo-1605649487212-47bdab064df7?auto=format&fit=crop&w=600&q=80', 'xorazm'),
+('Kunya-Ark Citadel', 'Крепость Куня-Арк', 'Ko''hna Ark qal''asi', 'The fortified palace-city of the Khiva Khans, featuring mints, mosques, and a high watchtower.', 'Укрепленная цитадель и бывшая резиденция ханов с прекрасной смотровой башней.', 'Xiva xonlarining qal''a-saroyi bo''lib, uning tarkibida zarbxona, masjidlar va ko''rinish minorasi mavjud.', 41.3782, 60.3598, 'historical', FALSE, 90, 'https://images.unsplash.com/photo-1627856013091-fed6e4e30025?auto=format&fit=crop&w=600&q=80', 'xorazm'),
+('Juma Mosque', 'Джума-мечеть', 'Juma masjidi', 'A unique 10th-century mosque supported by 218 beautifully carved wooden columns.', 'Уникальная мечеть X века, поддерживаемая 218 резными деревянными колоннами.', '218 ta nafis o''yilgan yog''och ustunlar bilan jihozlangan X asrga oid o''ziga xos masjid.', 41.3784, 60.3626, 'historical', FALSE, 60, 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=600&q=80', 'xorazm'),
+('Islam Khodja Complex', 'Минарет и медресе Ислам-Ходжа', 'Islomxo''ja majmuasi', 'The tallest minaret in Khiva, offering panoramic views of Ichan-Kala, alongside its madrasah.', 'Самый высокий минарет в Хиве с прекрасным панорамным видом на Ичан-Калу.', 'Ichan Qal''aning ajoyib manzarasini ko''rsatuvchi Xivadagi eng baland minora va uning madrasasi.', 41.3773, 60.3629, 'historical', FALSE, 60, 'https://images.unsplash.com/photo-1608958416790-27ff290c3ce2?auto=format&fit=crop&w=600&q=80', 'xorazm'),
+('Pahlavan Mahmoud Mausoleum', 'Мавзолей Пахлавана Махмуда', 'Pahlavon Mahmud maqbarasi', 'The sacred final resting place of Khiva\'s patron saint, featuring a massive turquoise dome.', 'Священная усыпальница покровителя Хивы с величественным бирюзовым куполом.', 'Xivaning muqaddas homiysi dafn etilgan, ulkan firuza gumbazga ega muhtasham ziyoratgoh.', 41.3768, 60.3618, 'historical', FALSE, 60, 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=600&q=80', 'xorazm'),
+('Tozabog Summer Palace', 'Дворец Кибла Тозабог', 'Qibla Tozabog'' saroyi', 'The summer palace of the last Khivan Khans, set inside a green oasis outside the city walls.', 'Загородный летний дворец последних хивинских ханов в зеленом оазисе.', 'Shahar devorlaridan tashqarida joylashgan Xiva xonlarining yozgi saroyi va yashil bog''i.', 41.3524, 60.3472, 'alternative', TRUE, 90, 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=600&q=80', 'xorazm'),
+('Khiva Silk Workshop', 'Шелковая мастерская Хивы', 'Xiva ipak hunarmandchilik ustaxonasi', 'Watch local weavers create natural silk carpets and traditional suzanis using ancient looms.', 'Мастерская шелковых ковров и традиционных сюзане, создаваемых вручную на старых станках.', 'Qadimgi dastgohlarda tabiiy ipak gilamlar va milliy suzanilarni to''qish jarayonini kuzating.', 41.3780, 60.3620, 'alternative', FALSE, 45, 'https://images.unsplash.com/photo-1596797038530-2c107229654b?auto=format&fit=crop&w=600&q=80', 'xorazm'),
+('Khorezm Osh & Shivit Oshi', 'Ресторан Шивит Оши', 'Xorazm shivit oshi markazi', 'Dine on traditional green dill noodles topped with meat stew and sour milk, a Khiva specialty.', 'Отведайте традиционную зеленую лапшу с укропом (Шивит Оши) и хорезмский плов.', 'Xivaning o''ziga xos milliy taomi bo''lgan shivitli ko''k lagmon (shivit oshi) va xorazmcha palov restorani.', 41.3779, 60.3615, 'food', FALSE, 90, 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=600&q=80', 'xorazm'),
+('Tukhum Barak Eatery', 'Кафе Тухум Барак', 'Tuxum barak choyxonasi', 'A traditional tavern serving Khorezmian egg-filled dumplings, hand-made to order.', 'Кафе традиционной кухни, специализирующееся на хорезмских варениках с яйцом (Тухум Барак).', 'Xorazm oshxonasining mashhur tuxum barak taomini yangi va issiq tayyorlab beruvchi milliy choyxona.', 41.3789, 60.3625, 'food', FALSE, 60, 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80', 'xorazm');
 
 -- Seed Guides
 INSERT INTO guides (full_name, phone_number, region) VALUES
@@ -138,7 +149,10 @@ INSERT INTO guides (full_name, phone_number, region) VALUES
 ('Jahongir Rustamov', '+998971112233', 'samarqand'),
 ('Mukhammadkhon Bakhronov', '+998939991122', 'buxoro'),
 ('Malika Davlatova', '+998904445566', 'buxoro'),
-('Abdurakhmon Karimov', '+998998887766', 'buxoro');
+('Abdurakhmon Karimov', '+998998887766', 'buxoro'),
+('Khurshid Bekchanov', '+998935552233', 'xorazm'),
+('Zilola Masharipova', '+998904441122', 'xorazm'),
+('Davron Sabirov', '+998973336655', 'xorazm');
 
 -- Seed Guide Tariffs
 -- Sherzod speaks English, Russian, and Uzbek
@@ -176,6 +190,24 @@ INSERT INTO guide_language_tariffs (guide_id, language_code, daily_rate) VALUES
 (6, 'RU', 45.00),
 (6, 'UZ', 35.00);
 
+-- Khurshid speaks English, Russian, Uzbek
+INSERT INTO guide_language_tariffs (guide_id, language_code, daily_rate) VALUES
+(7, 'EN', 50.00),
+(7, 'RU', 40.00),
+(7, 'UZ', 35.00);
+
+-- Zilola speaks German, Russian, Uzbek
+INSERT INTO guide_language_tariffs (guide_id, language_code, daily_rate) VALUES
+(8, 'DE', 55.00),
+(8, 'RU', 45.00),
+(8, 'UZ', 35.00);
+
+-- Davron speaks English, Russian, Spanish
+INSERT INTO guide_language_tariffs (guide_id, language_code, daily_rate) VALUES
+(9, 'EN', 55.00),
+(9, 'RU', 45.00),
+(9, 'ES', 65.00);
+
 -- Seed Vehicles
 INSERT INTO vehicles (driver_name, driver_phone, car_model, car_number, city_rate, out_of_city_rate, capacity, region) VALUES
 ('Alisher aka', '+998909998877', 'Chevrolet Cobalt (White)', '01 A 777 BA', 30.00, 45.00, 5, 'samarqand'),
@@ -185,4 +217,7 @@ INSERT INTO vehicles (driver_name, driver_phone, car_model, car_number, city_rat
 ('Jahongir aka', '+998909876543', 'Isuzu Bus (Turquoise)', '01 B 999 BB', 120.00, 180.00, 20, 'samarqand'),
 ('Jafar aka', '+998903334455', 'Chevrolet Lacetti (White)', '80 A 123 BZ', 25.00, 40.00, 5, 'buxoro'),
 ('Rustam aka', '+998936667788', 'Chevrolet Cobalt (Grey)', '80 B 555 YY', 25.00, 40.00, 5, 'buxoro'),
-('Bekzod aka', '+998972223344', 'Toyota Hiace Minivan (White)', '80 C 777 XX', 55.00, 80.00, 10, 'buxoro');
+('Bekzod aka', '+998972223344', 'Toyota Hiace Minivan (White)', '80 C 777 XX', 55.00, 80.00, 10, 'buxoro'),
+('Dilshod aka', '+998931112233', 'Chevrolet Cobalt (Grey)', '90 B 123 XY', 25.00, 40.00, 5, 'xorazm'),
+('Sanjar aka', '+998904447788', 'Chevrolet Lacetti (White)', '90 A 999 AA', 25.00, 40.00, 5, 'xorazm'),
+('Mansur aka', '+998977778899', 'Toyota Hiace Minivan (White)', '90 C 777 ZZ', 55.00, 80.00, 10, 'xorazm');

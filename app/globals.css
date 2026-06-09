@@ -82,6 +82,46 @@ body[data-region="buxoro"] .btn-primary:hover {
   box-shadow: 0 4px 15px rgba(192, 90, 26, 0.4);
 }
 
+/* ========================================================
+   🕌 XORAZM REGION SPECIAL THEME OVERRIDES
+   ======================================================== */
+body[data-region="xorazm"] {
+  --primary-blue: #028090; /* Kalta-Minor Teal/Turquoise */
+  --primary-blue-rgb: 2, 128, 144;
+  --deep-turquoise: #00a896; /* Secondary/Glow Teal */
+  
+  /* Custom backgrounds for card/borders to match teal/turquoise */
+  --bg-dark-card: rgba(10, 32, 35, 0.7);
+  --bg-dark-border: rgba(2, 128, 144, 0.15);
+  
+  --bg-card: rgba(10, 32, 35, 0.45);
+  --border-card: rgba(2, 128, 144, 0.15);
+}
+
+body[data-region="xorazm"] .selected-card-historical {
+  border-color: #028090 !important;
+  box-shadow: 0 0 18px rgba(2, 128, 144, 0.35) !important;
+  background: rgba(2, 128, 144, 0.08) !important;
+}
+
+body[data-region="xorazm"] .selected-card-alternative {
+  border-color: #00a896 !important;
+  box-shadow: 0 0 18px rgba(0, 168, 150, 0.35) !important;
+  background: rgba(0, 168, 150, 0.08) !important;
+}
+
+body[data-region="xorazm"] .blue-glow {
+  box-shadow: 0 0 15px rgba(2, 128, 144, 0.25);
+}
+
+body[data-region="xorazm"] .btn-primary {
+  background: linear-gradient(135deg, #028090 0%, #00a896 100%);
+}
+
+body[data-region="xorazm"] .btn-primary:hover {
+  box-shadow: 0 4px 15px rgba(2, 128, 144, 0.4);
+}
+
 
 /* Default to Dark Mode for the rich, magical, atmospheric "Samarkand Night" vibe */
 body {

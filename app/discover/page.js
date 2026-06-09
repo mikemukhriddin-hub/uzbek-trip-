@@ -82,6 +82,36 @@ const BUXORO_SLIDES = [
   }
 ];
 
+const XORAZM_SLIDES = [
+  {
+    image: 'https://images.unsplash.com/photo-1540959733332-eab4deceeaf7?auto=format&fit=crop&w=800&q=80',
+    title_en: 'Kalta-Minor Minaret',
+    title_ru: 'Минарет Кальта-Минор',
+    title_uz: 'Kalta Minor minorasi',
+    desc_en: 'Covered in vibrant turquoise glazed tiles, this iconic minaret is the visual heart of ancient Khiva.',
+    desc_ru: 'Этот культовый минарет, полностью покрытый яркой бирюзовой глазурью, является сердцем древней Хивы.',
+    desc_uz: 'Firuza sirlangan nafis koshinlar va geometrik naqshlar bilan bezatilgan Kalta Minor minorasi qadimiy Xiva shahrining ramzidir.'
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1627856013091-fed6e4e30025?auto=format&fit=crop&w=800&q=80',
+    title_en: 'Kunya-Ark Citadel',
+    title_ru: 'Крепость Куня-Арк',
+    title_uz: 'Ko\'hna Ark qal\'asi',
+    desc_en: 'Explore the fortified palace of the Khans, containing the mint, mosques, and the panoramic watchtower.',
+    desc_ru: 'Исследуйте укрепленную резиденцию хивинских ханов с монетным двором, мечетями и смотровой башней.',
+    desc_uz: 'Zarbxona, masjidlar va shahar manzarasini ko\'rsatuvchi baland kuzatuv minorasiga ega bo\'lgan xonlar qal\'asi.'
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1608958416790-27ff290c3ce2?auto=format&fit=crop&w=800&q=80',
+    title_en: 'Islam Khodja Complex',
+    title_ru: 'Комплекс Ислам-Ходжа',
+    title_uz: 'Islomxo\'ja majmuasi',
+    desc_en: 'The tallest minaret in Khiva, with its distinctive horizontal bands of turquoise tiles and madrasah.',
+    desc_ru: 'Самый высокий минарет в Хиве с чередующимися полосами бирюзовой плитки и соседнее медресе.',
+    desc_uz: 'Xivadagi eng baland minora bo\'lib, firuza rangli gorizontal koshin chiziqlari va madrasasi bilan ajralib turadi.'
+  }
+];
+
 const SAMARQAND_EVENTS = [
   {
     id: 1,
@@ -160,10 +190,49 @@ const BUXORO_EVENTS = [
   }
 ];
 
+const XORAZM_EVENTS = [
+  {
+    id: 1,
+    title_en: 'Navruz Spring Festival',
+    title_ru: 'Весенний фестиваль Навруз',
+    title_uz: 'Navro\'z bahor bayrami',
+    date_en: 'March 21',
+    date_ru: '21 Марта',
+    date_uz: '21 Mart',
+    desc_en: 'The Persian New Year welcoming spring. Celebrate with sumalak (sweet wheat paste), traditional folk music, and tightrope walkers.',
+    desc_ru: 'Восточный Новый год, встречающий весну. Празднование с сумаляком, традиционной народной музыкой и канатоходцами.',
+    desc_uz: 'Bahorni kutib oluvchi sharqona yangi yil. Sumalak, an\'anaviy xalq musiqasi va dorbozlar shoulari bilan nishonlanadi.'
+  },
+  {
+    id: 6,
+    title_en: 'Lazgi Dance International Festival',
+    title_ru: 'Международный фестиваль танца Лазги',
+    title_uz: 'Xalqaro Lazgi raqs festivali',
+    date_en: 'Late April',
+    date_ru: 'Конец Апреля',
+    date_uz: 'Aprel oxiri',
+    desc_en: 'A vibrant festival celebrating the fiery, energetic dance of Khorezm (Lazgi), bringing dancers from all over the world to Khiva.',
+    desc_ru: 'Яркий международный праздник в Хиве, посвященный энергичному и страстному хорезмскому танцу Лазги.',
+    desc_uz: 'Xorazmning jo\'shqin va olovli Lazgi raqsiga bag\'ishlangan, butun dunyodan raqqosalarni jamlovchi xalqaro festival.'
+  },
+  {
+    id: 7,
+    title_en: 'Gurvak Melon Festival',
+    title_ru: 'Фестиваль дыни Гурвак',
+    title_uz: 'Gurvak qovun sayli',
+    date_en: 'Mid August',
+    date_ru: 'Середина Августа',
+    date_uz: 'Avgust o\'rtalari',
+    desc_en: 'Taste Khorezm\'s famous Gurvak melons, known for their unique sweetness, along with artisan craft fairs and folk concerts.',
+    desc_ru: 'Попробуйте знаменитые хорезмские дыни сорта Гурвак, славящиеся своей сладостью, наряду с ярмаркой ремесел.',
+    desc_uz: 'O\'ziga xos shirinligi bilan mashhur bo\'lgan Xorazmning Gurvak qovunlarini tatib ko\'ring, hunarmandlar ko\'rgazmasidan bahramand bo\'ling.'
+  }
+];
+
 export default function DiscoverPage({ searchParams }) {
   const resolvedSearchParams = searchParams ? use(searchParams) : {};
   const regionParam = resolvedSearchParams?.region;
-  const initialRegion = (regionParam === 'buxoro' || regionParam === 'samarqand') ? regionParam : 'samarqand';
+  const initialRegion = (regionParam === 'buxoro' || regionParam === 'samarqand' || regionParam === 'xorazm') ? regionParam : 'samarqand';
 
   const [activeRegion, setActiveRegion] = useState(initialRegion);
   const [language, setLanguage] = useState('EN');
@@ -173,12 +242,12 @@ export default function DiscoverPage({ searchParams }) {
   const [uzsAmount, setUzsAmount] = useState('1280000');
   
   const EXCHANGE_RATE = 12800; // 1 USD = 12,800 UZS
-  const slides = activeRegion === 'buxoro' ? BUXORO_SLIDES : SAMARQAND_SLIDES;
-  const events = activeRegion === 'buxoro' ? BUXORO_EVENTS : SAMARQAND_EVENTS;
+  const slides = activeRegion === 'xorazm' ? XORAZM_SLIDES : activeRegion === 'buxoro' ? BUXORO_SLIDES : SAMARQAND_SLIDES;
+  const events = activeRegion === 'xorazm' ? XORAZM_EVENTS : activeRegion === 'buxoro' ? BUXORO_EVENTS : SAMARQAND_EVENTS;
 
   // Sync query parameters changes to state
   useEffect(() => {
-    if (regionParam && (regionParam === 'samarqand' || regionParam === 'buxoro')) {
+    if (regionParam && (regionParam === 'samarqand' || regionParam === 'buxoro' || regionParam === 'xorazm')) {
       setActiveRegion(regionParam);
     }
   }, [regionParam]);
@@ -196,7 +265,7 @@ export default function DiscoverPage({ searchParams }) {
     // Load active region from localStorage only if no query param was provided
     if (!regionParam) {
       const savedRegion = localStorage.getItem('active_region');
-      if (savedRegion && (savedRegion === 'samarqand' || savedRegion === 'buxoro')) {
+      if (savedRegion && (savedRegion === 'samarqand' || savedRegion === 'buxoro' || savedRegion === 'xorazm')) {
         Promise.resolve().then(() => {
           setActiveRegion(savedRegion);
         });
@@ -256,7 +325,13 @@ export default function DiscoverPage({ searchParams }) {
   const t = {
     backBtn: language === 'UZ' ? 'Orqaga qaytish' : language === 'RU' ? 'Вернуться назад' : 'Back to route builder',
     pageTitle: language === 'UZ' ? 'Sayohatchilar uchun qo\'llanma' : language === 'RU' ? 'Гид для Путешественников' : 'Traveler Discover Hub',
-    pageSubtitle: activeRegion === 'buxoro'
+    pageSubtitle: activeRegion === 'xorazm'
+      ? (language === 'UZ' 
+        ? 'Xorazmning (Xivaning) madaniy merosi, festivallari, ob-havosi va muhim ma\'lumotlari'
+        : language === 'RU' 
+        ? 'Актуальная информация, погода, праздники и культурное наследие Хорезма'
+        : 'Real-time weather, cultural festivals, slideshows, and local travel advice for Khorezm')
+      : activeRegion === 'buxoro'
       ? (language === 'UZ' 
         ? 'Buxoroning madaniy merosi, festivallari, ob-havosi va muhim ma\'lumotlari'
         : language === 'RU' 
@@ -269,7 +344,9 @@ export default function DiscoverPage({ searchParams }) {
         : 'Real-time weather, cultural festivals, slideshows, and local travel advice for Samarkand'),
     
     // Weather
-    weatherTitle: activeRegion === 'buxoro'
+    weatherTitle: activeRegion === 'xorazm'
+      ? (language === 'UZ' ? '🌤 Xorazm ob-havosi' : language === 'RU' ? '🌤 Погода в Хорезме' : '🌤 Khorezm Weather')
+      : activeRegion === 'buxoro'
       ? (language === 'UZ' ? '🌤 Buxoro ob-havosi' : language === 'RU' ? '🌤 Погода в Бухаре' : '🌤 Bukhara Weather')
       : (language === 'UZ' ? '🌤 Samarqand ob-havosi' : language === 'RU' ? '🌤 Погода в Самарканде' : '🌤 Samarkand Weather'),
     weatherDesc: language === 'UZ' ? 'Ochiq va quyoshli kun' : language === 'RU' ? 'Ясно, солнечный день' : 'Clear & sunny sky',
@@ -358,7 +435,7 @@ export default function DiscoverPage({ searchParams }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Compass size={20} className="animate-spin" style={{ color: '#d4af37', animationDuration: '20s' }} />
           <span style={{ fontSize: '16px', fontWeight: 800, letterSpacing: '0.05em', color: '#fff' }}>
-            {activeRegion === 'buxoro' ? 'BUXORO' : 'SAMARQAND'} <span style={{ color: '#d4af37' }}>DISCOVER</span>
+            {activeRegion === 'xorazm' ? 'XORAZM' : activeRegion === 'buxoro' ? 'BUXORO' : 'SAMARQAND'} <span style={{ color: '#d4af37' }}>DISCOVER</span>
           </span>
         </div>
 
@@ -409,6 +486,25 @@ export default function DiscoverPage({ searchParams }) {
             }}
           >
             {language === 'UZ' ? 'Buxoro' : language === 'RU' ? 'Бухара' : 'Bukhara'}
+          </button>
+          <button
+            onClick={() => setActiveRegion('xorazm')}
+            style={{
+              padding: '6px 12px',
+              borderRadius: '8px',
+              border: 'none',
+              background: activeRegion === 'xorazm' 
+                ? 'linear-gradient(135deg, #028090 0%, #00a896 100%)' 
+                : 'transparent',
+              color: activeRegion === 'xorazm' ? '#fff' : '#94a3b8',
+              fontSize: '12px',
+              fontWeight: '700',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              boxShadow: activeRegion === 'xorazm' ? '0 2px 8px rgba(2, 128, 144, 0.4)' : 'none'
+            }}
+          >
+            {language === 'UZ' ? 'Xorazm' : language === 'RU' ? 'Хорезм' : 'Khorezm'}
           </button>
         </div>
 
@@ -669,9 +765,14 @@ export default function DiscoverPage({ searchParams }) {
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                   <span style={{ fontSize: '28px', fontWeight: '800', color: '#fff', lineHeight: 1 }}>
-                    {activeRegion === 'buxoro' ? '31°C' : '28°C'} <span style={{ fontSize: '14px', fontWeight: '400', color: '#94a3b8' }}>/ {activeRegion === 'buxoro' ? '88°F' : '82°F'}</span>
+                    {activeRegion === 'xorazm' ? '33°C' : activeRegion === 'buxoro' ? '31°C' : '28°C'} <span style={{ fontSize: '14px', fontWeight: '400', color: '#94a3b8' }}>/ {activeRegion === 'xorazm' ? '91°F' : activeRegion === 'buxoro' ? '88°F' : '82°F'}</span>
                   </span>
-                  <span style={{ fontSize: '13px', color: '#009b9e', fontWeight: '600', marginTop: '4px' }}>
+                  <span style={{
+                    fontSize: '13px',
+                    color: activeRegion === 'xorazm' ? '#00a896' : activeRegion === 'buxoro' ? '#b25329' : '#009b9e',
+                    fontWeight: '600',
+                    marginTop: '4px'
+                  }}>
                     {t.weatherDesc}
                   </span>
                 </div>
@@ -703,17 +804,17 @@ export default function DiscoverPage({ searchParams }) {
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', padding: '10px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.04)' }}>
                   <span style={{ fontSize: '11px', color: '#94a3b8' }}>{t.tomorrow}</span>
                   <Sun size={16} style={{ color: '#fbbf24' }} />
-                  <strong style={{ fontSize: '13px', color: '#fff' }}>{activeRegion === 'buxoro' ? '32°C' : '29°C'}</strong>
+                  <strong style={{ fontSize: '13px', color: '#fff' }}>{activeRegion === 'xorazm' ? '34°C' : activeRegion === 'buxoro' ? '32°C' : '29°C'}</strong>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', padding: '10px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.04)' }}>
                   <span style={{ fontSize: '11px', color: '#94a3b8' }}>{t.dayAfter}</span>
-                  {activeRegion === 'buxoro' ? <Sun size={16} style={{ color: '#fbbf24' }} /> : <Cloud size={16} style={{ color: '#94a3b8' }} />}
-                  <strong style={{ fontSize: '13px', color: '#fff' }}>{activeRegion === 'buxoro' ? '31°C' : '27°C'}</strong>
+                  {activeRegion === 'xorazm' ? <Sun size={16} style={{ color: '#fbbf24' }} /> : activeRegion === 'buxoro' ? <Sun size={16} style={{ color: '#fbbf24' }} /> : <Cloud size={16} style={{ color: '#94a3b8' }} />}
+                  <strong style={{ fontSize: '13px', color: '#fff' }}>{activeRegion === 'xorazm' ? '33°C' : activeRegion === 'buxoro' ? '31°C' : '27°C'}</strong>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', padding: '10px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.04)' }}>
                   <span style={{ fontSize: '11px', color: '#94a3b8' }}>{t.dayThree}</span>
                   <Sun size={16} style={{ color: '#fbbf24' }} />
-                  <strong style={{ fontSize: '13px', color: '#fff' }}>{activeRegion === 'buxoro' ? '33°C' : '30°C'}</strong>
+                  <strong style={{ fontSize: '13px', color: '#fff' }}>{activeRegion === 'xorazm' ? '35°C' : activeRegion === 'buxoro' ? '33°C' : '30°C'}</strong>
                 </div>
               </div>
             </div>

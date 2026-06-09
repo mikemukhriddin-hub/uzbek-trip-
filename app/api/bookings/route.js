@@ -352,11 +352,11 @@ export async function POST(req) {
     const smtpPassword = process.env.SMTP_PASSWORD;
     if (smtpUser && smtpPassword) {
       try {
-        const activeRegion = region === 'buxoro' ? 'buxoro' : 'samarqand';
-        const brandName = activeRegion === 'buxoro' ? 'Buxoro CrafTour' : 'Samarqand CrafTour';
-        const regionNameUz = activeRegion === 'buxoro' ? 'Buxoro' : 'Samarqand';
-        const regionNameRu = activeRegion === 'buxoro' ? 'Бухару' : 'Самарканд';
-        const regionNameEn = activeRegion === 'buxoro' ? 'Bukhara' : 'Samarkand';
+        const activeRegion = region === 'xorazm' ? 'xorazm' : region === 'buxoro' ? 'buxoro' : 'samarqand';
+        const brandName = activeRegion === 'xorazm' ? 'Xorazm CrafTour' : activeRegion === 'buxoro' ? 'Buxoro CrafTour' : 'Samarqand CrafTour';
+        const regionNameUz = activeRegion === 'xorazm' ? 'Xorazm' : activeRegion === 'buxoro' ? 'Buxoro' : 'Samarqand';
+        const regionNameRu = activeRegion === 'xorazm' ? 'Хорезм' : activeRegion === 'buxoro' ? 'Бухару' : 'Самарканд';
+        const regionNameEn = activeRegion === 'xorazm' ? 'Khorezm' : activeRegion === 'buxoro' ? 'Bukhara' : 'Samarkand';
 
         const emailSubject = lang === 'UZ'
           ? `${brandName} - Elektron pochtani tasdiqlash`

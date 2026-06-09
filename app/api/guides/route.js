@@ -31,14 +31,25 @@ export async function GET(req) {
       guidesList = guides || [];
       tariffsList = tariffs || [];
 
+      // Ensure every DB guide has a region default
+      guidesList = guidesList.map(g => ({ ...g, region: g.region || 'samarqand' }));
+
       const hasBuxoro = guidesList.some(g => g.region === 'buxoro');
       if (!hasBuxoro) {
-        guidesList = guidesList.map(g => ({ ...g, region: g.region || 'samarqand' }));
         const buxoroGuides = MOCK_GUIDES.filter(g => g.region === 'buxoro');
         guidesList = [...guidesList, ...buxoroGuides];
 
         const buxoroTariffs = MOCK_TARIFFS.filter(t => buxoroGuides.some(bg => bg.id === t.guide_id));
         tariffsList = [...tariffsList, ...buxoroTariffs];
+      }
+
+      const hasXorazm = guidesList.some(g => g.region === 'xorazm');
+      if (!hasXorazm) {
+        const xorazmGuides = MOCK_GUIDES.filter(g => g.region === 'xorazm');
+        guidesList = [...guidesList, ...xorazmGuides];
+
+        const xorazmTariffs = MOCK_TARIFFS.filter(t => xorazmGuides.some(xg => xg.id === t.guide_id));
+        tariffsList = [...tariffsList, ...xorazmTariffs];
       }
     } catch (err) {
       console.error('Error fetching guides from Supabase:', err);

@@ -16,14 +16,22 @@ export async function GET() {
 
     if (error) throw error;
 
-    const hasBuxoro = data && data.some(loc => loc.region === 'buxoro');
+    const dbLocations = (data || []).map(loc => ({ ...loc, region: loc.region || 'samarqand' }));
+    let result = dbLocations;
+
+    const hasBuxoro = result.some(loc => loc.region === 'buxoro');
     if (!hasBuxoro) {
-      const dbLocations = (data || []).map(loc => ({ ...loc, region: loc.region || 'samarqand' }));
       const buxoroMocks = MOCK_LOCATIONS.filter(loc => loc.region === 'buxoro');
-      return NextResponse.json([...dbLocations, ...buxoroMocks]);
+      result = [...result, ...buxoroMocks];
     }
 
-    return NextResponse.json(data);
+    const hasXorazm = result.some(loc => loc.region === 'xorazm');
+    if (!hasXorazm) {
+      const xorazmMocks = MOCK_LOCATIONS.filter(loc => loc.region === 'xorazm');
+      result = [...result, ...xorazmMocks];
+    }
+
+    return NextResponse.json(result);
   } catch (err) {
     console.error('Error fetching locations from Supabase:', err);
     return NextResponse.json(MOCK_LOCATIONS);

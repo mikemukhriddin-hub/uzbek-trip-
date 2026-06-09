@@ -15,14 +15,22 @@ export async function GET() {
 
     if (error) throw error;
 
-    const hasBuxoro = data && data.some(v => v.region === 'buxoro');
+    const dbVehicles = (data || []).map(v => ({ ...v, region: v.region || 'samarqand' }));
+    let result = dbVehicles;
+
+    const hasBuxoro = result.some(v => v.region === 'buxoro');
     if (!hasBuxoro) {
-      const dbVehicles = (data || []).map(v => ({ ...v, region: v.region || 'samarqand' }));
       const buxoroMocks = MOCK_VEHICLES.filter(v => v.region === 'buxoro');
-      return NextResponse.json([...dbVehicles, ...buxoroMocks]);
+      result = [...result, ...buxoroMocks];
     }
 
-    return NextResponse.json(data);
+    const hasXorazm = result.some(v => v.region === 'xorazm');
+    if (!hasXorazm) {
+      const xorazmMocks = MOCK_VEHICLES.filter(v => v.region === 'xorazm');
+      result = [...result, ...xorazmMocks];
+    }
+
+    return NextResponse.json(result);
   } catch (err) {
     console.error('Error fetching vehicles from Supabase:', err);
     return NextResponse.json(MOCK_VEHICLES);

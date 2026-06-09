@@ -38,8 +38,8 @@ function generateEmailHtml(booking, groupBookings, finalGuide, finalVehicle, isG
   
   // Determine region dynamically
   const bookingRegion = finalGuide?.region || finalVehicle?.region || (booking.locations?.[0]?.region) || 'samarqand';
-  const brandName = bookingRegion === 'buxoro' ? 'Buxoro CrafTour' : 'Samarqand CrafTour';
-  const brandNameCaps = bookingRegion === 'buxoro' ? 'BUXORO CRAFTOUR' : 'SAMARQAND CRAFTOUR';
+  const brandName = bookingRegion === 'xorazm' ? 'Xorazm CrafTour' : bookingRegion === 'buxoro' ? 'Buxoro CrafTour' : 'Samarqand CrafTour';
+  const brandNameCaps = bookingRegion === 'xorazm' ? 'XORAZM CRAFTOUR' : bookingRegion === 'buxoro' ? 'BUXORO CRAFTOUR' : 'SAMARQAND CRAFTOUR';
 
   // Styling constants
   const primaryColor = '#0f172a'; // Deep Slate Navy
@@ -429,7 +429,7 @@ export async function GET(req) {
 
       // Determine booking region
       const bookingRegion = finalGuide?.region || finalVehicle?.region || (groupBookings[0].locations?.[0]?.region) || 'samarqand';
-      const brandNameCaps = bookingRegion === 'buxoro' ? 'BUXORO CRAFTOUR' : 'SAMARQAND CRAFTOUR';
+      const brandNameCaps = bookingRegion === 'xorazm' ? 'XORAZM CRAFTOUR' : bookingRegion === 'buxoro' ? 'BUXORO CRAFTOUR' : 'SAMARQAND CRAFTOUR';
 
       // Assemble Telegram text caption (Rich Text message alert)
       let tgText = '';
@@ -518,7 +518,7 @@ export async function GET(req) {
             const isBookingUz = booking.customer_language === 'UZ';
             const isBookingRu = booking.customer_language === 'RU';
             const bookingRegion = finalGuide?.region || finalVehicle?.region || (booking.locations?.[0]?.region) || 'samarqand';
-            const brandName = bookingRegion === 'buxoro' ? 'Buxoro CrafTour' : 'Samarqand CrafTour';
+            const brandName = bookingRegion === 'xorazm' ? 'Xorazm CrafTour' : bookingRegion === 'buxoro' ? 'Buxoro CrafTour' : 'Samarqand CrafTour';
 
             const emailSubject = isBookingUz
               ? `Sizning sayohat vaucheringiz - ${brandName}`
