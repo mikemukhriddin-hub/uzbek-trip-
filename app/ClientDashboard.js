@@ -52,7 +52,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
   const [tariffs, setTariffs] = useState(initialTariffs && initialTariffs.length > 0 ? initialTariffs : MOCK_TARIFFS);
   const [vehicles, setVehicles] = useState(initialVehicles && initialVehicles.length > 0 ? initialVehicles : MOCK_VEHICLES);
 
-  const [activeRegion, setActiveRegion] = useState('samarqand'); // 'samarqand' or 'buxoro'
+  const [activeRegion, setActiveRegion] = useState('samarqand'); // 'samarqand', 'buxoro', 'xorazm', or 'shahrisabz'
 
   // Constructor States
   const [selectedLocations, setSelectedLocations] = useState([]);
@@ -338,12 +338,20 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
   };
 
   const t = {
-    heroTitle: activeRegion === 'xorazm'
+    heroTitle: activeRegion === 'shahrisabz'
+      ? (language === 'RU' ? 'Шахрисабз CrafTour' : 'Shahrisabz CrafTour')
+      : activeRegion === 'xorazm'
       ? (language === 'RU' ? 'Хорезм CrafTour' : 'Xorazm CrafTour')
       : activeRegion === 'buxoro'
       ? (language === 'RU' ? 'Бухара CrafTour' : 'Buxoro CrafTour')
       : (language === 'RU' ? 'Самарканд CrafTour' : 'Samarqand CrafTour'),
-    heroSubtitle: activeRegion === 'xorazm'
+    heroSubtitle: activeRegion === 'shahrisabz'
+      ? (language === 'UZ'
+        ? 'Amir Temur vatani - Shahrisabzning ko\'hna saroy va maqbaralari bo\'ylab sayohatingizni o\'zingiz yarating'
+        : language === 'RU'
+        ? 'Сконструируйте собственное идеальное путешествие на родину Амира Темура в Шахрисабз'
+        : 'Craft your own tailor-made adventure in Amir Temur\'s home city of Shahrisabz')
+      : activeRegion === 'xorazm'
       ? (language === 'UZ'
         ? 'Ko\'hna Xivaning devorlari, gumbaz va minoralari bo\'ylab sayohatingizni o\'zingiz yarating'
         : language === 'RU' 
@@ -440,7 +448,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 width: '72px',
                 height: '72px',
                 borderRadius: '50%',
-                backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                backgroundColor: 'rgba(10, 185, 129, 0.15)',
                 color: '#10b981',
                 display: 'flex',
                 alignItems: 'center',
@@ -745,7 +753,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
             <Compass size={20} className="animate-spin" style={{ animationDuration: '20s' }} />
           </div>
           <span style={{ fontSize: '18px', fontWeight: 800, letterSpacing: '0.05em', color: '#fff', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            {activeRegion === 'xorazm' ? 'XORAZM' : activeRegion === 'buxoro' ? 'BUXORO' : 'SAMARQAND'} <span style={{ color: '#d4af37' }}>CRAFTOUR</span>
+            {activeRegion === 'shahrisabz' ? 'SHAHRISABZ' : activeRegion === 'xorazm' ? 'XORAZM' : activeRegion === 'buxoro' ? 'BUXORO' : 'SAMARQAND'} <span style={{ color: '#d4af37' }}>CRAFTOUR</span>
           </span>
         </div>
 
@@ -816,6 +824,25 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
               }}
             >
               {language === 'UZ' ? 'Xorazm' : language === 'RU' ? 'Хорезм' : 'Khorezm'}
+            </button>
+            <button
+              onClick={() => setActiveRegion('shahrisabz')}
+              style={{
+                padding: '6px 12px',
+                borderRadius: '8px',
+                border: 'none',
+                background: activeRegion === 'shahrisabz' 
+                  ? 'linear-gradient(135deg, #008060 0%, #00a36c 100%)' 
+                  : 'transparent',
+                color: activeRegion === 'shahrisabz' ? '#fff' : '#94a3b8',
+                fontSize: '12px',
+                fontWeight: '700',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                boxShadow: activeRegion === 'shahrisabz' ? '0 2px 8px rgba(0, 128, 96, 0.4)' : 'none'
+              }}
+            >
+              {language === 'UZ' ? 'Shahrisabz' : language === 'RU' ? 'Шахрисабз' : 'Shahrisabz'}
             </button>
           </div>
 
@@ -1029,7 +1056,9 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                   <span style={{ fontSize: '15px', fontWeight: '800', color: '#fff' }}>
-                    {activeRegion === 'xorazm'
+                    {activeRegion === 'shahrisabz'
+                      ? (language === 'UZ' ? 'Bugun Shahrisabzda: 27°C' : language === 'RU' ? 'Шахрисабз сегодня: 27°C' : 'Shahrisabz Today: 27°C')
+                      : activeRegion === 'xorazm'
                       ? (language === 'UZ' ? 'Bugun Xorazmda: 33°C' : language === 'RU' ? 'Хорезм сегодня: 33°C' : 'Khorezm Today: 33°C')
                       : activeRegion === 'buxoro'
                       ? (language === 'UZ' ? 'Bugun Buxoroda: 31°C' : language === 'RU' ? 'Бухара сегодня: 31°C' : 'Bukhara Today: 31°C')
@@ -1037,10 +1066,12 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                   </span>
                   <span style={{
                     fontSize: '12px',
-                    color: activeRegion === 'xorazm' ? '#00a896' : activeRegion === 'buxoro' ? '#b25329' : '#009b9e',
+                    color: activeRegion === 'shahrisabz' ? '#00a36c' : activeRegion === 'xorazm' ? '#00a896' : activeRegion === 'buxoro' ? '#b25329' : '#009b9e',
                     fontWeight: '500'
                   }}>
-                    {activeRegion === 'xorazm'
+                    {activeRegion === 'shahrisabz'
+                      ? (language === 'UZ' ? '☀️ Quyoshli va tog\' havosi' : language === 'RU' ? '☀️ Ясно, свежий горный воздух' : '☀️ Sunny, fresh mountain breeze')
+                      : activeRegion === 'xorazm'
                       ? (language === 'UZ' ? '☀️ Quyoshli va cho\'l shamoli' : language === 'RU' ? '☀️ Ясно, пустынный бриз' : '☀️ Sunny, desert breeze')
                       : activeRegion === 'buxoro'
                       ? (language === 'UZ' ? '☀️ Issiq va quyoshli' : language === 'RU' ? '☀️ Ясно, солнечно и жарко' : '☀️ Warm, sunny & clear')
@@ -1224,7 +1255,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
         color: '#64748b'
       }}>
         <div>
-          © {new Date().getFullYear()} {activeRegion === 'xorazm' ? 'Xorazm' : activeRegion === 'buxoro' ? 'Buxoro' : 'Samarqand'} CrafTour. {language === 'RU' ? 'Все права защищены.' : 'All rights reserved.'}
+          © {new Date().getFullYear()} {activeRegion === 'shahrisabz' ? 'Shahrisabz' : activeRegion === 'xorazm' ? 'Xorazm' : activeRegion === 'buxoro' ? 'Buxoro' : 'Samarqand'} CrafTour. {language === 'RU' ? 'Все права защищены.' : 'All rights reserved.'}
         </div>
         <a
           href="/admin"

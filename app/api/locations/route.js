@@ -31,6 +31,12 @@ export async function GET() {
       result = [...result, ...xorazmMocks];
     }
 
+    const hasShahrisabz = result.some(loc => loc.region === 'shahrisabz');
+    if (!hasShahrisabz) {
+      const shahrisabzMocks = MOCK_LOCATIONS.filter(loc => loc.region === 'shahrisabz');
+      result = [...result, ...shahrisabzMocks];
+    }
+
     return NextResponse.json(result);
   } catch (err) {
     console.error('Error fetching locations from Supabase:', err);

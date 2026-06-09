@@ -51,6 +51,15 @@ export async function GET(req) {
         const xorazmTariffs = MOCK_TARIFFS.filter(t => xorazmGuides.some(xg => xg.id === t.guide_id));
         tariffsList = [...tariffsList, ...xorazmTariffs];
       }
+
+      const hasShahrisabz = guidesList.some(g => g.region === 'shahrisabz');
+      if (!hasShahrisabz) {
+        const shahrisabzGuides = MOCK_GUIDES.filter(g => g.region === 'shahrisabz');
+        guidesList = [...guidesList, ...shahrisabzGuides];
+
+        const shahrisabzTariffs = MOCK_TARIFFS.filter(t => shahrisabzGuides.some(sg => sg.id === t.guide_id));
+        tariffsList = [...tariffsList, ...shahrisabzTariffs];
+      }
     } catch (err) {
       console.error('Error fetching guides from Supabase:', err);
       guidesList = MOCK_GUIDES;

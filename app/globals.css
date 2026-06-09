@@ -123,6 +123,47 @@ body[data-region="xorazm"] .btn-primary:hover {
 }
 
 
+/* ========================================================
+   🕌 SHAHRISABZ REGION SPECIAL THEME OVERRIDES
+   ======================================================== */
+body[data-region="shahrisabz"] {
+  --primary-blue: #008060; /* Temurid Jade Green */
+  --primary-blue-rgb: 0, 128, 96;
+  --deep-turquoise: #00a36c; /* Emerald/Glow Green */
+  
+  /* Custom backgrounds for card/borders to match jade/emerald green */
+  --bg-dark-card: rgba(8, 32, 24, 0.7);
+  --bg-dark-border: rgba(0, 128, 96, 0.15);
+  
+  --bg-card: rgba(8, 32, 24, 0.45);
+  --border-card: rgba(0, 128, 96, 0.15);
+}
+
+body[data-region="shahrisabz"] .selected-card-historical {
+  border-color: #008060 !important;
+  box-shadow: 0 0 18px rgba(0, 128, 96, 0.35) !important;
+  background: rgba(0, 128, 96, 0.08) !important;
+}
+
+body[data-region="shahrisabz"] .selected-card-alternative {
+  border-color: #00a36c !important;
+  box-shadow: 0 0 18px rgba(0, 163, 108, 0.35) !important;
+  background: rgba(0, 163, 108, 0.08) !important;
+}
+
+body[data-region="shahrisabz"] .blue-glow {
+  box-shadow: 0 0 15px rgba(0, 128, 96, 0.25);
+}
+
+body[data-region="shahrisabz"] .btn-primary {
+  background: linear-gradient(135deg, #008060 0%, #00a36c 100%);
+}
+
+body[data-region="shahrisabz"] .btn-primary:hover {
+  box-shadow: 0 4px 15px rgba(0, 128, 96, 0.4);
+}
+
+
 /* Default to Dark Mode for the rich, magical, atmospheric "Samarkand Night" vibe */
 body {
   margin: 0;

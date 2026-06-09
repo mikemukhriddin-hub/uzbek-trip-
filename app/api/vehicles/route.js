@@ -30,6 +30,12 @@ export async function GET() {
       result = [...result, ...xorazmMocks];
     }
 
+    const hasShahrisabz = result.some(v => v.region === 'shahrisabz');
+    if (!hasShahrisabz) {
+      const shahrisabzMocks = MOCK_VEHICLES.filter(v => v.region === 'shahrisabz');
+      result = [...result, ...shahrisabzMocks];
+    }
+
     return NextResponse.json(result);
   } catch (err) {
     console.error('Error fetching vehicles from Supabase:', err);
