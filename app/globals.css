@@ -42,6 +42,47 @@
   --font-family-body: var(--font-inter), sans-serif;
 }
 
+/* ========================================================
+   🕌 BUXORO REGION SPECIAL THEME OVERRIDES
+   ======================================================== */
+body[data-region="buxoro"] {
+  --primary-blue: #c05a1a; /* Terracotta Orange */
+  --primary-blue-rgb: 192, 90, 26;
+  --deep-turquoise: #b25329; /* Rich clay / copper */
+  
+  /* Custom backgrounds for card/borders to match terracotta */
+  --bg-dark-card: rgba(35, 23, 18, 0.7);
+  --bg-dark-border: rgba(192, 90, 26, 0.15);
+  
+  --bg-card: rgba(35, 23, 18, 0.45);
+  --border-card: rgba(192, 90, 26, 0.15);
+}
+
+body[data-region="buxoro"] .selected-card-historical {
+  border-color: #c05a1a !important;
+  box-shadow: 0 0 18px rgba(192, 90, 26, 0.35) !important;
+  background: rgba(192, 90, 26, 0.08) !important;
+}
+
+body[data-region="buxoro"] .selected-card-alternative {
+  border-color: #b25329 !important;
+  box-shadow: 0 0 18px rgba(178, 83, 41, 0.35) !important;
+  background: rgba(178, 83, 41, 0.08) !important;
+}
+
+body[data-region="buxoro"] .blue-glow {
+  box-shadow: 0 0 15px rgba(192, 90, 26, 0.25);
+}
+
+body[data-region="buxoro"] .btn-primary {
+  background: linear-gradient(135deg, #c05a1a 0%, #b25329 100%);
+}
+
+body[data-region="buxoro"] .btn-primary:hover {
+  box-shadow: 0 4px 15px rgba(192, 90, 26, 0.4);
+}
+
+
 /* Default to Dark Mode for the rich, magical, atmospheric "Samarkand Night" vibe */
 body {
   margin: 0;

@@ -52,6 +52,7 @@ export async function POST(req) {
       passengerCount,
       bookingType,
       locations,
+      region,
     } = body;
 
     // Bron turi: 'private' yoki 'shared' (default: 'private')
@@ -351,17 +352,23 @@ export async function POST(req) {
     const smtpPassword = process.env.SMTP_PASSWORD;
     if (smtpUser && smtpPassword) {
       try {
+        const activeRegion = region === 'buxoro' ? 'buxoro' : 'samarqand';
+        const brandName = activeRegion === 'buxoro' ? 'Buxoro CrafTour' : 'Samarqand CrafTour';
+        const regionNameUz = activeRegion === 'buxoro' ? 'Buxoro' : 'Samarqand';
+        const regionNameRu = activeRegion === 'buxoro' ? 'Бухару' : 'Самарканд';
+        const regionNameEn = activeRegion === 'buxoro' ? 'Bukhara' : 'Samarkand';
+
         const emailSubject = lang === 'UZ'
-          ? 'Samarqand CrafTour - Elektron pochtani tasdiqlash'
+          ? `${brandName} - Elektron pochtani tasdiqlash`
           : lang === 'RU'
-            ? 'Samarqand CrafTour - Подтверждение заказа'
-            : 'Samarqand CrafTour - Booking Verification';
+            ? `${brandName} - Подтверждение заказа`
+            : `${brandName} - Booking Verification`;
           
         const emailHtml = lang === 'UZ'
           ? `<div style="font-family: sans-serif; padding: 20px; color: #1e293b;">
-              <h2 style="color: #d4af37;">Samarqand CrafTour</h2>
+              <h2 style="color: #d4af37;">${brandName}</h2>
               <p>Assalomu alaykum, <strong>${touristName}</strong>!</p>
-              <p>Samarqand bo'ylab shaxsiy sayohatingizni shakllantirganingiz uchun tashakkur bildiramiz.</p>
+              <p>${regionNameUz} bo'ylab shaxsiy sayohatingizni shakllantirganingiz uchun tashakkur bildiramiz.</p>
               <p>Elektron pochta manzilingizni tasdiqlash uchun quyidagi tasdiqlash kodidan foydalaning:</p>
               <div style="background-color: #f1f5f9; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; letter-spacing: 5px; text-align: center; margin: 20px 0; border: 1px solid #e2e8f0;">
                 ${otpCode}
@@ -372,9 +379,9 @@ export async function POST(req) {
             </div>`
           : lang === 'RU'
             ? `<div style="font-family: sans-serif; padding: 20px; color: #1e293b;">
-                <h2 style="color: #d4af37;">Samarqand CrafTour</h2>
+                <h2 style="color: #d4af37;">${brandName}</h2>
                 <p>Здравствуйте, <strong>${touristName}</strong>!</p>
-                <p>Спасибо за создание маршрута для вашего путешествия в Самарканд.</p>
+                <p>Спасибо за создание маршрута для вашего путешествия в ${regionNameRu}.</p>
                 <p>Пожалуйста, используйте следующий код для подтверждения вашего адреса электронной почты:</p>
                 <div style="background-color: #f1f5f9; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; letter-spacing: 5px; text-align: center; margin: 20px 0; border: 1px solid #e2e8f0;">
                   ${otpCode}
@@ -384,9 +391,9 @@ export async function POST(req) {
                 <p style="font-size: 12px; color: #64748b;">Если вы не запрашивали этот код, просто проигнорируйте это письмо.</p>
               </div>`
             : `<div style="font-family: sans-serif; padding: 20px; color: #1e293b;">
-                <h2 style="color: #d4af37;">Samarqand CrafTour</h2>
+                <h2 style="color: #d4af37;">${brandName}</h2>
                 <p>Hello <strong>${touristName}</strong>,</p>
-                <p>Thank you for crafting your custom tour of Samarkand.</p>
+                <p>Thank you for crafting your custom tour of ${regionNameEn}.</p>
                 <p>Please use the following verification code to confirm your email address:</p>
                 <div style="background-color: #f1f5f9; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; letter-spacing: 5px; text-align: center; margin: 20px 0; border: 1px solid #e2e8f0;">
                   ${otpCode}
@@ -405,7 +412,7 @@ export async function POST(req) {
         });
 
         await transporter.sendMail({
-          from: `"Samarqand CrafTour" <${smtpUser}>`,
+          from: `"${brandName}" <${smtpUser}>`,
           to: touristEmail,
           subject: emailSubject,
           html: emailHtml

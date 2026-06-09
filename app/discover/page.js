@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { 
   ArrowLeft, 
@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 import BackgroundGraphics from '@/components/BackgroundGraphics';
 
-const SLIDES = [
+const SAMARQAND_SLIDES = [
   {
     image: '/images/discover/uzb_nature_slide1.webp',
     title_en: 'Majestic Urgut Mountains',
@@ -52,7 +52,37 @@ const SLIDES = [
   }
 ];
 
-const EVENTS = [
+const BUXORO_SLIDES = [
+  {
+    image: 'https://images.unsplash.com/photo-1584646098025-97cfbe6cae0d?auto=format&fit=crop&w=800&q=80',
+    title_en: 'Ancient Kalyan Minaret',
+    title_ru: 'Древний минарет Калян',
+    title_uz: 'Ko\'hna Minorai Kalon',
+    desc_en: 'Standing tall since 1127, this brick tower survived Genghis Khan and stands as a beacon of Bukhara\'s spiritual heart.',
+    desc_ru: 'Этот кирпичный минарет, возвышающийся с 1127 года, пережил Чингисхана и является символом Бухары.',
+    desc_uz: '1127-yildan buyon qad ko\'tarib turgan ushbu g\'ishtin minora Chingizxon bosqinidan omon qolgan Buxoro ramzidir.'
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1540959733332-eab4deceeaf7?auto=format&fit=crop&w=800&q=80',
+    title_en: 'The Ark Citadel',
+    title_ru: 'Цитадель Арк',
+    title_uz: 'Buxoro Arki',
+    desc_en: 'Walk inside the massive brick walls of the Emir\'s fortified city-fortress, dating back over 1500 years.',
+    desc_ru: 'Прогуляйтесь по массивным кирпичным стенам укрепленной крепости эмира, история которой насчитывает более 1500 лет.',
+    desc_uz: 'Buxoro amirlari yashagan, V asrga oid ulkan qal\'a va shahar ichidagi shahar devorlari bo\'ylab sayr qiling.'
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1605649487212-47bdab064df7?auto=format&fit=crop&w=800&q=80',
+    title_en: 'Sunset over Lyabi-Khauz',
+    title_ru: 'Закат над Ляби-Хауз',
+    title_uz: 'Labi Hovuzda shafaq vaqti',
+    desc_en: 'Relax by the historic pond surrounded by 16th-century madrasahs and ancient mulberry trees as the evening lights turn on.',
+    desc_ru: 'Отдохните у исторического пруда, окруженного медресе XVI века и старыми тутовыми деревьями, при свете вечерних огней.',
+    desc_uz: 'Kechki chiroqlar yonganda, XVI asr madrasalari va qadimgi tut daraxtlari bilan o\'ralgan tarixiy hovuz bo\'yida dam oling.'
+  }
+];
+
+const SAMARQAND_EVENTS = [
   {
     id: 1,
     title_en: 'Navruz Spring Festival',
@@ -64,18 +94,6 @@ const EVENTS = [
     desc_en: 'The Persian New Year welcoming spring. Celebrate with sumalak (sweet wheat paste), traditional folk music, and tightrope walkers.',
     desc_ru: 'Восточный Новый год, встречающий весну. Празднование с сумаляком, традиционной народной музыкой и канатоходцами.',
     desc_uz: 'Bahorni kutib oluvchi sharqona yangi yil. Sumalak, an\'anaviy xalq musiqasi va dorbozlar shoulari bilan nishonlanadi.'
-  },
-  {
-    id: 2,
-    title_en: 'Silk and Spices Festival',
-    title_ru: 'Фестиваль Шёлка и Специй',
-    title_uz: 'Ipak va ziravorlar festivali',
-    date_en: 'Late May / June',
-    date_ru: 'Конец Мая / Июнь',
-    date_uz: 'May oxiri / Iyun',
-    desc_en: 'An annual celebration showcasing traditional silk-weaving, handmade carpets, spice bazaars, and national folklore bands.',
-    desc_ru: 'Ежегодное празднование, демонстрирующее традиционное шелкоткачество, ковры ручной работы, базары специй и фольклор.',
-    desc_uz: 'An\'anaviy ipak to\'qish, qo\'lda to\'qilgan gilamlar, ziravorlar bozorlari va milliy folklor guruhlarini namoyish etuvchi har yillik bayram.'
   },
   {
     id: 3,
@@ -103,7 +121,51 @@ const EVENTS = [
   }
 ];
 
-export default function DiscoverPage() {
+const BUXORO_EVENTS = [
+  {
+    id: 1,
+    title_en: 'Navruz Spring Festival',
+    title_ru: 'Весенний фестиваль Навруз',
+    title_uz: 'Navro\'z bahor bayrami',
+    date_en: 'March 21',
+    date_ru: '21 Марта',
+    date_uz: '21 Mart',
+    desc_en: 'The Persian New Year welcoming spring. Celebrate with sumalak (sweet wheat paste), traditional folk music, and tightrope walkers.',
+    desc_ru: 'Восточный Новый год, встречающий весну. Празднование с сумаляком, традиционной народной музыкой и канатоходцами.',
+    desc_uz: 'Bahorni kutib oluvchi sharqona yangi yil. Sumalak, an\'anaviy xalq musiqasi va dorbozlar shoulari bilan nishonlanadi.'
+  },
+  {
+    id: 2,
+    title_en: 'Silk and Spices Festival',
+    title_ru: 'Фестиваль Шёлка и Специй',
+    title_uz: 'Ipak va ziravorlar festivali',
+    date_en: 'Late May / June',
+    date_ru: 'Конец Мая / Июнь',
+    date_uz: 'May oxiri / Iyun',
+    desc_en: 'An annual celebration showcasing traditional silk-weaving, handmade carpets, spice bazaars, and national folklore bands in Bukhara.',
+    desc_ru: 'Ежегодное празднование в Бухаре, демонстрирующее традиционное шелкоткачество, ковры ручной работы, базары специй и фольклор.',
+    desc_uz: 'Buxoroda an\'anaviy ipak to\'qish, qo\'lda to\'qilgan gilamlar, ziravorlar bozorlari va milliy folklor guruhlarini namoyish etuvchi har yillik bayram.'
+  },
+  {
+    id: 5,
+    title_en: 'Bukhara Melon & Honey Festival',
+    title_ru: 'Фестиваль дыни и меда в Бухаре',
+    title_uz: 'Qovun sayli va asal bayrami',
+    date_en: 'Mid August',
+    date_ru: 'Середина Августа',
+    date_uz: 'Avgust o\'rtalari',
+    desc_en: 'Taste the sweetest melons and honey varieties of the region, accompanied by traditional dances and folk concerts.',
+    desc_ru: 'Попробуйте самые сладкие сорта дынь и меда в регионе под звуки традиционных танцев и народных концертов.',
+    desc_uz: 'Buxoro vohasining eng shirin qovunlari va tabiiy asallaridan tatib ko\'ring. Milliy raqslar va folklor konsertlar taqdim etiladi.'
+  }
+];
+
+export default function DiscoverPage({ searchParams }) {
+  const resolvedSearchParams = searchParams ? use(searchParams) : {};
+  const regionParam = resolvedSearchParams?.region;
+  const initialRegion = (regionParam === 'buxoro' || regionParam === 'samarqand') ? regionParam : 'samarqand';
+
+  const [activeRegion, setActiveRegion] = useState(initialRegion);
   const [language, setLanguage] = useState('EN');
   const [showLangDropdown, setShowLangDropdown] = useState(false);
   const [activeSlide, setActiveSlide] = useState(0);
@@ -111,8 +173,17 @@ export default function DiscoverPage() {
   const [uzsAmount, setUzsAmount] = useState('1280000');
   
   const EXCHANGE_RATE = 12800; // 1 USD = 12,800 UZS
+  const slides = activeRegion === 'buxoro' ? BUXORO_SLIDES : SAMARQAND_SLIDES;
+  const events = activeRegion === 'buxoro' ? BUXORO_EVENTS : SAMARQAND_EVENTS;
 
-  // Sync state loaded from localStorage if user was previously reading in RU
+  // Sync query parameters changes to state
+  useEffect(() => {
+    if (regionParam && (regionParam === 'samarqand' || regionParam === 'buxoro')) {
+      setActiveRegion(regionParam);
+    }
+  }, [regionParam]);
+
+  // Sync state loaded from localStorage if user was previously reading in RU/UZ
   useEffect(() => {
     // Basic local language check
     const savedLang = localStorage.getItem('site_lang');
@@ -121,7 +192,26 @@ export default function DiscoverPage() {
         setLanguage(savedLang);
       });
     }
-  }, []);
+
+    // Load active region from localStorage only if no query param was provided
+    if (!regionParam) {
+      const savedRegion = localStorage.getItem('active_region');
+      if (savedRegion && (savedRegion === 'samarqand' || savedRegion === 'buxoro')) {
+        Promise.resolve().then(() => {
+          setActiveRegion(savedRegion);
+        });
+      }
+    }
+  }, [regionParam]);
+
+  // Sync activeRegion changes to document.body and localStorage
+  useEffect(() => {
+    setActiveSlide(0);
+    if (typeof document !== 'undefined') {
+      document.body.setAttribute('data-region', activeRegion);
+      localStorage.setItem('active_region', activeRegion);
+    }
+  }, [activeRegion]);
 
   const handleLanguageToggle = () => {
     const nextLang = language === 'EN' ? 'RU' : language === 'RU' ? 'UZ' : 'EN';
@@ -132,17 +222,17 @@ export default function DiscoverPage() {
   // Slideshow Auto-play
   useEffect(() => {
     const timer = setInterval(() => {
-      setActiveSlide((prev) => (prev + 1) % SLIDES.length);
+      setActiveSlide((prev) => (prev + 1) % slides.length);
     }, 6000);
     return () => clearInterval(timer);
-  }, []);
+  }, [slides]);
 
   const prevSlide = () => {
-    setActiveSlide((prev) => (prev === 0 ? SLIDES.length - 1 : prev - 1));
+    setActiveSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
   };
 
   const nextSlide = () => {
-    setActiveSlide((prev) => (prev + 1) % SLIDES.length);
+    setActiveSlide((prev) => (prev + 1) % slides.length);
   };
 
   const handleUsdChange = (val) => {
@@ -166,14 +256,22 @@ export default function DiscoverPage() {
   const t = {
     backBtn: language === 'UZ' ? 'Orqaga qaytish' : language === 'RU' ? 'Вернуться назад' : 'Back to route builder',
     pageTitle: language === 'UZ' ? 'Sayohatchilar uchun qo\'llanma' : language === 'RU' ? 'Гид для Путешественников' : 'Traveler Discover Hub',
-    pageSubtitle: language === 'UZ' 
-      ? 'Samarqandning madaniy merosi, bayramlari, ob-havosi va muhim ma\'lumotlari'
-      : language === 'RU' 
-      ? 'Актуальная информация, погода, праздники и культурное наследие Самарканда'
-      : 'Real-time weather, cultural festivals, slideshows, and local travel advice',
+    pageSubtitle: activeRegion === 'buxoro'
+      ? (language === 'UZ' 
+        ? 'Buxoroning madaniy merosi, festivallari, ob-havosi va muhim ma\'lumotlari'
+        : language === 'RU' 
+        ? 'Актуальная информация, погода, праздники и культурное наследие Бухары'
+        : 'Real-time weather, cultural festivals, slideshows, and local travel advice for Bukhara')
+      : (language === 'UZ' 
+        ? 'Samarqandning madaniy merosi, bayramlari, ob-havosi va muhim ma\'lumotlari'
+        : language === 'RU' 
+        ? 'Актуальная информация, погода, праздники и культурное наследие Самарканда'
+        : 'Real-time weather, cultural festivals, slideshows, and local travel advice for Samarkand'),
     
     // Weather
-    weatherTitle: language === 'UZ' ? '🌤 Samarqand ob-havosi' : language === 'RU' ? '🌤 Погода в Самарканде' : '🌤 Samarkand Weather',
+    weatherTitle: activeRegion === 'buxoro'
+      ? (language === 'UZ' ? '🌤 Buxoro ob-havosi' : language === 'RU' ? '🌤 Погода в Бухаре' : '🌤 Bukhara Weather')
+      : (language === 'UZ' ? '🌤 Samarqand ob-havosi' : language === 'RU' ? '🌤 Погода в Самарканде' : '🌤 Samarkand Weather'),
     weatherDesc: language === 'UZ' ? 'Ochiq va quyoshli kun' : language === 'RU' ? 'Ясно, солнечный день' : 'Clear & sunny sky',
     weatherTipTitle: language === 'UZ' ? 'Kiyim bo\'yicha tavsiya:' : language === 'RU' ? 'Совет по одежде:' : 'Attire Suggestion:',
     weatherTipDesc: language === 'UZ' 
@@ -260,8 +358,58 @@ export default function DiscoverPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Compass size={20} className="animate-spin" style={{ color: '#d4af37', animationDuration: '20s' }} />
           <span style={{ fontSize: '16px', fontWeight: 800, letterSpacing: '0.05em', color: '#fff' }}>
-            SAMARQAND <span style={{ color: '#d4af37' }}>DISCOVER</span>
+            {activeRegion === 'buxoro' ? 'BUXORO' : 'SAMARQAND'} <span style={{ color: '#d4af37' }}>DISCOVER</span>
           </span>
+        </div>
+
+        {/* Region Switcher */}
+        <div style={{
+          display: 'flex',
+          backgroundColor: 'rgba(5, 7, 16, 0.4)',
+          border: '1px solid rgba(212, 175, 55, 0.25)',
+          borderRadius: '12px',
+          padding: '3px',
+          gap: '2px',
+          marginRight: '4px'
+        }}>
+          <button
+            onClick={() => setActiveRegion('samarqand')}
+            style={{
+              padding: '6px 12px',
+              borderRadius: '8px',
+              border: 'none',
+              background: activeRegion === 'samarqand' 
+                ? 'linear-gradient(135deg, #0070c0 0%, #009b9e 100%)' 
+                : 'transparent',
+              color: activeRegion === 'samarqand' ? '#fff' : '#94a3b8',
+              fontSize: '12px',
+              fontWeight: '700',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              boxShadow: activeRegion === 'samarqand' ? '0 2px 8px rgba(0, 112, 192, 0.4)' : 'none'
+            }}
+          >
+            {language === 'UZ' ? 'Samarqand' : language === 'RU' ? 'Самарканд' : 'Samarkand'}
+          </button>
+          <button
+            onClick={() => setActiveRegion('buxoro')}
+            style={{
+              padding: '6px 12px',
+              borderRadius: '8px',
+              border: 'none',
+              background: activeRegion === 'buxoro' 
+                ? 'linear-gradient(135deg, #c05a1a 0%, #b25329 100%)' 
+                : 'transparent',
+              color: activeRegion === 'buxoro' ? '#fff' : '#94a3b8',
+              fontSize: '12px',
+              fontWeight: '700',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              boxShadow: activeRegion === 'buxoro' ? '0 2px 8px rgba(192, 90, 26, 0.4)' : 'none'
+            }}
+          >
+            {language === 'UZ' ? 'Buxoro' : language === 'RU' ? 'Бухара' : 'Bukhara'}
+          </button>
         </div>
 
         {/* Premium Dropdown Language Switcher */}
@@ -396,8 +544,8 @@ export default function DiscoverPage() {
             }}>
               {/* Slide Image */}
               <img 
-                src={SLIDES[activeSlide].image} 
-                alt={SLIDES[activeSlide].title_en}
+                src={slides[activeSlide]?.image} 
+                alt={slides[activeSlide]?.title_en}
                 style={{
                   width: '100%',
                   height: '100%',
@@ -463,7 +611,7 @@ export default function DiscoverPage() {
                 gap: '8px',
                 zIndex: 10
               }}>
-                {SLIDES.map((_, idx) => (
+                {slides.map((_, idx) => (
                   <div 
                     key={idx}
                     onClick={() => setActiveSlide(idx)}
@@ -483,10 +631,10 @@ export default function DiscoverPage() {
             {/* Slide Information */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }} className="animate-fade-in">
               <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#d4af37' }}>
-                {language === 'UZ' ? SLIDES[activeSlide].title_uz : language === 'RU' ? SLIDES[activeSlide].title_ru : SLIDES[activeSlide].title_en}
+                {language === 'UZ' ? slides[activeSlide]?.title_uz : language === 'RU' ? slides[activeSlide]?.title_ru : slides[activeSlide]?.title_en}
               </h3>
               <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: 1.5 }}>
-                {language === 'UZ' ? SLIDES[activeSlide].desc_uz : language === 'RU' ? SLIDES[activeSlide].desc_ru : SLIDES[activeSlide].desc_en}
+                {language === 'UZ' ? slides[activeSlide]?.desc_uz : language === 'RU' ? slides[activeSlide]?.desc_ru : slides[activeSlide]?.desc_en}
               </p>
             </div>
           </section>
@@ -521,7 +669,7 @@ export default function DiscoverPage() {
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                   <span style={{ fontSize: '28px', fontWeight: '800', color: '#fff', lineHeight: 1 }}>
-                    28°C <span style={{ fontSize: '14px', fontWeight: '400', color: '#94a3b8' }}>/ 82°F</span>
+                    {activeRegion === 'buxoro' ? '31°C' : '28°C'} <span style={{ fontSize: '14px', fontWeight: '400', color: '#94a3b8' }}>/ {activeRegion === 'buxoro' ? '88°F' : '82°F'}</span>
                   </span>
                   <span style={{ fontSize: '13px', color: '#009b9e', fontWeight: '600', marginTop: '4px' }}>
                     {t.weatherDesc}
@@ -555,17 +703,17 @@ export default function DiscoverPage() {
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', padding: '10px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.04)' }}>
                   <span style={{ fontSize: '11px', color: '#94a3b8' }}>{t.tomorrow}</span>
                   <Sun size={16} style={{ color: '#fbbf24' }} />
-                  <strong style={{ fontSize: '13px', color: '#fff' }}>29°C</strong>
+                  <strong style={{ fontSize: '13px', color: '#fff' }}>{activeRegion === 'buxoro' ? '32°C' : '29°C'}</strong>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', padding: '10px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.04)' }}>
                   <span style={{ fontSize: '11px', color: '#94a3b8' }}>{t.dayAfter}</span>
-                  <Cloud size={16} style={{ color: '#94a3b8' }} />
-                  <strong style={{ fontSize: '13px', color: '#fff' }}>27°C</strong>
+                  {activeRegion === 'buxoro' ? <Sun size={16} style={{ color: '#fbbf24' }} /> : <Cloud size={16} style={{ color: '#94a3b8' }} />}
+                  <strong style={{ fontSize: '13px', color: '#fff' }}>{activeRegion === 'buxoro' ? '31°C' : '27°C'}</strong>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', padding: '10px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.04)' }}>
                   <span style={{ fontSize: '11px', color: '#94a3b8' }}>{t.dayThree}</span>
                   <Sun size={16} style={{ color: '#fbbf24' }} />
-                  <strong style={{ fontSize: '13px', color: '#fff' }}>30°C</strong>
+                  <strong style={{ fontSize: '13px', color: '#fff' }}>{activeRegion === 'buxoro' ? '33°C' : '30°C'}</strong>
                 </div>
               </div>
             </div>
@@ -590,7 +738,7 @@ export default function DiscoverPage() {
             gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
             gap: '16px'
           }}>
-            {EVENTS.map((evt) => (
+            {events.map((evt) => (
               <div 
                 key={evt.id}
                 style={{

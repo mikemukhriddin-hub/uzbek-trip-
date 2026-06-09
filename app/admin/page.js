@@ -134,6 +134,10 @@ export default function AdminPage() {
       completed: "Completed",
       cancelled: "Cancelled",
       clearHistory: "Clear All History",
+      region: "Region",
+      samarqand: "Samarkand",
+      buxoro: "Bukhara",
+      allRegions: "All Regions",
 
       bookingId: "Booking ID",
       touristDetails: "Tourist Details",
@@ -250,6 +254,10 @@ export default function AdminPage() {
       completed: "Завершено",
       cancelled: "Отменено",
       clearHistory: "Очистить всю историю",
+      region: "Регион",
+      samarqand: "Самарканд",
+      buxoro: "Бухара",
+      allRegions: "Все регионы",
 
       bookingId: "ID Бронирования",
       touristDetails: "Данные туриста",
@@ -366,6 +374,10 @@ export default function AdminPage() {
       completed: "Tugatildi",
       cancelled: "Bekor qilindi",
       clearHistory: "Tarixni tozalash",
+      region: "Viloyat / Hudud",
+      samarqand: "Samarqand",
+      buxoro: "Buxoro",
+      allRegions: "Barcha hududlar",
 
       bookingId: "Buyurtma IDsi",
       touristDetails: "Turist ma'lumotlari",
@@ -467,13 +479,14 @@ export default function AdminPage() {
   // Bookings state
   const [bookings, setBookings] = useState([]);
   const [bookingFilter, setBookingFilter] = useState('all');
+  const [regionFilter, setRegionFilter] = useState('all');
 
   // Locations state
   const [locations, setLocations] = useState([]);
   const [locationForm, setLocationForm] = useState({
     name_en: '', name_ru: '', name_uz: '', description_en: '', description_ru: '', description_uz: '',
     latitude: '', longitude: '', category: 'historical', is_out_of_city: false,
-    image_url: '', estimated_duration: 90
+    image_url: '', estimated_duration: 90, region: 'samarqand'
   });
   const [aiQuery, setAiQuery] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
@@ -482,7 +495,7 @@ export default function AdminPage() {
   const [vehicles, setVehicles] = useState([]);
   const [vehicleForm, setVehicleForm] = useState({
     driver_name: '', driver_phone: '', car_model: '', car_number: '',
-    city_rate: '', out_of_city_rate: '', telegram_chat_id: '', bot_active: false, image_url: ''
+    city_rate: '', out_of_city_rate: '', telegram_chat_id: '', bot_active: false, image_url: '', region: 'samarqand'
   });
 
   // Guides state
@@ -498,7 +511,8 @@ export default function AdminPage() {
     fr_rate: '',
     telegram_chat_id: '',
     bot_active: false,
-    image_url: ''
+    image_url: '',
+    region: 'samarqand'
   });
 
   // Editing state
@@ -768,7 +782,7 @@ export default function AdminPage() {
           setLocationForm({
             name_en: '', name_ru: '', name_uz: '', description_en: '', description_ru: '', description_uz: '',
             latitude: '', longitude: '', category: 'historical', is_out_of_city: false,
-            image_url: '', estimated_duration: 90
+            image_url: '', estimated_duration: 90, region: 'samarqand'
           });
           setAiQuery('');
           alert('Location added successfully!');
@@ -814,7 +828,8 @@ export default function AdminPage() {
             category: loc.category || 'historical',
             is_out_of_city: !!loc.is_out_of_city,
             image_url: loc.image_url || '',
-            estimated_duration: loc.estimated_duration !== undefined ? loc.estimated_duration.toString() : '90'
+            estimated_duration: loc.estimated_duration !== undefined ? loc.estimated_duration.toString() : '90',
+            region: locationForm.region || 'samarqand'
           });
           if (data.isMock) {
             alert(data.message || 'Filled with mock data. Configure GEMINI_API_KEY in .env.local for real AI details.');
@@ -897,7 +912,7 @@ export default function AdminPage() {
           setVehicles(prev => [...prev, data.data || data.mockData]);
           setVehicleForm({
             driver_name: '', driver_phone: '', car_model: '', car_number: '',
-            city_rate: '', out_of_city_rate: '', telegram_chat_id: '', bot_active: false, image_url: ''
+            city_rate: '', out_of_city_rate: '', telegram_chat_id: '', bot_active: false, image_url: '', region: 'samarqand'
           });
           alert('Vehicle added successfully!');
         } else {
@@ -981,7 +996,8 @@ export default function AdminPage() {
         tariffs: guideTariffs,
         telegram_chat_id: guideForm.telegram_chat_id,
         bot_active: guideForm.bot_active,
-        image_url: guideForm.image_url
+        image_url: guideForm.image_url,
+        region: guideForm.region || 'samarqand'
       })
     })
       .then(async (res) => {
@@ -999,7 +1015,7 @@ export default function AdminPage() {
             }));
             setTariffs(prev => [...prev, ...tempTariffs]);
           }
-          setGuideForm({ full_name: '', phone_number: '', en_rate: '', ru_rate: '', uz_rate: '', es_rate: '', fr_rate: '', telegram_chat_id: '', bot_active: false, image_url: '' });
+          setGuideForm({ full_name: '', phone_number: '', en_rate: '', ru_rate: '', uz_rate: '', es_rate: '', fr_rate: '', telegram_chat_id: '', bot_active: false, image_url: '', region: 'samarqand' });
           alert('Guide added successfully!');
         } else {
           alert('Error: ' + data.message);
@@ -1034,12 +1050,13 @@ export default function AdminPage() {
         tariffs: newTariffs,
         telegram_chat_id: updateData.telegram_chat_id,
         bot_active: updateData.bot_active,
-        image_url: updateData.image_url
+        image_url: updateData.image_url,
+        region: updateData.region
       })
     })
       .then(async (res) => {
         if (res.ok) {
-          setGuides(prev => prev.map(g => g.id === guideId ? { id: g.id, full_name: updateData.full_name, phone_number: updateData.phone_number, telegram_chat_id: updateData.telegram_chat_id, bot_active: updateData.bot_active, image_url: updateData.image_url } : g));
+          setGuides(prev => prev.map(g => g.id === guideId ? { id: g.id, full_name: updateData.full_name, phone_number: updateData.phone_number, telegram_chat_id: updateData.telegram_chat_id, bot_active: updateData.bot_active, image_url: updateData.image_url, region: updateData.region } : g));
           
           // Re-update local tariffs
           setTariffs(prev => {
@@ -1092,7 +1109,25 @@ export default function AdminPage() {
     return found ? found.daily_rate : '';
   };
 
-  const filteredBookings = bookings.filter(b => bookingFilter === 'all' || b.status === bookingFilter);
+  const getBookingRegion = (b) => {
+    if (b.guide?.region) return b.guide.region;
+    if (b.vehicle?.region) return b.vehicle.region;
+    if (b.booking_items && b.booking_items.length > 0) {
+      const firstLocRegion = b.booking_items[0].location?.region;
+      if (firstLocRegion) return firstLocRegion;
+    }
+    return 'samarqand'; // default fallback
+  };
+
+  const filteredBookings = bookings.filter(b => {
+    const matchesStatus = bookingFilter === 'all' || b.status === bookingFilter;
+    const matchesRegion = regionFilter === 'all' || getBookingRegion(b) === regionFilter;
+    return matchesStatus && matchesRegion;
+  });
+
+  const filteredLocations = locations.filter(loc => regionFilter === 'all' || (loc.region || 'samarqand') === regionFilter);
+  const filteredVehicles = vehicles.filter(v => regionFilter === 'all' || (v.region || 'samarqand') === regionFilter);
+  const filteredGuides = guides.filter(g => regionFilter === 'all' || (g.region || 'samarqand') === regionFilter);
 
   // --- Login Gate ---
   if (!isAuthenticated) {
@@ -1420,7 +1455,31 @@ export default function AdminPage() {
           </span>
         </div>
 
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+          {/* Region Filter Segmented Selector */}
+          <div style={{ display: 'flex', gap: '4px', backgroundColor: 'rgba(255,255,255,0.03)', padding: '4px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.08)' }}>
+            {['all', 'samarqand', 'buxoro'].map((reg) => (
+              <button
+                key={reg}
+                onClick={() => setRegionFilter(reg)}
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: '7px',
+                  backgroundColor: regionFilter === reg ? 'rgba(99,102,241,0.15)' : 'transparent',
+                  color: regionFilter === reg ? '#818cf8' : '#64748b',
+                  border: regionFilter === reg ? '1.5px solid rgba(99,102,241,0.3)' : '1.5px solid transparent',
+                  fontSize: '12px',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                {reg === 'all' ? currT.allRegions : reg === 'samarqand' ? currT.samarqand : reg === 'buxoro' ? currT.buxoro : reg}
+              </button>
+            ))}
+          </div>
+
           {/* Header Dropdown Language Switcher */}
           <div style={{ position: 'relative' }}>
             <button
@@ -1826,6 +1885,10 @@ export default function AdminPage() {
                 <option value="alternative">{currT.alternative}</option>
                 <option value="food">{currT.food}</option>
               </select>
+              <select value={locationForm.region} onChange={e => setLocationForm({...locationForm, region: e.target.value})} required>
+                <option value="samarqand">Samarqand (Samarkand)</option>
+                <option value="buxoro">Buxoro (Bukhara)</option>
+              </select>
               <label style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#94a3b8', fontSize: '14px', cursor: 'pointer' }}>
                 <input type="checkbox" checked={locationForm.is_out_of_city} onChange={e => setLocationForm({...locationForm, is_out_of_city: e.target.checked})} style={{ width: 'auto' }} />
                 {currT.outOfCity}
@@ -1841,7 +1904,7 @@ export default function AdminPage() {
           </div>
 
           <div className="glass-container" style={{ padding: '24px', overflowX: 'auto' }}>
-            <h3 style={{ color: '#fff', marginBottom: '16px', fontSize: '18px' }}>{currT.existingLocations} ({locations.length})</h3>
+            <h3 style={{ color: '#fff', marginBottom: '16px', fontSize: '18px' }}>{currT.existingLocations} ({filteredLocations.length})</h3>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', color: '#94a3b8', fontSize: '13px' }}>
@@ -1855,7 +1918,7 @@ export default function AdminPage() {
                 </tr>
               </thead>
               <tbody>
-                {locations.map((loc) => {
+                {filteredLocations.map((loc) => {
                   const isEditing = editingResource?.type === 'location' && editingResource?.id === loc.id;
                   const defaultImages = {
                     1: '/images/locations/registan.webp',
@@ -1906,6 +1969,10 @@ export default function AdminPage() {
                             <input type="text" value={editingResource.data.name_en} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, name_en: e.target.value}})} style={{ padding: '4px', fontSize: '12px' }} />
                             <input type="text" value={editingResource.data.name_ru} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, name_ru: e.target.value}})} style={{ padding: '4px', fontSize: '12px' }} />
                             <input type="text" value={editingResource.data.name_uz || ''} placeholder="Name (Uzbek)" onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, name_uz: e.target.value}})} style={{ padding: '4px', fontSize: '12px' }} />
+                            <select value={editingResource.data.region || 'samarqand'} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, region: e.target.value}})} style={{ padding: '4px', fontSize: '12px' }}>
+                              <option value="samarqand">Samarqand</option>
+                              <option value="buxoro">Buxoro</option>
+                            </select>
                             <textarea value={editingResource.data.description_en || ''} placeholder="Description (English)" onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, description_en: e.target.value}})} style={{ padding: '4px', fontSize: '12px', minHeight: '40px' }} />
                             <textarea value={editingResource.data.description_ru || ''} placeholder="Description (Russian)" onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, description_ru: e.target.value}})} style={{ padding: '4px', fontSize: '12px', minHeight: '40px' }} />
                             <textarea value={editingResource.data.description_uz || ''} placeholder="Description (Uzbek)" onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, description_uz: e.target.value}})} style={{ padding: '4px', fontSize: '12px', minHeight: '40px' }} />
@@ -1915,6 +1982,19 @@ export default function AdminPage() {
                             <div style={{ fontWeight: '600' }}>{loc.name_en}</div>
                             <div style={{ color: '#94a3b8', fontSize: '12px' }}>{loc.name_ru}</div>
                             <div style={{ color: '#6366f1', fontSize: '12px' }}>{loc.name_uz || ''}</div>
+                            <div style={{ 
+                              color: loc.region === 'buxoro' ? '#ffa066' : '#a5b4fc', 
+                              fontSize: '11px', 
+                              marginTop: '6px', 
+                              display: 'inline-block', 
+                              padding: '2px 8px', 
+                              backgroundColor: loc.region === 'buxoro' ? 'rgba(192, 90, 26, 0.2)' : 'rgba(99, 102, 241, 0.15)', 
+                              borderRadius: '4px', 
+                              border: loc.region === 'buxoro' ? '1px solid rgba(192, 90, 26, 0.3)' : '1px solid rgba(99, 102, 241, 0.2)',
+                              fontWeight: '600'
+                            }}>
+                              📍 {loc.region === 'buxoro' ? currT.buxoro : currT.samarqand}
+                            </div>
                           </div>
                         )}
                       </td>
@@ -1984,6 +2064,11 @@ export default function AdminPage() {
               <input type="number" placeholder={currT.outOfCityRate} value={vehicleForm.out_of_city_rate} onChange={e => setVehicleForm({...vehicleForm, out_of_city_rate: e.target.value})} required />
               <input type="number" placeholder={currT.telegramChatIdCol} value={vehicleForm.telegram_chat_id || ''} onChange={e => setVehicleForm({...vehicleForm, telegram_chat_id: e.target.value})} />
               
+              <select value={vehicleForm.region} onChange={e => setVehicleForm({...vehicleForm, region: e.target.value})} required>
+                <option value="samarqand">Samarqand (Samarkand)</option>
+                <option value="buxoro">Buxoro (Bukhara)</option>
+              </select>
+              
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                 <input 
                   type="text" 
@@ -2026,7 +2111,7 @@ export default function AdminPage() {
           </div>
 
           <div className="glass-container" style={{ padding: '24px', overflowX: 'auto' }}>
-            <h3 style={{ color: '#fff', marginBottom: '16px', fontSize: '18px' }}>{currT.driversRates} ({vehicles.length})</h3>
+            <h3 style={{ color: '#fff', marginBottom: '16px', fontSize: '18px' }}>{currT.driversRates} ({filteredVehicles.length})</h3>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', color: '#94a3b8', fontSize: '13px' }}>
@@ -2042,7 +2127,7 @@ export default function AdminPage() {
                 </tr>
               </thead>
               <tbody>
-                {vehicles.map((v) => {
+                {filteredVehicles.map((v) => {
                   const isEditing = editingResource?.type === 'vehicle' && editingResource?.id === v.id;
                   return (
                     <tr key={v.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '14px' }}>
@@ -2063,9 +2148,30 @@ export default function AdminPage() {
                       </td>
                       <td style={{ padding: '14px 8px' }}>
                         {isEditing ? (
-                          <input type="text" value={editingResource.data.driver_name} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, driver_name: e.target.value}})} style={{ padding: '4px', fontSize: '12px' }} />
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <input type="text" value={editingResource.data.driver_name} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, driver_name: e.target.value}})} style={{ padding: '4px', fontSize: '12px' }} />
+                            <select value={editingResource.data.region || 'samarqand'} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, region: e.target.value}})} style={{ padding: '4px', fontSize: '12px' }}>
+                              <option value="samarqand">Samarqand</option>
+                              <option value="buxoro">Buxoro</option>
+                            </select>
+                          </div>
                         ) : (
-                          <div style={{ fontWeight: '600' }}>{v.driver_name}</div>
+                          <div>
+                            <div style={{ fontWeight: '600' }}>{v.driver_name}</div>
+                            <div style={{ 
+                              color: v.region === 'buxoro' ? '#ffa066' : '#a5b4fc', 
+                              fontSize: '11px', 
+                              marginTop: '4px', 
+                              display: 'inline-block', 
+                              padding: '2px 6px', 
+                              backgroundColor: v.region === 'buxoro' ? 'rgba(192, 90, 26, 0.2)' : 'rgba(99, 102, 241, 0.15)', 
+                              borderRadius: '4px', 
+                              border: v.region === 'buxoro' ? '1px solid rgba(192, 90, 26, 0.3)' : '1px solid rgba(99, 102, 241, 0.2)',
+                              fontWeight: '600'
+                            }}>
+                              📍 {v.region === 'buxoro' ? currT.buxoro : currT.samarqand}
+                            </div>
+                          </div>
                         )}
                       </td>
                       <td style={{ padding: '14px 8px' }}>
@@ -2217,6 +2323,13 @@ export default function AdminPage() {
                   <span style={{ fontSize: '12px', color: '#64748b' }}>{currT.telegramChatIdCol}</span>
                   <input type="number" placeholder="e.g. 123456789" value={guideForm.telegram_chat_id || ''} onChange={e => setGuideForm({...guideForm, telegram_chat_id: e.target.value})} />
                 </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <span style={{ fontSize: '12px', color: '#64748b' }}>{currT.region}</span>
+                  <select value={guideForm.region} onChange={e => setGuideForm({...guideForm, region: e.target.value})} required>
+                    <option value="samarqand">Samarqand (Samarkand)</option>
+                    <option value="buxoro">Buxoro (Bukhara)</option>
+                  </select>
+                </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', justifyContent: 'center' }}>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#94a3b8', fontSize: '14px', cursor: 'pointer', marginTop: '16px' }}>
                     <input type="checkbox" checked={!!guideForm.bot_active} onChange={e => setGuideForm({...guideForm, bot_active: e.target.checked})} style={{ width: 'auto' }} />
@@ -2234,7 +2347,7 @@ export default function AdminPage() {
           {/* Guides List */}
           <div className="glass-container" style={{ padding: '24px', overflowX: 'auto' }}>
             <h3 style={{ color: '#fff', marginBottom: '16px', fontSize: '18px' }}>
-              {userRole === 'guide' ? currT.myProfileRates : `${currT.expertGuides} (${guides.length})`}
+              {userRole === 'guide' ? currT.myProfileRates : `${currT.expertGuides} (${filteredGuides.length})`}
             </h3>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px' }}>
               <thead>
@@ -2254,7 +2367,7 @@ export default function AdminPage() {
                 </tr>
               </thead>
               <tbody>
-                {guides
+                {filteredGuides
                   .filter(g => userRole === 'admin' || g.id === guideId)
                   .map((g) => {
                     const isEditing = editingResource?.type === 'guide' && editingResource?.id === g.id;
@@ -2278,9 +2391,30 @@ export default function AdminPage() {
                         </td>
                         <td style={{ padding: '14px 8px' }}>
                           {isEditing ? (
-                            <input type="text" value={editingResource.data.full_name} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, full_name: e.target.value}})} style={{ padding: '4px', fontSize: '12px' }} />
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <input type="text" value={editingResource.data.full_name} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, full_name: e.target.value}})} style={{ padding: '4px', fontSize: '12px' }} />
+                              <select value={editingResource.data.region || 'samarqand'} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, region: e.target.value}})} style={{ padding: '4px', fontSize: '12px' }}>
+                                <option value="samarqand">Samarqand</option>
+                                <option value="buxoro">Buxoro</option>
+                              </select>
+                            </div>
                           ) : (
-                            <div style={{ fontWeight: '600' }}>{g.full_name}</div>
+                            <div>
+                              <div style={{ fontWeight: '600' }}>{g.full_name}</div>
+                              <div style={{ 
+                                color: g.region === 'buxoro' ? '#ffa066' : '#a5b4fc', 
+                                fontSize: '11px', 
+                                marginTop: '4px', 
+                                display: 'inline-block', 
+                                padding: '2px 6px', 
+                                backgroundColor: g.region === 'buxoro' ? 'rgba(192, 90, 26, 0.2)' : 'rgba(99, 102, 241, 0.15)', 
+                                borderRadius: '4px', 
+                                border: g.region === 'buxoro' ? '1px solid rgba(192, 90, 26, 0.3)' : '1px solid rgba(99, 102, 241, 0.2)',
+                                fontWeight: '600'
+                              }}>
+                                📍 {g.region === 'buxoro' ? currT.buxoro : currT.samarqand}
+                              </div>
+                            </div>
                           )}
                         </td>
                         <td style={{ padding: '14px 8px' }}>
@@ -2396,7 +2530,8 @@ export default function AdminPage() {
                                       fr_rate: getGuideRateForLang(g.id, 'FR'),
                                       telegram_chat_id: g.telegram_chat_id || '',
                                       bot_active: !!g.bot_active,
-                                      image_url: g.image_url || ''
+                                      image_url: g.image_url || '',
+                                      region: g.region || 'samarqand'
                                     } 
                                   })} style={{ padding: '4px', background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer' }}><Edit3 size={16} /></button>
                                   {userRole === 'admin' && (

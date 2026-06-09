@@ -62,7 +62,7 @@ export async function POST(req) {
 
   try {
     const body = await req.json();
-    const { full_name, phone_number, tariffs, telegram_chat_id, bot_active, image_url } = body;
+    const { full_name, phone_number, tariffs, telegram_chat_id, bot_active, image_url, region } = body;
 
     if (!full_name || !phone_number) {
       return NextResponse.json({ message: 'Missing guide name or phone' }, { status: 400 });
@@ -73,7 +73,7 @@ export async function POST(req) {
     if (!supabaseConfigured) {
       return NextResponse.json({ 
         message: 'Mock mode: Guide created successfully', 
-        data: { id: Math.floor(100 + Math.random() * 900), full_name, phone_number, tariffs, telegram_chat_id, bot_active, image_url: finalImageUrl } 
+        data: { id: Math.floor(100 + Math.random() * 900), full_name, phone_number, tariffs, telegram_chat_id, bot_active, image_url: finalImageUrl, region: region || 'samarqand' } 
       });
     }
 
@@ -84,7 +84,8 @@ export async function POST(req) {
         phone_number,
         telegram_chat_id: telegram_chat_id ? parseInt(telegram_chat_id, 10) : null,
         bot_active: !!bot_active,
-        image_url: finalImageUrl
+        image_url: finalImageUrl,
+        region: region || 'samarqand'
       })
       .select()
       .single();
@@ -125,7 +126,7 @@ export async function PATCH(req) {
 
   try {
     const body = await req.json();
-    const { id, full_name, phone_number, tariffs, telegram_chat_id, bot_active, image_url } = body;
+    const { id, full_name, phone_number, tariffs, telegram_chat_id, bot_active, image_url, region } = body;
 
     if (!id) {
       return NextResponse.json({ message: 'Missing guide ID' }, { status: 400 });
@@ -147,7 +148,8 @@ export async function PATCH(req) {
         phone_number,
         telegram_chat_id: telegram_chat_id !== undefined ? (telegram_chat_id ? parseInt(telegram_chat_id, 10) : null) : undefined,
         bot_active: bot_active !== undefined ? !!bot_active : undefined,
-        image_url: image_url !== undefined ? (image_url || null) : undefined
+        image_url: image_url !== undefined ? (image_url || null) : undefined,
+        region: region !== undefined ? region : undefined
       })
       .eq('id', id)
       .select()

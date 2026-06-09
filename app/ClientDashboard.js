@@ -51,11 +51,28 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
   const [guides, setGuides] = useState(initialGuides && initialGuides.length > 0 ? initialGuides : MOCK_GUIDES);
   const [tariffs, setTariffs] = useState(initialTariffs && initialTariffs.length > 0 ? initialTariffs : MOCK_TARIFFS);
   const [vehicles, setVehicles] = useState(initialVehicles && initialVehicles.length > 0 ? initialVehicles : MOCK_VEHICLES);
-  
+
+  const [activeRegion, setActiveRegion] = useState('samarqand'); // 'samarqand' or 'buxoro'
+
   // Constructor States
   const [selectedLocations, setSelectedLocations] = useState([]);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [selectedGuide, setSelectedGuide] = useState(null);
+
+  // Sync region switches, reset selections and apply theme data-attribute
+  useEffect(() => {
+    setSelectedLocations([]);
+    setSelectedVehicle(null);
+    setSelectedGuide(null);
+    if (typeof document !== 'undefined') {
+      document.body.setAttribute('data-region', activeRegion);
+      localStorage.setItem('active_region', activeRegion);
+    }
+  }, [activeRegion]);
+
+  const filteredLocations = locations.filter(loc => (loc.region || 'samarqand') === activeRegion);
+  const filteredGuides = guides.filter(g => (g.region || 'samarqand') === activeRegion);
+  const filteredVehicles = vehicles.filter(v => (v.region || 'samarqand') === activeRegion);
   const [selectedGuideLanguage, setSelectedGuideLanguage] = useState('EN');
 
   // Checkout & OTP verification states
@@ -180,6 +197,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
         locationId: loc.id,
         visitOrder: idx + 1,
       })),
+      region: activeRegion,
     };
 
     try {
@@ -320,12 +338,20 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
   };
 
   const t = {
-    heroTitle: language === 'RU' ? 'Самарканд CrafTour' : 'Samarqand CrafTour',
-    heroSubtitle: language === 'UZ'
-      ? 'Afsonaviy Samarqand bo\'ylab shaxsiy sayohatingizni o\'zingiz yarating'
-      : language === 'RU' 
-      ? 'Сконструируйте собственное идеальное путешествие в легендарный Самарканд'
-      : 'Craft your own tailor-made adventure in legendary Samarkand',
+    heroTitle: activeRegion === 'buxoro'
+      ? (language === 'RU' ? 'Бухара CrafTour' : 'Buxoro CrafTour')
+      : (language === 'RU' ? 'Самарканд CrafTour' : 'Samarqand CrafTour'),
+    heroSubtitle: activeRegion === 'buxoro'
+      ? (language === 'UZ'
+        ? 'Ko\'hna Buxoroning ko\'cha va obidalari bo\'ylab sayohatingizni o\'zingiz yarating'
+        : language === 'RU' 
+        ? 'Сконструируйте собственное идеальное путешествие в благородную Бухару'
+        : 'Craft your own tailor-made adventure in noble Bukhara')
+      : (language === 'UZ'
+        ? 'Afsonaviy Samarqand bo\'ylab shaxsiy sayohatingizni o\'zingiz yarating'
+        : language === 'RU' 
+        ? 'Сконструируйте собственное идеальное путешествие в легендарный Самарканд'
+        : 'Craft your own tailor-made adventure in legendary Samarkand'),
     step1: language === 'UZ' ? '🗺 1-qadam: Marshrutni shakllantiring' : language === 'RU' ? '🗺 Шаг 1: Спланируйте маршрут' : '🗺 Step 1: Craft Your Route',
     step2: language === 'UZ' ? '🚗 2-qadam: Transportni tanlang' : language === 'RU' ? '🚗 Шаг 2: Выберите транспорт' : '🚗 Step 2: Choose Transport',
     step3: language === 'UZ' ? '🗣 3-qadam: Gidni tanlang' : language === 'RU' ? '🗣 Шаг 3: Выберите гида' : '🗣 Step 3: Choose Expert Guide',
@@ -711,14 +737,64 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
             <Compass size={20} className="animate-spin" style={{ animationDuration: '20s' }} />
           </div>
           <span style={{ fontSize: '18px', fontWeight: 800, letterSpacing: '0.05em', color: '#fff', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            SAMARQAND <span style={{ color: '#d4af37' }}>CRAFTOUR</span>
+            {activeRegion === 'buxoro' ? 'BUXORO' : 'SAMARQAND'} <span style={{ color: '#d4af37' }}>CRAFTOUR</span>
           </span>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {/* Region Switcher */}
+          <div style={{
+            display: 'flex',
+            backgroundColor: 'rgba(5, 7, 16, 0.4)',
+            border: '1px solid rgba(212, 175, 55, 0.25)',
+            borderRadius: '12px',
+            padding: '3px',
+            gap: '2px',
+            marginRight: '4px'
+          }}>
+            <button
+              onClick={() => setActiveRegion('samarqand')}
+              style={{
+                padding: '6px 12px',
+                borderRadius: '8px',
+                border: 'none',
+                background: activeRegion === 'samarqand' 
+                  ? 'linear-gradient(135deg, #0070c0 0%, #009b9e 100%)' 
+                  : 'transparent',
+                color: activeRegion === 'samarqand' ? '#fff' : '#94a3b8',
+                fontSize: '12px',
+                fontWeight: '700',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                boxShadow: activeRegion === 'samarqand' ? '0 2px 8px rgba(0, 112, 192, 0.4)' : 'none'
+              }}
+            >
+              {language === 'UZ' ? 'Samarqand' : language === 'RU' ? 'Самарканд' : 'Samarkand'}
+            </button>
+            <button
+              onClick={() => setActiveRegion('buxoro')}
+              style={{
+                padding: '6px 12px',
+                borderRadius: '8px',
+                border: 'none',
+                background: activeRegion === 'buxoro' 
+                  ? 'linear-gradient(135deg, #c05a1a 0%, #b25329 100%)' 
+                  : 'transparent',
+                color: activeRegion === 'buxoro' ? '#fff' : '#94a3b8',
+                fontSize: '12px',
+                fontWeight: '700',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                boxShadow: activeRegion === 'buxoro' ? '0 2px 8px rgba(192, 90, 26, 0.4)' : 'none'
+              }}
+            >
+              {language === 'UZ' ? 'Buxoro' : language === 'RU' ? 'Бухара' : 'Bukhara'}
+            </button>
+          </div>
+
           {/* Discover Info Button */}
           <Link
-            href="/discover"
+            href={`/discover?region=${activeRegion}`}
             style={{
               padding: '8px 16px',
               borderRadius: '10px',
@@ -926,16 +1002,20 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                   <span style={{ fontSize: '15px', fontWeight: '800', color: '#fff' }}>
-                    {language === 'UZ' ? 'Bugun Samarqandda: 28°C' : language === 'RU' ? 'Самарканд сегодня: 28°C' : 'Samarkand Today: 28°C'}
+                    {activeRegion === 'buxoro'
+                      ? (language === 'UZ' ? 'Bugun Buxoroda: 31°C' : language === 'RU' ? 'Бухара сегодня: 31°C' : 'Bukhara Today: 31°C')
+                      : (language === 'UZ' ? 'Bugun Samarqandda: 28°C' : language === 'RU' ? 'Самарканд сегодня: 28°C' : 'Samarkand Today: 28°C')}
                   </span>
                   <span style={{ fontSize: '12px', color: '#009b9e', fontWeight: '500' }}>
-                    {language === 'UZ' ? '☀️ Havo ochiq va quyoshli' : language === 'RU' ? '☀️ Ясно, солнечно и тепло' : '☀️ Clear skies & sunny forecast'}
+                    {activeRegion === 'buxoro'
+                      ? (language === 'UZ' ? '☀️ Issiq va quyoshli' : language === 'RU' ? '☀️ Ясно, солнечно и жарко' : '☀️ Warm, sunny & clear')
+                      : (language === 'UZ' ? '☀️ Havo ochiq va quyoshli' : language === 'RU' ? '☀️ Ясно, солнечно и тепло' : '☀️ Clear skies & sunny forecast')}
                   </span>
                 </div>
               </div>
               
               <Link
-                href="/discover"
+                href={`/discover?region=${activeRegion}`}
                 className="btn-gold"
                 style={{
                   padding: '10px 18px',
@@ -982,7 +1062,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 )}
               </div>
               <RouteBuilder
-                locations={locations}
+                locations={filteredLocations}
                 selectedLocations={selectedLocations}
                 onToggleLocation={handleToggleLocation}
                 language={language}
@@ -993,7 +1073,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
             <section style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#fff' }}>{t.step2}</h2>
               <VehicleSelector
-                vehicles={vehicles}
+                vehicles={filteredVehicles}
                 selectedVehicleId={selectedVehicle?.id}
                 onSelectVehicle={handleSelectVehicle}
                 isOutOfCityRoute={isOutOfCityRoute}
@@ -1005,7 +1085,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
             <section style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#fff' }}>{t.step3}</h2>
               <GuideSelector
-                guides={guides}
+                guides={filteredGuides}
                 tariffs={tariffs}
                 selectedGuideId={selectedGuide?.id}
                 selectedGuideLanguage={selectedGuideLanguage}
@@ -1050,9 +1130,10 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 <span>Interactive Route Visualizer</span>
               </div>
               <Map
-                locations={locations}
+                locations={filteredLocations}
                 selectedLocations={selectedLocations}
                 language={language}
+                activeRegion={activeRegion}
               />
             </div>
           </div>
@@ -1108,7 +1189,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
         color: '#64748b'
       }}>
         <div>
-          © {new Date().getFullYear()} Samarqand CrafTour. {language === 'RU' ? 'Все права защищены.' : 'All rights reserved.'}
+          © {new Date().getFullYear()} {activeRegion === 'buxoro' ? 'Buxoro' : 'Samarqand'} CrafTour. {language === 'RU' ? 'Все права защищены.' : 'All rights reserved.'}
         </div>
         <a
           href="/admin"

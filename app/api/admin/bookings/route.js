@@ -14,11 +14,11 @@ const MOCK_BOOKINGS = [
     customer_language: 'EN',
     status: 'confirmed',
     created_at: new Date(Date.now() - 3600000).toISOString(),
-    guide: { full_name: 'Sherzod Alimov', phone_number: '+998901234567' },
-    vehicle: { driver_name: 'Alisher aka', driver_phone: '+998909998877', car_model: 'Chevrolet Cobalt (White)', car_number: '01 A 777 BA' },
+    guide: { full_name: 'Sherzod Alimov', phone_number: '+998901234567', region: 'samarqand' },
+    vehicle: { driver_name: 'Alisher aka', driver_phone: '+998909998877', car_model: 'Chevrolet Cobalt (White)', car_number: '01 A 777 BA', region: 'samarqand' },
     booking_items: [
-      { visit_order: 1, location: { name_en: 'Registan Square', name_ru: 'Площадь Регистан', name_uz: 'Registon maydoni' } },
-      { visit_order: 2, location: { name_en: 'Gur-e-Amir Mausoleum', name_ru: 'Мавзолей Гур-Эмир', name_uz: "Go'ri Amir maqbarasi" } }
+      { visit_order: 1, location: { name_en: 'Registan Square', name_ru: 'Площадь Регистан', name_uz: 'Registon maydoni', region: 'samarqand' } },
+      { visit_order: 2, location: { name_en: 'Gur-e-Amir Mausoleum', name_ru: 'Мавзолей Гур-Эмир', name_uz: "Go'ri Amir maqbarasi", region: 'samarqand' } }
     ]
   },
   {
@@ -31,11 +31,11 @@ const MOCK_BOOKINGS = [
     customer_language: 'RU',
     status: 'pending',
     created_at: new Date().toISOString(),
-    guide: { full_name: 'Elena Petrova', phone_number: '+998937654321' },
-    vehicle: { driver_name: 'Doston aka', driver_phone: '+998935554433', car_model: 'Chevrolet Gentra (Black)', car_number: '01 Z 888 ZZ' },
+    guide: { full_name: 'Elena Petrova', phone_number: '+998937654321', region: 'samarqand' },
+    vehicle: { driver_name: 'Doston aka', driver_phone: '+998935554433', car_model: 'Chevrolet Gentra (Black)', car_number: '01 Z 888 ZZ', region: 'samarqand' },
     booking_items: [
-      { visit_order: 1, location: { name_en: 'Shah-i-Zinda', name_ru: 'Шахи Зинда', name_uz: 'Shohi Zinda' } },
-      { visit_order: 2, location: { name_en: 'Urgut Mountain Bazaar & Hills', name_ru: 'Ургутский горный базар и горы', name_uz: "Urgut tog' bozori va adirlari" } }
+      { visit_order: 1, location: { name_en: 'Shah-i-Zinda', name_ru: 'Шахи Зинда', name_uz: 'Shohi Zinda', region: 'samarqand' } },
+      { visit_order: 2, location: { name_en: 'Urgut Mountain Bazaar & Hills', name_ru: 'Ургутский горный базар и горы', name_uz: "Urgut tog' bozori va adirlari", region: 'samarqand' } }
     ]
   }
 ];
@@ -100,11 +100,11 @@ export async function GET(req) {
       .from('bookings')
       .select(`
         *,
-        guide:guides(full_name, phone_number),
-        vehicle:vehicles(driver_name, driver_phone, car_model, car_number),
+        guide:guides(full_name, phone_number, region),
+        vehicle:vehicles(driver_name, driver_phone, car_model, car_number, region),
         booking_items(
           visit_order,
-          location:locations(id, name_en, name_ru, name_uz)
+          location:locations(id, name_en, name_ru, name_uz, region)
         )
       `);
 
@@ -121,11 +121,11 @@ export async function GET(req) {
           .from('bookings')
           .select(`
             *,
-            guide:guides(full_name, phone_number),
-            vehicle:vehicles(driver_name, driver_phone, car_model, car_number),
+            guide:guides(full_name, phone_number, region),
+            vehicle:vehicles(driver_name, driver_phone, car_model, car_number, region),
             booking_items(
               visit_order,
-              location:locations(id, name_en, name_ru)
+              location:locations(id, name_en, name_ru, region)
             )
           `);
 

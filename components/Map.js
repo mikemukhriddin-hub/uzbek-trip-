@@ -16,7 +16,7 @@ const LOCATION_IMAGES = {
   11: '/images/locations/karimbek_restaurant.webp'
 };
 
-export default function Map({ locations = [], selectedLocations = [], language = 'EN' }) {
+export default function Map({ locations = [], selectedLocations = [], language = 'EN', activeRegion = 'samarqand' }) {
   const [isInteractive, setIsInteractive] = useState(true);
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
@@ -46,12 +46,15 @@ export default function Map({ locations = [], selectedLocations = [], language =
         shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
       });
 
+      const defaultCenter = activeRegion === 'buxoro' ? [39.7747, 64.4286] : [39.6548, 66.9757];
+      const defaultZoom = activeRegion === 'buxoro' ? 13.5 : 13;
+
       // Initialize Map if not already initialized
       if (!mapInstance.current && mapRef.current) {
         mapInstance.current = L.map(mapRef.current, {
           zoomControl: true,
           scrollWheelZoom: true,
-        }).setView([39.6548, 66.9757], 13); // Centered in Samarkand
+        }).setView(defaultCenter, defaultZoom);
 
         // Use a beautiful dark tile layer to match the premium theme
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
@@ -62,6 +65,11 @@ export default function Map({ locations = [], selectedLocations = [], language =
       }
 
       const map = mapInstance.current;
+
+      // Smooth fly/pan to region center if no locations are selected
+      if (selectedLocations.length === 0) {
+        map.flyTo(defaultCenter, defaultZoom, { duration: 1.2 });
+      }
 
       // Clean existing markers
       Object.keys(markersRef.current).forEach((key) => {
@@ -202,7 +210,7 @@ export default function Map({ locations = [], selectedLocations = [], language =
         mapInstance.current = null;
       }
     };
-  }, [locations, selectedLocations, language]);
+  }, [locations, selectedLocations, language, activeRegion]);
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', minHeight: '400px' }}>

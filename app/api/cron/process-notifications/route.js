@@ -36,6 +36,11 @@ function generateEmailHtml(booking, groupBookings, finalGuide, finalVehicle, isG
   const isRu = booking.customer_language === 'RU';
   const totalPassengers = groupBookings.reduce((sum, b) => sum + (b.passenger_count || 1), 0);
   
+  // Determine region dynamically
+  const bookingRegion = finalGuide?.region || finalVehicle?.region || (booking.locations?.[0]?.region) || 'samarqand';
+  const brandName = bookingRegion === 'buxoro' ? 'Buxoro CrafTour' : 'Samarqand CrafTour';
+  const brandNameCaps = bookingRegion === 'buxoro' ? 'BUXORO CRAFTOUR' : 'SAMARQAND CRAFTOUR';
+
   // Styling constants
   const primaryColor = '#0f172a'; // Deep Slate Navy
   const accentColor = '#d4af37';  // Gold Accent
@@ -113,10 +118,10 @@ function generateEmailHtml(booking, groupBookings, finalGuide, finalVehicle, isG
           : `<p style="font-size: 12px; color: #64748b; margin-top: 15px; font-style: italic;">*Note: If other travellers join your tour for a matching route, you will be pooled into a shared group and an updated voucher will be sent to you.</p>`);
  
   const footerText = isUz
-    ? 'Samarqand CrafTour xizmatini tanlaganingiz uchun rahmat. Iltimos, belgilangan vaqtdan 10 daqiqa oldin mehmonxona foyesida tayyor turing.<br/>Savollar yuzasidan qo\'llab-quvvatlash xizmati yoki gid bilan bevosita bog\'lanishingiz mumkin.'
+    ? `${brandName} xizmatini tanlaganingiz uchun rahmat. Iltimos, belgilangan vaqtdan 10 daqiqa oldin mehmonxona foyesida tayyor turing.<br/>Savollar yuzasidan qo'llab-quvvatlash xizmati yoki gid bilan bevosita bog'lanishingiz mumkin.`
     : isRu 
-      ? 'Спасибо, что выбрали Samarqand CrafTour. Пожалуйста, будьте в лобби вашего отеля за 10 минут до назначенного времени.<br/>Для любых вопросов обращайтесь по номеру службы поддержки или напрямую к вашему гиду.'
-      : 'Thank you for choosing Samarqand CrafTour. Please be ready at your hotel lobby 10 minutes prior to departure.<br/>For support or questions, contact customer service or your assigned guide directly.';
+      ? `Спасибо, что выбрали ${brandName}. Пожалуйста, будьте в лобби вашего отеля за 10 минут до назначенного времени.<br/>Для любых вопросов обращайтесь по номеру службы поддержки или напрямую к вашему гиду.`
+      : `Thank you for choosing ${brandName}. Please be ready at your hotel lobby 10 minutes prior to departure.<br/>For support or questions, contact customer service or your assigned guide directly.`;
  
   return `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 0; margin: 0; background-color: #f1f5f9;">
@@ -128,7 +133,7 @@ function generateEmailHtml(booking, groupBookings, finalGuide, finalVehicle, isG
               <!-- Header Banner -->
               <tr>
                 <td style="background-color: ${primaryColor}; padding: 30px; text-align: center;">
-                  <h1 style="color: ${accentColor}; font-size: 24px; margin: 0; letter-spacing: 2px; font-weight: 800;">SAMARQAND CRAFTOUR</h1>
+                  <h1 style="color: ${accentColor}; font-size: 24px; margin: 0; letter-spacing: 2px; font-weight: 800;">${brandNameCaps}</h1>
                   <p style="color: #94a3b8; font-size: 11px; margin: 8px 0 0 0; letter-spacing: 1px; font-weight: 600;">${headerSubtitle}</p>
                 </td>
               </tr>
@@ -220,7 +225,7 @@ function generateEmailHtml(booking, groupBookings, finalGuide, finalVehicle, isG
                 <td style="background-color: ${primaryColor}; padding: 30px; text-align: center; color: #94a3b8; font-size: 12px; line-height: 1.5;">
                   ${footerText}
                   <div style="margin-top: 20px; border-top: 1px solid #334155; padding-top: 15px; font-size: 10px; color: #64748b;">
-                    © 2026 Samarqand CrafTour. All rights reserved.
+                    © 2026 ${brandName}. All rights reserved.
                   </div>
                 </td>
               </tr>
@@ -422,11 +427,15 @@ export async function GET(req) {
         }
       }
 
+      // Determine booking region
+      const bookingRegion = finalGuide?.region || finalVehicle?.region || (groupBookings[0].locations?.[0]?.region) || 'samarqand';
+      const brandNameCaps = bookingRegion === 'buxoro' ? 'BUXORO CRAFTOUR' : 'SAMARQAND CRAFTOUR';
+
       // Assemble Telegram text caption (Rich Text message alert)
       let tgText = '';
       if (isGrouped) {
         if (isGroupUpdate) {
-          tgText = `🔄 *SAMARQAND CRAFTOUR - GURUH YANGILANISHI (POOLING)* 🔄\n\n` +
+          tgText = `🔄 *${brandNameCaps} - GURUH YANGILANISHI (POOLING)* 🔄\n\n` +
             `👥 *Guruhingizga yangi sayyoh qo'shildi!*\n\n` +
             `📅 *Sana:* ${groupBookings[0].booking_date}\n` +
             `🌐 *Mijoz tili:* ${language}\n` +
@@ -438,7 +447,7 @@ export async function GET(req) {
             `💵 *Buyurtmalar to'lovi:* \n${groupBookings.map(b => `- Buyurtma #${b.id} (${b.tourist_name}): $${parseFloat(b.total_price).toFixed(2)}`).join('\n')}\n\n` +
             `📄 *Tafsilotlar yangilandi. Barcha mijozlarga elektron pochta orqali xabar yuborildi.*`;
         } else {
-          tgText = `🌟 *SAMARQAND CRAFTOUR - GURUH TUR (POOLING)* 🌟\n\n` +
+          tgText = `🌟 *${brandNameCaps} - GURUH TUR (POOLING)* 🌟\n\n` +
             `👥 *Birgalikda sayohat qilish uchun guruh shakllantirildi!*\n\n` +
             `📅 *Sana:* ${groupBookings[0].booking_date}\n` +
             `🌐 *Mijoz tili:* ${language}\n` +
@@ -452,7 +461,7 @@ export async function GET(req) {
         }
       } else {
         const b = groupBookings[0];
-        tgText = `✨ *SAMARQAND CRAFTOUR - SHAXSIY SAYOHAT* ✨\n\n` +
+        tgText = `✨ *${brandNameCaps} - SHAXSIY SAYOHAT* ✨\n\n` +
           `📅 *Sana:* ${b.booking_date}\n` +
           `🌐 *Mijoz tili:* ${language}\n` +
           `👥 *Yo'lovchilar:* ${totalPassengers} ta (${b.tourist_name})\n\n` +
@@ -508,16 +517,19 @@ export async function GET(req) {
           for (const booking of groupBookings) {
             const isBookingUz = booking.customer_language === 'UZ';
             const isBookingRu = booking.customer_language === 'RU';
+            const bookingRegion = finalGuide?.region || finalVehicle?.region || (booking.locations?.[0]?.region) || 'samarqand';
+            const brandName = bookingRegion === 'buxoro' ? 'Buxoro CrafTour' : 'Samarqand CrafTour';
+
             const emailSubject = isBookingUz
-              ? 'Sizning sayohat vaucheringiz - Samarqand CrafTour'
+              ? `Sizning sayohat vaucheringiz - ${brandName}`
               : isBookingRu
-                ? 'Ваш туристический ваучер - Samarqand CrafTour'
-                : 'Your Travel Voucher - Samarqand CrafTour';
+                ? `Ваш туристический ваучер - ${brandName}`
+                : `Your Travel Voucher - ${brandName}`;
 
             const emailHtml = generateEmailHtml(booking, groupBookings, finalGuide, finalVehicle, isGrouped);
 
             await transporter.sendMail({
-              from: `"Samarqand CrafTour" <${smtpUser}>`,
+              from: `"${brandName}" <${smtpUser}>`,
               to: booking.tourist_email,
               subject: emailSubject,
               html: emailHtml
