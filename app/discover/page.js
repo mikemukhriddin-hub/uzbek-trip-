@@ -112,6 +112,36 @@ const XORAZM_SLIDES = [
   }
 ];
 
+const SHAHRISABZ_SLIDES = [
+  {
+    image: 'https://images.unsplash.com/photo-1584646098025-97cfbe6cae0d?auto=format&fit=crop&w=800&q=80',
+    title_en: 'Colossal Ak-Saray Palace',
+    title_ru: 'Колоссальный дворец Ак-Сарай',
+    title_uz: 'Muhtasham Oqsaroy saroyi',
+    desc_en: 'The legendary summer palace of Tamerlane. Although mostly in ruins, its giant portal stands as a testament to Timurid architecture.',
+    desc_ru: 'Легендарная летняя резиденция Амира Темура. Уцелевшие фрагменты гигантского портала поражают величием мозаики.',
+    desc_uz: 'Amir Temur tomonidan bunyod etilgan afsonaviy yozgi qarorgoh. Uning ulkan peshtoq qoldiqlari me\'morchilik mo\'jizasidir.'
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1540959733332-eab4deceeaf7?auto=format&fit=crop&w=800&q=80',
+    title_en: 'Kok Gumbaz Dome',
+    title_ru: 'Купол Кок-Гумбаз',
+    title_uz: 'Ko\'k Gumbaz masjidi',
+    desc_en: 'Built by Ulugh Beg, the Friday Mosque of Shahrisabz is famous for its massive turquoise dome reflecting the blue sky.',
+    desc_ru: 'Построенная Улугбеком пятничная мечеть знаменита своим массивным бирюзовым куполом, сливающимся с небом.',
+    desc_uz: 'Ulug\'bek buyrug\'iga binoan qurilgan ushbu jome masjid firuza rangli ulkan gumbazi bilan dunyoga mashhurdir.'
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1605649487212-47bdab064df7?auto=format&fit=crop&w=800&q=80',
+    title_en: 'Dorus Saodat Complex',
+    title_ru: 'Комплекс Дорус-Саодат',
+    title_uz: 'Dorus Saodat majmuasi',
+    desc_en: 'The family crypt of the Temurid dynasty, housing Tamerlane\'s empty marble sarcophagus and his oldest son\'s vault.',
+    desc_ru: 'Семейная усыпальница династии Темуридов, хранящая пустой мраморный саркофаг Амира Темура и склепы его сыновей.',
+    desc_uz: 'Temuriylar sulolasining oilaviy maqbarasi bo\'lib, u yerda Amir Temur uchun tayyorlangan bo\'sh marmar tobut saqlanadi.'
+  }
+];
+
 const SAMARQAND_EVENTS = [
   {
     id: 1,
@@ -229,10 +259,49 @@ const XORAZM_EVENTS = [
   }
 ];
 
+const SHAHRISABZ_EVENTS = [
+  {
+    id: 1,
+    title_en: 'Navruz Spring Festival',
+    title_ru: 'Весенний фестиваль Навруз',
+    title_uz: 'Navro\'z bahor bayrami',
+    date_en: 'March 21',
+    date_ru: '21 Марта',
+    date_uz: '21 Mart',
+    desc_en: 'The Persian New Year welcoming spring. Celebrate with sumalak (sweet wheat paste), traditional folk music, and tightrope walkers.',
+    desc_ru: 'Восточный Новый год, встречающий весну. Празднование с сумаляком, традиционной народной музыкой и канатоходцами.',
+    desc_uz: 'Bahorni kutib oluvchi sharqona yangi yil. Sumalak, an\'anaviy xalq musiqasi va dorbozlar shoulari bilan nishonlanadi.'
+  },
+  {
+    id: 8,
+    title_en: 'National Folklore Festival',
+    title_ru: 'Национальный фольклорный фестиваль',
+    title_uz: 'Milliy folklor va doston festivali',
+    date_en: 'Mid May',
+    date_ru: 'Середина Мая',
+    date_uz: 'May o\'rtalarida',
+    desc_en: 'A colorful gathering in the hills of Shahrisabz showing traditional folklore dance, local crafts, and nomadic music.',
+    desc_ru: 'Яркий фестиваль в предгорьях Шахрисабза, демонстрирующий народные танцы, ремесла и традиционные песнопения бахши.',
+    desc_uz: 'Shahrisabz adirlarida o\'tkaziladigan, milliy folklor raqslari, hunarmandchilik va baxshilar dostonlarini namoyish etuvchi festival.'
+  },
+  {
+    id: 9,
+    title_en: 'Katta-Langar Mountain Picnic',
+    title_ru: 'Горный пикник в Катта-Лангаре',
+    title_uz: 'Katta Langar tog\' sayli',
+    date_en: 'Late Summer',
+    date_ru: 'Конец Лета',
+    date_uz: 'Yoz oxirida',
+    desc_en: 'Experience traditional mountain tandoor meat cooked in clay ovens, local hikes, and stargazing in the clear mountain sky.',
+    desc_ru: 'Насладитесь традиционным горным тандыр-кабобом, пешими прогулками и наблюдением за звездами в горах Лангара.',
+    desc_uz: 'Tog\' bag\'rida tuproq tandirda pishirilgan tandir kabobdan bahramand bo\'lish, piyoda sayrlar va musaffo tog\' osmonini kuzatish tadbiri.'
+  }
+];
+
 export default function DiscoverPage({ searchParams }) {
   const resolvedSearchParams = searchParams ? use(searchParams) : {};
   const regionParam = resolvedSearchParams?.region;
-  const initialRegion = (regionParam === 'buxoro' || regionParam === 'samarqand' || regionParam === 'xorazm') ? regionParam : 'samarqand';
+  const initialRegion = (regionParam === 'buxoro' || regionParam === 'samarqand' || regionParam === 'xorazm' || regionParam === 'shahrisabz') ? regionParam : 'samarqand';
 
   const [activeRegion, setActiveRegion] = useState(initialRegion);
   const [language, setLanguage] = useState('EN');
@@ -242,12 +311,12 @@ export default function DiscoverPage({ searchParams }) {
   const [uzsAmount, setUzsAmount] = useState('1280000');
   
   const EXCHANGE_RATE = 12800; // 1 USD = 12,800 UZS
-  const slides = activeRegion === 'xorazm' ? XORAZM_SLIDES : activeRegion === 'buxoro' ? BUXORO_SLIDES : SAMARQAND_SLIDES;
-  const events = activeRegion === 'xorazm' ? XORAZM_EVENTS : activeRegion === 'buxoro' ? BUXORO_EVENTS : SAMARQAND_EVENTS;
+  const slides = activeRegion === 'shahrisabz' ? SHAHRISABZ_SLIDES : activeRegion === 'xorazm' ? XORAZM_SLIDES : activeRegion === 'buxoro' ? BUXORO_SLIDES : SAMARQAND_SLIDES;
+  const events = activeRegion === 'shahrisabz' ? SHAHRISABZ_EVENTS : activeRegion === 'xorazm' ? XORAZM_EVENTS : activeRegion === 'buxoro' ? BUXORO_EVENTS : SAMARQAND_EVENTS;
 
   // Sync query parameters changes to state
   useEffect(() => {
-    if (regionParam && (regionParam === 'samarqand' || regionParam === 'buxoro' || regionParam === 'xorazm')) {
+    if (regionParam && (regionParam === 'samarqand' || regionParam === 'buxoro' || regionParam === 'xorazm' || regionParam === 'shahrisabz')) {
       setActiveRegion(regionParam);
     }
   }, [regionParam]);
@@ -265,7 +334,7 @@ export default function DiscoverPage({ searchParams }) {
     // Load active region from localStorage only if no query param was provided
     if (!regionParam) {
       const savedRegion = localStorage.getItem('active_region');
-      if (savedRegion && (savedRegion === 'samarqand' || savedRegion === 'buxoro' || savedRegion === 'xorazm')) {
+      if (savedRegion && (savedRegion === 'samarqand' || savedRegion === 'buxoro' || savedRegion === 'xorazm' || savedRegion === 'shahrisabz')) {
         Promise.resolve().then(() => {
           setActiveRegion(savedRegion);
         });
@@ -325,7 +394,13 @@ export default function DiscoverPage({ searchParams }) {
   const t = {
     backBtn: language === 'UZ' ? 'Orqaga qaytish' : language === 'RU' ? 'Вернуться назад' : 'Back to route builder',
     pageTitle: language === 'UZ' ? 'Sayohatchilar uchun qo\'llanma' : language === 'RU' ? 'Гид для Путешественников' : 'Traveler Discover Hub',
-    pageSubtitle: activeRegion === 'xorazm'
+    pageSubtitle: activeRegion === 'shahrisabz'
+      ? (language === 'UZ' 
+        ? 'Shahrisabzning (Amir Temur vatanining) madaniy merosi, festivallari, ob-havosi va muhim ma\'lumotlari'
+        : language === 'RU' 
+        ? 'Актуальная информация, погода, праздники и культурное наследие родины Амира Темура — Шахрисабза'
+        : 'Real-time weather, cultural festivals, slideshows, and local travel advice for Shahrisabz')
+      : activeRegion === 'xorazm'
       ? (language === 'UZ' 
         ? 'Xorazmning (Xivaning) madaniy merosi, festivallari, ob-havosi va muhim ma\'lumotlari'
         : language === 'RU' 
@@ -344,7 +419,9 @@ export default function DiscoverPage({ searchParams }) {
         : 'Real-time weather, cultural festivals, slideshows, and local travel advice for Samarkand'),
     
     // Weather
-    weatherTitle: activeRegion === 'xorazm'
+    weatherTitle: activeRegion === 'shahrisabz'
+      ? (language === 'UZ' ? '🌤 Shahrisabz ob-havosi' : language === 'RU' ? '🌤 Погода в Шахрисабзе' : '🌤 Shahrisabz Weather')
+      : activeRegion === 'xorazm'
       ? (language === 'UZ' ? '🌤 Xorazm ob-havosi' : language === 'RU' ? '🌤 Погода в Хорезме' : '🌤 Khorezm Weather')
       : activeRegion === 'buxoro'
       ? (language === 'UZ' ? '🌤 Buxoro ob-havosi' : language === 'RU' ? '🌤 Погода в Бухаре' : '🌤 Bukhara Weather')
@@ -505,6 +582,25 @@ export default function DiscoverPage({ searchParams }) {
             }}
           >
             {language === 'UZ' ? 'Xorazm' : language === 'RU' ? 'Хорезм' : 'Khorezm'}
+          </button>
+          <button
+            onClick={() => setActiveRegion('shahrisabz')}
+            style={{
+              padding: '6px 12px',
+              borderRadius: '8px',
+              border: 'none',
+              background: activeRegion === 'shahrisabz' 
+                ? 'linear-gradient(135deg, #008060 0%, #00a36c 100%)' 
+                : 'transparent',
+              color: activeRegion === 'shahrisabz' ? '#fff' : '#94a3b8',
+              fontSize: '12px',
+              fontWeight: '700',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              boxShadow: activeRegion === 'shahrisabz' ? '0 2px 8px rgba(0, 128, 96, 0.4)' : 'none'
+            }}
+          >
+            {language === 'UZ' ? 'Shahrisabz' : language === 'RU' ? 'Шахрисабз' : 'Shahrisabz'}
           </button>
         </div>
 

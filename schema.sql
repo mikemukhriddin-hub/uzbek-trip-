@@ -140,7 +140,13 @@ INSERT INTO locations (name_en, name_ru, name_uz, description_en, description_ru
 ('Tozabog Summer Palace', 'Дворец Кибла Тозабог', 'Qibla Tozabog'' saroyi', 'The summer palace of the last Khivan Khans, set inside a green oasis outside the city walls.', 'Загородный летний дворец последних хивинских ханов в зеленом оазисе.', 'Shahar devorlaridan tashqarida joylashgan Xiva xonlarining yozgi saroyi va yashil bog''i.', 41.3524, 60.3472, 'alternative', TRUE, 90, 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=600&q=80', 'xorazm'),
 ('Khiva Silk Workshop', 'Шелковая мастерская Хивы', 'Xiva ipak hunarmandchilik ustaxonasi', 'Watch local weavers create natural silk carpets and traditional suzanis using ancient looms.', 'Мастерская шелковых ковров и традиционных сюзане, создаваемых вручную на старых станках.', 'Qadimgi dastgohlarda tabiiy ipak gilamlar va milliy suzanilarni to''qish jarayonini kuzating.', 41.3780, 60.3620, 'alternative', FALSE, 45, 'https://images.unsplash.com/photo-1596797038530-2c107229654b?auto=format&fit=crop&w=600&q=80', 'xorazm'),
 ('Khorezm Osh & Shivit Oshi', 'Ресторан Шивит Оши', 'Xorazm shivit oshi markazi', 'Dine on traditional green dill noodles topped with meat stew and sour milk, a Khiva specialty.', 'Отведайте традиционную зеленую лапшу с укропом (Шивит Оши) и хорезмский плов.', 'Xivaning o''ziga xos milliy taomi bo''lgan shivitli ko''k lagmon (shivit oshi) va xorazmcha palov restorani.', 41.3779, 60.3615, 'food', FALSE, 90, 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=600&q=80', 'xorazm'),
-('Tukhum Barak Eatery', 'Кафе Тухум Барак', 'Tuxum barak choyxonasi', 'A traditional tavern serving Khorezmian egg-filled dumplings, hand-made to order.', 'Кафе традиционной кухни, специализирующееся на хорезмских варениках с яйцом (Тухум Барак).', 'Xorazm oshxonasining mashhur tuxum barak taomini yangi va issiq tayyorlab beruvchi milliy choyxona.', 41.3789, 60.3625, 'food', FALSE, 60, 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80', 'xorazm');
+('Tukhum Barak Eatery', 'Кафе Тухум Барак', 'Tuxum barak choyxonasi', 'A traditional tavern serving Khorezmian egg-filled dumplings, hand-made to order.', 'Кафе традиционной кухни, специализирующееся на хорезмских варениках с яйцом (Тухум Барак).', 'Xorazm oshxonasining mashhur tuxum barak taomini yangi va issiq tayyorlab beruvchi milliy choyxona.', 41.3789, 60.3625, 'food', FALSE, 60, 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80', 'xorazm'),
+('Ak-Saray Palace ruins', 'Руины дворца Ак-Сарай', 'Oqsaroy saroyi xarobalari', 'The colossal summer palace built by Amir Temur, featuring remains of majestic blue and gold tilework.', 'Колоссальные руины летней резиденции Амира Темура с остатками величественной мозаики.', 'Amir Temur tomonidan barpo etilgan muhtasham va ulkan Oqsaroy saroyining moviy koshinli xarobalari.', 39.0606, 66.8294, 'historical', FALSE, 90, 'https://images.unsplash.com/photo-1584646098025-97cfbe6cae0d?auto=format&fit=crop&w=600&q=80', 'shahrisabz'),
+('Kok Gumbaz Mosque (Dorut Tilavat)', 'Мечеть Кок-Гумбаз', 'Ko''k Gumbaz masjidi (Dorut Tilovat)', 'The main Friday mosque of Shahrisabz, built by Ulugh Beg, famous for its giant emerald-blue tiled dome.', 'Главная пятничная мечеть города, построенная Улугбеком, с гигантским бирюзовым куполом.', 'Ulug''bek tomonidan qurilgan, ulkan firuza-moviy gumbazga ega bo''lgan Xondamir jome masjidi.', 39.0506, 66.8281, 'historical', FALSE, 60, 'https://images.unsplash.com/photo-1540959733332-eab4deceeaf7?auto=format&fit=crop&w=600&q=80', 'shahrisabz'),
+('Dorus Saodat Complex', 'Комплекс Дорус-Саодат', 'Dorus Saodat majmuasi', 'The family mausoleum of the Temurids, containing Jahongir''s tomb and grand vaulted structures.', 'Семейная усыпальница Темуридов с мавзолеем Джахангира и грандиозными сводами.', 'Temuriylar sulolasining oilaviy maqbarasi bo''lib, u yerda Jahongir mirzo qabri va ravotlar joylashgan.', 39.0515, 66.8315, 'historical', FALSE, 60, 'https://images.unsplash.com/photo-1605649487212-47bdab064df7?auto=format&fit=crop&w=600&q=80', 'shahrisabz'),
+('Crypt of Amir Temur', 'Склеп Амира Темура', 'Amir Temur xilxonasi', 'A underground stone chamber with a massive marble sarcophagus designed originally for Tamerlane himself.', 'Подземная каменная усыпальница с массивным мраморным саркофагом, изначально созданным для самого Темура.', 'Temur bobomiz uchun maxsus tayyorlangan, yer ostidagi ulkan marmar toshli tobut va xilxona.', 39.0518, 66.8322, 'historical', FALSE, 45, 'https://images.unsplash.com/photo-1627856013091-fed6e4e30025?auto=format&fit=crop&w=600&q=80', 'shahrisabz'),
+('Shahrisabz Chorsu Bazaar', 'Чорсу Базар Шахрисабза', 'Shahrisabz Chorsu bozori', 'A domed 18th-century bazaar located at the ancient crossroads, offering local textiles, honey, and dry fruits.', 'Купольный старинный базар XVIII века на историческом перекрестке с тканями, медом и сухофруктами.', 'Qadimiy chorrahada joylashgan, milliy matolar, tog'' asali va quruq mevalar sotiladigan gumbazli XVIII asr bozori.', 39.0531, 66.8298, 'alternative', FALSE, 60, 'https://images.unsplash.com/photo-1596797038530-2c107229654b?auto=format&fit=crop&w=600&q=80', 'shahrisabz'),
+('Katta-Langar Mountain Tandoor', 'Горный тандыр Катта-Лангара', 'Katta Langar tog'' tandir kabobi', 'An open-air restaurant in the scenic mountains serving traditional meat slow-cooked in clay ovens with pine needles.', 'Ресторан в живописных горах, где подают традиционное мясо из глиняных печей с хвоей арчи.', 'Tog'' bag''rida archa barglari bilan tuproq tandirda pishirilgan haqiqiy tog'' tandir kabob choyxonasi.', 38.8320, 66.7562, 'food', TRUE, 90, 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=600&q=80', 'shahrisabz');
 
 -- Seed Guides
 INSERT INTO guides (full_name, phone_number, region) VALUES
@@ -152,7 +158,9 @@ INSERT INTO guides (full_name, phone_number, region) VALUES
 ('Abdurakhmon Karimov', '+998998887766', 'buxoro'),
 ('Khurshid Bekchanov', '+998935552233', 'xorazm'),
 ('Zilola Masharipova', '+998904441122', 'xorazm'),
-('Davron Sabirov', '+998973336655', 'xorazm');
+('Davron Sabirov', '+998973336655', 'xorazm'),
+('Javokhir Qodirov', '+998933334455', 'shahrisabz'),
+('Madina Karimova', '+998905556677', 'shahrisabz');
 
 -- Seed Guide Tariffs
 -- Sherzod speaks English, Russian, and Uzbek
@@ -208,6 +216,18 @@ INSERT INTO guide_language_tariffs (guide_id, language_code, daily_rate) VALUES
 (9, 'RU', 45.00),
 (9, 'ES', 65.00);
 
+-- Javokhir speaks English, Russian, Uzbek
+INSERT INTO guide_language_tariffs (guide_id, language_code, daily_rate) VALUES
+(10, 'EN', 50.00),
+(10, 'RU', 40.00),
+(10, 'UZ', 35.00);
+
+-- Madina speaks English, Russian, French
+INSERT INTO guide_language_tariffs (guide_id, language_code, daily_rate) VALUES
+(11, 'EN', 55.00),
+(11, 'RU', 45.00),
+(11, 'FR', 65.00);
+
 -- Seed Vehicles
 INSERT INTO vehicles (driver_name, driver_phone, car_model, car_number, city_rate, out_of_city_rate, capacity, region) VALUES
 ('Alisher aka', '+998909998877', 'Chevrolet Cobalt (White)', '01 A 777 BA', 30.00, 45.00, 5, 'samarqand'),
@@ -220,4 +240,6 @@ INSERT INTO vehicles (driver_name, driver_phone, car_model, car_number, city_rat
 ('Bekzod aka', '+998972223344', 'Toyota Hiace Minivan (White)', '80 C 777 XX', 55.00, 80.00, 10, 'buxoro'),
 ('Dilshod aka', '+998931112233', 'Chevrolet Cobalt (Grey)', '90 B 123 XY', 25.00, 40.00, 5, 'xorazm'),
 ('Sanjar aka', '+998904447788', 'Chevrolet Lacetti (White)', '90 A 999 AA', 25.00, 40.00, 5, 'xorazm'),
-('Mansur aka', '+998977778899', 'Toyota Hiace Minivan (White)', '90 C 777 ZZ', 55.00, 80.00, 10, 'xorazm');
+('Mansur aka', '+998977778899', 'Toyota Hiace Minivan (White)', '90 C 777 ZZ', 55.00, 80.00, 10, 'xorazm'),
+('Sherzod aka', '+998901113344', 'Chevrolet Cobalt (Grey)', '90 D 555 AA', 25.00, 40.00, 5, 'shahrisabz'),
+('Bobur aka', '+998934448899', 'Chevrolet Lacetti (White)', '90 E 888 ZZ', 25.00, 40.00, 5, 'shahrisabz');
