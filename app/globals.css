@@ -204,6 +204,43 @@ body[data-region="toshkent"] .btn-primary:hover {
   box-shadow: 0 4px 15px rgba(30, 64, 175, 0.4);
 }
 
+body[data-region="qoraqalpoq"] {
+  --primary-blue: #7c3aed; /* Amethyst Purple */
+  --primary-blue-rgb: 124, 58, 237;
+  --deep-turquoise: #a78bfa; /* Sky Purple Glow */
+
+  --bg-dark-card: rgba(15, 10, 35, 0.7);
+  --bg-dark-border: rgba(124, 58, 237, 0.15);
+
+  --bg-card: rgba(15, 10, 35, 0.45);
+  --border-card: rgba(124, 58, 237, 0.15);
+}
+
+body[data-region="qoraqalpoq"] .selected-card-historical {
+  border-color: #7c3aed !important;
+  box-shadow: 0 0 18px rgba(124, 58, 237, 0.35) !important;
+  background: rgba(124, 58, 237, 0.08) !important;
+}
+
+body[data-region="qoraqalpoq"] .selected-card-alternative {
+  border-color: #a78bfa !important;
+  box-shadow: 0 0 18px rgba(167, 139, 250, 0.35) !important;
+  background: rgba(167, 139, 250, 0.08) !important;
+}
+
+body[data-region="qoraqalpoq"] .blue-glow {
+  box-shadow: 0 0 15px rgba(124, 58, 237, 0.25);
+}
+
+body[data-region="qoraqalpoq"] .btn-primary {
+  background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%);
+}
+
+body[data-region="qoraqalpoq"] .btn-primary:hover {
+  box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+}
+
+
 
 /* Default to Dark Mode for the rich, magical, atmospheric "Samarkand Night" vibe */
 body {

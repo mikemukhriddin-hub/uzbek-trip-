@@ -140,6 +140,7 @@ export default function AdminPage() {
       xorazm: "Khorezm",
       shahrisabz: "Shahrisabz",
       toshkent: "Tashkent",
+      qoraqalpoq: "Karakalpakstan",
       allRegions: "All Regions",
 
       bookingId: "Booking ID",
@@ -263,6 +264,7 @@ export default function AdminPage() {
       xorazm: "Хорезм",
       shahrisabz: "Шахрисабз",
       toshkent: "Ташкент",
+      qoraqalpoq: "Каракалпакстан",
       allRegions: "Все регионы",
 
       bookingId: "ID Бронирования",
@@ -386,6 +388,7 @@ export default function AdminPage() {
       xorazm: "Xorazm",
       shahrisabz: "Shahrisabz",
       toshkent: "Toshkent",
+      qoraqalpoq: "Qoraqalpog'iston",
       allRegions: "Barcha hududlar",
 
       bookingId: "Buyurtma IDsi",
@@ -1467,7 +1470,7 @@ export default function AdminPage() {
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
           {/* Region Filter Segmented Selector */}
           <div style={{ display: 'flex', gap: '4px', backgroundColor: 'rgba(255,255,255,0.03)', padding: '4px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.08)' }}>
-            {['all', 'samarqand', 'buxoro', 'xorazm', 'shahrisabz', 'toshkent'].map((reg) => (
+            {['all', 'samarqand', 'buxoro', 'xorazm', 'shahrisabz', 'toshkent', 'qoraqalpoq'].map((reg) => (
               <button
                 key={reg}
                 onClick={() => setRegionFilter(reg)}
@@ -1484,7 +1487,7 @@ export default function AdminPage() {
                   whiteSpace: 'nowrap'
                 }}
               >
-                {reg === 'all' ? currT.allRegions : reg === 'samarqand' ? currT.samarqand : reg === 'buxoro' ? currT.buxoro : reg === 'xorazm' ? currT.xorazm : reg === 'shahrisabz' ? currT.shahrisabz : reg === 'toshkent' ? currT.toshkent : reg}
+                {reg === 'all' ? currT.allRegions : reg === 'samarqand' ? currT.samarqand : reg === 'buxoro' ? currT.buxoro : reg === 'xorazm' ? currT.xorazm : reg === 'shahrisabz' ? currT.shahrisabz : reg === 'toshkent' ? currT.toshkent : reg === 'qoraqalpoq' ? currT.qoraqalpoq : reg}
               </button>
             ))}
           </div>
@@ -1899,6 +1902,8 @@ export default function AdminPage() {
                 <option value="buxoro">Buxoro (Bukhara)</option>
                 <option value="xorazm">Xorazm (Khorezm)</option>
                 <option value="shahrisabz">Shahrisabz (Shahrisabz)</option>
+                <option value="toshkent">Toshkent (Tashkent)</option>
+                <option value="qoraqalpoq">Qoraqalpog'iston (Karakalpakstan)</option>
               </select>
               <label style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#94a3b8', fontSize: '14px', cursor: 'pointer' }}>
                 <input type="checkbox" checked={locationForm.is_out_of_city} onChange={e => setLocationForm({...locationForm, is_out_of_city: e.target.checked})} style={{ width: 'auto' }} />
@@ -1997,17 +2002,17 @@ export default function AdminPage() {
                             <div style={{ color: '#94a3b8', fontSize: '12px' }}>{loc.name_ru}</div>
                             <div style={{ color: '#6366f1', fontSize: '12px' }}>{loc.name_uz || ''}</div>
                             <div style={{ 
-                              color: loc.region === 'toshkent' ? '#60a5fa' : loc.region === 'shahrisabz' ? '#34d399' : loc.region === 'xorazm' ? '#00a896' : loc.region === 'buxoro' ? '#ffa066' : '#a5b4fc', 
+                              color: loc.region === 'qoraqalpoq' ? '#a78bfa' : loc.region === 'toshkent' ? '#60a5fa' : loc.region === 'shahrisabz' ? '#34d399' : loc.region === 'xorazm' ? '#00a896' : loc.region === 'buxoro' ? '#ffa066' : '#a5b4fc', 
                               fontSize: '11px', 
                               marginTop: '6px', 
                               display: 'inline-block', 
                               padding: '2px 8px', 
-                              backgroundColor: loc.region === 'toshkent' ? 'rgba(30, 64, 175, 0.2)' : loc.region === 'shahrisabz' ? 'rgba(0, 163, 108, 0.2)' : loc.region === 'xorazm' ? 'rgba(2, 128, 144, 0.2)' : loc.region === 'buxoro' ? 'rgba(192, 90, 26, 0.2)' : 'rgba(99, 102, 241, 0.15)', 
+                              backgroundColor: loc.region === 'qoraqalpoq' ? 'rgba(124, 58, 237, 0.2)' : loc.region === 'toshkent' ? 'rgba(30, 64, 175, 0.2)' : loc.region === 'shahrisabz' ? 'rgba(0, 163, 108, 0.2)' : loc.region === 'xorazm' ? 'rgba(2, 128, 144, 0.2)' : loc.region === 'buxoro' ? 'rgba(192, 90, 26, 0.2)' : 'rgba(99, 102, 241, 0.15)', 
                               borderRadius: '4px', 
-                              border: loc.region === 'toshkent' ? '1px solid rgba(30, 64, 175, 0.3)' : loc.region === 'shahrisabz' ? '1px solid rgba(0, 163, 108, 0.3)' : loc.region === 'xorazm' ? '1px solid rgba(2, 128, 144, 0.3)' : loc.region === 'buxoro' ? '1px solid rgba(192, 90, 26, 0.3)' : '1px solid rgba(99, 102, 241, 0.2)',
+                              border: loc.region === 'qoraqalpoq' ? '1px solid rgba(124, 58, 237, 0.3)' : loc.region === 'toshkent' ? '1px solid rgba(30, 64, 175, 0.3)' : loc.region === 'shahrisabz' ? '1px solid rgba(0, 163, 108, 0.3)' : loc.region === 'xorazm' ? '1px solid rgba(2, 128, 144, 0.3)' : loc.region === 'buxoro' ? '1px solid rgba(192, 90, 26, 0.3)' : '1px solid rgba(99, 102, 241, 0.2)',
                               fontWeight: '600'
                             }}>
-                              📍 {loc.region === 'toshkent' ? currT.toshkent : loc.region === 'shahrisabz' ? currT.shahrisabz : loc.region === 'xorazm' ? currT.xorazm : loc.region === 'buxoro' ? currT.buxoro : currT.samarqand}
+                              📍 {loc.region === 'qoraqalpoq' ? currT.qoraqalpoq : loc.region === 'toshkent' ? currT.toshkent : loc.region === 'shahrisabz' ? currT.shahrisabz : loc.region === 'xorazm' ? currT.xorazm : loc.region === 'buxoro' ? currT.buxoro : currT.samarqand}
                             </div>
                           </div>
                         )}
@@ -2084,6 +2089,7 @@ export default function AdminPage() {
                 <option value="xorazm">Xorazm (Khorezm)</option>
                 <option value="shahrisabz">Shahrisabz (Shahrisabz)</option>
                 <option value="toshkent">Toshkent (Tashkent)</option>
+                <option value="qoraqalpoq">Qoraqalpog'iston (Karakalpakstan)</option>
               </select>
               
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -2173,23 +2179,24 @@ export default function AdminPage() {
                               <option value="xorazm">Xorazm</option>
                               <option value="shahrisabz">Shahrisabz</option>
                               <option value="toshkent">Toshkent</option>
+                              <option value="qoraqalpoq">Qoraqalpog'iston</option>
                             </select>
                           </div>
                         ) : (
                           <div>
                             <div style={{ fontWeight: '600' }}>{v.driver_name}</div>
                             <div style={{ 
-                              color: v.region === 'toshkent' ? '#60a5fa' : v.region === 'shahrisabz' ? '#34d399' : v.region === 'xorazm' ? '#00a896' : v.region === 'buxoro' ? '#ffa066' : '#a5b4fc', 
+                              color: v.region === 'qoraqalpoq' ? '#a78bfa' : v.region === 'toshkent' ? '#60a5fa' : v.region === 'shahrisabz' ? '#34d399' : v.region === 'xorazm' ? '#00a896' : v.region === 'buxoro' ? '#ffa066' : '#a5b4fc', 
                               fontSize: '11px', 
                               marginTop: '4px', 
                               display: 'inline-block', 
                               padding: '2px 6px', 
-                              backgroundColor: v.region === 'toshkent' ? 'rgba(30, 64, 175, 0.2)' : v.region === 'shahrisabz' ? 'rgba(0, 163, 108, 0.2)' : v.region === 'xorazm' ? 'rgba(2, 128, 144, 0.2)' : v.region === 'buxoro' ? 'rgba(192, 90, 26, 0.2)' : 'rgba(99, 102, 241, 0.15)', 
+                              backgroundColor: v.region === 'qoraqalpoq' ? 'rgba(124, 58, 237, 0.2)' : v.region === 'toshkent' ? 'rgba(30, 64, 175, 0.2)' : v.region === 'shahrisabz' ? 'rgba(0, 163, 108, 0.2)' : v.region === 'xorazm' ? 'rgba(2, 128, 144, 0.2)' : v.region === 'buxoro' ? 'rgba(192, 90, 26, 0.2)' : 'rgba(99, 102, 241, 0.15)', 
                               borderRadius: '4px', 
-                              border: v.region === 'toshkent' ? '1px solid rgba(30, 64, 175, 0.3)' : v.region === 'shahrisabz' ? '1px solid rgba(0, 163, 108, 0.3)' : v.region === 'xorazm' ? '1px solid rgba(2, 128, 144, 0.3)' : v.region === 'buxoro' ? '1px solid rgba(192, 90, 26, 0.3)' : '1px solid rgba(99, 102, 241, 0.2)',
+                              border: v.region === 'qoraqalpoq' ? '1px solid rgba(124, 58, 237, 0.3)' : v.region === 'toshkent' ? '1px solid rgba(30, 64, 175, 0.3)' : v.region === 'shahrisabz' ? '1px solid rgba(0, 163, 108, 0.3)' : v.region === 'xorazm' ? '1px solid rgba(2, 128, 144, 0.3)' : v.region === 'buxoro' ? '1px solid rgba(192, 90, 26, 0.3)' : '1px solid rgba(99, 102, 241, 0.2)',
                               fontWeight: '600'
                             }}>
-                              📍 {v.region === 'toshkent' ? currT.toshkent : v.region === 'shahrisabz' ? currT.shahrisabz : v.region === 'xorazm' ? currT.xorazm : v.region === 'buxoro' ? currT.buxoro : currT.samarqand}
+                              📍 {v.region === 'qoraqalpoq' ? currT.qoraqalpoq : v.region === 'toshkent' ? currT.toshkent : v.region === 'shahrisabz' ? currT.shahrisabz : v.region === 'xorazm' ? currT.xorazm : v.region === 'buxoro' ? currT.buxoro : currT.samarqand}
                             </div>
                           </div>
                         )}
@@ -2351,6 +2358,7 @@ export default function AdminPage() {
                     <option value="xorazm">Xorazm (Khorezm)</option>
                     <option value="shahrisabz">Shahrisabz (Shahrisabz)</option>
                     <option value="toshkent">Toshkent (Tashkent)</option>
+                    <option value="qoraqalpoq">Qoraqalpog'iston (Karakalpakstan)</option>
                   </select>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', justifyContent: 'center' }}>
@@ -2422,23 +2430,24 @@ export default function AdminPage() {
                                 <option value="xorazm">Xorazm</option>
                                 <option value="shahrisabz">Shahrisabz</option>
                                 <option value="toshkent">Toshkent</option>
+                                <option value="qoraqalpoq">Qoraqalpog'iston</option>
                               </select>
                             </div>
                           ) : (
                             <div>
                               <div style={{ fontWeight: '600' }}>{g.full_name}</div>
                                <div style={{ 
-                                 color: g.region === 'toshkent' ? '#60a5fa' : g.region === 'shahrisabz' ? '#34d399' : g.region === 'xorazm' ? '#00a896' : g.region === 'buxoro' ? '#ffa066' : '#a5b4fc', 
+                                 color: g.region === 'qoraqalpoq' ? '#a78bfa' : g.region === 'toshkent' ? '#60a5fa' : g.region === 'shahrisabz' ? '#34d399' : g.region === 'xorazm' ? '#00a896' : g.region === 'buxoro' ? '#ffa066' : '#a5b4fc', 
                                  fontSize: '11px', 
                                  marginTop: '4px', 
                                  display: 'inline-block', 
                                  padding: '2px 6px', 
-                                 backgroundColor: g.region === 'toshkent' ? 'rgba(30, 64, 175, 0.2)' : g.region === 'shahrisabz' ? 'rgba(0, 163, 108, 0.2)' : g.region === 'xorazm' ? 'rgba(2, 128, 144, 0.2)' : g.region === 'buxoro' ? 'rgba(192, 90, 26, 0.2)' : 'rgba(99, 102, 241, 0.15)', 
+                                 backgroundColor: g.region === 'qoraqalpoq' ? 'rgba(124, 58, 237, 0.2)' : g.region === 'toshkent' ? 'rgba(30, 64, 175, 0.2)' : g.region === 'shahrisabz' ? 'rgba(0, 163, 108, 0.2)' : g.region === 'xorazm' ? 'rgba(2, 128, 144, 0.2)' : g.region === 'buxoro' ? 'rgba(192, 90, 26, 0.2)' : 'rgba(99, 102, 241, 0.15)', 
                                  borderRadius: '4px', 
-                                 border: g.region === 'toshkent' ? '1px solid rgba(30, 64, 175, 0.3)' : g.region === 'shahrisabz' ? '1px solid rgba(0, 163, 108, 0.3)' : g.region === 'xorazm' ? '1px solid rgba(2, 128, 144, 0.3)' : g.region === 'buxoro' ? '1px solid rgba(192, 90, 26, 0.3)' : '1px solid rgba(99, 102, 241, 0.2)',
+                                 border: g.region === 'qoraqalpoq' ? '1px solid rgba(124, 58, 237, 0.3)' : g.region === 'toshkent' ? '1px solid rgba(30, 64, 175, 0.3)' : g.region === 'shahrisabz' ? '1px solid rgba(0, 163, 108, 0.3)' : g.region === 'xorazm' ? '1px solid rgba(2, 128, 144, 0.3)' : g.region === 'buxoro' ? '1px solid rgba(192, 90, 26, 0.3)' : '1px solid rgba(99, 102, 241, 0.2)',
                                  fontWeight: '600'
                                }}>
-                                 📍 {g.region === 'toshkent' ? currT.toshkent : g.region === 'shahrisabz' ? currT.shahrisabz : g.region === 'xorazm' ? currT.xorazm : g.region === 'buxoro' ? currT.buxoro : currT.samarqand}
+                                 📍 {g.region === 'qoraqalpoq' ? currT.qoraqalpoq : g.region === 'toshkent' ? currT.toshkent : g.region === 'shahrisabz' ? currT.shahrisabz : g.region === 'xorazm' ? currT.xorazm : g.region === 'buxoro' ? currT.buxoro : currT.samarqand}
                                </div>
                             </div>
                           )}

@@ -43,6 +43,12 @@ export async function GET() {
       result = [...result, ...toshkentMocks];
     }
 
+    const hasQoraqalpoq = result.some(loc => loc.region === 'qoraqalpoq');
+    if (!hasQoraqalpoq) {
+      const qoraqalpoqMocks = MOCK_LOCATIONS.filter(loc => loc.region === 'qoraqalpoq');
+      result = [...result, ...qoraqalpoqMocks];
+    }
+
     return NextResponse.json(result);
   } catch (err) {
     console.error('Error fetching locations from Supabase:', err);

@@ -42,6 +42,12 @@ export async function GET() {
       result = [...result, ...toshkentMocks];
     }
 
+    const hasQoraqalpoq = result.some(v => v.region === 'qoraqalpoq');
+    if (!hasQoraqalpoq) {
+      const qoraqalpoqMocks = MOCK_VEHICLES.filter(v => v.region === 'qoraqalpoq');
+      result = [...result, ...qoraqalpoqMocks];
+    }
+
     return NextResponse.json(result);
   } catch (err) {
     console.error('Error fetching vehicles from Supabase:', err);

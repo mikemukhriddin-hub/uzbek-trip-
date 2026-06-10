@@ -153,7 +153,14 @@ INSERT INTO locations (name_en, name_ru, name_uz, description_en, description_ru
 ('Chorsu Bazaar', 'Рынок Чорсу', 'Chorsu bozori', 'Tashkent''s iconic ancient bazaar under a massive turquoise dome, overflowing with spices, produce, and local crafts.', 'Легендарный базар Ташкента под огромным бирюзовым куполом со специями, овощами и народными промыслами.', 'Ulkan firuza gumbaz ostidagi Toshkentning mashhur Chorsu bozori — ziravorlar, mahsulotlar va hunarmandchilik.', 41.3094, 69.2284, 'alternative', FALSE, 90, 'https://images.unsplash.com/photo-1596797038530-2c107229654b?auto=format&fit=crop&w=600&q=80', 'toshkent'),
 ('Navoi Opera & Ballet Theatre', 'Театр оперы и балета им. Навои', 'Navoiy nomidagi Opera va Balet teatri', 'A magnificent Stalinist-era opera house blending Soviet grandeur with Uzbek architectural motifs, a cultural landmark.', 'Величественный оперный театр эпохи сталинизма, сочетающий советское величие с узбекскими мотивами.', 'Sovet davri me''morchiligi va o''zbek naqshlari uyg''unlashgan muhtasham opera va balet teatri.', 41.2975, 69.2413, 'historical', FALSE, 120, 'https://images.unsplash.com/photo-1540959733332-eab4deceeaf7?auto=format&fit=crop&w=600&q=80', 'toshkent'),
 ('Tashkent TV Tower & Park', 'Ташкентская телебашня и парк', 'Toshkent teleminorasi va park', 'Central Asia''s tallest structure at 375m, offering panoramic views of Tashkent from its observation deck.', 'Самое высокое сооружение Центральной Азии высотой 375 м с панорамным видом на Ташкент.', 'Markaziy Osiyoning eng baland inshootiga (375m) chiqib Toshkentning ajoyib panoramasini tomosha qiling.', 41.3160, 69.2781, 'alternative', FALSE, 90, 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80', 'toshkent'),
-('Norin & Dimlama Restaurant', 'Ресторан Норин и Димлама', 'Norin va Dimlama restorani', 'Taste authentic Tashkent cuisine — hand-pulled norin noodles and slow-cooked dimlama stew in a traditional setting.', 'Попробуйте аутентичную ташкентскую кухню: норин, думляма и другие традиционные блюда.', 'Qo''lda tortilgan norin va sekin pishirilgan dimlama taomini an''anaviy muhitda tatib ko''ring.', 41.2988, 69.2395, 'food', FALSE, 75, 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80', 'toshkent');
+('Norin & Dimlama Restaurant', 'Ресторан Норин и Димлама', 'Norin va Dimlama restorani', 'Taste authentic Tashkent cuisine — hand-pulled norin noodles and slow-cooked dimlama stew in a traditional setting.', 'Попробуйте аутентичную ташкентскую кухню: норин, думляма и другие традиционные блюда.', 'Qo''lda tortilgan norin va sekin pishirilgan dimlama taomini an''anaviy muhitda tatib ko''ring.', 41.2988, 69.2395, 'food', FALSE, 75, 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80', 'toshkent'),
+-- QORAQALPOQ LOCATIONS
+('Savitsky Museum', 'Музей Савицкого', 'Savitskiy muzeyi', 'The world-famous Nukus Museum of Art, hosting a legendary collection of forbidden Soviet avant-garde art.', 'Всемирно известный Нукусский художественный музей с легендарной коллекцией запрещенного советского авангарда.', 'Taqqiqlangan sovet avant-garde san''atining afsonaviy to''plamiga ega bo''lgan jahonga mashhur Nukus tasviriy san''at muzeyi.', 42.4646, 59.6019, 'historical', FALSE, 120, 'https://images.unsplash.com/photo-1618218168350-6e7c8137558d?auto=format&fit=crop&w=600&q=80', 'qoraqalpoq'),
+('Mizdakhkhan Necropolis', 'Некрополь Миздахкан', 'Mizdaxqon maqbaralar majmuasi', 'An ancient, mystical cemetery dating back to the 4th century BC, containing the mythical World Clock monument.', 'Древний мистический некрополь IV века до н.э. с легендарными «Мировыми часами».', 'Miloddan avvalgi IV asrga oid, sirli "Dunyo soati" inshootini o''z ichiga olgan qadimiy va muqaddas maqbaralar majmuasi.', 42.3995, 59.3875, 'historical', TRUE, 90, 'https://images.unsplash.com/photo-1540959733332-eab4deceeaf7?auto=format&fit=crop&w=600&q=80', 'qoraqalpoq'),
+('Chilpyk Dahma', 'Чилпык (Башня молчания)', 'Shilpiq daxmasi (Qal''a)', 'A 2,200-year-old Zoroastrian Tower of Silence, standing majestically on a clay hill overlooking the Amu Darya.', '2200-летняя зороастрийская Башня молчания, величественно возвышающаяся над Амударьей.', 'Amudaryo bo''yida loy tepalik ustida qad ko''targan, 2200 yillik tarixga ega zardushtiylik daxmasi (minorasi).', 42.1982, 60.0766, 'historical', TRUE, 60, 'https://images.unsplash.com/photo-1627856013091-fed6e4e30025?auto=format&fit=crop&w=600&q=80', 'qoraqalpoq'),
+('Aral Sea & Muynaq Ship Graveyard', 'Кладбище кораблей в Муйнаке', 'Orol dengizi va Mo''ynoq kemalar qabristoni', 'Explore the hauntingly beautiful ship graveyard on the former bed of the dried-up Aral Sea.', 'Исследуйте драматическое кладбище кораблей на бывшем дне некогда великого Аральского моря.', 'Qurib qolgan Orol dengizining sobiq tubida joylashgan, ulkan tarixiy fojea va go''zallik timsoli bo''lgan kemalar qabristoni.', 43.7663, 59.0264, 'alternative', TRUE, 240, 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=600&q=80', 'qoraqalpoq'),
+('Ustyurt Plateau Canyons', 'Каньоны плато Устюрт', 'Ustyurt platosi kanyonlari', 'Breathtaking alien-like clay cliffs, vast salt pans, and canyons stretching to the horizon.', 'Завораживающие глиняные обрывы (чинки), солончаки и марсианские пейзажи плато Устюрт.', 'Ufqqa tutashgan hayratlanarli loy chinklari, sho''rxoklar va boshqa sayyoralarni eslatuvchi Ustyurt kanyonlari.', 43.5000, 58.2000, 'alternative', TRUE, 300, 'https://images.unsplash.com/photo-1501555088652-021faa106b9b?auto=format&fit=crop&w=600&q=80', 'qoraqalpoq'),
+('Besoq Kala Fish Restaurant', 'Рыбный ресторан Бесоқ Қала', 'Besoq Qala baliq restorani', 'Savor traditional Karakalpak fried fish (saazan) cooked in local wood-fired clay ovens.', 'Попробуйте традиционную каракалпакскую жареную рыбу (сазан), приготовленную на дровах.', 'Mahalliy ko''llardan tutilgan va o''tda qovurilgan mashhur qoraqalpoqcha baliq (sazan) taomlaridan bahramand bo''ling.', 42.4582, 59.6080, 'food', FALSE, 90, 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80', 'qoraqalpoq');
 
 -- Seed Guides
 INSERT INTO guides (full_name, phone_number, region) VALUES
@@ -170,7 +177,10 @@ INSERT INTO guides (full_name, phone_number, region) VALUES
 ('Madina Karimova', '+998905556677', 'shahrisabz'),
 -- TOSHKENT GUIDES
 ('Nodira Yusupova', '+998901234599', 'toshkent'),
-('Sardor Toshmatov', '+998935559988', 'toshkent');
+('Sardor Toshmatov', '+998935559988', 'toshkent'),
+-- QORAQALPOQ GUIDES
+('Gulnara Seytova', '+998905556633', 'qoraqalpoq'),
+('Dauletniyaz Kabylov', '+998934448822', 'qoraqalpoq');
 
 -- Seed Guide Tariffs
 -- Sherzod speaks English, Russian, and Uzbek
@@ -250,6 +260,18 @@ INSERT INTO guide_language_tariffs (guide_id, language_code, daily_rate) VALUES
 (13, 'RU', 55.00),
 (13, 'KO', 80.00);
 
+-- Gulnara speaks English, Russian, Uzbek
+INSERT INTO guide_language_tariffs (guide_id, language_code, daily_rate) VALUES
+(14, 'EN', 55.00),
+(14, 'RU', 45.00),
+(14, 'UZ', 35.00);
+
+-- Dauletniyaz speaks English, Russian, Uzbek
+INSERT INTO guide_language_tariffs (guide_id, language_code, daily_rate) VALUES
+(15, 'EN', 60.00),
+(15, 'RU', 50.00),
+(15, 'UZ', 40.00);
+
 -- Seed Vehicles
 INSERT INTO vehicles (driver_name, driver_phone, car_model, car_number, city_rate, out_of_city_rate, capacity, region) VALUES
 ('Alisher aka', '+998909998877', 'Chevrolet Cobalt (White)', '01 A 777 BA', 30.00, 45.00, 5, 'samarqand'),
@@ -267,4 +289,7 @@ INSERT INTO vehicles (driver_name, driver_phone, car_model, car_number, city_rat
 ('Bobur aka', '+998934448899', 'Chevrolet Lacetti (White)', '90 E 888 ZZ', 25.00, 40.00, 5, 'shahrisabz'),
 -- TOSHKENT VEHICLES
 ('Aziz aka', '+998901998877', 'Chevrolet Equinox (Black)', '01 T 001 TT', 45.00, 65.00, 5, 'toshkent'),
-('Mirzo aka', '+998935001122', 'Toyota Camry (White)', '01 T 002 TK', 55.00, 80.00, 5, 'toshkent');
+('Mirzo aka', '+998935001122', 'Toyota Camry (White)', '01 T 002 TK', 55.00, 80.00, 5, 'toshkent'),
+-- QORAQALPOQ VEHICLES
+('Timur aka', '+998905557766', 'Chevrolet Cobalt (Grey)', '95 A 111 AA', 30.00, 50.00, 5, 'qoraqalpoq'),
+('Batir aka', '+998932225544', 'Toyota Land Cruiser 100 (Grey)', '95 Z 999 ZZ', 65.00, 110.00, 6, 'qoraqalpoq');

@@ -367,10 +367,79 @@ const TOSHKENT_EVENTS = [
   }
 ];
 
+const QORAQALPOQ_SLIDES = [
+  {
+    image: 'https://images.unsplash.com/photo-1618218168350-6e7c8137558d?auto=format&fit=crop&w=800&q=80',
+    title_en: 'Savitsky Museum',
+    title_ru: 'Музей Савицкого',
+    title_uz: 'Savitskiy muzeyi',
+    desc_en: 'The world-famous Nukus Museum of Art, hosting a legendary collection of forbidden Soviet avant-garde art.',
+    desc_ru: 'Всемирно известный Нукусский художественный музей с легендарной коллекцией запрещенного советского авангарда.',
+    desc_uz: 'Taqqiqlangan sovet avant-garde san\'atining afsonaviy to\'plamiga ega bo\'lgan jahonga mashhur Nukus tasviriy san\'at muzeyi.'
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1540959733332-eab4deceeaf7?auto=format&fit=crop&w=800&q=80',
+    title_en: 'Mizdakhkhan Necropolis',
+    title_ru: 'Некрополь Миздахкан',
+    title_uz: 'Mizdaxqon majmuasi',
+    desc_en: 'An ancient, mystical cemetery dating back to the 4th century BC, containing the mythical World Clock monument.',
+    desc_ru: 'Древний мистический некрополь IV века до н.э. с легендарными «Мировыми часами».',
+    desc_uz: 'Miloddan avvalgi IV asrga oid, sirli "Dunyo soati" inshootini o\'z ichiga olgan qadimiy va muqaddas maqbaralar majmuasi.'
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=800&q=80',
+    title_en: 'Aral Sea & Muynaq Ship Graveyard',
+    title_ru: 'Кладбище кораблей в Муйнаке',
+    title_uz: 'Mo\'ynoq kemalar qabristoni',
+    desc_en: 'Explore the hauntingly beautiful ship graveyard on the former bed of the dried-up Aral Sea.',
+    desc_ru: 'Исследуйте драматическое кладбище кораблей на бывшем дне некогда великого Аральского моря.',
+    desc_uz: 'Qurib qolgan Orol dengizining sobiq tubida joylashgan, ulkan tarixiy fojea va go\'zallik timsoli bo\'lgan kemalar qabristoni.'
+  }
+];
+
+const QORAQALPOQ_EVENTS = [
+  {
+    id: 13,
+    title_en: 'Stixia Festival',
+    title_ru: 'Фестиваль Стихия',
+    title_uz: 'Stixiya festivali',
+    date_en: 'Late May / June',
+    date_ru: 'Конец мая / Июнь',
+    date_uz: 'May oxiri / Iyun',
+    desc_en: 'A unique electronic music, science, and art festival held in the desert landscape of Muynaq, raising awareness for the Aral Sea.',
+    desc_ru: 'Уникальный фестиваль электронной музыки, науки и искусства в Муйнаке, посвященный теме Аральского моря.',
+    desc_uz: 'Orol dengizi ekologiyasiga e\'tibor qaratish maqsadida Mo\'ynoq sahrosida o\'tkaziladigan o\'ziga xos elektron musiqa, ilm-fan va san\'at festivali.'
+  },
+  {
+    id: 14,
+    title_en: 'Karakalpak Epic & Folk Art Festival',
+    title_ru: 'Фестиваль каракалпакского эпоса',
+    title_uz: 'Qoraqalpoq dostonchilik festivali',
+    date_en: 'September',
+    date_ru: 'Сентябрь',
+    date_uz: 'Sentabr',
+    desc_en: 'A celebration of Karakalpak throat singing (jirau), epic poetry, traditional yurt decoration, and local crafts in Nukus.',
+    desc_ru: 'Праздник каракалпакского горлового пения (жирау), эпоса и народных ремесел в Нукусе.',
+    desc_uz: 'Nukus shahrida o\'tkaziladigan qoraqalpoq baxshi-dostonchilari (jirau), milliy o\'tovlar bezaklari va xalq hunarmandchiligi bayrami.'
+  },
+  {
+    id: 15,
+    title_en: 'Aral Sea Eco-Marathon',
+    title_ru: 'Эко-марафон Аральского моря',
+    title_uz: 'Orol dengizi eko-marafoni',
+    date_en: 'October',
+    date_ru: 'Октябрь',
+    date_uz: 'Oktabr',
+    desc_en: 'An extreme endurance run along the dry seabed and canyons of Muynaq to promote environmental tourism and ecology.',
+    desc_ru: 'Экстремальный забег по дну Аральского моря и каньонам Муйнака для поддержки экологии.',
+    desc_uz: 'Ekologik turizmni rivojlantirish va Orol ekologiyasini qo\'llab-quvvatlash maqsadida Mo\'ynoq sahrosi va kanyonlari bo\'ylab ekstremal marafon.'
+  }
+];
+
 export default function DiscoverPage({ searchParams }) {
   const resolvedSearchParams = searchParams ? use(searchParams) : {};
   const regionParam = resolvedSearchParams?.region;
-  const initialRegion = (regionParam === 'buxoro' || regionParam === 'samarqand' || regionParam === 'xorazm' || regionParam === 'shahrisabz' || regionParam === 'toshkent') ? regionParam : 'samarqand';
+  const initialRegion = (regionParam === 'buxoro' || regionParam === 'samarqand' || regionParam === 'xorazm' || regionParam === 'shahrisabz' || regionParam === 'toshkent' || regionParam === 'qoraqalpoq') ? regionParam : 'samarqand';
 
   const [activeRegion, setActiveRegion] = useState(initialRegion);
   const [language, setLanguage] = useState('EN');
@@ -380,12 +449,12 @@ export default function DiscoverPage({ searchParams }) {
   const [uzsAmount, setUzsAmount] = useState('1280000');
   
   const EXCHANGE_RATE = 12800; // 1 USD = 12,800 UZS
-  const slides = activeRegion === 'toshkent' ? TOSHKENT_SLIDES : activeRegion === 'shahrisabz' ? SHAHRISABZ_SLIDES : activeRegion === 'xorazm' ? XORAZM_SLIDES : activeRegion === 'buxoro' ? BUXORO_SLIDES : SAMARQAND_SLIDES;
-  const events = activeRegion === 'toshkent' ? TOSHKENT_EVENTS : activeRegion === 'shahrisabz' ? SHAHRISABZ_EVENTS : activeRegion === 'xorazm' ? XORAZM_EVENTS : activeRegion === 'buxoro' ? BUXORO_EVENTS : SAMARQAND_EVENTS;
+  const slides = activeRegion === 'qoraqalpoq' ? QORAQALPOQ_SLIDES : activeRegion === 'toshkent' ? TOSHKENT_SLIDES : activeRegion === 'shahrisabz' ? SHAHRISABZ_SLIDES : activeRegion === 'xorazm' ? XORAZM_SLIDES : activeRegion === 'buxoro' ? BUXORO_SLIDES : SAMARQAND_SLIDES;
+  const events = activeRegion === 'qoraqalpoq' ? QORAQALPOQ_EVENTS : activeRegion === 'toshkent' ? TOSHKENT_EVENTS : activeRegion === 'shahrisabz' ? SHAHRISABZ_EVENTS : activeRegion === 'xorazm' ? XORAZM_EVENTS : activeRegion === 'buxoro' ? BUXORO_EVENTS : SAMARQAND_EVENTS;
 
   // Sync query parameters changes to state
   useEffect(() => {
-    if (regionParam && (regionParam === 'samarqand' || regionParam === 'buxoro' || regionParam === 'xorazm' || regionParam === 'shahrisabz' || regionParam === 'toshkent')) {
+    if (regionParam && (regionParam === 'samarqand' || regionParam === 'buxoro' || regionParam === 'xorazm' || regionParam === 'shahrisabz' || regionParam === 'toshkent' || regionParam === 'qoraqalpoq')) {
       setActiveRegion(regionParam);
     }
   }, [regionParam]);
@@ -670,6 +739,44 @@ export default function DiscoverPage({ searchParams }) {
             }}
           >
             {language === 'UZ' ? 'Shahrisabz' : language === 'RU' ? 'Шахрисабз' : 'Shahrisabz'}
+          </button>
+          <button
+            onClick={() => setActiveRegion('toshkent')}
+            style={{
+              padding: '6px 12px',
+              borderRadius: '8px',
+              border: 'none',
+              background: activeRegion === 'toshkent' 
+                ? 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)' 
+                : 'transparent',
+              color: activeRegion === 'toshkent' ? '#fff' : '#94a3b8',
+              fontSize: '12px',
+              fontWeight: '700',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              boxShadow: activeRegion === 'toshkent' ? '0 2px 8px rgba(30, 64, 175, 0.4)' : 'none'
+            }}
+          >
+            {language === 'UZ' ? 'Toshkent' : language === 'RU' ? 'Ташкент' : 'Tashkent'}
+          </button>
+          <button
+            onClick={() => setActiveRegion('qoraqalpoq')}
+            style={{
+              padding: '6px 12px',
+              borderRadius: '8px',
+              border: 'none',
+              background: activeRegion === 'qoraqalpoq' 
+                ? 'linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%)' 
+                : 'transparent',
+              color: activeRegion === 'qoraqalpoq' ? '#fff' : '#94a3b8',
+              fontSize: '12px',
+              fontWeight: '700',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              boxShadow: activeRegion === 'qoraqalpoq' ? '0 2px 8px rgba(124, 58, 237, 0.4)' : 'none'
+            }}
+          >
+            {language === 'UZ' ? 'Qoraqalpoq' : language === 'RU' ? 'Каракалпак' : 'Karakalpak'}
           </button>
         </div>
 
