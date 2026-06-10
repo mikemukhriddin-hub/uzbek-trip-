@@ -713,51 +713,23 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* ========================================================
-   🕌 RESPONSIVE SIDEBAR LAYOUT
+   🕌 RESPONSIVE HEADER SWITCHER
    ======================================================== */
-.dashboard-layout {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  min-height: 100vh;
+.header-switcher {
+  display: none !important;
 }
 
-.dashboard-main-content {
-  flex: 1;
-  width: 100%;
-}
-
-.desktop-sidebar {
-  display: none;
-}
-
-.mobile-header-container {
-  display: block;
-  width: 100%;
+.ribbon-switcher {
+  display: flex !important;
 }
 
 @media (min-width: 1024px) {
-  .dashboard-layout {
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    gap: 24px;
-    max-width: 1440px;
-    margin: 0 auto;
-    padding: 24px;
-    align-items: start;
+  .header-switcher {
+    display: flex !important;
   }
 
-  .desktop-sidebar {
-    display: flex;
-    flex-direction: column;
-    position: sticky;
-    top: 24px;
-    height: calc(100vh - 48px);
-    z-index: 100;
-  }
-
-  .mobile-header-container {
-    display: none;
+  .ribbon-switcher {
+    display: none !important;
   }
 }
 

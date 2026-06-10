@@ -1038,241 +1038,99 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
         }} />
       </div>
       
-      <div className="dashboard-layout">
-        
-        {/* 🧭 Desktop Sidebar Navigation */}
-        <aside className="desktop-sidebar glass-container" style={{
-          padding: '24px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          border: '1px solid rgba(212, 175, 55, 0.15)',
-          borderRadius: '20px',
-          height: 'calc(100vh - 48px)',
-          position: 'sticky',
-          top: '24px',
-          zIndex: 100
-        }}>
-          {/* Top Section: Brand Logo & Region buttons */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '28px', width: '100%' }}>
-            {/* Logo Brand */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: '8px',
-                backgroundColor: 'rgba(212,175,55,0.15)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#d4af37'
-              }}>
-                <Compass size={20} className="animate-spin" style={{ animationDuration: '20s' }} />
-              </div>
-              <span style={{ fontSize: '18px', fontWeight: 800, letterSpacing: '0.05em', color: '#fff', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                <span style={{ fontSize: '10px', opacity: 0.6, letterSpacing: '0.05em' }}>
-                  {activeRegion === 'cross_region' ? 'O\'ZBEKISTON' : activeRegion === 'qoraqalpoq' ? 'QORAQALPOQ' : activeRegion === 'toshkent' ? 'TOSHKENT' : activeRegion === 'shahrisabz' ? 'SHAHRISABZ' : activeRegion === 'xorazm' ? 'XORAZM' : activeRegion === 'buxoro' ? 'BUXORO' : 'SAMARQAND'}
-                </span>
-                <span style={{ color: '#d4af37', fontSize: '15px' }}>CRAFTOUR</span>
-              </span>
-            </div>
-
-            {/* Vertical Region List */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', width: '100%' }}>
-              {REGIONS_CONFIG.map((reg) => {
-                const isActive = activeRegion === reg.id;
-                return (
-                  <button
-                    key={reg.id}
-                    onClick={() => setActiveRegion(reg.id)}
-                    style={{
-                      width: '100%',
-                      padding: '10px 14px',
-                      borderRadius: '10px',
-                      border: 'none',
-                      background: isActive ? reg.gradient : 'transparent',
-                      color: isActive ? reg.color : '#94a3b8',
-                      fontSize: '13px',
-                      fontWeight: '700',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '10px',
-                      transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-                      boxShadow: isActive ? `0 4px 12px ${reg.shadow}` : 'none',
-                      transform: isActive ? 'scale(1.02)' : 'scale(1)',
-                      textAlign: 'left'
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!isActive) {
-                        e.currentTarget.style.color = '#fff';
-                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
-                        e.currentTarget.style.transform = 'scale(1.02)';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isActive) {
-                        e.currentTarget.style.color = '#94a3b8';
-                        e.currentTarget.style.background = 'transparent';
-                        e.currentTarget.style.transform = 'scale(1)';
-                      }
-                    }}
-                  >
-                    <span style={{ fontSize: '15px' }}>{reg.emoji}</span>
-                    <span>{reg.label[language] || reg.label['UZ']}</span>
-                  </button>
-                );
-              })}
-            </div>
+      {/* 🕌 Premium Header */}
+      <header className="glass-container" style={{
+        margin: '16px',
+        padding: '16px 24px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        border: '1px solid rgba(212,175,55,0.15)',
+        borderRadius: '16px',
+        position: 'sticky',
+        top: '16px',
+        zIndex: 100
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{
+            width: '36px',
+            height: '36px',
+            borderRadius: '8px',
+            backgroundColor: 'rgba(212,175,55,0.15)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#d4af37'
+          }}>
+            <Compass size={20} className="animate-spin" style={{ animationDuration: '20s' }} />
           </div>
+          <span style={{ fontSize: '18px', fontWeight: 800, letterSpacing: '0.05em', color: '#fff', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            {activeRegion === 'cross_region' ? 'O\'ZBEKISTON' : activeRegion === 'qoraqalpoq' ? 'QORAQALPOQ' : activeRegion === 'toshkent' ? 'TOSHKENT' : activeRegion === 'shahrisabz' ? 'SHAHRISABZ' : activeRegion === 'xorazm' ? 'XORAZM' : activeRegion === 'buxoro' ? 'BUXORO' : 'SAMARQAND'} <span style={{ color: '#d4af37' }}>CRAFTOUR</span>
+          </span>
+        </div>
 
-          {/* Bottom Section: Discover Link & Language Switcher */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '16px' }}>
-            {/* Discover Info Button */}
-            <Link
-              href={`/discover?region=${activeRegion}`}
-              style={{
-                width: '100%',
-                padding: '10px 14px',
-                borderRadius: '10px',
-                backgroundColor: 'rgba(212, 175, 55, 0.1)',
-                border: '1px solid rgba(212, 175, 55, 0.25)',
-                color: '#d4af37',
-                fontSize: '13px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '6px',
-                textDecoration: 'none',
-                transition: 'all 0.2s ease'
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(212, 175, 55, 0.2)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'rgba(212, 175, 55, 0.1)'; }}
-            >
-              <Info size={14} />
-              <span>{language === 'UZ' ? 'Ma\'lumot' : language === 'RU' ? 'Инфо' : 'Discover'}</span>
-            </Link>
-
-            {/* Premium Dropdown Language Switcher */}
-            <div style={{ position: 'relative', width: '100%' }}>
+        {/* Center: Inline Header Region Switcher (visible on desktop) */}
+        <div 
+          className="header-switcher no-scrollbar"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '2px',
+            backgroundColor: 'rgba(5, 7, 16, 0.35)',
+            border: '1px solid rgba(212, 175, 55, 0.15)',
+            borderRadius: '12px',
+            overflowX: 'auto',
+            whiteSpace: 'nowrap',
+            maxWidth: 'calc(100% - 400px)', /* ensure it doesn't crowd logo/controls */
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            margin: '0 12px'
+          }}
+        >
+          {REGIONS_CONFIG.map((reg) => {
+            const isActive = activeRegion === reg.id;
+            return (
               <button
-                onClick={() => setShowLangDropdown(!showLangDropdown)}
+                key={reg.id}
+                onClick={() => setActiveRegion(reg.id)}
                 style={{
-                  width: '100%',
-                  padding: '10px 14px',
+                  padding: '8px 14px',
                   borderRadius: '10px',
-                  backgroundColor: 'rgba(255,255,255,0.05)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  color: '#fff',
-                  fontSize: '13px',
-                  fontWeight: '600',
+                  border: 'none',
+                  background: isActive ? reg.gradient : 'transparent',
+                  color: isActive ? reg.color : '#94a3b8',
+                  fontSize: '12.5px',
+                  fontWeight: '700',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  transition: 'all 0.2s ease'
+                  gap: '6px',
+                  transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                  boxShadow: isActive ? `0 4px 10px ${reg.shadow}` : 'none',
+                  transform: isActive ? 'scale(1.02)' : 'scale(1)',
+                }}
+                onMouseEnter={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.color = '#fff';
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+                    e.currentTarget.style.transform = 'scale(1.02)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.color = '#94a3b8';
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }
                 }}
               >
-                <Languages size={14} style={{ color: '#d4af37' }} />
-                <span>{language === 'EN' ? '🇬🇧 EN' : language === 'RU' ? '🇷🇺 RU' : '🇺🇿 UZ'}</span>
+                <span style={{ fontSize: '14px' }}>{reg.emoji}</span>
+                <span>{reg.label[language] || reg.label['UZ']}</span>
               </button>
-              {showLangDropdown && (
-                <div style={{
-                  position: 'absolute',
-                  bottom: 'calc(100% + 8px)',
-                  left: 0,
-                  right: 0,
-                  backgroundColor: '#0f172a',
-                  border: '1px solid rgba(212,175,55,0.25)',
-                  borderRadius: '10px',
-                  padding: '4px',
-                  zIndex: 1000,
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '2px'
-                }}>
-                  {['EN', 'RU', 'UZ'].map((langCode) => (
-                    <button
-                      key={langCode}
-                      onClick={() => {
-                        setLanguage(langCode);
-                        setShowLangDropdown(false);
-                        localStorage.setItem('site_lang', langCode);
-                      }}
-                      style={{
-                        padding: '8px 12px',
-                        border: 'none',
-                        background: language === langCode ? 'rgba(212,175,55,0.1)' : 'transparent',
-                        color: language === langCode ? '#d4af37' : '#94a3b8',
-                        textAlign: 'left',
-                        fontSize: '13px',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        borderRadius: '6px',
-                        transition: 'all 0.2s ease',
-                        width: '100%'
-                      }}
-                      onMouseEnter={(e) => {
-                        if (language !== langCode) {
-                          e.currentTarget.style.color = '#fff';
-                          e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (language !== langCode) {
-                          e.currentTarget.style.color = '#94a3b8';
-                          e.currentTarget.style.backgroundColor = 'transparent';
-                        }
-                      }}
-                    >
-                      {langCode === 'EN' ? '🇬🇧 English' : langCode === 'RU' ? '🇷🇺 Русский' : '🇺🇿 O\'zbekcha'}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </aside>
-
-        {/* 📱 Mobile/Tablet Header & Navigation Container */}
-        <div className="mobile-header-container">
-          {/* 🕌 Premium Header */}
-          <header className="glass-container" style={{
-            margin: '16px',
-            padding: '16px 24px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            border: '1px solid rgba(212,175,55,0.15)',
-            borderRadius: '16px',
-            position: 'sticky',
-            top: '16px',
-            zIndex: 100
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: '8px',
-                backgroundColor: 'rgba(212,175,55,0.15)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#d4af37'
-              }}>
-                <Compass size={20} className="animate-spin" style={{ animationDuration: '20s' }} />
-              </div>
-              <span style={{ fontSize: '18px', fontWeight: 800, letterSpacing: '0.05em', color: '#fff', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                <span style={{ fontSize: '10px', opacity: 0.7, letterSpacing: '0.05em', lineHeight: 1 }}>
-                  {activeRegion === 'cross_region' ? 'O\'ZBEKISTON' : activeRegion === 'qoraqalpoq' ? 'QORAQALPOQ' : activeRegion === 'toshkent' ? 'TOSHKENT' : activeRegion === 'shahrisabz' ? 'SHAHRISABZ' : activeRegion === 'xorazm' ? 'XORAZM' : activeRegion === 'buxoro' ? 'BUXORO' : 'SAMARQAND'}
-                </span>
-                <span style={{ color: '#d4af37', fontSize: '14px', lineHeight: 1 }}>CRAFTOUR</span>
-              </span>
-            </div>
+            );
+          })}
+        </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
 
@@ -1383,14 +1241,17 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
       </header>
 
       {/* 🧭 Interactive Region Ribbon */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        padding: '0 16px',
-        marginBottom: '24px',
-        width: '100%',
-        zIndex: 90
-      }}>
+      <div 
+        className="ribbon-switcher"
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          padding: '0 16px',
+          marginBottom: '24px',
+          width: '100%',
+          zIndex: 90
+        }}
+      >
         <div 
           className="no-scrollbar"
           style={{
@@ -1453,10 +1314,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
           })}
         </div>
       </div>
-    </div> {/* Close .mobile-header-container */}
 
-    {/* 🚀 Main Dashboard Content */}
-    <div className="dashboard-main-content">
       {/* 🚀 Main Interface Grid */}
       <div style={{
         flex: 1,
@@ -2444,8 +2302,6 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
           <span>{language === 'RU' ? 'Панель администратора' : 'Admin Portal'}</span>
         </a>
       </footer>
-    </div> {/* Close .dashboard-main-content */}
-  </div> {/* Close .dashboard-layout */}
-</main>
+    </main>
   );
 }
