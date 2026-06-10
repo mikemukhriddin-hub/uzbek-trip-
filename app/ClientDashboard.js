@@ -250,7 +250,21 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
         localStorage.setItem('site_lang', defaultLang);
       });
     }
+
+    const savedRegion = localStorage.getItem('active_region');
+    if (savedRegion) {
+      Promise.resolve().then(() => {
+        setActiveRegion(savedRegion);
+      });
+    }
   }, []);
+
+  // Save activeRegion to localStorage when it changes to persist it on refresh
+  useEffect(() => {
+    if (activeRegion) {
+      localStorage.setItem('active_region', activeRegion);
+    }
+  }, [activeRegion]);
 
   // Update selected guide language automatically if guide list resets
   useEffect(() => {
