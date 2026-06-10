@@ -69,6 +69,65 @@ const ACCOMMODATIONS_DATA = {
   ]
 };
 
+const REGIONS_CONFIG = [
+  {
+    id: 'cross_region',
+    emoji: '🇺🇿',
+    gradient: 'linear-gradient(135deg, #d4af37 0%, #b8860b 100%)',
+    shadow: 'rgba(212, 175, 55, 0.4)',
+    color: '#0a0f1d',
+    label: { UZ: 'Viloyatlararo', RU: 'Межрегиональный', EN: 'Cross-Region' }
+  },
+  {
+    id: 'toshkent',
+    emoji: '🏢',
+    gradient: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+    shadow: 'rgba(30, 64, 175, 0.35)',
+    color: '#fff',
+    label: { UZ: 'Toshkent', RU: 'Ташкент', EN: 'Tashkent' }
+  },
+  {
+    id: 'samarqand',
+    emoji: '🕌',
+    gradient: 'linear-gradient(135deg, #0070c0 0%, #009b9e 100%)',
+    shadow: 'rgba(0, 112, 192, 0.35)',
+    color: '#fff',
+    label: { UZ: 'Samarqand', RU: 'Самарканд', EN: 'Samarkand' }
+  },
+  {
+    id: 'buxoro',
+    emoji: '🧱',
+    gradient: 'linear-gradient(135deg, #c05a1a 0%, #b25329 100%)',
+    shadow: 'rgba(192, 90, 26, 0.35)',
+    color: '#fff',
+    label: { UZ: 'Buxoro', RU: 'Бухара', EN: 'Bukhara' }
+  },
+  {
+    id: 'xorazm',
+    emoji: '🏰',
+    gradient: 'linear-gradient(135deg, #028090 0%, #00a896 100%)',
+    shadow: 'rgba(2, 128, 144, 0.35)',
+    color: '#fff',
+    label: { UZ: 'Xorazm', RU: 'Хорезм', EN: 'Khorezm' }
+  },
+  {
+    id: 'qoraqalpoq',
+    emoji: '🐫',
+    gradient: 'linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%)',
+    shadow: 'rgba(124, 58, 237, 0.35)',
+    color: '#fff',
+    label: { UZ: 'Qoraqalpog\'iston', RU: 'Каракалпакстан', EN: 'Karakalpakstan' }
+  },
+  {
+    id: 'shahrisabz',
+    emoji: '🏔',
+    gradient: 'linear-gradient(135deg, #008060 0%, #00a36c 100%)',
+    shadow: 'rgba(0, 128, 96, 0.35)',
+    color: '#fff',
+    label: { UZ: 'Shahrisabz', RU: 'Шахрисабз', EN: 'Shahrisabz' }
+  }
+];
+
 export default function ClientDashboard({ initialLocations = [], initialGuides = [], initialTariffs = [], initialVehicles = [] }) {
   const [language, setLanguage] = useState('UZ'); // Site UI Language - default to UZ
   const [showLangDropdown, setShowLangDropdown] = useState(false);
@@ -1011,156 +1070,6 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {/* Region Switcher */}
-          <div 
-            className="no-scrollbar"
-            style={{
-              display: 'flex',
-              backgroundColor: 'rgba(5, 7, 16, 0.4)',
-              border: '1px solid rgba(212, 175, 55, 0.25)',
-              borderRadius: '12px',
-              padding: '3px',
-              gap: '2px',
-              marginRight: '4px',
-              overflowX: 'auto',
-              maxWidth: '380px',
-              whiteSpace: 'nowrap'
-            }}
-          >
-            <button
-              onClick={() => setActiveRegion('samarqand')}
-              style={{
-                padding: '6px 12px',
-                borderRadius: '8px',
-                border: 'none',
-                background: activeRegion === 'samarqand' 
-                  ? 'linear-gradient(135deg, #0070c0 0%, #009b9e 100%)' 
-                  : 'transparent',
-                color: activeRegion === 'samarqand' ? '#fff' : '#94a3b8',
-                fontSize: '12px',
-                fontWeight: '700',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                boxShadow: activeRegion === 'samarqand' ? '0 2px 8px rgba(0, 112, 192, 0.4)' : 'none'
-              }}
-            >
-              {language === 'UZ' ? 'Samarqand' : language === 'RU' ? 'Самарканд' : 'Samarkand'}
-            </button>
-            <button
-              onClick={() => setActiveRegion('buxoro')}
-              style={{
-                padding: '6px 12px',
-                borderRadius: '8px',
-                border: 'none',
-                background: activeRegion === 'buxoro' 
-                  ? 'linear-gradient(135deg, #c05a1a 0%, #b25329 100%)' 
-                  : 'transparent',
-                color: activeRegion === 'buxoro' ? '#fff' : '#94a3b8',
-                fontSize: '12px',
-                fontWeight: '700',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                boxShadow: activeRegion === 'buxoro' ? '0 2px 8px rgba(192, 90, 26, 0.4)' : 'none'
-              }}
-            >
-              {language === 'UZ' ? 'Buxoro' : language === 'RU' ? 'Бухара' : 'Bukhara'}
-            </button>
-            <button
-              onClick={() => setActiveRegion('xorazm')}
-              style={{
-                padding: '6px 12px',
-                borderRadius: '8px',
-                border: 'none',
-                background: activeRegion === 'xorazm' 
-                  ? 'linear-gradient(135deg, #028090 0%, #00a896 100%)' 
-                  : 'transparent',
-                color: activeRegion === 'xorazm' ? '#fff' : '#94a3b8',
-                fontSize: '12px',
-                fontWeight: '700',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                boxShadow: activeRegion === 'xorazm' ? '0 2px 8px rgba(2, 128, 144, 0.4)' : 'none'
-              }}
-            >
-              {language === 'UZ' ? 'Xorazm' : language === 'RU' ? 'Хорезм' : 'Khorezm'}
-            </button>
-            <button
-              onClick={() => setActiveRegion('shahrisabz')}
-              style={{
-                padding: '6px 12px',
-                borderRadius: '8px',
-                border: 'none',
-                background: activeRegion === 'shahrisabz' 
-                  ? 'linear-gradient(135deg, #008060 0%, #00a36c 100%)' 
-                  : 'transparent',
-                color: activeRegion === 'shahrisabz' ? '#fff' : '#94a3b8',
-                fontSize: '12px',
-                fontWeight: '700',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                boxShadow: activeRegion === 'shahrisabz' ? '0 2px 8px rgba(0, 128, 96, 0.4)' : 'none'
-              }}
-            >
-              {language === 'UZ' ? 'Shahrisabz' : language === 'RU' ? 'Шахрисабз' : 'Shahrisabz'}
-            </button>
-            <button
-              onClick={() => setActiveRegion('toshkent')}
-              style={{
-                padding: '6px 12px',
-                borderRadius: '8px',
-                border: 'none',
-                background: activeRegion === 'toshkent' 
-                  ? 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)' 
-                  : 'transparent',
-                color: activeRegion === 'toshkent' ? '#fff' : '#94a3b8',
-                fontSize: '12px',
-                fontWeight: '700',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                boxShadow: activeRegion === 'toshkent' ? '0 2px 8px rgba(30, 64, 175, 0.4)' : 'none'
-              }}
-            >
-              {language === 'UZ' ? 'Toshkent' : language === 'RU' ? 'Ташкент' : 'Tashkent'}
-            </button>
-            <button
-              onClick={() => setActiveRegion('qoraqalpoq')}
-              style={{
-                padding: '6px 12px',
-                borderRadius: '8px',
-                border: 'none',
-                background: activeRegion === 'qoraqalpoq' 
-                  ? 'linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%)' 
-                  : 'transparent',
-                color: activeRegion === 'qoraqalpoq' ? '#fff' : '#94a3b8',
-                fontSize: '12px',
-                fontWeight: '700',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                boxShadow: activeRegion === 'qoraqalpoq' ? '0 2px 8px rgba(124, 58, 237, 0.4)' : 'none'
-              }}
-            >
-              {language === 'UZ' ? 'Qoraqalpoq' : language === 'RU' ? 'Каракалпак' : 'Karakalpak'}
-            </button>
-            <button
-              onClick={() => setActiveRegion('cross_region')}
-              style={{
-                padding: '6px 12px',
-                borderRadius: '8px',
-                border: 'none',
-                background: activeRegion === 'cross_region' 
-                  ? 'linear-gradient(135deg, #d4af37 0%, #b8860b 100%)' 
-                  : 'transparent',
-                color: activeRegion === 'cross_region' ? '#0a0f1d' : '#94a3b8',
-                fontSize: '12px',
-                fontWeight: '700',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                boxShadow: activeRegion === 'cross_region' ? '0 2px 8px rgba(212, 175, 55, 0.4)' : 'none'
-              }}
-            >
-              {language === 'UZ' ? '🇺🇿 Viloyatlararo' : language === 'RU' ? '🇺🇿 Межрегиональный' : '🇺🇿 Cross-Region'}
-            </button>
-          </div>
 
           {/* Discover Info Button */}
           <Link
@@ -1267,6 +1176,78 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
           </div>
         </div>
       </header>
+
+      {/* 🧭 Interactive Region Ribbon */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        padding: '0 16px',
+        marginBottom: '24px',
+        width: '100%',
+        zIndex: 90
+      }}>
+        <div 
+          className="no-scrollbar"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '6px',
+            background: 'rgba(5, 7, 16, 0.4)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(212, 175, 55, 0.25)',
+            borderRadius: '16px',
+            overflowX: 'auto',
+            whiteSpace: 'nowrap',
+            maxWidth: '100%',
+            scrollbarWidth: 'none', // hide scrollbar Firefox
+            msOverflowStyle: 'none' // hide scrollbar IE/Edge
+          }}
+        >
+          {REGIONS_CONFIG.map((reg) => {
+            const isActive = activeRegion === reg.id;
+            return (
+              <button
+                key={reg.id}
+                onClick={() => setActiveRegion(reg.id)}
+                style={{
+                  padding: '10px 18px',
+                  borderRadius: '12px',
+                  border: 'none',
+                  background: isActive ? reg.gradient : 'transparent',
+                  color: isActive ? reg.color : '#94a3b8',
+                  fontSize: '13.5px',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                  boxShadow: isActive ? `0 4px 12px ${reg.shadow}` : 'none',
+                  transform: isActive ? 'scale(1.02)' : 'scale(1)',
+                }}
+                onMouseEnter={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.color = '#fff';
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+                    e.currentTarget.style.transform = 'scale(1.02)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.color = '#94a3b8';
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }
+                }}
+              >
+                <span style={{ fontSize: '16px' }}>{reg.emoji}</span>
+                <span>{reg.label[language] || reg.label['UZ']}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       {/* 🚀 Main Interface Grid */}
       <div style={{
