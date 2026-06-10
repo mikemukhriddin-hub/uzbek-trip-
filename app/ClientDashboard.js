@@ -1056,7 +1056,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
       </div>
       
       {/* 🕌 Premium Header */}
-      <header className="glass-container" style={{
+      <header className="premium-header glass-container" style={{
         margin: '16px',
         padding: '16px 24px',
         display: 'flex',
@@ -1069,7 +1069,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
         zIndex: 100
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{
+          <div className="brand-icon-container" style={{
             width: '36px',
             height: '36px',
             borderRadius: '8px',
@@ -1081,7 +1081,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
           }}>
             <Compass size={20} className="animate-spin" style={{ animationDuration: '20s' }} />
           </div>
-          <span style={{ fontSize: '18px', fontWeight: 800, letterSpacing: '0.05em', color: '#fff', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span className="brand-title" style={{ fontSize: '18px', fontWeight: 800, letterSpacing: '0.05em', color: '#fff', display: 'flex', alignItems: 'center', gap: '6px' }}>
             {activeRegion === 'cross_region' ? 'O\'ZBEKISTON' : activeRegion === 'qoraqalpoq' ? 'QORAQALPOQ' : activeRegion === 'toshkent' ? 'TOSHKENT' : activeRegion === 'shahrisabz' ? 'SHAHRISABZ' : activeRegion === 'xorazm' ? 'XORAZM' : activeRegion === 'buxoro' ? 'BUXORO' : 'SAMARQAND'} <span style={{ color: '#d4af37' }}>CRAFTOUR</span>
           </span>
         </div>
@@ -1344,7 +1344,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
         width: '100%'
       }}>
         {/* Responsive Grid Setup for Desktop vs Mobile */}
-        <div style={{
+        <div className="main-interface-grid" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
           gap: '24px',
@@ -2223,10 +2223,10 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
           </div>
 
           {/* Right Column: Sticky Interactive Map */}
-          <div style={{
+          <div className="map-column" style={{
             position: 'relative',
           }}>
-            <div style={{
+            <div className="map-sticky-container" style={{
               position: 'sticky',
               top: '110px',
               height: 'calc(100vh - 150px)',

@@ -624,7 +624,7 @@ export default function DiscoverPage({ searchParams }) {
       <BackgroundGraphics />
 
       {/* 🕌 Premium Sticky Header */}
-      <header className="glass-container" style={{
+      <header className="premium-header discover-header glass-container" style={{
         padding: '16px 24px',
         display: 'flex',
         justifyContent: 'space-between',
@@ -638,7 +638,7 @@ export default function DiscoverPage({ searchParams }) {
         width: '100%',
         margin: '0 auto 24px auto'
       }}>
-        <Link href="/" style={{
+        <Link href="/" className="discover-back-btn" style={{
           display: 'flex',
           alignItems: 'center',
           gap: '8px',
@@ -655,15 +655,15 @@ export default function DiscoverPage({ searchParams }) {
           <span>{t.backBtn}</span>
         </Link>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div className="discover-title-block" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Compass size={20} className="animate-spin" style={{ color: '#d4af37', animationDuration: '20s' }} />
-          <span style={{ fontSize: '16px', fontWeight: 800, letterSpacing: '0.05em', color: '#fff' }}>
+          <span className="brand-title" style={{ fontSize: '16px', fontWeight: 800, letterSpacing: '0.05em', color: '#fff' }}>
             {activeRegion === 'xorazm' ? 'XORAZM' : activeRegion === 'buxoro' ? 'BUXORO' : 'SAMARQAND'} <span style={{ color: '#d4af37' }}>DISCOVER</span>
           </span>
         </div>
 
         {/* Region Switcher */}
-        <div style={{
+        <div className="discover-header-switcher no-scrollbar" style={{
           display: 'flex',
           backgroundColor: 'rgba(5, 7, 16, 0.4)',
           border: '1px solid rgba(212, 175, 55, 0.25)',
@@ -789,7 +789,7 @@ export default function DiscoverPage({ searchParams }) {
         </div>
 
         {/* Premium Dropdown Language Switcher */}
-        <div style={{ position: 'relative' }}>
+        <div className="discover-lang-wrapper" style={{ position: 'relative' }}>
           <button
             onClick={() => setShowLangDropdown(!showLangDropdown)}
             style={{
