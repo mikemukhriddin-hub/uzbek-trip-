@@ -164,6 +164,47 @@ body[data-region="shahrisabz"] .btn-primary:hover {
 }
 
 
+/* ========================================================
+   🏙️ TOSHKENT REGION SPECIAL THEME OVERRIDES
+   Capital Sapphire Blue — Modern Uzbekistan
+   ======================================================== */
+body[data-region="toshkent"] {
+  --primary-blue: #1e40af; /* Capital Sapphire Blue */
+  --primary-blue-rgb: 30, 64, 175;
+  --deep-turquoise: #3b82f6; /* Sky Blue Glow */
+
+  --bg-dark-card: rgba(10, 18, 40, 0.7);
+  --bg-dark-border: rgba(30, 64, 175, 0.15);
+
+  --bg-card: rgba(10, 18, 40, 0.45);
+  --border-card: rgba(30, 64, 175, 0.15);
+}
+
+body[data-region="toshkent"] .selected-card-historical {
+  border-color: #1e40af !important;
+  box-shadow: 0 0 18px rgba(30, 64, 175, 0.35) !important;
+  background: rgba(30, 64, 175, 0.08) !important;
+}
+
+body[data-region="toshkent"] .selected-card-alternative {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 18px rgba(59, 130, 246, 0.35) !important;
+  background: rgba(59, 130, 246, 0.08) !important;
+}
+
+body[data-region="toshkent"] .blue-glow {
+  box-shadow: 0 0 15px rgba(30, 64, 175, 0.25);
+}
+
+body[data-region="toshkent"] .btn-primary {
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+}
+
+body[data-region="toshkent"] .btn-primary:hover {
+  box-shadow: 0 4px 15px rgba(30, 64, 175, 0.4);
+}
+
+
 /* Default to Dark Mode for the rich, magical, atmospheric "Samarkand Night" vibe */
 body {
   margin: 0;

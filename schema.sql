@@ -146,7 +146,14 @@ INSERT INTO locations (name_en, name_ru, name_uz, description_en, description_ru
 ('Dorus Saodat Complex', 'Комплекс Дорус-Саодат', 'Dorus Saodat majmuasi', 'The family mausoleum of the Temurids, containing Jahongir''s tomb and grand vaulted structures.', 'Семейная усыпальница Темуридов с мавзолеем Джахангира и грандиозными сводами.', 'Temuriylar sulolasining oilaviy maqbarasi bo''lib, u yerda Jahongir mirzo qabri va ravotlar joylashgan.', 39.0515, 66.8315, 'historical', FALSE, 60, 'https://images.unsplash.com/photo-1605649487212-47bdab064df7?auto=format&fit=crop&w=600&q=80', 'shahrisabz'),
 ('Crypt of Amir Temur', 'Склеп Амира Темура', 'Amir Temur xilxonasi', 'A underground stone chamber with a massive marble sarcophagus designed originally for Tamerlane himself.', 'Подземная каменная усыпальница с массивным мраморным саркофагом, изначально созданным для самого Темура.', 'Temur bobomiz uchun maxsus tayyorlangan, yer ostidagi ulkan marmar toshli tobut va xilxona.', 39.0518, 66.8322, 'historical', FALSE, 45, 'https://images.unsplash.com/photo-1627856013091-fed6e4e30025?auto=format&fit=crop&w=600&q=80', 'shahrisabz'),
 ('Shahrisabz Chorsu Bazaar', 'Чорсу Базар Шахрисабза', 'Shahrisabz Chorsu bozori', 'A domed 18th-century bazaar located at the ancient crossroads, offering local textiles, honey, and dry fruits.', 'Купольный старинный базар XVIII века на историческом перекрестке с тканями, медом и сухофруктами.', 'Qadimiy chorrahada joylashgan, milliy matolar, tog'' asali va quruq mevalar sotiladigan gumbazli XVIII asr bozori.', 39.0531, 66.8298, 'alternative', FALSE, 60, 'https://images.unsplash.com/photo-1596797038530-2c107229654b?auto=format&fit=crop&w=600&q=80', 'shahrisabz'),
-('Katta-Langar Mountain Tandoor', 'Горный тандыр Катта-Лангара', 'Katta Langar tog'' tandir kabobi', 'An open-air restaurant in the scenic mountains serving traditional meat slow-cooked in clay ovens with pine needles.', 'Ресторан в живописных горах, где подают традиционное мясо из глиняных печей с хвоей арчи.', 'Tog'' bag''rida archa barglari bilan tuproq tandirda pishirilgan haqiqiy tog'' tandir kabob choyxonasi.', 38.8320, 66.7562, 'food', TRUE, 90, 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=600&q=80', 'shahrisabz');
+('Katta-Langar Mountain Tandoor', 'Горный тандыр Катта-Лангара', 'Katta Langar tog'' tandir kabobi', 'An open-air restaurant in the scenic mountains serving traditional meat slow-cooked in clay ovens with pine needles.', 'Ресторан в живописных горах, где подают традиционное мясо из глиняных печей с хвоей арчи.', 'Tog'' bag''rida archa barglari bilan tuproq tandirda pishirilgan haqiqiy tog'' tandir kabob choyxonasi.', 38.8320, 66.7562, 'food', TRUE, 90, 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=600&q=80', 'shahrisabz'),
+-- TOSHKENT LOCATIONS
+('Amir Temur Square', 'Площадь Амира Темура', 'Amir Temur maydoni', 'The grand central square of Tashkent, featuring an equestrian statue of Amir Temur surrounded by lush parks and fountains.', 'Главная центральная площадь Ташкента с конной статуей Амира Темура, окружённой парками и фонтанами.', 'Toshkentning markaziy maydonida Amir Temurning otliq haykali, yashil parklar va favvoralar bilan bezatilgan.', 41.2995, 69.2401, 'historical', FALSE, 60, 'https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?auto=format&fit=crop&w=600&q=80', 'toshkent'),
+('Khast Imam Complex', 'Комплекс Хаст-Имам', 'Hazrat Imom majmuasi', 'The spiritual heart of Tashkent, home to one of the world''s oldest Quran manuscripts and stunning Islamic architecture.', 'Духовный центр Ташкента с одной из старейших рукописей Корана и великолепной исламской архитектурой.', 'Toshkentning ma''naviy markazi — dunyodagi eng qadimiy Qur''on qo''lyozmasi va ajoyib islom me''morchiligi.', 41.3053, 69.2313, 'historical', FALSE, 90, 'https://images.unsplash.com/photo-1618218168350-6e7c8137558d?auto=format&fit=crop&w=600&q=80', 'toshkent'),
+('Chorsu Bazaar', 'Рынок Чорсу', 'Chorsu bozori', 'Tashkent''s iconic ancient bazaar under a massive turquoise dome, overflowing with spices, produce, and local crafts.', 'Легендарный базар Ташкента под огромным бирюзовым куполом со специями, овощами и народными промыслами.', 'Ulkan firuza gumbaz ostidagi Toshkentning mashhur Chorsu bozori — ziravorlar, mahsulotlar va hunarmandchilik.', 41.3094, 69.2284, 'alternative', FALSE, 90, 'https://images.unsplash.com/photo-1596797038530-2c107229654b?auto=format&fit=crop&w=600&q=80', 'toshkent'),
+('Navoi Opera & Ballet Theatre', 'Театр оперы и балета им. Навои', 'Navoiy nomidagi Opera va Balet teatri', 'A magnificent Stalinist-era opera house blending Soviet grandeur with Uzbek architectural motifs, a cultural landmark.', 'Величественный оперный театр эпохи сталинизма, сочетающий советское величие с узбекскими мотивами.', 'Sovet davri me''morchiligi va o''zbek naqshlari uyg''unlashgan muhtasham opera va balet teatri.', 41.2975, 69.2413, 'historical', FALSE, 120, 'https://images.unsplash.com/photo-1540959733332-eab4deceeaf7?auto=format&fit=crop&w=600&q=80', 'toshkent'),
+('Tashkent TV Tower & Park', 'Ташкентская телебашня и парк', 'Toshkent teleminorasi va park', 'Central Asia''s tallest structure at 375m, offering panoramic views of Tashkent from its observation deck.', 'Самое высокое сооружение Центральной Азии высотой 375 м с панорамным видом на Ташкент.', 'Markaziy Osiyoning eng baland inshootiga (375m) chiqib Toshkentning ajoyib panoramasini tomosha qiling.', 41.3160, 69.2781, 'alternative', FALSE, 90, 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80', 'toshkent'),
+('Norin & Dimlama Restaurant', 'Ресторан Норин и Димлама', 'Norin va Dimlama restorani', 'Taste authentic Tashkent cuisine — hand-pulled norin noodles and slow-cooked dimlama stew in a traditional setting.', 'Попробуйте аутентичную ташкентскую кухню: норин, думляма и другие традиционные блюда.', 'Qo''lda tortilgan norin va sekin pishirilgan dimlama taomini an''anaviy muhitda tatib ko''ring.', 41.2988, 69.2395, 'food', FALSE, 75, 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80', 'toshkent');
 
 -- Seed Guides
 INSERT INTO guides (full_name, phone_number, region) VALUES
@@ -160,7 +167,10 @@ INSERT INTO guides (full_name, phone_number, region) VALUES
 ('Zilola Masharipova', '+998904441122', 'xorazm'),
 ('Davron Sabirov', '+998973336655', 'xorazm'),
 ('Javokhir Qodirov', '+998933334455', 'shahrisabz'),
-('Madina Karimova', '+998905556677', 'shahrisabz');
+('Madina Karimova', '+998905556677', 'shahrisabz'),
+-- TOSHKENT GUIDES
+('Nodira Yusupova', '+998901234599', 'toshkent'),
+('Sardor Toshmatov', '+998935559988', 'toshkent');
 
 -- Seed Guide Tariffs
 -- Sherzod speaks English, Russian, and Uzbek
@@ -228,6 +238,18 @@ INSERT INTO guide_language_tariffs (guide_id, language_code, daily_rate) VALUES
 (11, 'RU', 45.00),
 (11, 'FR', 65.00);
 
+-- Nodira speaks English, Russian, Uzbek
+INSERT INTO guide_language_tariffs (guide_id, language_code, daily_rate) VALUES
+(12, 'EN', 60.00),
+(12, 'RU', 50.00),
+(12, 'UZ', 40.00);
+
+-- Sardor speaks English, Russian, Korean
+INSERT INTO guide_language_tariffs (guide_id, language_code, daily_rate) VALUES
+(13, 'EN', 65.00),
+(13, 'RU', 55.00),
+(13, 'KO', 80.00);
+
 -- Seed Vehicles
 INSERT INTO vehicles (driver_name, driver_phone, car_model, car_number, city_rate, out_of_city_rate, capacity, region) VALUES
 ('Alisher aka', '+998909998877', 'Chevrolet Cobalt (White)', '01 A 777 BA', 30.00, 45.00, 5, 'samarqand'),
@@ -242,4 +264,7 @@ INSERT INTO vehicles (driver_name, driver_phone, car_model, car_number, city_rat
 ('Sanjar aka', '+998904447788', 'Chevrolet Lacetti (White)', '90 A 999 AA', 25.00, 40.00, 5, 'xorazm'),
 ('Mansur aka', '+998977778899', 'Toyota Hiace Minivan (White)', '90 C 777 ZZ', 55.00, 80.00, 10, 'xorazm'),
 ('Sherzod aka', '+998901113344', 'Chevrolet Cobalt (Grey)', '90 D 555 AA', 25.00, 40.00, 5, 'shahrisabz'),
-('Bobur aka', '+998934448899', 'Chevrolet Lacetti (White)', '90 E 888 ZZ', 25.00, 40.00, 5, 'shahrisabz');
+('Bobur aka', '+998934448899', 'Chevrolet Lacetti (White)', '90 E 888 ZZ', 25.00, 40.00, 5, 'shahrisabz'),
+-- TOSHKENT VEHICLES
+('Aziz aka', '+998901998877', 'Chevrolet Equinox (Black)', '01 T 001 TT', 45.00, 65.00, 5, 'toshkent'),
+('Mirzo aka', '+998935001122', 'Toyota Camry (White)', '01 T 002 TK', 55.00, 80.00, 5, 'toshkent');
