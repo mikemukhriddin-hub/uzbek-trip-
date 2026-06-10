@@ -298,10 +298,79 @@ const SHAHRISABZ_EVENTS = [
   }
 ];
 
+const TOSHKENT_SLIDES = [
+  {
+    image: 'https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?auto=format&fit=crop&w=800&q=80',
+    title_en: 'Amir Temur Square',
+    title_ru: 'Площадь Амира Темура',
+    title_uz: 'Amir Temur maydoni',
+    desc_en: 'The grand central square of Tashkent, featuring an equestrian statue of Amir Temur surrounded by lush parks, fountains and modern city life.',
+    desc_ru: 'Главная площадь Ташкента с конной статуей Амира Темура, парками и фонтанами.',
+    desc_uz: 'Toshkentning markaziy maydonida Amir Temurning otliq haykali, yashil parklar, favvoralar va zamonaviy shahar hayoti.'
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1618218168350-6e7c8137558d?auto=format&fit=crop&w=800&q=80',
+    title_en: 'Khast Imam — Spiritual Heart',
+    title_ru: 'Хаст-Имам — духовный центр',
+    title_uz: 'Hazrat Imom — ma\'naviy markaz',
+    desc_en: 'Home to one of the world\'s oldest Quran manuscripts and stunning 16th-century Islamic architecture in the heart of old Tashkent.',
+    desc_ru: 'Здесь хранится одна из старейших рукописей Корана и великолепная исламская архитектура XVI века.',
+    desc_uz: 'Bu yerda dunyodagi eng qadimiy Qur\'on qo\'lyozmasi va Toshkent qalbidagi XVI asr islom me\'morchiligi joylashgan.'
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1596797038530-2c107229654b?auto=format&fit=crop&w=800&q=80',
+    title_en: 'Chorsu Bazaar — City\'s Soul',
+    title_ru: 'Базар Чорсу — душа города',
+    title_uz: 'Chorsu bozori — shahar qalbi',
+    desc_en: 'Tashkent\'s iconic ancient bazaar under a massive turquoise dome, overflowing with spices, fresh produce, textiles and local crafts.',
+    desc_ru: 'Легендарный базар под огромным бирюзовым куполом со специями, овощами и народными промыслами.',
+    desc_uz: 'Ulkan firuza gumbaz ostidagi Toshkentning mashhur Chorsu bozori — ziravorlar, mahsulotlar va milliy hunarmandchilik.'
+  }
+];
+
+const TOSHKENT_EVENTS = [
+  {
+    id: 10,
+    title_en: 'Tashkent City Day',
+    title_ru: 'День города Ташкента',
+    title_uz: 'Toshkent shahri kuni',
+    date_en: 'Late September',
+    date_ru: 'Конец сентября',
+    date_uz: 'Sentabr oxirida',
+    desc_en: 'Tashkent celebrates its founding with grand concerts, fireworks, art exhibitions, and a colorful parade along the central avenues.',
+    desc_ru: 'Ташкент отмечает своё основание грандиозными концертами, фейерверками и выставками.',
+    desc_uz: 'Toshkent o\'zining ta\'sis kuni sharafiga yirik konsertlar, ot\'in shou, san\'at ko\'rgazmalari va rang-barang paradlar uyushtiradi.'
+  },
+  {
+    id: 11,
+    title_en: 'Tashkent International Film Festival',
+    title_ru: 'Ташкентский международный кинофестиваль',
+    title_uz: 'Toshkent xalqaro kinofestivali',
+    date_en: 'October',
+    date_ru: 'Октябрь',
+    date_uz: 'Oktabr',
+    desc_en: 'One of Central Asia\'s premier film festivals, showcasing international and Uzbek cinema at the Navoi Theatre and city venues.',
+    desc_ru: 'Один из ведущих кинофестивалей Центральной Азии в Театре Навои.',
+    desc_uz: 'Navoiy teatri va shahar sahnaларida xalqaro va o\'zbek kino asarlarini namoyish etuvchi Markaziy Osiyoning yetakchi kinofestivali.'
+  },
+  {
+    id: 12,
+    title_en: 'Navruz in Tashkent',
+    title_ru: 'Навруз в Ташкенте',
+    title_uz: 'Toshkentda Navro\'z',
+    date_en: 'March 21',
+    date_ru: '21 Марта',
+    date_uz: '21 Mart',
+    desc_en: 'Tashkent comes alive with massive Navruz celebrations — sumalak cooking, folk dance shows, national food fairs and free concerts.',
+    desc_ru: 'Ташкент оживает масштабными праздниками Навруза: сумаляк, народные танцы, еда и бесплатные концерты.',
+    desc_uz: 'Toshkent ulkan Navro\'z bayramlari bilan jonlanadi — sumalak pishirish, xalq raqslari, milliy taomlar yarmarkasi va bepul konsertlar.'
+  }
+];
+
 export default function DiscoverPage({ searchParams }) {
   const resolvedSearchParams = searchParams ? use(searchParams) : {};
   const regionParam = resolvedSearchParams?.region;
-  const initialRegion = (regionParam === 'buxoro' || regionParam === 'samarqand' || regionParam === 'xorazm' || regionParam === 'shahrisabz') ? regionParam : 'samarqand';
+  const initialRegion = (regionParam === 'buxoro' || regionParam === 'samarqand' || regionParam === 'xorazm' || regionParam === 'shahrisabz' || regionParam === 'toshkent') ? regionParam : 'samarqand';
 
   const [activeRegion, setActiveRegion] = useState(initialRegion);
   const [language, setLanguage] = useState('EN');
@@ -311,12 +380,12 @@ export default function DiscoverPage({ searchParams }) {
   const [uzsAmount, setUzsAmount] = useState('1280000');
   
   const EXCHANGE_RATE = 12800; // 1 USD = 12,800 UZS
-  const slides = activeRegion === 'shahrisabz' ? SHAHRISABZ_SLIDES : activeRegion === 'xorazm' ? XORAZM_SLIDES : activeRegion === 'buxoro' ? BUXORO_SLIDES : SAMARQAND_SLIDES;
-  const events = activeRegion === 'shahrisabz' ? SHAHRISABZ_EVENTS : activeRegion === 'xorazm' ? XORAZM_EVENTS : activeRegion === 'buxoro' ? BUXORO_EVENTS : SAMARQAND_EVENTS;
+  const slides = activeRegion === 'toshkent' ? TOSHKENT_SLIDES : activeRegion === 'shahrisabz' ? SHAHRISABZ_SLIDES : activeRegion === 'xorazm' ? XORAZM_SLIDES : activeRegion === 'buxoro' ? BUXORO_SLIDES : SAMARQAND_SLIDES;
+  const events = activeRegion === 'toshkent' ? TOSHKENT_EVENTS : activeRegion === 'shahrisabz' ? SHAHRISABZ_EVENTS : activeRegion === 'xorazm' ? XORAZM_EVENTS : activeRegion === 'buxoro' ? BUXORO_EVENTS : SAMARQAND_EVENTS;
 
   // Sync query parameters changes to state
   useEffect(() => {
-    if (regionParam && (regionParam === 'samarqand' || regionParam === 'buxoro' || regionParam === 'xorazm' || regionParam === 'shahrisabz')) {
+    if (regionParam && (regionParam === 'samarqand' || regionParam === 'buxoro' || regionParam === 'xorazm' || regionParam === 'shahrisabz' || regionParam === 'toshkent')) {
       setActiveRegion(regionParam);
     }
   }, [regionParam]);

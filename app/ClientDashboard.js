@@ -338,14 +338,22 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
   };
 
   const t = {
-    heroTitle: activeRegion === 'shahrisabz'
+    heroTitle: activeRegion === 'toshkent'
+      ? (language === 'RU' ? 'Ташкент CrafTour' : 'Toshkent CrafTour')
+      : activeRegion === 'shahrisabz'
       ? (language === 'RU' ? 'Шахрисабз CrafTour' : 'Shahrisabz CrafTour')
       : activeRegion === 'xorazm'
       ? (language === 'RU' ? 'Хорезм CrafTour' : 'Xorazm CrafTour')
       : activeRegion === 'buxoro'
       ? (language === 'RU' ? 'Бухара CrafTour' : 'Buxoro CrafTour')
       : (language === 'RU' ? 'Самарканд CrafTour' : 'Samarqand CrafTour'),
-    heroSubtitle: activeRegion === 'shahrisabz'
+    heroSubtitle: activeRegion === 'toshkent'
+      ? (language === 'UZ'
+        ? 'Zamonaviy va qadimiy Toshkentning diqqatga sazovor joylari bo\'ylab o\'zingizning shaxsiy sayohatingizni yarating'
+        : language === 'RU'
+        ? 'Создайте своё идеальное путешествие по великолепному Ташкенту — столице Узбекистана'
+        : 'Craft your own tailor-made adventure in magnificent Tashkent — the capital of Uzbekistan')
+      : activeRegion === 'shahrisabz'
       ? (language === 'UZ'
         ? 'Amir Temur vatani - Shahrisabzning ko\'hna saroy va maqbaralari bo\'ylab sayohatingizni o\'zingiz yarating'
         : language === 'RU'
@@ -753,7 +761,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
             <Compass size={20} className="animate-spin" style={{ animationDuration: '20s' }} />
           </div>
           <span style={{ fontSize: '18px', fontWeight: 800, letterSpacing: '0.05em', color: '#fff', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            {activeRegion === 'shahrisabz' ? 'SHAHRISABZ' : activeRegion === 'xorazm' ? 'XORAZM' : activeRegion === 'buxoro' ? 'BUXORO' : 'SAMARQAND'} <span style={{ color: '#d4af37' }}>CRAFTOUR</span>
+            {activeRegion === 'toshkent' ? 'TOSHKENT' : activeRegion === 'shahrisabz' ? 'SHAHRISABZ' : activeRegion === 'xorazm' ? 'XORAZM' : activeRegion === 'buxoro' ? 'BUXORO' : 'SAMARQAND'} <span style={{ color: '#d4af37' }}>CRAFTOUR</span>
           </span>
         </div>
 
@@ -843,6 +851,25 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
               }}
             >
               {language === 'UZ' ? 'Shahrisabz' : language === 'RU' ? 'Шахрисабз' : 'Shahrisabz'}
+            </button>
+            <button
+              onClick={() => setActiveRegion('toshkent')}
+              style={{
+                padding: '6px 12px',
+                borderRadius: '8px',
+                border: 'none',
+                background: activeRegion === 'toshkent' 
+                  ? 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)' 
+                  : 'transparent',
+                color: activeRegion === 'toshkent' ? '#fff' : '#94a3b8',
+                fontSize: '12px',
+                fontWeight: '700',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                boxShadow: activeRegion === 'toshkent' ? '0 2px 8px rgba(30, 64, 175, 0.4)' : 'none'
+              }}
+            >
+              {language === 'UZ' ? 'Toshkent' : language === 'RU' ? 'Ташкент' : 'Tashkent'}
             </button>
           </div>
 
@@ -1255,7 +1282,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
         color: '#64748b'
       }}>
         <div>
-          © {new Date().getFullYear()} {activeRegion === 'shahrisabz' ? 'Shahrisabz' : activeRegion === 'xorazm' ? 'Xorazm' : activeRegion === 'buxoro' ? 'Buxoro' : 'Samarqand'} CrafTour. {language === 'RU' ? 'Все права защищены.' : 'All rights reserved.'}
+          © {new Date().getFullYear()} {activeRegion === 'toshkent' ? 'Toshkent' : activeRegion === 'shahrisabz' ? 'Shahrisabz' : activeRegion === 'xorazm' ? 'Xorazm' : activeRegion === 'buxoro' ? 'Buxoro' : 'Samarqand'} CrafTour. {language === 'RU' ? 'Все права защищены.' : 'All rights reserved.'}
         </div>
         <a
           href="/admin"

@@ -46,14 +46,18 @@ export default function Map({ locations = [], selectedLocations = [], language =
         shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
       });
 
-      const defaultCenter = activeRegion === 'shahrisabz'
+      const defaultCenter = activeRegion === 'toshkent'
+        ? [41.2995, 69.2401]
+        : activeRegion === 'shahrisabz'
         ? [39.0606, 66.8294]
         : activeRegion === 'xorazm'
         ? [41.3783, 60.3639]
         : activeRegion === 'buxoro'
         ? [39.7747, 64.4286]
         : [39.6548, 66.9757];
-      const defaultZoom = activeRegion === 'shahrisabz'
+      const defaultZoom = activeRegion === 'toshkent'
+        ? 13
+        : activeRegion === 'shahrisabz'
         ? 14
         : activeRegion === 'xorazm'
         ? 14
@@ -104,16 +108,20 @@ export default function Map({ locations = [], selectedLocations = [], language =
         const isSelected = selectedIndex !== -1;
 
         // Marker color code: Historical (Blue/Orange/Teal), Alternative (Teal/Turquoise/Clay), Food (Gold)
-        let color = activeRegion === 'shahrisabz'
+        let color = activeRegion === 'toshkent'
+          ? '#1e40af'
+          : activeRegion === 'shahrisabz'
           ? '#008060'
           : activeRegion === 'xorazm'
           ? '#028090'
           : activeRegion === 'buxoro'
           ? '#c05a1a'
-          : '#0070c0'; // Historical default (Samarqand)
+          : '#0070c0';
 
         if (loc.category === 'alternative') {
-          color = activeRegion === 'shahrisabz'
+          color = activeRegion === 'toshkent'
+            ? '#3b82f6'
+            : activeRegion === 'shahrisabz'
             ? '#00a36c'
             : activeRegion === 'xorazm'
             ? '#00a896'
