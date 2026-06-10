@@ -46,6 +46,25 @@ function getLocationImage(id, imageUrl) {
   return imageUrl || LOCATION_IMAGES[id] || '/images/locations/registan.webp';
 }
 
+const REGION_BADGES = {
+  toshkent: { UZ: 'Toshkent', RU: 'Ташкент', EN: 'Tashkent', color: '#3b82f6', bg: 'rgba(59, 130, 246, 0.1)', border: 'rgba(59, 130, 246, 0.2)', emoji: '🏢' },
+  samarqand: { UZ: 'Samarqand', RU: 'Самарканд', EN: 'Samarkand', color: '#009b9e', bg: 'rgba(0, 155, 158, 0.1)', border: 'rgba(0, 155, 158, 0.2)', emoji: '🕌' },
+  buxoro: { UZ: 'Buxoro', RU: 'Бухара', EN: 'Bukhara', color: '#b25329', bg: 'rgba(178, 83, 41, 0.1)', border: 'rgba(178, 83, 41, 0.2)', emoji: '🧱' },
+  xorazm: { UZ: 'Xorazm', RU: 'Хорезм', EN: 'Khorezm', color: '#00a896', bg: 'rgba(0, 168, 150, 0.1)', border: 'rgba(0, 168, 150, 0.2)', emoji: '🏰' },
+  qoraqalpoq: { UZ: 'Qoraqalpog\'iston', RU: 'Каракалпакстан', EN: 'Karakalpakstan', color: '#a78bfa', bg: 'rgba(167, 139, 250, 0.1)', border: 'rgba(167, 139, 250, 0.2)', emoji: '🐫' },
+  shahrisabz: { UZ: 'Shahrisabz', RU: 'Шахрисабз', EN: 'Shahrisabz', color: '#00a36c', bg: 'rgba(0, 163, 108, 0.1)', border: 'rgba(0, 163, 108, 0.2)', emoji: '🏔' }
+};
+
+const REGION_FILTER_CONFIG = [
+  { id: 'all', emoji: '🗺️', label: { UZ: 'Barcha viloyatlar', RU: 'Все регионы', EN: 'All Regions' } },
+  { id: 'toshkent', emoji: '🏢', label: { UZ: 'Toshkent', RU: 'Ташкент', EN: 'Tashkent' } },
+  { id: 'samarqand', emoji: '🕌', label: { UZ: 'Samarqand', RU: 'Самарканд', EN: 'Samarkand' } },
+  { id: 'buxoro', emoji: '🧱', label: { UZ: 'Buxoro', RU: 'Бухара', EN: 'Bukhara' } },
+  { id: 'xorazm', emoji: '🏰', label: { UZ: 'Xorazm', RU: 'Хорезм', EN: 'Khorezm' } },
+  { id: 'qoraqalpoq', emoji: '🐫', label: { UZ: 'Qoraqalpog\'iston', RU: 'Каракалпакстан', EN: 'Karakalpakstan' } },
+  { id: 'shahrisabz', emoji: '🏔', label: { UZ: 'Shahrisabz', RU: 'Шахрисабз', EN: 'Shahrisabz' } }
+];
+
 const formatDuration = (mins, lang) => {
   if (!mins) return '';
   const hours = mins / 60;
@@ -71,11 +90,22 @@ export default function RouteBuilder({
   language = 'EN',
   tourDurationType = 'single',
   numDays = 2,
-  onUpdateLocationDay
+  onUpdateLocationDay,
+  activeRegion = 'samarqand'
 }) {
+  const [regionFilter, setRegionFilter] = React.useState('all');
+
+  React.useEffect(() => {
+    setRegionFilter('all');
+  }, [activeRegion]);
+
+  // Filter locations by region when in cross-region view
+  const visibleLocations = activeRegion === 'cross_region' && regionFilter !== 'all'
+    ? locations.filter(loc => (loc.region || 'samarqand') === regionFilter)
+    : locations;
   
   // Group locations by category
-  const groupedLocations = locations.reduce((acc, loc) => {
+  const groupedLocations = visibleLocations.reduce((acc, loc) => {
     if (!acc[loc.category]) acc[loc.category] = [];
     acc[loc.category].push(loc);
     return acc;
@@ -89,6 +119,79 @@ export default function RouteBuilder({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      
+      {/* 📍 Region Sub-Filter for Cross-Region Planner */}
+      {activeRegion === 'cross_region' && (
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '10px',
+          padding: '14px 16px',
+          backgroundColor: 'rgba(212, 175, 55, 0.04)',
+          border: '1px solid rgba(212, 175, 55, 0.15)',
+          borderRadius: '16px',
+          marginBottom: '4px'
+        }} className="animate-fade-in">
+          <span style={{ fontSize: '13px', fontWeight: '700', color: '#d4af37', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <MapPin size={14} />
+            <span>
+              {language === 'UZ' ? 'Viloyat bo\'yicha saralash:' : language === 'RU' ? 'Фильтр по регионам:' : 'Filter attractions by region:'}
+            </span>
+          </span>
+          <div 
+            className="no-scrollbar"
+            style={{
+              display: 'flex',
+              gap: '6px',
+              overflowX: 'auto',
+              whiteSpace: 'nowrap',
+              paddingBottom: '2px'
+            }}
+          >
+            {REGION_FILTER_CONFIG.map((filter) => {
+              const isSelected = regionFilter === filter.id;
+              return (
+                <button
+                  key={filter.id}
+                  type="button"
+                  onClick={() => setRegionFilter(filter.id)}
+                  style={{
+                    padding: '8px 12px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: isSelected ? 'rgba(212, 175, 55, 0.12)' : 'rgba(255, 255, 255, 0.03)',
+                    border: isSelected ? '1px solid rgba(212, 175, 55, 0.4)' : '1px solid rgba(255, 255, 255, 0.05)',
+                    color: isSelected ? '#d4af37' : '#94a3b8',
+                    fontSize: '12px',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isSelected) {
+                      e.currentTarget.style.color = '#fff';
+                      e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isSelected) {
+                      e.currentTarget.style.color = '#94a3b8';
+                      e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.03)';
+                    }
+                  }}
+                >
+                  <span>{filter.emoji}</span>
+                  <span>{filter.label[language] || filter.label['UZ']}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+      
       {Object.entries(CATEGORIES).map(([catKey, catInfo]) => {
         const catLocations = groupedLocations[catKey] || [];
         if (catLocations.length === 0) return null;
@@ -237,9 +340,33 @@ export default function RouteBuilder({
                       </div>
 
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flex: 1 }}>
-                        <span style={{ fontWeight: 700, fontSize: '15px', color: 'var(--text-primary)' }}>
-                          {name}
-                        </span>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap' }}>
+                          <span style={{ fontWeight: 700, fontSize: '14px', color: 'var(--text-primary)' }}>
+                            {name}
+                          </span>
+                          {(() => {
+                            const badge = REGION_BADGES[loc.region || 'samarqand'];
+                            if (!badge) return null;
+                            return (
+                              <div style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                padding: '2px 6px',
+                                borderRadius: '6px',
+                                fontSize: '10px',
+                                fontWeight: '700',
+                                backgroundColor: badge.bg,
+                                color: badge.color,
+                                border: `1px solid ${badge.border}`,
+                                whiteSpace: 'nowrap'
+                              }}>
+                                <span>{badge.emoji}</span>
+                                <span>{badge[language] || badge['UZ']}</span>
+                              </div>
+                            );
+                          })()}
+                        </div>
                         <span style={{ 
                           fontSize: '12px', 
                           color: 'var(--text-secondary)', 

@@ -2070,6 +2070,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 tourDurationType={tourDurationType}
                 numDays={numDays}
                 onUpdateLocationDay={handleUpdateLocationDay}
+                activeRegion={activeRegion}
               />
 
               {/* 🏨 Accommodation Suggestions for Multi-Day Tours */}
