@@ -28,7 +28,8 @@ CREATE TABLE locations (
     is_out_of_city BOOLEAN DEFAULT FALSE, -- TRUE for mountain or out of town spots
     image_url TEXT, -- Custom image URL for thumbnail
     estimated_duration INT DEFAULT 90, -- Estimated visit duration in minutes
-    region VARCHAR(50) DEFAULT 'samarqand'
+    region VARCHAR(50) DEFAULT 'samarqand',
+    ticket_price DECIMAL(10, 2) DEFAULT 0.00
 );
 
 -- 2. Gidlar asosi

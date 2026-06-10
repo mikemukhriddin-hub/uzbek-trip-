@@ -40,7 +40,8 @@ export async function POST(req) {
           category: 'historical',
           is_out_of_city: false,
           estimated_duration: 90,
-          image_url: 'https://images.unsplash.com/photo-1618218168350-6e7c8137558d?auto=format&fit=crop&w=600&q=80'
+          image_url: 'https://images.unsplash.com/photo-1618218168350-6e7c8137558d?auto=format&fit=crop&w=600&q=80',
+          ticket_price: 0.00
         }
       });
     }
@@ -53,6 +54,7 @@ Determine the correct latitude and longitude of the place as accurately as possi
 For category, choose exactly one of: 'historical', 'alternative', or 'food'.
 Decide if it's out of city (is_out_of_city = true) or in the city (is_out_of_city = false).
 Provide estimated duration in minutes (estimated_duration).
+Determine an estimated entrance ticket price in USD (ticket_price). Use 0.00 for restaurants, parks, or free sites, and realistic prices (e.g. 2.00, 4.50) for museums, mausoleums, and historical monuments.
 For image_url, you MUST choose exactly one of the following verified working Unsplash URLs that matches the location category and aesthetic best (do NOT generate new Unsplash IDs as they return 404):
 - Registan or premium mosaic tiles: 'https://images.unsplash.com/photo-1618218168350-6e7c8137558d?auto=format&fit=crop&w=600&q=80'
 - Gur-e-Amir or ancient dome: 'https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?auto=format&fit=crop&w=600&q=80'
@@ -81,13 +83,14 @@ For image_url, you MUST choose exactly one of the following verified working Uns
         category: { type: 'STRING', enum: ['historical', 'alternative', 'food'] },
         is_out_of_city: { type: 'BOOLEAN' },
         estimated_duration: { type: 'INTEGER' },
-        image_url: { type: 'STRING' }
+        image_url: { type: 'STRING' },
+        ticket_price: { type: 'NUMBER' }
       },
       required: [
         'name_en', 'name_ru', 'name_uz', 
         'description_en', 'description_ru', 'description_uz', 
         'latitude', 'longitude', 'category', 'is_out_of_city', 
-        'estimated_duration', 'image_url'
+        'estimated_duration', 'image_url', 'ticket_price'
       ]
     };
 

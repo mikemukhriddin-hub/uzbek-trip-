@@ -181,6 +181,8 @@ export default function AdminPage() {
       confirmDeleteLoc: "Are you sure you want to delete this location?",
       durationCol: "Duration (min)",
       estDurationPlaceholder: "Estimated Duration (minutes)*",
+      ticketPrice: "Entrance Ticket Price ($)*",
+      ticketPriceCol: "Entrance Ticket ($)",
 
       addVehicle: "Add New Driver / Transport",
       driverName: "Driver Name*",
@@ -305,6 +307,8 @@ export default function AdminPage() {
       confirmDeleteLoc: "Вы уверены, что хотите удалить эту локацию?",
       durationCol: "Время (мин)",
       estDurationPlaceholder: "Расчетное время (минуты)*",
+      ticketPrice: "Цена входного билета ($)*",
+      ticketPriceCol: "Входной билет ($)",
 
       addVehicle: "Добавить нового водителя / транспорт",
       driverName: "Имя водителя*",
@@ -429,6 +433,8 @@ export default function AdminPage() {
       confirmDeleteLoc: "Ushbu joyni o'chirmoqchimisiz?",
       durationCol: "Vaqt (daq)",
       estDurationPlaceholder: "Taxminiy vaqt (daqiqalarda)*",
+      ticketPrice: "Kirish bileti narxi ($)*",
+      ticketPriceCol: "Kirish bileti ($)",
 
       addVehicle: "Yangi haydovchi / transport qo'shish",
       driverName: "Haydovchi ismi*",
@@ -498,7 +504,7 @@ export default function AdminPage() {
   const [locationForm, setLocationForm] = useState({
     name_en: '', name_ru: '', name_uz: '', description_en: '', description_ru: '', description_uz: '',
     latitude: '', longitude: '', category: 'historical', is_out_of_city: false,
-    image_url: '', estimated_duration: 90, region: 'samarqand'
+    image_url: '', estimated_duration: 90, region: 'samarqand', ticket_price: '0.00'
   });
   const [aiQuery, setAiQuery] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
@@ -794,7 +800,7 @@ export default function AdminPage() {
           setLocationForm({
             name_en: '', name_ru: '', name_uz: '', description_en: '', description_ru: '', description_uz: '',
             latitude: '', longitude: '', category: 'historical', is_out_of_city: false,
-            image_url: '', estimated_duration: 90, region: 'samarqand'
+            image_url: '', estimated_duration: 90, region: 'samarqand', ticket_price: '0.00'
           });
           setAiQuery('');
           alert('Location added successfully!');
@@ -841,7 +847,8 @@ export default function AdminPage() {
             is_out_of_city: !!loc.is_out_of_city,
             image_url: loc.image_url || '',
             estimated_duration: loc.estimated_duration !== undefined ? loc.estimated_duration.toString() : '90',
-            region: locationForm.region || 'samarqand'
+            region: locationForm.region || 'samarqand',
+            ticket_price: loc.ticket_price !== undefined ? loc.ticket_price.toString() : '0.00'
           });
           if (data.isMock) {
             alert(data.message || 'Filled with mock data. Configure GEMINI_API_KEY in .env.local for real AI details.');
@@ -1899,6 +1906,7 @@ export default function AdminPage() {
               <input type="text" placeholder={currT.nameRu} value={locationForm.name_ru} onChange={e => setLocationForm({...locationForm, name_ru: e.target.value})} required />
               <input type="text" placeholder={currT.nameUz} value={locationForm.name_uz} onChange={e => setLocationForm({...locationForm, name_uz: e.target.value})} required />
               <input type="number" placeholder={currT.estDurationPlaceholder} value={locationForm.estimated_duration} onChange={e => setLocationForm({...locationForm, estimated_duration: e.target.value})} required />
+              <input type="number" step="0.01" placeholder={currT.ticketPrice} value={locationForm.ticket_price} onChange={e => setLocationForm({...locationForm, ticket_price: e.target.value})} required />
               <input type="text" placeholder={currT.lat} value={locationForm.latitude} onChange={e => setLocationForm({...locationForm, latitude: e.target.value})} />
               <input type="text" placeholder={currT.lng} value={locationForm.longitude} onChange={e => setLocationForm({...locationForm, longitude: e.target.value})} />
               <select value={locationForm.category} onChange={e => setLocationForm({...locationForm, category: e.target.value})}>
@@ -1937,6 +1945,7 @@ export default function AdminPage() {
                   <th style={{ padding: '12px 8px' }}>{currT.category}</th>
                   <th style={{ padding: '12px 8px' }}>{currT.nameEnRuUz}</th>
                   <th style={{ padding: '12px 8px' }}>{currT.durationCol}</th>
+                  <th style={{ padding: '12px 8px' }}>{currT.ticketPriceCol}</th>
                   <th style={{ padding: '12px 8px' }}>{currT.coordinates}</th>
                   <th style={{ padding: '12px 8px' }}>{currT.outOfCityCol}</th>
                   <th style={{ padding: '12px 8px', textAlign: 'center' }}>{currT.actions}</th>
@@ -2031,6 +2040,13 @@ export default function AdminPage() {
                           <input type="number" value={editingResource.data.estimated_duration || 90} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, estimated_duration: parseInt(e.target.value, 10) || 0}})} style={{ width: '80px', padding: '4px', fontSize: '12px' }} required />
                         ) : (
                           <span>{loc.estimated_duration || 90} min</span>
+                        )}
+                      </td>
+                      <td style={{ padding: '14px 8px' }}>
+                        {isEditing ? (
+                          <input type="number" step="0.01" value={editingResource.data.ticket_price || 0.00} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, ticket_price: parseFloat(e.target.value) || 0.00}})} style={{ width: '80px', padding: '4px', fontSize: '12px' }} required />
+                        ) : (
+                          <span>{loc.ticket_price > 0 ? `$${parseFloat(loc.ticket_price).toFixed(2)}` : (language === 'UZ' ? 'bepul' : language === 'RU' ? 'бесплатно' : 'free')}</span>
                         )}
                       </td>
                       <td style={{ padding: '14px 8px', fontSize: '13px' }}>

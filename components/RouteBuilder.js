@@ -198,6 +198,31 @@ export default function RouteBuilder({
                           </span>
                         )}
 
+                        <span style={{
+                          position: 'absolute',
+                          bottom: '8px',
+                          left: '8px',
+                          zIndex: 2,
+                          backgroundColor: 'rgba(10, 15, 29, 0.82)',
+                          backdropFilter: 'blur(4px)',
+                          color: '#fff',
+                          fontSize: '10px',
+                          fontWeight: '600',
+                          padding: '3px 8px',
+                          borderRadius: '6px',
+                          border: '1px solid rgba(255, 255, 255, 0.1)',
+                          boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px'
+                        }}>
+                          🎟️ {language === 'UZ' ? 'Kirish bileti' : language === 'RU' ? 'Входной билет' : 'Entrance ticket'}: {
+                            parseFloat(loc.ticket_price) > 0 
+                              ? `$${parseFloat(loc.ticket_price).toFixed(2)}` 
+                              : (language === 'UZ' ? 'bepul' : language === 'RU' ? 'бесплатно' : 'free')
+                          }
+                        </span>
+
                         <img 
                           src={getLocationImage(loc.id, loc.image_url)} 
                           alt={name} 

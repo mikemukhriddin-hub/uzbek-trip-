@@ -78,7 +78,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
       ...loc,
       name_uz: loc.name_uz || UZ_LOCATIONS[loc.id]?.name || loc.name_en,
       description_uz: loc.description_uz || UZ_LOCATIONS[loc.id]?.desc || loc.description_en,
-      ticket_price: TICKET_PRICES[loc.id] || 0.00
+      ticket_price: loc.ticket_price !== undefined && loc.ticket_price !== null ? parseFloat(loc.ticket_price) : (TICKET_PRICES[loc.id] || 0.00)
     }));
   });
   const [guides, setGuides] = useState(initialGuides && initialGuides.length > 0 ? initialGuides : MOCK_GUIDES);
@@ -1706,6 +1706,9 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                                   
                                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                     <span style={{ fontSize: '11px', color: '#64748b' }}>⏱️ {loc.estimated_duration}m</span>
+                                    <span style={{ fontSize: '11px', color: '#10b981', fontWeight: '500' }}>
+                                      🎟️ {parseFloat(loc.ticket_price) > 0 ? `$${parseFloat(loc.ticket_price).toFixed(2)}` : (language === 'UZ' ? 'bepul' : language === 'RU' ? 'бесплатно' : 'free')}
+                                    </span>
                                     <div style={{ display: 'flex', gap: '2px' }}>
                                       <button
                                         type="button"
@@ -1798,6 +1801,9 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                             
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                               <span style={{ fontSize: '11px', color: '#64748b' }}>⏱️ {loc.estimated_duration}m</span>
+                              <span style={{ fontSize: '11px', color: '#10b981', fontWeight: '500' }}>
+                                🎟️ {parseFloat(loc.ticket_price) > 0 ? `$${parseFloat(loc.ticket_price).toFixed(2)}` : (language === 'UZ' ? 'bepul' : language === 'RU' ? 'бесплатно' : 'free')}
+                              </span>
                               <div style={{ display: 'flex', gap: '2px' }}>
                                 <button
                                   type="button"

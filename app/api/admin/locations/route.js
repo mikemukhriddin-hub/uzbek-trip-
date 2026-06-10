@@ -14,7 +14,7 @@ export async function POST(req) {
 
   try {
     const body = await req.json();
-    const { name_en, name_ru, name_uz, description_en, description_ru, description_uz, latitude, longitude, category, is_out_of_city, image_url, estimated_duration, region } = body;
+    const { name_en, name_ru, name_uz, description_en, description_ru, description_uz, latitude, longitude, category, is_out_of_city, image_url, estimated_duration, region, ticket_price } = body;
 
     if (!name_en || !name_ru || !name_uz || !category) {
       return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
@@ -39,7 +39,8 @@ export async function POST(req) {
         is_out_of_city: !!is_out_of_city,
         image_url: image_url || null,
         estimated_duration: parseInt(estimated_duration, 10) || 90,
-        region: region || 'samarqand'
+        region: region || 'samarqand',
+        ticket_price: ticket_price !== undefined ? parseFloat(ticket_price) : 0.00
       })
       .select()
       .single();
@@ -60,7 +61,7 @@ export async function PATCH(req) {
 
   try {
     const body = await req.json();
-    const { id, name_en, name_ru, name_uz, description_en, description_ru, description_uz, latitude, longitude, category, is_out_of_city, image_url, estimated_duration, region } = body;
+    const { id, name_en, name_ru, name_uz, description_en, description_ru, description_uz, latitude, longitude, category, is_out_of_city, image_url, estimated_duration, region, ticket_price } = body;
 
     if (!id) {
       return NextResponse.json({ message: 'Missing location ID' }, { status: 400 });
@@ -85,7 +86,8 @@ export async function PATCH(req) {
         is_out_of_city: !!is_out_of_city,
         image_url: image_url,
         estimated_duration: estimated_duration !== undefined ? parseInt(estimated_duration, 10) : undefined,
-        region: region
+        region: region,
+        ticket_price: ticket_price !== undefined ? parseFloat(ticket_price) : undefined
       })
       .eq('id', id)
       .select()
