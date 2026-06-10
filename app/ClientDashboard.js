@@ -74,12 +74,18 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
   const [showLangDropdown, setShowLangDropdown] = useState(false);
   const [locations, setLocations] = useState(() => {
     const base = initialLocations && initialLocations.length > 0 ? initialLocations : MOCK_LOCATIONS;
-    return base.map(loc => ({
-      ...loc,
-      name_uz: loc.name_uz || UZ_LOCATIONS[loc.id]?.name || loc.name_en,
-      description_uz: loc.description_uz || UZ_LOCATIONS[loc.id]?.desc || loc.description_en,
-      ticket_price: loc.ticket_price !== undefined && loc.ticket_price !== null ? parseFloat(loc.ticket_price) : (TICKET_PRICES[loc.id] || 0.00)
-    }));
+    return base.map(loc => {
+      const dbPrice = loc.ticket_price !== undefined && loc.ticket_price !== null ? parseFloat(loc.ticket_price) : 0;
+      const fallbackPrice = TICKET_PRICES[loc.id] !== undefined ? TICKET_PRICES[loc.id] : 0;
+      const finalPrice = dbPrice > 0 ? dbPrice : (fallbackPrice > 0 ? fallbackPrice : dbPrice);
+      
+      return {
+        ...loc,
+        name_uz: loc.name_uz || UZ_LOCATIONS[loc.id]?.name || loc.name_en,
+        description_uz: loc.description_uz || UZ_LOCATIONS[loc.id]?.desc || loc.description_en,
+        ticket_price: finalPrice
+      };
+    });
   });
   const [guides, setGuides] = useState(initialGuides && initialGuides.length > 0 ? initialGuides : MOCK_GUIDES);
   const [tariffs, setTariffs] = useState(initialTariffs && initialTariffs.length > 0 ? initialTariffs : MOCK_TARIFFS);
