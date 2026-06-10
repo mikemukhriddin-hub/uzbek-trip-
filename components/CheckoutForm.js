@@ -22,6 +22,7 @@ export default function CheckoutForm({
     phone: '',
     date: '',
     passengerCount: 1,
+    localPartners: false,
   });
   const [errors, setErrors] = useState({});
   const [bookingType, setBookingType] = useState('private');
@@ -90,6 +91,9 @@ export default function CheckoutForm({
   const discountRate = bookingType === 'shared' ? 0.25 : 0;
   const discountAmount = subtotal * discountRate;
   const total = subtotal - discountAmount;
+
+  const passengerCount = formData.passengerCount || 1;
+  const totalTicketsCost = selectedLocations.reduce((sum, loc) => sum + (loc.ticket_price || 0), 0) * passengerCount;
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -382,6 +386,55 @@ export default function CheckoutForm({
           </select>
         </div>
 
+        {/* Local Partners Option for Cross-Region */}
+        {activeRegion === 'cross_region' && (
+          <div 
+            className="glass-container animate-fade-in"
+            style={{
+              padding: '14px',
+              borderRadius: '10px',
+              backgroundColor: 'rgba(0, 155, 158, 0.08)',
+              border: '1.5px solid rgba(0, 155, 158, 0.25)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '8px',
+              marginTop: '4px'
+            }}
+          >
+            <label style={{ 
+              display: 'flex', 
+              alignItems: 'flex-start', 
+              gap: '10px', 
+              cursor: 'pointer',
+              fontSize: '13px',
+              color: '#fff',
+              fontWeight: '600'
+            }}>
+              <input 
+                type="checkbox" 
+                name="localPartners"
+                checked={formData.localPartners || false}
+                onChange={(e) => setFormData(prev => ({ ...prev, localPartners: e.target.checked }))}
+                style={{ marginTop: '3px', cursor: 'pointer', accentColor: '#009b9e' }}
+              />
+              <span>
+                {language === 'UZ' 
+                  ? 'Har bir shaharda alohida mahalliy gid/transport xizmati (tavsiya etiladi)' 
+                  : language === 'RU' 
+                    ? 'Отдельные местные гиды/водители в каждом городе (рекомендуется)' 
+                    : 'Arrange local guides/drivers in each city (recommended)'}
+              </span>
+            </label>
+            <p style={{ fontSize: '11px', color: '#94a3b8', margin: 0, paddingLeft: '24px', lineHeight: 1.45 }}>
+              {language === 'UZ'
+                ? 'Toshkentdan butun yo\'l davomida bitta mashinada yurish o\'rniga, shahar oralarida poyezdda borib, har bir shaharda mahalliy transport yollash orqali mablag\'ingizni tejaysiz. Menejerimiz sizga moslashtirishda yordam beradi.'
+                : language === 'RU'
+                  ? 'Сэкономит ваш бюджет и время. Вместо одной машины на весь путь из Ташкента, вы поедете на поезде, а в городах вас встретят местные гиды.'
+                  : 'Saves budget and travel time. Instead of driving in one car the whole way, travel by train between cities and get picked up by local guides/drivers.'}
+            </p>
+          </div>
+        )}
+
         {/* Full Name */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
           <label style={{ fontSize: '13px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -515,6 +568,21 @@ export default function CheckoutForm({
             <span>{t.platformFee}</span>
             <span style={{ color: 'var(--text-primary)', fontWeight: '500' }}>${fixedFee.toFixed(2)}</span>
           </div>
+
+          {/* Ticket Cost */}
+          {totalTicketsCost > 0 && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
+              <span>
+                {language === 'UZ' ? 'Kirish chiptalari (joyida to\'lanadi):' : language === 'RU' ? 'Входные билеты (оплата на месте):' : 'Entrance tickets (paid on site):'}
+                <span style={{ fontSize: '11px', color: '#64748b', marginLeft: '6px' }}>
+                  (${selectedLocations.reduce((sum, loc) => sum + (loc.ticket_price || 0), 0).toFixed(2)} × {passengerCount} {language === 'UZ' ? 'kishi' : language === 'RU' ? 'чел.' : 'pax'})
+                </span>
+              </span>
+              <span style={{ color: '#fbbf24', fontWeight: '700' }}>
+                ${totalTicketsCost.toFixed(2)}
+              </span>
+            </div>
+          )}
 
           {/* Divider */}
           <div style={{ height: '1px', backgroundColor: 'var(--border-card)', margin: '2px 0' }} />

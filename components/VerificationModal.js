@@ -337,6 +337,23 @@ export default function VerificationModal({
             </p>
           </div>
 
+          {/* Email Spam / Fallback Tip */}
+          {emailSent !== false && (
+            <div style={{
+              textAlign: 'center',
+              fontSize: '11.5px',
+              color: '#94a3b8',
+              lineHeight: 1.45,
+              marginTop: '-4px'
+            }}>
+              💡 {language === 'UZ' 
+                ? 'Kod kelmadimi? Iltimos, "Spam" papkasini tekshiring yoki operator bilan bog\'lanishni kuting.' 
+                : language === 'RU' 
+                ? 'Не получили код? Пожалуйста, проверьте папку «Спам» или дождитесь звонка оператора.' 
+                : 'Did not receive the code? Please check your "Spam" folder or wait for the operator to call.'}
+            </div>
+          )}
+
           {/* Actions */}
           <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
             <button

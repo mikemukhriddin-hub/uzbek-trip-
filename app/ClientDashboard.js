@@ -34,7 +34,7 @@ import CheckoutForm from '@/components/CheckoutForm';
 const VerificationModal = dynamic(() => import('@/components/VerificationModal'), { ssr: false });
 const PaymentPortal = dynamic(() => import('@/components/PaymentPortal'), { ssr: false });
 
-import { MOCK_LOCATIONS, MOCK_GUIDES, MOCK_TARIFFS, MOCK_VEHICLES, UZ_LOCATIONS } from '@/lib/mockData';
+import { MOCK_LOCATIONS, MOCK_GUIDES, MOCK_TARIFFS, MOCK_VEHICLES, UZ_LOCATIONS, TICKET_PRICES } from '@/lib/mockData';
 
 
 const WEATHER_DATA = {
@@ -42,8 +42,31 @@ const WEATHER_DATA = {
   buxoro: { temp: '31°C', uz: '☀️ Issiq va quyoshli', ru: '☀️ Ясно, солнечно и жарко', en: '☀️ Warm, sunny & clear', nameUz: 'Buxoro', nameRu: 'Бухаре', nameEn: 'Bukhara' },
   xorazm: { temp: '33°C', uz: '☀️ Quyoshli va cho\'l shamoli', ru: '☀️ Ясно, пустынный бриз', en: '☀️ Sunny, desert breeze', nameUz: 'Xorazm', nameRu: 'Хорезме', nameEn: 'Khorezm' },
   shahrisabz: { temp: '27°C', uz: '☀️ Quyoshli va tog\' havosi', ru: '☀️ Ясно, свежий горный воздух', en: '☀️ Sunny, fresh mountain breeze', nameUz: 'Shahrisabz', nameRu: 'Шахрисабзе', nameEn: 'Shahrisabz' },
-  toshkent: { temp: '29°C', uz: '☀️ Muloqot va shahar tarovati', ru: '☀️ Ясно, городской ритм', en: '☀️ Sunny city life', nameUz: 'Toshkent', nameRu: 'Ташкенте', nameEn: 'Tashkent' },
+  toshkent: { temp: '29°C', uz: '☀️ Muloqot va shahar tarovati', ru: '☀️ Ясно, городской ритm', en: '☀️ Sunny city life', nameUz: 'Toshkent', nameRu: 'Ташкенте', nameEn: 'Tashkent' },
   qoraqalpoq: { temp: '32°C', uz: '☀️ Issiq va quruq sahro havosi', ru: '☀️ Ясно, сухой пустынный воздух', en: '☀️ Hot & dry desert air', nameUz: 'Nukus', nameRu: 'Нукусе', nameEn: 'Nukus' }
+};
+
+const ACCOMMODATIONS_DATA = {
+  samarqand: [
+    { name: 'Registan Plaza Hotel', rating: '⭐️ 4.7', price: '$80-120', descUz: 'Registon maydoniga yaqin, qulay va hashamatli mehmonxona.', descRu: 'Комфортабельный отель рядом с площадью Регистан.', descEn: 'Comfortable hotel close to Registan Square.' },
+    { name: 'Konigil Eco Guest House', rating: '⭐️ 4.9', price: '$40-60', descUz: 'Konigil qog\'oz fabrikasi yaqinidagi tabiiy eco guest house.', descRu: 'Эко-гостевой дом в живописной ремесленной деревне.', descEn: 'Scenic eco-guest house in the heart of Konigil village.' }
+  ],
+  buxoro: [
+    { name: 'Lyabi-House Hotel', rating: '⭐️ 4.8', price: '$70-100', descUz: 'Labi Hovuz ansamblining qadimiy qismida joylashgan an\'anaviy mehmonxona.', descRu: 'Традиционный отель в самом сердце старой Бухары.', descEn: 'Traditional hotel located in old Bukhara, close to Lyabi-Khauz.' },
+    { name: 'Sufi Oasis Yurt Camp', rating: '⭐️ 4.9', price: '$50-80', descUz: 'Buxoro sahrosidagi qum barxanlari va tuya minish xizmatiga ega o\'tovlar lageri.', descRu: 'Юртовый лагерь в пустыне для любителей экзотики.', descEn: 'Desert yurt camp with camel riding and starry night stays.' }
+  ],
+  xorazm: [
+    { name: 'Hotel Khiva Kala', rating: '⭐️ 4.7', price: '$60-90', descUz: 'Ichan Qal\'aning ichida joylashgan, tomidan panorama ko\'rinadigan mehmonxona.', descRu: 'Отель внутри крепости Ичан-Кала с прекрасной террасой.', descEn: 'Hotel inside the Ichan-Kala fortress with a rooftop view.' }
+  ],
+  shahrisabz: [
+    { name: 'Katta-Langar Guest House', rating: '⭐️ 4.8', price: '$30-50', descUz: 'Shahrisabz tog\'lari va qadimiy Langar ziyoratgohi yaqinidagi shinam mehmon uyi.', descRu: 'Уютный гостевой дом в живописном горном поселке.', descEn: 'Cozy guest house in the scenic Langar mountain village.' }
+  ],
+  toshkent: [
+    { name: 'Lotte City Hotel Tashkent Palace', rating: '⭐️ 4.8', price: '$120-180', descUz: 'Toshkent markazida, Navoiy teatri ro\'parasida joylashgan hashamatli klassik mehmonxona.', descRu: 'Исторический отель в центре Ташкента напротив театра Навои.', descEn: 'Historic hotel in Tashkent center, opposite Navoi Theatre.' }
+  ],
+  qoraqalpoq: [
+    { name: 'Aral Oasis Yurt Camp (Muynaq)', rating: '⭐️ 4.8', price: '$45-75', descUz: 'Mo\'ynoqda sobiq dengiz tubi va kemalar qabristoniga yaqin o\'tovlar lageri.', descRu: 'Юртовый лагерь в Муйнаке у бывшего дна Аральского моря.', descEn: 'Yurt camp in Muynaq near the ship graveyard.' }
+  ]
 };
 
 export default function ClientDashboard({ initialLocations = [], initialGuides = [], initialTariffs = [], initialVehicles = [] }) {
@@ -54,7 +77,8 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
     return base.map(loc => ({
       ...loc,
       name_uz: loc.name_uz || UZ_LOCATIONS[loc.id]?.name || loc.name_en,
-      description_uz: loc.description_uz || UZ_LOCATIONS[loc.id]?.desc || loc.description_en
+      description_uz: loc.description_uz || UZ_LOCATIONS[loc.id]?.desc || loc.description_en,
+      ticket_price: TICKET_PRICES[loc.id] || 0.00
     }));
   });
   const [guides, setGuides] = useState(initialGuides && initialGuides.length > 0 ? initialGuides : MOCK_GUIDES);
@@ -218,6 +242,49 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
       )
     );
   };
+
+  const handleMoveLocationUp = (locId) => {
+    setSelectedLocations((prev) => {
+      const idx = prev.findIndex(item => item.id === locId);
+      if (idx === -1) return prev;
+      const currentDay = prev[idx].selectedDay || 1;
+      let prevSameDayIdx = -1;
+      for (let i = idx - 1; i >= 0; i--) {
+        if ((prev[i].selectedDay || 1) === currentDay) {
+          prevSameDayIdx = i;
+          break;
+        }
+      }
+      if (prevSameDayIdx === -1) return prev;
+      const newLocs = [...prev];
+      const temp = newLocs[idx];
+      newLocs[idx] = newLocs[prevSameDayIdx];
+      newLocs[prevSameDayIdx] = temp;
+      return newLocs;
+    });
+  };
+
+  const handleMoveLocationDown = (locId) => {
+    setSelectedLocations((prev) => {
+      const idx = prev.findIndex(item => item.id === locId);
+      if (idx === -1) return prev;
+      const currentDay = prev[idx].selectedDay || 1;
+      let nextSameDayIdx = -1;
+      for (let i = idx + 1; i < prev.length; i++) {
+        if ((prev[i].selectedDay || 1) === currentDay) {
+          nextSameDayIdx = i;
+          break;
+        }
+      }
+      if (nextSameDayIdx === -1) return prev;
+      const newLocs = [...prev];
+      const temp = newLocs[idx];
+      newLocs[idx] = newLocs[nextSameDayIdx];
+      newLocs[nextSameDayIdx] = temp;
+      return newLocs;
+    });
+  };
+
 
   const handleSelectVehicle = (vehicle) => {
     setSelectedVehicle(vehicle);
@@ -694,32 +761,32 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
 
               <div>
                 <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#fff', marginBottom: '8px' }}>
-                  {language === 'UZ' ? 'Orzungizdagi sayohatni bekor qilasizmi?' : language === 'RU' ? 'Отменить поездку вашей мечты?' : 'Cancel Your Dream Trip?'}
+                  {language === 'UZ' ? 'Buyurtmani bekor qilishni tasdiqlaysizmi?' : language === 'RU' ? 'Подтверждаете отмену бронирования?' : 'Confirm Booking Cancellation?'}
                 </h3>
                 <p style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: 1.6 }}>
                   {language === 'UZ'
                     ? (selectedGuide && selectedVehicle)
-                      ? `Sizning tajribali gidingiz (${selectedGuide.full_name}) va haydovchingiz (${selectedVehicle.driver_name}) ushbu kunni aynan siz uchun band qilishgan. Agar bekor qilsangiz, ular kunlik ishidan mahrum bo'lishadi. Ishonchingiz komilmi?`
+                      ? `Tajribali gidingiz (${selectedGuide.full_name}) va haydovchingiz (${selectedVehicle.driver_name}) siz uchun ushbu kunni band qilib qo'yishgan. Buyurtmani bekor qilsangiz, ularning kunlik jadvali bo'shatiladi. Bekor qilish bepul.`
                       : selectedGuide
-                        ? `Sizning tajribali gidingiz (${selectedGuide.full_name}) ushbu kunni aynan siz uchun band qilgan. Agar bekor qilsangiz, u kunlik ishidan mahrum bo'ladi. Ishonchingiz komilmi?`
+                        ? `Tajribali gidingiz (${selectedGuide.full_name}) siz uchun ushbu kunni band qilib qo'ygan. Buyurtmani bekor qilsangiz, uning kunlik jadvali bo'shatiladi. Bekor qilish bepul.`
                         : selectedVehicle
-                          ? `Sizning haydovchingiz (${selectedVehicle.driver_name}) ushbu kunni aynan siz uchun band qilgan. Agar bekor qilsangiz, u kunlik ishidan mahrum bo'ladi. Ishonchingiz komilmi?`
-                          : `Ushbu sayohat buyurtmasini bekor qilishga ishonchingiz komilmi?`
+                          ? `Haydovchingiz (${selectedVehicle.driver_name}) siz uchun ushbu kunni band qilib qo'ygan. Buyurtmani bekor qilsangiz, uning kunlik jadvali bo'shatiladi. Bekor qilish bepul.`
+                          : `Ushbu sayohat buyurtmasini bekor qilishga ishonchingiz komilmi? Bekor qilish bepul.`
                     : language === 'RU'
                     ? (selectedGuide && selectedVehicle)
-                      ? `Ваш опытный гид (${selectedGuide.full_name}) и водитель (${selectedVehicle.driver_name}) уже забронировали свой день для вас. Если вы отмените, они потеряют этот рабочий день. Вы уверены?`
+                      ? `Ваш гид (${selectedGuide.full_name}) и водитель (${selectedVehicle.driver_name}) забронировали этот день для вас. Если вы отмените заказ, их график будет освобожден. Отмена бесплатная.`
                       : selectedGuide
-                        ? `Ваш опытный гид (${selectedGuide.full_name}) уже забронировал свой день для вас. Если вы отмените, он потеряет этот рабочий день. Вы уверены?`
+                        ? `Ваш гид (${selectedGuide.full_name}) забронировал этот день для вас. Если вы отмените заказ, его график будет освобожден. Отмена бесплатная.`
                         : selectedVehicle
-                          ? `Ваш водитель (${selectedVehicle.driver_name}) уже забронировал свой день для вас. Если вы отмените, он потеряет этот рабочий день. Вы уверены?`
-                          : `Вы уверены, что хотите отменить это бронирование?`
+                          ? `Ваш водитель (${selectedVehicle.driver_name}) забронировал этот день для вас. Если вы отмените заказ, его график будет освобожден. Отмена бесплатная.`
+                          : `Вы уверены, что хотите отменить это бронирование? Отмена бесплатная.`
                     : (selectedGuide && selectedVehicle)
-                      ? `Your guide (${selectedGuide.full_name}) and driver (${selectedVehicle.driver_name}) have reserved their day for you. If you cancel, they will lose their schedule. Are you sure you want to cancel?`
+                      ? `Your guide (${selectedGuide.full_name}) and driver (${selectedVehicle.driver_name}) have reserved this day for you. If you cancel, their schedule will be released. Cancellation is free of charge.`
                       : selectedGuide
-                        ? `Your guide (${selectedGuide.full_name}) has reserved their day for you. If you cancel, they will lose their schedule. Are you sure you want to cancel?`
+                        ? `Your guide (${selectedGuide.full_name}) has reserved this day for you. If you cancel, their schedule will be released. Cancellation is free of charge.`
                         : selectedVehicle
-                          ? `Your driver (${selectedVehicle.driver_name}) has reserved their day for you. If you cancel, they will lose their schedule. Are you sure you want to cancel?`
-                          : `Are you sure you want to cancel this booking?`}
+                          ? `Your driver (${selectedVehicle.driver_name}) has reserved this day for you. If you cancel, their schedule will be released. Cancellation is free of charge.`
+                          : `Are you sure you want to cancel this booking? Cancellation is free of charge.`}
                 </p>
               </div>
 
@@ -1182,44 +1249,72 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
 
             {/* 🌤 Live Traveler Info & Weather Banner */}
             {activeRegion === 'cross_region' && (
-              <div 
-                className="glass-container gold-glow animate-fade-in" 
-                style={{
-                  padding: '16px 20px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '12px',
-                  border: '1px solid rgba(212, 175, 55, 0.3)',
-                  background: 'linear-gradient(135deg, rgba(10, 15, 29, 0.4) 0%, rgba(212, 175, 55, 0.06) 100%)',
-                }}
-              >
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '13px', fontWeight: '700', color: '#d4af37', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <MapPin size={14} />
-                    <span>{language === 'UZ' ? 'Sayohatni boshlash viloyati (Gid va Transport keladigan shahar):' : language === 'RU' ? 'Регион начала поездки (город отправления гида и транспорта):' : 'Starting Region (Where your guide & transport will start):'}</span>
-                  </label>
-                  <select
-                    value={crossRegionStart}
-                    onChange={(e) => setCrossRegionStart(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '10px 14px',
-                      borderRadius: '8px',
-                      backgroundColor: 'rgba(10, 15, 29, 0.8)',
-                      border: '1px solid rgba(212, 175, 55, 0.3)',
-                      color: '#fff',
-                      fontSize: '14px',
-                      outline: 'none',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <option value="samarqand" style={{ backgroundColor: '#0f172a' }}>{language === 'UZ' ? 'Samarqand' : language === 'RU' ? 'Самарканд' : 'Samarkand'}</option>
-                    <option value="buxoro" style={{ backgroundColor: '#0f172a' }}>{language === 'UZ' ? 'Buxoro' : language === 'RU' ? 'Бухара' : 'Bukhara'}</option>
-                    <option value="xorazm" style={{ backgroundColor: '#0f172a' }}>{language === 'UZ' ? 'Xorazm' : language === 'RU' ? 'Хорезм' : 'Khorezm'}</option>
-                    <option value="shahrisabz" style={{ backgroundColor: '#0f172a' }}>{language === 'UZ' ? 'Shahrisabz' : language === 'RU' ? 'Шахрисабз' : 'Shahrisabz'}</option>
-                    <option value="toshkent" style={{ backgroundColor: '#0f172a' }}>{language === 'UZ' ? 'Toshkent' : language === 'RU' ? 'Ташкент' : 'Tashkent'}</option>
-                    <option value="qoraqalpoq" style={{ backgroundColor: '#0f172a' }}>{language === 'UZ' ? 'Qoraqalpog\'iston' : language === 'RU' ? 'Каракалпакстан' : 'Karakalpakstan'}</option>
-                  </select>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }} className="animate-fade-in">
+                <div 
+                  className="glass-container gold-glow" 
+                  style={{
+                    padding: '16px 20px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '12px',
+                    border: '1px solid rgba(212, 175, 55, 0.3)',
+                    background: 'linear-gradient(135deg, rgba(10, 15, 29, 0.4) 0%, rgba(212, 175, 55, 0.06) 100%)',
+                  }}
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <label style={{ fontSize: '13px', fontWeight: '700', color: '#d4af37', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <MapPin size={14} />
+                      <span>{language === 'UZ' ? 'Sayohatni boshlash viloyati (Gid va Transport keladigan shahar):' : language === 'RU' ? 'Регион начала поездки (город отправления гида и транспорта):' : 'Starting Region (Where your guide & transport will start):'}</span>
+                    </label>
+                    <select
+                      value={crossRegionStart}
+                      onChange={(e) => setCrossRegionStart(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '10px 14px',
+                        borderRadius: '8px',
+                        backgroundColor: 'rgba(10, 15, 29, 0.8)',
+                        border: '1px solid rgba(212, 175, 55, 0.3)',
+                        color: '#fff',
+                        fontSize: '14px',
+                        outline: 'none',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <option value="samarqand" style={{ backgroundColor: '#0f172a' }}>{language === 'UZ' ? 'Samarqand' : language === 'RU' ? 'Самарканд' : 'Samarkand'}</option>
+                      <option value="buxoro" style={{ backgroundColor: '#0f172a' }}>{language === 'UZ' ? 'Buxoro' : language === 'RU' ? 'Бухара' : 'Bukhara'}</option>
+                      <option value="xorazm" style={{ backgroundColor: '#0f172a' }}>{language === 'UZ' ? 'Xorazm' : language === 'RU' ? 'Хорезм' : 'Khorezm'}</option>
+                      <option value="shahrisabz" style={{ backgroundColor: '#0f172a' }}>{language === 'UZ' ? 'Shahrisabz' : language === 'RU' ? 'Шахрисабз' : 'Shahrisabz'}</option>
+                      <option value="toshkent" style={{ backgroundColor: '#0f172a' }}>{language === 'UZ' ? 'Toshkent' : language === 'RU' ? 'Ташкент' : 'Tashkent'}</option>
+                      <option value="qoraqalpoq" style={{ backgroundColor: '#0f172a' }}>{language === 'UZ' ? 'Qoraqalpog\'iston' : language === 'RU' ? 'Каракалпакстан' : 'Karakalpakstan'}</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* 🚄 Train / Flight Recommendation Card */}
+                <div 
+                  className="glass-container" 
+                  style={{
+                    padding: '16px 20px',
+                    border: '1.5px solid rgba(0, 155, 158, 0.35)',
+                    background: 'linear-gradient(135deg, rgba(10, 15, 29, 0.5) 0%, rgba(0, 155, 158, 0.05) 100%)',
+                    borderRadius: '16px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px'
+                  }}
+                >
+                  <strong style={{ fontSize: '13px', color: '#009b9e', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span>🚄</span>
+                    {language === 'UZ' ? 'Tezyurar poezdlar tavsiyasi (Afrosiyob):' : language === 'RU' ? 'Рекомендация по поездам (Афросиаб):' : 'High-Speed Train Advice (Afrosiyob):'}
+                  </strong>
+                  <p style={{ fontSize: '12px', color: '#cbd5e1', margin: 0, lineHeight: 1.45 }}>
+                    {language === 'UZ'
+                      ? 'Toshkent, Samarqand va Buxoro o\'rtasida mashinadan ko\'ra Afrosiyob tezyurar poyezdida sayohat qilish ancha tez, xavfsiz va qulay. Shaharlararo poezdda kelib, shahar ichida mahalliy transport yollashni tavsiya qilamiz (pastdagi Checkout formida "Alohida mahalliy gid/transport" bandini belgilang).'
+                      : language === 'RU'
+                        ? 'Поездка на высокоскоростном поезде «Афросиаб» между Ташкентом, Самаркандом и Бухарой гораздо быстрее и комфортнее, чем на машине по трассе. Рекомендуем покупать билеты на поезд, а в городах брать местных водителей.'
+                        : 'Traveling via the Afrosiyob high-speed train between Tashkent, Samarkand, and Bukhara is much faster and more comfortable than driving. We recommend booking train tickets for inter-city travel and hiring local drivers inside each city.'}
+                  </p>
                 </div>
               </div>
             )}
@@ -1534,6 +1629,236 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                   })}
                 </div>
               )}
+              {/* Selected Route Summary & Reordering Section */}
+              {selectedLocations.length > 0 && (
+                <div 
+                  className="glass-container gold-glow animate-fade-in" 
+                  style={{
+                    padding: '18px 20px',
+                    border: '1.5px solid rgba(212, 175, 55, 0.35)',
+                    background: 'linear-gradient(135deg, rgba(10, 15, 29, 0.7) 0%, rgba(212, 175, 55, 0.04) 100%)',
+                    borderRadius: '16px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '12px',
+                    marginBottom: '16px'
+                  }}
+                >
+                  <h3 style={{ fontSize: '15px', fontWeight: 800, color: '#d4af37', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Compass size={16} className="animate-spin" style={{ animationDuration: '20s' }} />
+                    <span>
+                      {language === 'UZ' ? 'Siz tanlagan sayohat tartibi (O\'zgartirish mumkin):' : language === 'RU' ? 'Ваш порядок посещения (можно менять):' : 'Your Selected Itinerary (Reorderable):'}
+                    </span>
+                  </h3>
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {/* If single-day tour, just list them. If multi-day, group by day first */}
+                    {tourDurationType === 'multi' ? (
+                      Array.from({ length: numDays }, (_, i) => i + 1).map(dayNum => {
+                        const dayLocs = selectedLocations.filter(loc => (loc.selectedDay || 1) === dayNum);
+                        if (dayLocs.length === 0) return null;
+                        
+                        const dayColors = {
+                          1: '#d4af37', // Gold
+                          2: '#009b9e', // Teal
+                          3: '#c05a1a', // Terracotta
+                          4: '#7c3aed', // Purple
+                          5: '#008060', // Green
+                        };
+                        const dayColor = dayColors[dayNum] || '#d4af37';
+                        
+                        return (
+                          <div key={dayNum} style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '6px' }}>
+                            <div style={{ fontSize: '12px', fontWeight: '800', color: dayColor, borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '4px', display: 'flex', justifyContent: 'space-between' }}>
+                              <span>{language === 'UZ' ? `${dayNum}-KUN` : language === 'RU' ? `ДЕНЬ ${dayNum}` : `DAY ${dayNum}`}</span>
+                              <span style={{ fontSize: '11px', color: '#64748b' }}>
+                                ⏱️ {formatTotalDuration(dayLocs.reduce((sum, l) => sum + (l.estimated_duration || 0), 0), language)}
+                              </span>
+                            </div>
+                            {dayLocs.map((loc, dayIdx) => {
+                              const isFirstInDay = dayIdx === 0;
+                              const isLastInDay = dayIdx === dayLocs.length - 1;
+                              
+                              let emoji = '🕌';
+                              if (loc.category === 'alternative') emoji = '🌲';
+                              if (loc.category === 'food') emoji = '🍲';
+                              
+                              return (
+                                <div 
+                                  key={loc.id}
+                                  style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    padding: '8px 12px',
+                                    backgroundColor: 'rgba(5, 7, 16, 0.4)',
+                                    borderRadius: '10px',
+                                    border: '1px solid rgba(255,255,255,0.05)',
+                                    fontSize: '13px'
+                                  }}
+                                >
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <span style={{ color: dayColor, fontWeight: '800', fontSize: '12px' }}>{dayIdx + 1}.</span>
+                                    <span>{emoji}</span>
+                                    <span style={{ fontWeight: '600', color: '#fff' }}>{language === 'RU' ? loc.name_ru : language === 'UZ' ? loc.name_uz : loc.name_en}</span>
+                                    {loc.is_out_of_city && <span style={{ fontSize: '10px', backgroundColor: 'rgba(212,175,55,0.15)', color: '#d4af37', padding: '1px 5px', borderRadius: '4px' }}>🏔</span>}
+                                  </div>
+                                  
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <span style={{ fontSize: '11px', color: '#64748b' }}>⏱️ {loc.estimated_duration}m</span>
+                                    <div style={{ display: 'flex', gap: '2px' }}>
+                                      <button
+                                        type="button"
+                                        disabled={isFirstInDay}
+                                        onClick={() => handleMoveLocationUp(loc.id)}
+                                        style={{
+                                          padding: '2px 6px',
+                                          backgroundColor: isFirstInDay ? 'rgba(255,255,255,0.02)' : 'rgba(212,175,55,0.12)',
+                                          border: 'none',
+                                          color: isFirstInDay ? '#475569' : '#d4af37',
+                                          borderRadius: '4px',
+                                          cursor: isFirstInDay ? 'not-allowed' : 'pointer',
+                                          fontSize: '11px',
+                                          fontWeight: 'bold',
+                                          transition: 'all 0.2s'
+                                        }}
+                                      >
+                                        ▲
+                                      </button>
+                                      <button
+                                        type="button"
+                                        disabled={isLastInDay}
+                                        onClick={() => handleMoveLocationDown(loc.id)}
+                                        style={{
+                                          padding: '2px 6px',
+                                          backgroundColor: isLastInDay ? 'rgba(255,255,255,0.02)' : 'rgba(212,175,55,0.12)',
+                                          border: 'none',
+                                          color: isLastInDay ? '#475569' : '#d4af37',
+                                          borderRadius: '4px',
+                                          cursor: isLastInDay ? 'not-allowed' : 'pointer',
+                                          fontSize: '11px',
+                                          fontWeight: 'bold',
+                                          transition: 'all 0.2s'
+                                        }}
+                                      >
+                                        ▼
+                                      </button>
+                                    </div>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleToggleLocation(loc)}
+                                      style={{
+                                        border: 'none',
+                                        background: 'none',
+                                        color: '#ef4444',
+                                        cursor: 'pointer',
+                                        padding: '0 4px',
+                                        fontWeight: '700',
+                                        fontSize: '14px'
+                                      }}
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        );
+                      })
+                    ) : (
+                      selectedLocations.map((loc, idx) => {
+                        const isFirst = idx === 0;
+                        const isLast = idx === selectedLocations.length - 1;
+                        
+                        let emoji = '🕌';
+                        if (loc.category === 'alternative') emoji = '🌲';
+                        if (loc.category === 'food') emoji = '🍲';
+                        
+                        return (
+                          <div 
+                            key={loc.id}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              padding: '8px 12px',
+                              backgroundColor: 'rgba(5, 7, 16, 0.4)',
+                              borderRadius: '10px',
+                              border: '1px solid rgba(255,255,255,0.05)',
+                              fontSize: '13px'
+                            }}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <span style={{ color: '#009b9e', fontWeight: '800', fontSize: '12px' }}>{idx + 1}.</span>
+                              <span>{emoji}</span>
+                              <span style={{ fontWeight: '600', color: '#fff' }}>{language === 'RU' ? loc.name_ru : language === 'UZ' ? loc.name_uz : loc.name_en}</span>
+                              {loc.is_out_of_city && <span style={{ fontSize: '10px', backgroundColor: 'rgba(212,175,55,0.15)', color: '#d4af37', padding: '1px 5px', borderRadius: '4px' }}>🏔</span>}
+                            </div>
+                            
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <span style={{ fontSize: '11px', color: '#64748b' }}>⏱️ {loc.estimated_duration}m</span>
+                              <div style={{ display: 'flex', gap: '2px' }}>
+                                <button
+                                  type="button"
+                                  disabled={isFirst}
+                                  onClick={() => handleMoveLocationUp(loc.id)}
+                                  style={{
+                                    padding: '2px 6px',
+                                    backgroundColor: isFirst ? 'rgba(255,255,255,0.02)' : 'rgba(0,112,192,0.12)',
+                                    border: 'none',
+                                    color: isFirst ? '#475569' : '#009b9e',
+                                    borderRadius: '4px',
+                                    cursor: isFirst ? 'not-allowed' : 'pointer',
+                                    fontSize: '11px',
+                                    fontWeight: 'bold',
+                                    transition: 'all 0.2s'
+                                  }}
+                                >
+                                  ▲
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={isLast}
+                                  onClick={() => handleMoveLocationDown(loc.id)}
+                                  style={{
+                                    padding: '2px 6px',
+                                    backgroundColor: isLast ? 'rgba(255,255,255,0.02)' : 'rgba(0,112,192,0.12)',
+                                    border: 'none',
+                                    color: isLast ? '#475569' : '#009b9e',
+                                    borderRadius: '4px',
+                                    cursor: isLast ? 'not-allowed' : 'pointer',
+                                    fontSize: '11px',
+                                    fontWeight: 'bold',
+                                    transition: 'all 0.2s'
+                                  }}
+                                >
+                                  ▼
+                                </button>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => handleToggleLocation(loc)}
+                                style={{
+                                  border: 'none',
+                                  background: 'none',
+                                  color: '#ef4444',
+                                  cursor: 'pointer',
+                                  padding: '0 4px',
+                                  fontWeight: '700',
+                                  fontSize: '14px'
+                                }}
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
+              )}
               <RouteBuilder
                 locations={filteredLocations}
                 selectedLocations={selectedLocations}
@@ -1543,6 +1868,91 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 numDays={numDays}
                 onUpdateLocationDay={handleUpdateLocationDay}
               />
+
+              {/* 🏨 Accommodation Suggestions for Multi-Day Tours */}
+              {tourDurationType === 'multi' && selectedLocations.length > 0 && (() => {
+                const selectedRegions = Array.from(new Set(selectedLocations.map(loc => loc.region || 'samarqand')));
+                return (
+                  <div 
+                    className="glass-container animate-fade-in" 
+                    style={{
+                      padding: '18px 20px',
+                      border: '1.5px solid rgba(212, 175, 55, 0.25)',
+                      background: 'linear-gradient(135deg, rgba(10, 15, 29, 0.6) 0%, rgba(212, 175, 55, 0.03) 100%)',
+                      borderRadius: '16px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '12px',
+                      marginTop: '16px'
+                    }}
+                  >
+                    <h3 style={{ fontSize: '15px', fontWeight: 800, color: '#d4af37', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span>🏨</span>
+                      <span>
+                        {language === 'UZ' ? 'Tavsiya etiladigan mehmonxonalar:' : language === 'RU' ? 'Рекомендуемое проживание:' : 'Recommended Accommodations:'}
+                      </span>
+                    </h3>
+                    
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                      {selectedRegions.map(reg => {
+                        const hotels = ACCOMMODATIONS_DATA[reg] || [];
+                        if (hotels.length === 0) return null;
+                        
+                        const regionNames = {
+                          samarqand: { UZ: 'Samarqand', RU: 'Самарканд', EN: 'Samarkand' },
+                          buxoro: { UZ: 'Buxoro', RU: 'Бухара', EN: 'Bukhara' },
+                          xorazm: { UZ: 'Xorazm', RU: 'Хорезм', EN: 'Khorezm' },
+                          shahrisabz: { UZ: 'Shahrisabz', RU: 'Шахрисабз', EN: 'Shahrisabz' },
+                          toshkent: { UZ: 'Toshkent', RU: 'Ташкент', EN: 'Tashkent' },
+                          qoraqalpoq: { UZ: 'Qoraqalpog\'iston', RU: 'Каракалпакстан', EN: 'Karakalpakstan' }
+                        };
+                        const regName = regionNames[reg]?.[language] || reg;
+                        
+                        return (
+                          <div key={reg} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            <span style={{ fontSize: '12px', fontWeight: '800', color: '#cbd5e1', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '3px' }}>
+                              📍 {regName}
+                            </span>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '10px' }}>
+                              {hotels.map((hotel, hIdx) => (
+                                <div 
+                                  key={hIdx}
+                                  style={{
+                                    padding: '10px 14px',
+                                    backgroundColor: 'rgba(5, 7, 16, 0.4)',
+                                    borderRadius: '10px',
+                                    border: '1px solid rgba(255,255,255,0.05)',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: '4px'
+                                  }}
+                                >
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <strong style={{ fontSize: '13.5px', color: '#fff' }}>{hotel.name}</strong>
+                                    <span style={{ fontSize: '11px', color: '#fbbf24', fontWeight: '700' }}>{hotel.rating}</span>
+                                  </div>
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11.5px', color: '#cbd5e1' }}>
+                                    <span>{language === 'UZ' ? hotel.descUz : language === 'RU' ? hotel.descRu : hotel.descEn}</span>
+                                    <strong style={{ color: '#009b9e', marginLeft: '10px', whiteSpace: 'nowrap' }}>{hotel.price}</strong>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    
+                    <p style={{ fontSize: '11px', color: '#64748b', margin: '4px 0 0 0', lineHeight: 1.4, borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '8px' }}>
+                      💡 {language === 'UZ'
+                        ? 'Menejerimiz sayohat buyurtmangizni tasdiqlaganidan so\'ng, ushbu mehmonxonalarni band qilishda sizga bepul yordam beradi.'
+                        : language === 'RU'
+                          ? 'Наш менеджер бесплатно поможет вам забронировать это жилье после подтверждения вашей заявки.'
+                          : 'Our manager will assist you in booking these accommodations free of charge after your booking is confirmed.'}
+                    </p>
+                  </div>
+                );
+              })()}
             </section>
 
             {/* Step 2: Vehicle Selection */}
