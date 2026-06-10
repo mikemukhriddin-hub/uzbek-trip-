@@ -1734,7 +1734,16 @@ export default function AdminPage() {
                         </td>
                         <td style={{ padding: '16px 8px', maxWidth: '280px' }}>
                           {booking.booking_items?.sort((x,y) => x.visit_order - y.visit_order).map((item, idx) => (
-                            <div key={idx} style={{ fontSize: '12px', color: '#e2e8f0' }}>{item.visit_order}. {booking.customer_language === 'UZ' ? (item.location?.name_uz || item.location?.name_en) : booking.customer_language === 'RU' ? item.location?.name_ru : item.location?.name_en}</div>
+                            <div key={idx} style={{ fontSize: '12px', color: '#e2e8f0' }}>
+                              {item.visit_order > 100 
+                                ? (booking.customer_language === 'UZ' 
+                                    ? `${Math.floor(item.visit_order / 100)}-kun, ${item.visit_order % 100}` 
+                                    : booking.customer_language === 'RU' 
+                                      ? `День ${Math.floor(item.visit_order / 100)}, ${item.visit_order % 100}` 
+                                      : `Day ${Math.floor(item.visit_order / 100)}, ${item.visit_order % 100}`) 
+                                : item.visit_order
+                              }. {booking.customer_language === 'UZ' ? (item.location?.name_uz || item.location?.name_en) : booking.customer_language === 'RU' ? item.location?.name_ru : item.location?.name_en}
+                            </div>
                           )) || <span style={{ color: '#64748b' }}>None</span>}
                         </td>
                         <td style={{ padding: '16px 8px', fontSize: '12px' }}>

@@ -380,7 +380,14 @@ function MyTourContent() {
           <div style={{ paddingLeft: '24px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
             {booking.booking_items?.sort((a,b) => a.visit_order - b.visit_order).map((item, idx) => (
               <div key={idx} style={{ color: '#e2e8f0' }}>
-                {item.visit_order}. {language === 'UZ' ? (item.location?.name_uz || item.location?.name_en) : language === 'RU' ? item.location?.name_ru : item.location?.name_en}
+                {item.visit_order > 100 
+                  ? (language === 'UZ' 
+                      ? `${Math.floor(item.visit_order / 100)}-kun, ${item.visit_order % 100}` 
+                      : language === 'RU' 
+                        ? `День ${Math.floor(item.visit_order / 100)}, ${item.visit_order % 100}` 
+                        : `Day ${Math.floor(item.visit_order / 100)}, ${item.visit_order % 100}`) 
+                  : item.visit_order
+                }. {language === 'UZ' ? (item.location?.name_uz || item.location?.name_en) : language === 'RU' ? item.location?.name_ru : item.location?.name_en}
               </div>
             )) || <span style={{ color: '#64748b' }}>None</span>}
           </div>
