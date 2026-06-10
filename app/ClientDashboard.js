@@ -103,6 +103,11 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
   const [numDays, setNumDays] = useState(2); // 2 to 5 days
   const [activePlanningDay, setActivePlanningDay] = useState(1); // active day for planning (1 to numDays)
 
+  // Drag and Drop States
+  const [draggedLocationId, setDraggedLocationId] = useState(null);
+  const [dragOverLocationId, setDragOverLocationId] = useState(null);
+  const [dragOverDay, setDragOverDay] = useState(null);
+
   // Sync region switches, reset selections and apply theme data-attribute
   useEffect(() => {
     setSelectedLocations([]);
@@ -112,6 +117,9 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
     setTourDurationType('single');
     setNumDays(2);
     setActivePlanningDay(1);
+    setDraggedLocationId(null);
+    setDragOverLocationId(null);
+    setDragOverDay(null);
     if (typeof document !== 'undefined') {
       document.body.setAttribute('data-region', activeRegion);
       localStorage.setItem('active_region', activeRegion);
@@ -247,6 +255,87 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
         item.id === locId ? { ...item, selectedDay: newDay } : item
       )
     );
+  };
+
+  // --- DRAG & DROP HANDLERS FOR ROUTE REORDERING ---
+  const handleDragStart = (e, locId) => {
+    setDraggedLocationId(locId);
+    e.dataTransfer.setData('text/plain', locId.toString());
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragEnd = () => {
+    setDraggedLocationId(null);
+    setDragOverLocationId(null);
+    setDragOverDay(null);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const handleDropOnLocation = (e, targetLoc) => {
+    e.preventDefault();
+    const draggedIdStr = e.dataTransfer.getData('text/plain');
+    const draggedId = parseInt(draggedIdStr, 10);
+    if (!draggedId || draggedId === targetLoc.id) {
+      handleDragEnd();
+      return;
+    }
+
+    setSelectedLocations((prev) => {
+      const draggedLoc = prev.find(item => item.id === draggedId);
+      if (!draggedLoc) return prev;
+
+      // Filter out the dragged location from its original position
+      const remaining = prev.filter(item => item.id !== draggedId);
+
+      // Find the index of target location in remaining array
+      const targetIdx = remaining.findIndex(item => item.id === targetLoc.id);
+      if (targetIdx === -1) return prev;
+
+      // Update the day of the dragged item to target's day
+      const updatedDraggedLoc = {
+        ...draggedLoc,
+        selectedDay: targetLoc.selectedDay || 1
+      };
+
+      // Insert dragged item at the target position
+      const newList = [...remaining];
+      newList.splice(targetIdx, 0, updatedDraggedLoc);
+      return newList;
+    });
+
+    handleDragEnd();
+  };
+
+  const handleDropOnDay = (e, targetDay) => {
+    e.preventDefault();
+    const draggedIdStr = e.dataTransfer.getData('text/plain');
+    const draggedId = parseInt(draggedIdStr, 10);
+    if (!draggedId) {
+      handleDragEnd();
+      return;
+    }
+
+    setSelectedLocations((prev) => {
+      const draggedLoc = prev.find(item => item.id === draggedId);
+      if (!draggedLoc) return prev;
+
+      // Update day
+      const updatedDraggedLoc = {
+        ...draggedLoc,
+        selectedDay: targetDay
+      };
+
+      // Filter out original
+      const remaining = prev.filter(item => item.id !== draggedId);
+
+      // Append to the end of the day or just push it
+      return [...remaining, updatedDraggedLoc];
+    });
+
+    handleDragEnd();
   };
 
   const handleMoveLocationUp = (locId) => {
@@ -1662,7 +1751,6 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                     {tourDurationType === 'multi' ? (
                       Array.from({ length: numDays }, (_, i) => i + 1).map(dayNum => {
                         const dayLocs = selectedLocations.filter(loc => (loc.selectedDay || 1) === dayNum);
-                        if (dayLocs.length === 0) return null;
                         
                         const dayColors = {
                           1: '#d4af37', // Gold
@@ -1672,106 +1760,146 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                           5: '#008060', // Green
                         };
                         const dayColor = dayColors[dayNum] || '#d4af37';
+                        const isDragOverThisDay = dragOverDay === dayNum;
                         
                         return (
-                          <div key={dayNum} style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '6px' }}>
+                          <div 
+                            key={dayNum} 
+                            onDragOver={handleDragOver}
+                            onDragEnter={() => setDragOverDay(dayNum)}
+                            onDragLeave={() => setDragOverDay(null)}
+                            onDrop={(e) => handleDropOnDay(e, dayNum)}
+                            style={{ 
+                              display: 'flex', 
+                              flexDirection: 'column', 
+                              gap: '6px', 
+                              marginTop: '6px',
+                              padding: '6px',
+                              borderRadius: '10px',
+                              border: isDragOverThisDay ? '1px dashed #10b981' : '1px dashed transparent',
+                              backgroundColor: isDragOverThisDay ? 'rgba(16, 185, 129, 0.05)' : 'transparent',
+                              transition: 'all 0.2s'
+                            }}
+                          >
                             <div style={{ fontSize: '12px', fontWeight: '800', color: dayColor, borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '4px', display: 'flex', justifyContent: 'space-between' }}>
                               <span>{language === 'UZ' ? `${dayNum}-KUN` : language === 'RU' ? `ДЕНЬ ${dayNum}` : `DAY ${dayNum}`}</span>
                               <span style={{ fontSize: '11px', color: '#64748b' }}>
                                 ⏱️ {formatTotalDuration(dayLocs.reduce((sum, l) => sum + (l.estimated_duration || 0), 0), language)}
                               </span>
                             </div>
-                            {dayLocs.map((loc, dayIdx) => {
-                              const isFirstInDay = dayIdx === 0;
-                              const isLastInDay = dayIdx === dayLocs.length - 1;
-                              
-                              let emoji = '🕌';
-                              if (loc.category === 'alternative') emoji = '🌲';
-                              if (loc.category === 'food') emoji = '🍲';
-                              
-                              return (
-                                <div 
-                                  key={loc.id}
-                                  style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'space-between',
-                                    padding: '8px 12px',
-                                    backgroundColor: 'rgba(5, 7, 16, 0.4)',
-                                    borderRadius: '10px',
-                                    border: '1px solid rgba(255,255,255,0.05)',
-                                    fontSize: '13px'
-                                  }}
-                                >
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <span style={{ color: dayColor, fontWeight: '800', fontSize: '12px' }}>{dayIdx + 1}.</span>
-                                    <span>{emoji}</span>
-                                    <span style={{ fontWeight: '600', color: '#fff' }}>{language === 'RU' ? loc.name_ru : language === 'UZ' ? loc.name_uz : loc.name_en}</span>
-                                    {loc.is_out_of_city && <span style={{ fontSize: '10px', backgroundColor: 'rgba(212,175,55,0.15)', color: '#d4af37', padding: '1px 5px', borderRadius: '4px' }}>🏔</span>}
-                                  </div>
-                                  
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <span style={{ fontSize: '11px', color: '#64748b' }}>⏱️ {loc.estimated_duration}m</span>
-                                    <span style={{ fontSize: '11px', color: '#10b981', fontWeight: '500' }}>
-                                      🎟️ {parseFloat(loc.ticket_price) > 0 ? `$${parseFloat(loc.ticket_price).toFixed(2)}` : (language === 'UZ' ? 'bepul' : language === 'RU' ? 'бесплатно' : 'free')}
-                                    </span>
-                                    <div style={{ display: 'flex', gap: '2px' }}>
+                            {dayLocs.length === 0 ? (
+                              <div style={{ padding: '12px', textAlign: 'center', color: '#475569', fontSize: '11px', fontStyle: 'italic', border: '1px dashed rgba(255,255,255,0.08)', borderRadius: '8px' }}>
+                                {language === 'UZ' ? 'Bu kunga obidalar qo\'shilmagan' : language === 'RU' ? 'Нет мест на этот день' : 'No places added for this day'}
+                              </div>
+                            ) : (
+                              dayLocs.map((loc, dayIdx) => {
+                                const isFirstInDay = dayIdx === 0;
+                                const isLastInDay = dayIdx === dayLocs.length - 1;
+                                
+                                let emoji = '🕌';
+                                if (loc.category === 'alternative') emoji = '🌲';
+                                if (loc.category === 'food') emoji = '🍲';
+                                
+                                const isDragged = draggedLocationId === loc.id;
+                                const isDragOverThisLoc = dragOverLocationId === loc.id;
+                                
+                                return (
+                                  <div 
+                                    key={loc.id}
+                                    draggable={true}
+                                    onDragStart={(e) => handleDragStart(e, loc.id)}
+                                    onDragEnd={handleDragEnd}
+                                    onDragOver={handleDragOver}
+                                    onDragEnter={() => setDragOverLocationId(loc.id)}
+                                    onDragLeave={() => setDragOverLocationId(null)}
+                                    onDrop={(e) => handleDropOnLocation(e, loc)}
+                                    style={{
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'space-between',
+                                      padding: '8px 12px',
+                                      backgroundColor: isDragOverThisLoc ? 'rgba(16, 185, 129, 0.1)' : 'rgba(5, 7, 16, 0.4)',
+                                      borderRadius: '10px',
+                                      border: isDragOverThisLoc 
+                                        ? '1px dashed #10b981' 
+                                        : '1px solid rgba(255,255,255,0.05)',
+                                      fontSize: '13px',
+                                      opacity: isDragged ? 0.4 : 1,
+                                      cursor: 'grab',
+                                      transition: 'all 0.2s'
+                                    }}
+                                  >
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                      <span style={{ color: '#475569', cursor: 'grab', marginRight: '-2px', fontSize: '14px', userSelect: 'none' }}>☰</span>
+                                      <span style={{ color: dayColor, fontWeight: '800', fontSize: '12px' }}>{dayIdx + 1}.</span>
+                                      <span>{emoji}</span>
+                                      <span style={{ fontWeight: '600', color: '#fff' }}>{language === 'RU' ? loc.name_ru : language === 'UZ' ? loc.name_uz : loc.name_en}</span>
+                                      {loc.is_out_of_city && <span style={{ fontSize: '10px', backgroundColor: 'rgba(212,175,55,0.15)', color: '#d4af37', padding: '1px 5px', borderRadius: '4px' }}>🏔</span>}
+                                    </div>
+                                    
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                      <span style={{ fontSize: '11px', color: '#64748b' }}>⏱️ {loc.estimated_duration}m</span>
+                                      <span style={{ fontSize: '11px', color: '#10b981', fontWeight: '500' }}>
+                                        🎟️ {parseFloat(loc.ticket_price) > 0 ? `$${parseFloat(loc.ticket_price).toFixed(2)}` : (language === 'UZ' ? 'bepul' : language === 'RU' ? 'бесплатно' : 'free')}
+                                      </span>
+                                      <div style={{ display: 'flex', gap: '2px' }}>
+                                        <button
+                                          type="button"
+                                          disabled={isFirstInDay}
+                                          onClick={() => handleMoveLocationUp(loc.id)}
+                                          style={{
+                                            padding: '2px 6px',
+                                            backgroundColor: isFirstInDay ? 'rgba(255,255,255,0.02)' : 'rgba(212,175,55,0.12)',
+                                            border: 'none',
+                                            color: isFirstInDay ? '#475569' : '#d4af37',
+                                            borderRadius: '4px',
+                                            cursor: isFirstInDay ? 'not-allowed' : 'pointer',
+                                            fontSize: '11px',
+                                            fontWeight: 'bold',
+                                            transition: 'all 0.2s'
+                                          }}
+                                        >
+                                          ▲
+                                        </button>
+                                        <button
+                                          type="button"
+                                          disabled={isLastInDay}
+                                          onClick={() => handleMoveLocationDown(loc.id)}
+                                          style={{
+                                            padding: '2px 6px',
+                                            backgroundColor: isLastInDay ? 'rgba(255,255,255,0.02)' : 'rgba(212,175,55,0.12)',
+                                            border: 'none',
+                                            color: isLastInDay ? '#475569' : '#d4af37',
+                                            borderRadius: '4px',
+                                            cursor: isLastInDay ? 'not-allowed' : 'pointer',
+                                            fontSize: '11px',
+                                            fontWeight: 'bold',
+                                            transition: 'all 0.2s'
+                                          }}
+                                        >
+                                          ▼
+                                        </button>
+                                      </div>
                                       <button
                                         type="button"
-                                        disabled={isFirstInDay}
-                                        onClick={() => handleMoveLocationUp(loc.id)}
+                                        onClick={() => handleToggleLocation(loc)}
                                         style={{
-                                          padding: '2px 6px',
-                                          backgroundColor: isFirstInDay ? 'rgba(255,255,255,0.02)' : 'rgba(212,175,55,0.12)',
                                           border: 'none',
-                                          color: isFirstInDay ? '#475569' : '#d4af37',
-                                          borderRadius: '4px',
-                                          cursor: isFirstInDay ? 'not-allowed' : 'pointer',
-                                          fontSize: '11px',
-                                          fontWeight: 'bold',
-                                          transition: 'all 0.2s'
+                                          background: 'none',
+                                          color: '#ef4444',
+                                          cursor: 'pointer',
+                                          padding: '0 4px',
+                                          fontWeight: '700',
+                                          fontSize: '14px'
                                         }}
                                       >
-                                        ▲
-                                      </button>
-                                      <button
-                                        type="button"
-                                        disabled={isLastInDay}
-                                        onClick={() => handleMoveLocationDown(loc.id)}
-                                        style={{
-                                          padding: '2px 6px',
-                                          backgroundColor: isLastInDay ? 'rgba(255,255,255,0.02)' : 'rgba(212,175,55,0.12)',
-                                          border: 'none',
-                                          color: isLastInDay ? '#475569' : '#d4af37',
-                                          borderRadius: '4px',
-                                          cursor: isLastInDay ? 'not-allowed' : 'pointer',
-                                          fontSize: '11px',
-                                          fontWeight: 'bold',
-                                          transition: 'all 0.2s'
-                                        }}
-                                      >
-                                        ▼
+                                        ✕
                                       </button>
                                     </div>
-                                    <button
-                                      type="button"
-                                      onClick={() => handleToggleLocation(loc)}
-                                      style={{
-                                        border: 'none',
-                                        background: 'none',
-                                        color: '#ef4444',
-                                        cursor: 'pointer',
-                                        padding: '0 4px',
-                                        fontWeight: '700',
-                                        fontSize: '14px'
-                                      }}
-                                    >
-                                      ✕
-                                    </button>
                                   </div>
-                                </div>
-                              );
-                            })}
+                                );
+                              })
+                            )}
                           </div>
                         );
                       })
@@ -1784,21 +1912,37 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                         if (loc.category === 'alternative') emoji = '🌲';
                         if (loc.category === 'food') emoji = '🍲';
                         
+                        const isDragged = draggedLocationId === loc.id;
+                        const isDragOverThisLoc = dragOverLocationId === loc.id;
+
                         return (
                           <div 
                             key={loc.id}
+                            draggable={true}
+                            onDragStart={(e) => handleDragStart(e, loc.id)}
+                            onDragEnd={handleDragEnd}
+                            onDragOver={handleDragOver}
+                            onDragEnter={() => setDragOverLocationId(loc.id)}
+                            onDragLeave={() => setDragOverLocationId(null)}
+                            onDrop={(e) => handleDropOnLocation(e, loc)}
                             style={{
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'space-between',
                               padding: '8px 12px',
-                              backgroundColor: 'rgba(5, 7, 16, 0.4)',
+                              backgroundColor: isDragOverThisLoc ? 'rgba(16, 185, 129, 0.1)' : 'rgba(5, 7, 16, 0.4)',
                               borderRadius: '10px',
-                              border: '1px solid rgba(255,255,255,0.05)',
-                              fontSize: '13px'
+                              border: isDragOverThisLoc 
+                                ? '1px dashed #10b981' 
+                                : '1px solid rgba(255,255,255,0.05)',
+                              fontSize: '13px',
+                              opacity: isDragged ? 0.4 : 1,
+                              cursor: 'grab',
+                              transition: 'all 0.2s'
                             }}
                           >
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <span style={{ color: '#475569', cursor: 'grab', marginRight: '-2px', fontSize: '14px', userSelect: 'none' }}>☰</span>
                               <span style={{ color: '#009b9e', fontWeight: '800', fontSize: '12px' }}>{idx + 1}.</span>
                               <span>{emoji}</span>
                               <span style={{ fontWeight: '600', color: '#fff' }}>{language === 'RU' ? loc.name_ru : language === 'UZ' ? loc.name_uz : loc.name_en}</span>
