@@ -19,7 +19,7 @@ async function getLocations() {
     if (result.length === 0) return MOCK_LOCATIONS;
 
     // Merge missing regions from mock data
-    ['buxoro', 'xorazm', 'shahrisabz'].forEach(region => {
+    ['buxoro', 'xorazm', 'shahrisabz', 'toshkent'].forEach(region => {
       if (!result.some(loc => loc.region === region)) {
         result = [...result, ...MOCK_LOCATIONS.filter(loc => loc.region === region)];
       }
@@ -53,7 +53,7 @@ async function getGuidesData() {
     if (guidesList.length === 0) return fallback;
 
     // Merge missing regions from mock data
-    ['buxoro', 'xorazm', 'shahrisabz'].forEach(region => {
+    ['buxoro', 'xorazm', 'shahrisabz', 'toshkent'].forEach(region => {
       if (!guidesList.some(g => g.region === region)) {
         const mockG = MOCK_GUIDES.filter(g => g.region === region);
         guidesList = [...guidesList, ...mockG];
@@ -82,7 +82,7 @@ async function getVehicles() {
     if (result.length === 0) return MOCK_VEHICLES;
 
     // Merge missing regions from mock data
-    ['buxoro', 'xorazm', 'shahrisabz'].forEach(region => {
+    ['buxoro', 'xorazm', 'shahrisabz', 'toshkent'].forEach(region => {
       if (!result.some(v => v.region === region)) {
         result = [...result, ...MOCK_VEHICLES.filter(v => v.region === region)];
       }
