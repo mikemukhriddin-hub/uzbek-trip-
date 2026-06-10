@@ -12,6 +12,7 @@ export default function CheckoutForm({
   language = 'EN',
   onSubmitBooking,
   isSubmitting = false,
+  activeRegion = 'samarqand',
 }) {
   const [formData, setFormData] = useState({
     name: '',
@@ -471,7 +472,13 @@ export default function CheckoutForm({
               {t.transportCost}{' '}
               {selectedVehicle ? (
                 <span style={{ fontSize: '11px', color: '#009b9e', backgroundColor: 'rgba(0,155,158,0.1)', padding: '1px 5px', borderRadius: '3px', marginLeft: '4px' }}>
-                  {selectedVehicle.car_model} ({isOutOfCityRoute ? '🏔 Mountain' : '🏙 City'})
+                  {selectedVehicle.car_model} ({
+                    activeRegion === 'cross_region'
+                      ? (language === 'UZ' ? '🇺🇿 Viloyatlararo' : language === 'RU' ? '🇺🇿 Межрегиональный' : '🇺🇿 Inter-Province')
+                      : isOutOfCityRoute
+                        ? (language === 'UZ' ? '🏔 Shaxar tashqarisi' : language === 'RU' ? '🏔 Загородный' : '🏔 Out of City')
+                        : (language === 'UZ' ? '🏙 Shahar ichi' : language === 'RU' ? '🏙 В черте города' : '🏙 City rate')
+                  })
                 </span>
               ) : (
                 <span style={{ fontSize: '11px', color: '#94a3b8', backgroundColor: 'rgba(255,255,255,0.05)', padding: '1px 5px', borderRadius: '3px', marginLeft: '4px' }}>

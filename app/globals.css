@@ -241,6 +241,59 @@ body[data-region="qoraqalpoq"] .btn-primary:hover {
 }
 
 
+/* ========================================================
+   🇺🇿 CROSS-REGION SPECIAL THEME OVERRIDES
+   Gold & Imperial Sapphire - All Uzbekistan
+   ======================================================== */
+body[data-region="cross_region"] {
+  --primary-blue: #d4af37; /* Gold */
+  --primary-blue-rgb: 212, 175, 55;
+  --deep-turquoise: #b8860b; /* Goldenrod/Bronze */
+  
+  /* Custom backgrounds for card/borders to match gold */
+  --bg-dark-card: rgba(26, 22, 10, 0.7);
+  --bg-dark-border: rgba(212, 175, 55, 0.2);
+  
+  --bg-card: rgba(26, 22, 10, 0.45);
+  --border-card: rgba(212, 175, 55, 0.2);
+}
+
+body[data-region="cross_region"] .selected-card-historical {
+  border-color: #d4af37 !important;
+  box-shadow: 0 0 18px rgba(212, 175, 55, 0.45) !important;
+  background: rgba(212, 175, 55, 0.08) !important;
+}
+
+body[data-region="cross_region"] .selected-card-alternative {
+  border-color: #b8860b !important;
+  box-shadow: 0 0 18px rgba(184, 134, 11, 0.45) !important;
+  background: rgba(184, 134, 11, 0.08) !important;
+}
+
+body[data-region="cross_region"] .blue-glow {
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.35);
+}
+
+body[data-region="cross_region"] .btn-primary {
+  background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
+  color: #0a0f1d !important;
+}
+
+body[data-region="cross_region"] .btn-primary:hover {
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.5);
+}
+
+/* Hide scrollbar utility for the region switcher */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+
+
 
 /* Default to Dark Mode for the rich, magical, atmospheric "Samarkand Night" vibe */
 body {

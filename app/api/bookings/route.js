@@ -352,11 +352,51 @@ export async function POST(req) {
     const smtpPassword = process.env.SMTP_PASSWORD;
     if (smtpUser && smtpPassword) {
       try {
-        const activeRegion = region === 'shahrisabz' ? 'shahrisabz' : region === 'xorazm' ? 'xorazm' : region === 'buxoro' ? 'buxoro' : 'samarqand';
-        const brandName = activeRegion === 'shahrisabz' ? 'Shahrisabz CrafTour' : activeRegion === 'xorazm' ? 'Xorazm CrafTour' : activeRegion === 'buxoro' ? 'Buxoro CrafTour' : 'Samarqand CrafTour';
-        const regionNameUz = activeRegion === 'shahrisabz' ? 'Shahrisabz' : activeRegion === 'xorazm' ? 'Xorazm' : activeRegion === 'buxoro' ? 'Buxoro' : 'Samarqand';
-        const regionNameRu = activeRegion === 'shahrisabz' ? 'Шахрисабз' : activeRegion === 'xorazm' ? 'Хорезм' : activeRegion === 'buxoro' ? 'Бухару' : 'Самарканд';
-        const regionNameEn = activeRegion === 'shahrisabz' ? 'Shahrisabz' : activeRegion === 'xorazm' ? 'Khorezm' : activeRegion === 'buxoro' ? 'Bukhara' : 'Samarkand';
+        const activeRegion = region === 'shahrisabz' 
+          ? 'shahrisabz' 
+          : region === 'xorazm' 
+            ? 'xorazm' 
+            : region === 'buxoro' 
+              ? 'buxoro' 
+              : region === 'toshkent'
+                ? 'toshkent'
+                : region === 'qoraqalpoq'
+                  ? 'qoraqalpoq'
+                  : region === 'cross_region'
+                    ? 'cross_region'
+                    : 'samarqand';
+
+        const brandName = activeRegion === 'shahrisabz' ? 'Shahrisabz CrafTour' 
+          : activeRegion === 'xorazm' ? 'Xorazm CrafTour' 
+          : activeRegion === 'buxoro' ? 'Buxoro CrafTour' 
+          : activeRegion === 'toshkent' ? 'Toshkent CrafTour'
+          : activeRegion === 'qoraqalpoq' ? 'Qoraqalpog\'iston CrafTour'
+          : activeRegion === 'cross_region' ? 'O\'zbekiston CrafTour'
+          : 'Samarqand CrafTour';
+
+        const regionNameUz = activeRegion === 'shahrisabz' ? 'Shahrisabz' 
+          : activeRegion === 'xorazm' ? 'Xorazm' 
+          : activeRegion === 'buxoro' ? 'Buxoro' 
+          : activeRegion === 'toshkent' ? 'Toshkent'
+          : activeRegion === 'qoraqalpoq' ? 'Qoraqalpog\'iston'
+          : activeRegion === 'cross_region' ? 'O\'zbekiston'
+          : 'Samarqand';
+
+        const regionNameRu = activeRegion === 'shahrisabz' ? 'Шахрисабз' 
+          : activeRegion === 'xorazm' ? 'Хорезм' 
+          : activeRegion === 'buxoro' ? 'Бухару' 
+          : activeRegion === 'toshkent' ? 'Ташкент'
+          : activeRegion === 'qoraqalpoq' ? 'Нукус/Каракалпакстан'
+          : activeRegion === 'cross_region' ? 'Узбекистан'
+          : 'Самарканд';
+
+        const regionNameEn = activeRegion === 'shahrisabz' ? 'Shahrisabz' 
+          : activeRegion === 'xorazm' ? 'Khorezm' 
+          : activeRegion === 'buxoro' ? 'Bukhara' 
+          : activeRegion === 'toshkent' ? 'Tashkent'
+          : activeRegion === 'qoraqalpoq' ? 'Karakalpakstan'
+          : activeRegion === 'cross_region' ? 'Uzbekistan'
+          : 'Samarkand';
 
         const emailSubject = lang === 'UZ'
           ? `${brandName} - Elektron pochtani tasdiqlash`

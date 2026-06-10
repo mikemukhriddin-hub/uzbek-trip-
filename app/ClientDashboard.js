@@ -37,6 +37,15 @@ const PaymentPortal = dynamic(() => import('@/components/PaymentPortal'), { ssr:
 import { MOCK_LOCATIONS, MOCK_GUIDES, MOCK_TARIFFS, MOCK_VEHICLES, UZ_LOCATIONS } from '@/lib/mockData';
 
 
+const WEATHER_DATA = {
+  samarqand: { temp: '28°C', uz: '☀️ Havo ochiq va quyoshli', ru: '☀️ Ясно, солнечно', en: '☀️ Clear skies & sunny forecast', nameUz: 'Samarqand', nameRu: 'Самарканде', nameEn: 'Samarkand' },
+  buxoro: { temp: '31°C', uz: '☀️ Issiq va quyoshli', ru: '☀️ Ясно, солнечно и жарко', en: '☀️ Warm, sunny & clear', nameUz: 'Buxoro', nameRu: 'Бухаре', nameEn: 'Bukhara' },
+  xorazm: { temp: '33°C', uz: '☀️ Quyoshli va cho\'l shamoli', ru: '☀️ Ясно, пустынный бриз', en: '☀️ Sunny, desert breeze', nameUz: 'Xorazm', nameRu: 'Хорезме', nameEn: 'Khorezm' },
+  shahrisabz: { temp: '27°C', uz: '☀️ Quyoshli va tog\' havosi', ru: '☀️ Ясно, свежий горный воздух', en: '☀️ Sunny, fresh mountain breeze', nameUz: 'Shahrisabz', nameRu: 'Шахрисабзе', nameEn: 'Shahrisabz' },
+  toshkent: { temp: '29°C', uz: '☀️ Muloqot va shahar tarovati', ru: '☀️ Ясно, городской ритм', en: '☀️ Sunny city life', nameUz: 'Toshkent', nameRu: 'Ташкенте', nameEn: 'Tashkent' },
+  qoraqalpoq: { temp: '32°C', uz: '☀️ Issiq va quruq sahro havosi', ru: '☀️ Ясно, сухой пустынный воздух', en: '☀️ Hot & dry desert air', nameUz: 'Nukus', nameRu: 'Нукусе', nameEn: 'Nukus' }
+};
+
 export default function ClientDashboard({ initialLocations = [], initialGuides = [], initialTariffs = [], initialVehicles = [] }) {
   const [language, setLanguage] = useState('UZ'); // Site UI Language - default to UZ
   const [showLangDropdown, setShowLangDropdown] = useState(false);
@@ -52,7 +61,9 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
   const [tariffs, setTariffs] = useState(initialTariffs && initialTariffs.length > 0 ? initialTariffs : MOCK_TARIFFS);
   const [vehicles, setVehicles] = useState(initialVehicles && initialVehicles.length > 0 ? initialVehicles : MOCK_VEHICLES);
 
-  const [activeRegion, setActiveRegion] = useState('samarqand'); // 'samarqand', 'buxoro', 'xorazm', or 'shahrisabz'
+  const [activeRegion, setActiveRegion] = useState('samarqand'); // 'samarqand', 'buxoro', 'xorazm', 'shahrisabz', 'toshkent', 'qoraqalpoq', or 'cross_region'
+  const [crossRegionStart, setCrossRegionStart] = useState('samarqand'); // starting point for cross-region tours
+  const [crossRegionLocationFilter, setCrossRegionLocationFilter] = useState('all'); // sub-region browsing filter
 
   // Constructor States
   const [selectedLocations, setSelectedLocations] = useState([]);
@@ -64,15 +75,32 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
     setSelectedLocations([]);
     setSelectedVehicle(null);
     setSelectedGuide(null);
+    setCrossRegionLocationFilter('all');
     if (typeof document !== 'undefined') {
       document.body.setAttribute('data-region', activeRegion);
       localStorage.setItem('active_region', activeRegion);
     }
   }, [activeRegion]);
 
-  const filteredLocations = locations.filter(loc => (loc.region || 'samarqand') === activeRegion);
-  const filteredGuides = guides.filter(g => (g.region || 'samarqand') === activeRegion);
-  const filteredVehicles = vehicles.filter(v => (v.region || 'samarqand') === activeRegion);
+  // Reset selected guide & driver when starting region changes in cross-region mode
+  useEffect(() => {
+    setSelectedVehicle(null);
+    setSelectedGuide(null);
+  }, [crossRegionStart]);
+
+  const filteredLocations = activeRegion === 'cross_region'
+    ? (crossRegionLocationFilter === 'all'
+      ? locations
+      : locations.filter(loc => (loc.region || 'samarqand') === crossRegionLocationFilter))
+    : locations.filter(loc => (loc.region || 'samarqand') === activeRegion);
+
+  const filteredGuides = activeRegion === 'cross_region'
+    ? guides.filter(g => (g.region || 'samarqand') === crossRegionStart)
+    : guides.filter(g => (g.region || 'samarqand') === activeRegion);
+
+  const filteredVehicles = activeRegion === 'cross_region'
+    ? vehicles.filter(v => (v.region || 'samarqand') === crossRegionStart)
+    : vehicles.filter(v => (v.region || 'samarqand') === activeRegion);
   const [selectedGuideLanguage, setSelectedGuideLanguage] = useState('EN');
 
   // Checkout & OTP verification states
@@ -121,7 +149,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
   }, [selectedGuideLanguage]);
 
   // Determine if route includes any mountain/out-of-city zones
-  const isOutOfCityRoute = selectedLocations.some((loc) => loc.is_out_of_city);
+  const isOutOfCityRoute = activeRegion === 'cross_region' || selectedLocations.some((loc) => loc.is_out_of_city);
 
   const totalDuration = selectedLocations.reduce((sum, loc) => sum + (loc.estimated_duration || 0), 0);
 
@@ -338,7 +366,9 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
   };
 
   const t = {
-    heroTitle: activeRegion === 'qoraqalpoq'
+    heroTitle: activeRegion === 'cross_region'
+      ? (language === 'RU' ? 'Комбинированный тур по Узбекистану' : language === 'UZ' ? 'O\'zbekiston Kombinatsiyalangan CrafTour' : 'Uzbekistan Cross-Region CrafTour')
+      : activeRegion === 'qoraqalpoq'
       ? (language === 'RU' ? 'Каракалпакстан CrafTour' : language === 'UZ' ? 'Qoraqalpog\'iston CrafTour' : 'Karakalpakstan CrafTour')
       : activeRegion === 'toshkent'
       ? (language === 'RU' ? 'Ташкент CrafTour' : 'Toshkent CrafTour')
@@ -349,7 +379,13 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
       : activeRegion === 'buxoro'
       ? (language === 'RU' ? 'Бухара CrafTour' : 'Buxoro CrafTour')
       : (language === 'RU' ? 'Самарканд CrafTour' : 'Samarqand CrafTour'),
-    heroSubtitle: activeRegion === 'qoraqalpoq'
+    heroSubtitle: activeRegion === 'cross_region'
+      ? (language === 'UZ'
+        ? 'O\'zbekistonning bir nechta viloyatlari bo\'ylab o\'zingizning shaxsiy sayohatingizni yarating. Gid va transportni istalgan shahardan boshlang!'
+        : language === 'RU'
+        ? 'Создайте свой собственный уникальный маршрут по нескольким регионам Узбекистана. Выберите гида и транспорт из города старта.'
+        : 'Craft your custom itinerary across multiple provinces of Uzbekistan. Hire guides and drivers starting from your pickup city.')
+      : activeRegion === 'qoraqalpoq'
       ? (language === 'UZ'
         ? 'Orol dengizi, Ustyurt platosi va Savitskiy muzeyi bo\'ylab o\'zingizning shaxsiy sayohatingizni yarating'
         : language === 'RU'
@@ -357,7 +393,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
         : 'Craft your own tailor-made adventure in Karakalpakstan — to the Aral Sea, Ustyurt Plateau, and Savitsky Museum')
       : activeRegion === 'toshkent'
       ? (language === 'UZ'
-        ? 'Zamonaviy va qadimiy Toshkentning diqqatga sazovor joylari bo\'ylab o\'zingizning shaxsiy sayohatingizni yarating'
+        ? 'Zamonaviy va qadimiy Toshkentning diqqatga zobor joylari bo\'ylab o\'zingizning shaxsiy sayohatingizni yarating'
         : language === 'RU'
         ? 'Создайте своё идеальное путешествие по великолепному Ташкенту — столице Узбекистана'
         : 'Craft your own tailor-made adventure in magnificent Tashkent — the capital of Uzbekistan')
@@ -769,21 +805,27 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
             <Compass size={20} className="animate-spin" style={{ animationDuration: '20s' }} />
           </div>
           <span style={{ fontSize: '18px', fontWeight: 800, letterSpacing: '0.05em', color: '#fff', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            {activeRegion === 'qoraqalpoq' ? 'QORAQALPOQ' : activeRegion === 'toshkent' ? 'TOSHKENT' : activeRegion === 'shahrisabz' ? 'SHAHRISABZ' : activeRegion === 'xorazm' ? 'XORAZM' : activeRegion === 'buxoro' ? 'BUXORO' : 'SAMARQAND'} <span style={{ color: '#d4af37' }}>CRAFTOUR</span>
+            {activeRegion === 'cross_region' ? 'O\'ZBEKISTON' : activeRegion === 'qoraqalpoq' ? 'QORAQALPOQ' : activeRegion === 'toshkent' ? 'TOSHKENT' : activeRegion === 'shahrisabz' ? 'SHAHRISABZ' : activeRegion === 'xorazm' ? 'XORAZM' : activeRegion === 'buxoro' ? 'BUXORO' : 'SAMARQAND'} <span style={{ color: '#d4af37' }}>CRAFTOUR</span>
           </span>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {/* Region Switcher */}
-          <div style={{
-            display: 'flex',
-            backgroundColor: 'rgba(5, 7, 16, 0.4)',
-            border: '1px solid rgba(212, 175, 55, 0.25)',
-            borderRadius: '12px',
-            padding: '3px',
-            gap: '2px',
-            marginRight: '4px'
-          }}>
+          <div 
+            className="no-scrollbar"
+            style={{
+              display: 'flex',
+              backgroundColor: 'rgba(5, 7, 16, 0.4)',
+              border: '1px solid rgba(212, 175, 55, 0.25)',
+              borderRadius: '12px',
+              padding: '3px',
+              gap: '2px',
+              marginRight: '4px',
+              overflowX: 'auto',
+              maxWidth: '380px',
+              whiteSpace: 'nowrap'
+            }}
+          >
             <button
               onClick={() => setActiveRegion('samarqand')}
               style={{
@@ -897,6 +939,25 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
               }}
             >
               {language === 'UZ' ? 'Qoraqalpoq' : language === 'RU' ? 'Каракалпак' : 'Karakalpak'}
+            </button>
+            <button
+              onClick={() => setActiveRegion('cross_region')}
+              style={{
+                padding: '6px 12px',
+                borderRadius: '8px',
+                border: 'none',
+                background: activeRegion === 'cross_region' 
+                  ? 'linear-gradient(135deg, #d4af37 0%, #b8860b 100%)' 
+                  : 'transparent',
+                color: activeRegion === 'cross_region' ? '#0a0f1d' : '#94a3b8',
+                fontSize: '12px',
+                fontWeight: '700',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                boxShadow: activeRegion === 'cross_region' ? '0 2px 8px rgba(212, 175, 55, 0.4)' : 'none'
+              }}
+            >
+              {language === 'UZ' ? '🇺🇿 Viloyatlararo' : language === 'RU' ? '🇺🇿 Межрегиональный' : '🇺🇿 Cross-Region'}
             </button>
           </div>
 
@@ -1081,6 +1142,49 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
             </div>
 
             {/* 🌤 Live Traveler Info & Weather Banner */}
+            {activeRegion === 'cross_region' && (
+              <div 
+                className="glass-container gold-glow animate-fade-in" 
+                style={{
+                  padding: '16px 20px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px',
+                  border: '1px solid rgba(212, 175, 55, 0.3)',
+                  background: 'linear-gradient(135deg, rgba(10, 15, 29, 0.4) 0%, rgba(212, 175, 55, 0.06) 100%)',
+                }}
+              >
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <label style={{ fontSize: '13px', fontWeight: '700', color: '#d4af37', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <MapPin size={14} />
+                    <span>{language === 'UZ' ? 'Sayohatni boshlash viloyati (Gid va Transport keladigan shahar):' : language === 'RU' ? 'Регион начала поездки (город отправления гида и транспорта):' : 'Starting Region (Where your guide & transport will start):'}</span>
+                  </label>
+                  <select
+                    value={crossRegionStart}
+                    onChange={(e) => setCrossRegionStart(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '10px 14px',
+                      borderRadius: '8px',
+                      backgroundColor: 'rgba(10, 15, 29, 0.8)',
+                      border: '1px solid rgba(212, 175, 55, 0.3)',
+                      color: '#fff',
+                      fontSize: '14px',
+                      outline: 'none',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <option value="samarqand" style={{ backgroundColor: '#0f172a' }}>{language === 'UZ' ? 'Samarqand' : language === 'RU' ? 'Самарканд' : 'Samarkand'}</option>
+                    <option value="buxoro" style={{ backgroundColor: '#0f172a' }}>{language === 'UZ' ? 'Buxoro' : language === 'RU' ? 'Бухара' : 'Bukhara'}</option>
+                    <option value="xorazm" style={{ backgroundColor: '#0f172a' }}>{language === 'UZ' ? 'Xorazm' : language === 'RU' ? 'Хорезм' : 'Khorezm'}</option>
+                    <option value="shahrisabz" style={{ backgroundColor: '#0f172a' }}>{language === 'UZ' ? 'Shahrisabz' : language === 'RU' ? 'Шахрисабз' : 'Shahrisabz'}</option>
+                    <option value="toshkent" style={{ backgroundColor: '#0f172a' }}>{language === 'UZ' ? 'Toshkent' : language === 'RU' ? 'Ташкент' : 'Tashkent'}</option>
+                    <option value="qoraqalpoq" style={{ backgroundColor: '#0f172a' }}>{language === 'UZ' ? 'Qoraqalpog\'iston' : language === 'RU' ? 'Каракалпакстан' : 'Karakalpakstan'}</option>
+                  </select>
+                </div>
+              </div>
+            )}
+
             <div 
               className="glass-container gold-glow" 
               style={{
@@ -1110,34 +1214,31 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                   <span style={{ fontSize: '15px', fontWeight: '800', color: '#fff' }}>
-                    {activeRegion === 'qoraqalpoq'
-                      ? (language === 'UZ' ? 'Bugun Nukusda: 32°C' : language === 'RU' ? 'Нукус сегодня: 32°C' : 'Nukus Today: 32°C')
-                      : activeRegion === 'toshkent'
-                      ? (language === 'UZ' ? 'Bugun Toshkentda: 29°C' : language === 'RU' ? 'Ташкент сегодня: 29°C' : 'Tashkent Today: 29°C')
-                      : activeRegion === 'shahrisabz'
-                      ? (language === 'UZ' ? 'Bugun Shahrisabzda: 27°C' : language === 'RU' ? 'Шахрисабз сегодня: 27°C' : 'Shahrisabz Today: 27°C')
-                      : activeRegion === 'xorazm'
-                      ? (language === 'UZ' ? 'Bugun Xorazmda: 33°C' : language === 'RU' ? 'Хорезм сегодня: 33°C' : 'Khorezm Today: 33°C')
-                      : activeRegion === 'buxoro'
-                      ? (language === 'UZ' ? 'Bugun Buxoroda: 31°C' : language === 'RU' ? 'Бухара сегодня: 31°C' : 'Bukhara Today: 31°C')
-                      : (language === 'UZ' ? 'Bugun Samarqandda: 28°C' : language === 'RU' ? 'Самарканд сегодня: 28°C' : 'Samarkand Today: 28°C')}
+                    {(() => {
+                      const weatherReg = activeRegion === 'cross_region' ? crossRegionStart : activeRegion;
+                      const weather = WEATHER_DATA[weatherReg] || WEATHER_DATA.samarqand;
+                      return (
+                        <>
+                           {language === 'UZ' 
+                             ? `Bugun ${weather.nameUz}da: ${weather.temp}` 
+                             : language === 'RU' 
+                               ? `${weather.nameRu} сегодня: ${weather.temp}` 
+                               : `${weather.nameEn} Today: ${weather.temp}`}
+                           {activeRegion === 'cross_region' && (language === 'UZ' ? ' (boshlanish)' : language === 'RU' ? ' (старт)' : ' (start)')}
+                        </>
+                      );
+                    })()}
                   </span>
                   <span style={{
                     fontSize: '12px',
-                    color: activeRegion === 'qoraqalpoq' ? '#a78bfa' : activeRegion === 'toshkent' ? '#3b82f6' : activeRegion === 'shahrisabz' ? '#00a36c' : activeRegion === 'xorazm' ? '#00a896' : activeRegion === 'buxoro' ? '#b25329' : '#009b9e',
+                    color: (activeRegion === 'cross_region' ? crossRegionStart : activeRegion) === 'qoraqalpoq' ? '#a78bfa' : (activeRegion === 'cross_region' ? crossRegionStart : activeRegion) === 'toshkent' ? '#3b82f6' : (activeRegion === 'cross_region' ? crossRegionStart : activeRegion) === 'shahrisabz' ? '#00a36c' : (activeRegion === 'cross_region' ? crossRegionStart : activeRegion) === 'xorazm' ? '#00a896' : (activeRegion === 'cross_region' ? crossRegionStart : activeRegion) === 'buxoro' ? '#b25329' : '#009b9e',
                     fontWeight: '500'
                   }}>
-                    {activeRegion === 'qoraqalpoq'
-                      ? (language === 'UZ' ? '☀️ Issiq va quruq sahro havosi' : language === 'RU' ? '☀️ Ясно, сухой пустынный воздух' : '☀️ Hot & dry desert air')
-                      : activeRegion === 'toshkent'
-                      ? (language === 'UZ' ? '☀️ Muloqot va shahar tarovati' : language === 'RU' ? '☀️ Ясно, городской ритм' : '☀️ Sunny city life')
-                      : activeRegion === 'shahrisabz'
-                      ? (language === 'UZ' ? '☀️ Quyoshli va tog\' havosi' : language === 'RU' ? '☀️ Ясно, свежий горный воздух' : '☀️ Sunny, fresh mountain breeze')
-                      : activeRegion === 'xorazm'
-                      ? (language === 'UZ' ? '☀️ Quyoshli va cho\'l shamoli' : language === 'RU' ? '☀️ Ясно, пустынный бриз' : '☀️ Sunny, desert breeze')
-                      : activeRegion === 'buxoro'
-                      ? (language === 'UZ' ? '☀️ Issiq va quyoshli' : language === 'RU' ? '☀️ Ясно, солнечно и жарко' : '☀️ Warm, sunny & clear')
-                      : (language === 'UZ' ? '☀️ Havo ochiq va quyoshli' : language === 'RU' ? '☀️ Ясно, солнечно и тепло' : '☀️ Clear skies & sunny forecast')}
+                    {(() => {
+                      const weatherReg = activeRegion === 'cross_region' ? crossRegionStart : activeRegion;
+                      const weather = WEATHER_DATA[weatherReg] || WEATHER_DATA.samarqand;
+                      return language === 'UZ' ? weather.uz : language === 'RU' ? weather.ru : weather.en;
+                    })()}
                   </span>
                 </div>
               </div>
@@ -1189,6 +1290,55 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                   </div>
                 )}
               </div>
+              {activeRegion === 'cross_region' && (
+                <div 
+                  className="no-scrollbar"
+                  style={{
+                    display: 'flex',
+                    gap: '6px',
+                    overflowX: 'auto',
+                    padding: '4px 0',
+                    margin: '4px 0 10px 0',
+                    borderBottom: '1px solid rgba(255,255,255,0.08)',
+                    whiteSpace: 'nowrap'
+                  }} 
+                >
+                  {[
+                    { id: 'all', labelUz: 'Barchasi', labelRu: 'Все', labelEn: 'All' },
+                    { id: 'samarqand', labelUz: 'Samarqand', labelRu: 'Самарканд', labelEn: 'Samarkand' },
+                    { id: 'buxoro', labelUz: 'Buxoro', labelRu: 'Бухара', labelEn: 'Bukhara' },
+                    { id: 'xorazm', labelUz: 'Xorazm', labelRu: 'Хорезм', labelEn: 'Khorezm' },
+                    { id: 'shahrisabz', labelUz: 'Shahrisabz', labelRu: 'Шахрисабз', labelEn: 'Shahrisabz' },
+                    { id: 'toshkent', labelUz: 'Toshkent', labelRu: 'Ташкент', labelEn: 'Tashkent' },
+                    { id: 'qoraqalpoq', labelUz: 'Qoraqalpog\'iston', labelRu: 'Каракалпакстан', labelEn: 'Karakalpakstan' }
+                  ].map((tab) => {
+                    const isSelected = crossRegionLocationFilter === tab.id;
+                    return (
+                      <button
+                        key={tab.id}
+                        type="button"
+                        onClick={() => setCrossRegionLocationFilter(tab.id)}
+                        style={{
+                          padding: '6px 12px',
+                          borderRadius: '8px',
+                          border: isSelected ? '1px solid #d4af37' : '1px solid rgba(255,255,255,0.08)',
+                          background: isSelected 
+                            ? 'linear-gradient(135deg, #d4af37 0%, #b8860b 100%)' 
+                            : 'rgba(255, 255, 255, 0.05)',
+                          color: isSelected ? '#0a0f1d' : '#94a3b8',
+                          fontSize: '12px',
+                          fontWeight: '700',
+                          cursor: 'pointer',
+                          whiteSpace: 'nowrap',
+                          transition: 'all 0.2s ease',
+                        }}
+                      >
+                        {language === 'UZ' ? tab.labelUz : language === 'RU' ? tab.labelRu : tab.labelEn}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
               <RouteBuilder
                 locations={filteredLocations}
                 selectedLocations={selectedLocations}
@@ -1235,6 +1385,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 language={language}
                 onSubmitBooking={handleSubmitBooking}
                 isSubmitting={isSubmitting}
+                activeRegion={activeRegion}
               />
             </section>
 
@@ -1258,7 +1409,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 <span>Interactive Route Visualizer</span>
               </div>
               <Map
-                locations={filteredLocations}
+                locations={activeRegion === 'cross_region' ? locations : filteredLocations}
                 selectedLocations={selectedLocations}
                 language={language}
                 activeRegion={activeRegion}

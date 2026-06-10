@@ -46,7 +46,9 @@ export default function Map({ locations = [], selectedLocations = [], language =
         shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
       });
 
-      const defaultCenter = activeRegion === 'qoraqalpoq'
+      const defaultCenter = activeRegion === 'cross_region'
+        ? [40.5, 65.0] // Geographic center of Uzbekistan
+        : activeRegion === 'qoraqalpoq'
         ? [42.4646, 59.6019]
         : activeRegion === 'toshkent'
         ? [41.2995, 69.2401]
@@ -57,7 +59,9 @@ export default function Map({ locations = [], selectedLocations = [], language =
         : activeRegion === 'buxoro'
         ? [39.7747, 64.4286]
         : [39.6548, 66.9757];
-      const defaultZoom = activeRegion === 'qoraqalpoq'
+      const defaultZoom = activeRegion === 'cross_region'
+        ? 6.2
+        : activeRegion === 'qoraqalpoq'
         ? 8
         : activeRegion === 'toshkent'
         ? 13
@@ -112,28 +116,29 @@ export default function Map({ locations = [], selectedLocations = [], language =
         const isSelected = selectedIndex !== -1;
 
         // Marker color code: Historical (Blue/Orange/Teal), Alternative (Teal/Turquoise/Clay), Food (Gold)
-        let color = activeRegion === 'qoraqalpoq'
+        const markerRegion = activeRegion === 'cross_region' ? (loc.region || 'samarqand') : activeRegion;
+        let color = markerRegion === 'qoraqalpoq'
           ? '#7c3aed'
-          : activeRegion === 'toshkent'
+          : markerRegion === 'toshkent'
           ? '#1e40af'
-          : activeRegion === 'shahrisabz'
+          : markerRegion === 'shahrisabz'
           ? '#008060'
-          : activeRegion === 'xorazm'
+          : markerRegion === 'xorazm'
           ? '#028090'
-          : activeRegion === 'buxoro'
+          : markerRegion === 'buxoro'
           ? '#c05a1a'
           : '#0070c0';
 
         if (loc.category === 'alternative') {
-          color = activeRegion === 'qoraqalpoq'
+          color = markerRegion === 'qoraqalpoq'
             ? '#a78bfa'
-            : activeRegion === 'toshkent'
+            : markerRegion === 'toshkent'
             ? '#3b82f6'
-            : activeRegion === 'shahrisabz'
+            : markerRegion === 'shahrisabz'
             ? '#00a36c'
-            : activeRegion === 'xorazm'
+            : markerRegion === 'xorazm'
             ? '#00a896'
-            : activeRegion === 'buxoro'
+            : markerRegion === 'buxoro'
             ? '#b25329'
             : '#009b9e';
         }
