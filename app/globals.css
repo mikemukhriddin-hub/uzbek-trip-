@@ -822,6 +822,12 @@ input:focus, select:focus, textarea:focus {
   }
 }
 
+@media (min-width: 1024px) {
+  .ribbon-switcher {
+    display: none !important;
+  }
+}
+
 /* Main Layout Grid & Column Ordering */
 .main-interface-grid {
   display: grid !important;
