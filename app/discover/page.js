@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, use } from 'react';
+import React, { useState, useEffect, use, useRef } from 'react';
 import Link from 'next/link';
 import { 
   ArrowLeft, 
@@ -442,6 +442,7 @@ export default function DiscoverPage({ searchParams }) {
   const initialRegion = (regionParam === 'buxoro' || regionParam === 'samarqand' || regionParam === 'xorazm' || regionParam === 'shahrisabz' || regionParam === 'toshkent' || regionParam === 'qoraqalpoq') ? regionParam : 'samarqand';
 
   const [activeRegion, setActiveRegion] = useState(initialRegion);
+  const isLoadedRef = useRef(false);
   const [language, setLanguage] = useState('EN');
   const [showLangDropdown, setShowLangDropdown] = useState(false);
   const [activeSlide, setActiveSlide] = useState(0);
@@ -472,11 +473,16 @@ export default function DiscoverPage({ searchParams }) {
     // Load active region from localStorage only if no query param was provided
     if (!regionParam) {
       const savedRegion = localStorage.getItem('active_region');
-      if (savedRegion && (savedRegion === 'samarqand' || savedRegion === 'buxoro' || savedRegion === 'xorazm' || savedRegion === 'shahrisabz')) {
+      if (savedRegion && (savedRegion === 'samarqand' || savedRegion === 'buxoro' || savedRegion === 'xorazm' || savedRegion === 'shahrisabz' || savedRegion === 'toshkent' || savedRegion === 'qoraqalpoq')) {
         Promise.resolve().then(() => {
           setActiveRegion(savedRegion);
+          isLoadedRef.current = true;
         });
+      } else {
+        isLoadedRef.current = true;
       }
+    } else {
+      isLoadedRef.current = true;
     }
   }, [regionParam]);
 
@@ -485,7 +491,9 @@ export default function DiscoverPage({ searchParams }) {
     setActiveSlide(0);
     if (typeof document !== 'undefined') {
       document.body.setAttribute('data-region', activeRegion);
-      localStorage.setItem('active_region', activeRegion);
+      if (isLoadedRef.current) {
+        localStorage.setItem('active_region', activeRegion);
+      }
     }
   }, [activeRegion]);
 

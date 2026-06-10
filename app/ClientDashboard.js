@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { Compass, Sparkles, MapPin, CheckCircle, XCircle, Languages, AlertCircle, Lock, Info, Sun } from 'lucide-react';
@@ -151,6 +151,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
   const [vehicles, setVehicles] = useState(initialVehicles && initialVehicles.length > 0 ? initialVehicles : MOCK_VEHICLES);
 
   const [activeRegion, setActiveRegion] = useState('samarqand'); // 'samarqand', 'buxoro', 'xorazm', 'shahrisabz', 'toshkent', 'qoraqalpoq', or 'cross_region'
+  const isLoadedRef = useRef(false);
   const [crossRegionStart, setCrossRegionStart] = useState('samarqand'); // starting point for cross-region tours
   const [crossRegionLocationFilter, setCrossRegionLocationFilter] = useState('all'); // sub-region browsing filter
 
@@ -181,7 +182,6 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
     setDragOverDay(null);
     if (typeof document !== 'undefined') {
       document.body.setAttribute('data-region', activeRegion);
-      localStorage.setItem('active_region', activeRegion);
     }
   }, [activeRegion]);
 
@@ -255,13 +255,16 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
     if (savedRegion) {
       Promise.resolve().then(() => {
         setActiveRegion(savedRegion);
+        isLoadedRef.current = true;
       });
+    } else {
+      isLoadedRef.current = true;
     }
   }, []);
 
   // Save activeRegion to localStorage when it changes to persist it on refresh
   useEffect(() => {
-    if (activeRegion) {
+    if (isLoadedRef.current && activeRegion) {
       localStorage.setItem('active_region', activeRegion);
     }
   }, [activeRegion]);
