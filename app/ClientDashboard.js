@@ -69,6 +69,9 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
   const [selectedLocations, setSelectedLocations] = useState([]);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [selectedGuide, setSelectedGuide] = useState(null);
+  const [tourDurationType, setTourDurationType] = useState('single'); // 'single' or 'multi'
+  const [numDays, setNumDays] = useState(2); // 2 to 5 days
+  const [activePlanningDay, setActivePlanningDay] = useState(1); // active day for planning (1 to numDays)
 
   // Sync region switches, reset selections and apply theme data-attribute
   useEffect(() => {
@@ -76,11 +79,22 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
     setSelectedVehicle(null);
     setSelectedGuide(null);
     setCrossRegionLocationFilter('all');
+    setTourDurationType('single');
+    setNumDays(2);
+    setActivePlanningDay(1);
     if (typeof document !== 'undefined') {
       document.body.setAttribute('data-region', activeRegion);
       localStorage.setItem('active_region', activeRegion);
     }
   }, [activeRegion]);
+
+  // Reset selected locations and other components when changing between single-day and multi-day tours
+  useEffect(() => {
+    setSelectedLocations([]);
+    setSelectedVehicle(null);
+    setSelectedGuide(null);
+    setActivePlanningDay(1);
+  }, [tourDurationType]);
 
   // Reset selected guide & driver when starting region changes in cross-region mode
   useEffect(() => {
@@ -188,9 +202,21 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
       if (exists) {
         return prev.filter((item) => item.id !== loc.id);
       } else {
-        return [...prev, loc];
+        if (tourDurationType === 'multi') {
+          return [...prev, { ...loc, selectedDay: activePlanningDay }];
+        } else {
+          return [...prev, loc];
+        }
       }
     });
+  };
+
+  const handleUpdateLocationDay = (locId, newDay) => {
+    setSelectedLocations((prev) =>
+      prev.map((item) =>
+        item.id === locId ? { ...item, selectedDay: newDay } : item
+      )
+    );
   };
 
   const handleSelectVehicle = (vehicle) => {
@@ -221,11 +247,24 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
       customerLanguage: language,
       passengerCount: formData.passengerCount || 1,
       bookingType: formData.bookingType || 'private',
-      locations: selectedLocations.map((loc, idx) => ({
-        locationId: loc.id,
-        visitOrder: idx + 1,
-      })),
+      locations: selectedLocations.map((loc, idx) => {
+        if (tourDurationType === 'multi') {
+          const day = loc.selectedDay || 1;
+          const dayIndex = selectedLocations.slice(0, idx).filter(l => (l.selectedDay || 1) === day).length;
+          return {
+            locationId: loc.id,
+            visitOrder: day * 100 + (dayIndex + 1),
+          };
+        } else {
+          return {
+            locationId: loc.id,
+            visitOrder: idx + 1,
+          };
+        }
+      }),
       region: activeRegion,
+      tourDurationType,
+      numDays: tourDurationType === 'multi' ? numDays : 1,
     };
 
     try {
@@ -1280,6 +1319,161 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 <AlertCircle size={12} style={{ color: '#009b9e' }} />
                 <span>{t.disclaimer}</span>
               </div>
+              
+              {/* Tour Duration Type Toggle & Day Selector (Premium Gold/Teal Design) */}
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px',
+                padding: '16px',
+                backgroundColor: 'rgba(15, 23, 42, 0.6)',
+                borderRadius: '12px',
+                border: '1px solid rgba(212, 175, 55, 0.2)',
+                marginTop: '4px',
+                marginBottom: '8px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '13px', fontWeight: '700', color: '#fff' }}>
+                    {language === 'UZ' ? 'Sayohat turi:' : language === 'RU' ? 'Тип поездки:' : 'Tour Type:'}
+                  </span>
+                  
+                  {/* Toggle Selector */}
+                  <div style={{
+                    display: 'flex',
+                    backgroundColor: 'rgba(5, 7, 16, 0.5)',
+                    padding: '2px',
+                    borderRadius: '8px',
+                    border: '1px solid rgba(255,255,255,0.08)'
+                  }}>
+                    <button
+                      type="button"
+                      onClick={() => setTourDurationType('single')}
+                      style={{
+                        padding: '6px 12px',
+                        borderRadius: '6px',
+                        border: 'none',
+                        background: tourDurationType === 'single' ? 'linear-gradient(135deg, #0070c0 0%, #009b9e 100%)' : 'transparent',
+                        color: tourDurationType === 'single' ? '#fff' : '#94a3b8',
+                        fontSize: '12px',
+                        fontWeight: '700',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      {language === 'UZ' ? 'Bir kunlik' : language === 'RU' ? 'Однодневный' : '1-Day Tour'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setTourDurationType('multi')}
+                      style={{
+                        padding: '6px 12px',
+                        borderRadius: '6px',
+                        border: 'none',
+                        background: tourDurationType === 'multi' ? 'linear-gradient(135deg, #d4af37 0%, #b8860b 100%)' : 'transparent',
+                        color: tourDurationType === 'multi' ? '#0a0f1d' : '#94a3b8',
+                        fontSize: '12px',
+                        fontWeight: '700',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      {language === 'UZ' ? 'Ko\'p kunlik' : language === 'RU' ? 'Многодневный' : 'Multi-Day'}
+                    </button>
+                  </div>
+                </div>
+
+                {tourDurationType === 'multi' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '10px' }} className="animate-fade-in">
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+                      <span style={{ fontSize: '13px', fontWeight: '700', color: '#d4af37' }}>
+                        {language === 'UZ' ? 'Kunlar soni:' : language === 'RU' ? 'Количество дней:' : 'Number of Days:'}
+                      </span>
+                      <select
+                        value={numDays}
+                        onChange={(e) => {
+                          const val = parseInt(e.target.value, 10);
+                          setNumDays(val);
+                          if (activePlanningDay > val) {
+                            setActivePlanningDay(val);
+                          }
+                        }}
+                        style={{
+                          padding: '6px 12px',
+                          borderRadius: '6px',
+                          backgroundColor: 'rgba(10, 15, 29, 0.8)',
+                          border: '1px solid rgba(212, 175, 55, 0.3)',
+                          color: '#fff',
+                          fontSize: '13px',
+                          outline: 'none',
+                          cursor: 'pointer',
+                          fontWeight: '600'
+                        }}
+                      >
+                        <option value={2}>2 {language === 'UZ' ? 'kun' : language === 'RU' ? 'дня' : 'Days'}</option>
+                        <option value={3}>3 {language === 'UZ' ? 'kun' : language === 'RU' ? 'дня' : 'Days'}</option>
+                        <option value={4}>4 {language === 'UZ' ? 'kun' : language === 'RU' ? 'дня' : 'Days'}</option>
+                        <option value={5}>5 {language === 'UZ' ? 'kun' : language === 'RU' ? 'дней' : 'Days'}</option>
+                      </select>
+                    </div>
+
+                    {/* Day Selection Tabs with selected count badge */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '4px' }}>
+                      <span style={{ fontSize: '11px', color: '#94a3b8', fontWeight: '600' }}>
+                        {language === 'UZ' ? 'Hozirgi rejalashtirilayotgan kun (joylar shu kunga qo\'shiladi):' : language === 'RU' ? 'Планируемый день (места будут добавлены на этот день):' : 'Active Planning Day (added places go here):'}
+                      </span>
+                      <div className="no-scrollbar" style={{ display: 'flex', gap: '6px', overflowX: 'auto', padding: '2px 0' }}>
+                        {Array.from({ length: numDays }, (_, i) => i + 1).map((d) => {
+                          const isDayActive = activePlanningDay === d;
+                          const dayLocationsCount = selectedLocations.filter(loc => (loc.selectedDay || 1) === d).length;
+                          const dayColors = {
+                            1: '#d4af37', // Gold
+                            2: '#009b9e', // Teal
+                            3: '#c05a1a', // Terracotta
+                            4: '#7c3aed', // Purple
+                            5: '#008060', // Green
+                          };
+                          const activeColor = dayColors[d] || '#d4af37';
+                          return (
+                            <button
+                              key={d}
+                              type="button"
+                              onClick={() => setActivePlanningDay(d)}
+                              style={{
+                                padding: '6px 12px',
+                                borderRadius: '8px',
+                                border: isDayActive ? `1px solid ${activeColor}` : '1px solid rgba(255,255,255,0.08)',
+                                backgroundColor: isDayActive ? activeColor : 'rgba(255,255,255,0.03)',
+                                color: isDayActive ? (d === 1 || d === 2 ? '#0a0f1d' : '#fff') : '#94a3b8',
+                                fontSize: '12px',
+                                fontWeight: '700',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                whiteSpace: 'nowrap'
+                              }}
+                            >
+                              <span>{language === 'UZ' ? `${d}-kun` : language === 'RU' ? `День ${d}` : `Day ${d}`}</span>
+                              <span style={{
+                                fontSize: '10px',
+                                padding: '1px 6px',
+                                borderRadius: '10px',
+                                backgroundColor: isDayActive ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.1)',
+                                color: isDayActive ? (d === 1 || d === 2 ? '#000' : '#fff') : '#cbd5e1',
+                                fontWeight: '800'
+                              }}>
+                                {dayLocationsCount}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <div style={{ display: 'flex', gap: '16px', alignItems: 'center', fontSize: '13px', fontWeight: '600', color: '#fff', flexWrap: 'wrap' }}>
                 <div>
                   {t.selectedCount} <span style={{ color: '#d4af37', backgroundColor: 'rgba(212,175,55,0.1)', padding: '2px 8px', borderRadius: '10px' }}>{selectedLocations.length}</span>
@@ -1302,6 +1496,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                     borderBottom: '1px solid rgba(255,255,255,0.08)',
                     whiteSpace: 'nowrap'
                   }} 
+                  
                 >
                   {[
                     { id: 'all', labelUz: 'Barchasi', labelRu: 'Все', labelEn: 'All' },
@@ -1344,6 +1539,9 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 selectedLocations={selectedLocations}
                 onToggleLocation={handleToggleLocation}
                 language={language}
+                tourDurationType={tourDurationType}
+                numDays={numDays}
+                onUpdateLocationDay={handleUpdateLocationDay}
               />
             </section>
 
@@ -1386,6 +1584,8 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 onSubmitBooking={handleSubmitBooking}
                 isSubmitting={isSubmitting}
                 activeRegion={activeRegion}
+                tourDurationType={tourDurationType}
+                numDays={numDays}
               />
             </section>
 
@@ -1413,6 +1613,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 selectedLocations={selectedLocations}
                 language={language}
                 activeRegion={activeRegion}
+                tourDurationType={tourDurationType}
               />
             </div>
           </div>

@@ -16,7 +16,7 @@ const LOCATION_IMAGES = {
   11: '/images/locations/karimbek_restaurant.webp'
 };
 
-export default function Map({ locations = [], selectedLocations = [], language = 'EN', activeRegion = 'samarqand' }) {
+export default function Map({ locations = [], selectedLocations = [], language = 'EN', activeRegion = 'samarqand', tourDurationType = 'single' }) {
   const [isInteractive, setIsInteractive] = useState(true);
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
@@ -218,26 +218,71 @@ export default function Map({ locations = [], selectedLocations = [], language =
 
       // Draw polyline connecting selected locations in order
       if (polylineRef.current) {
-        map.removeLayer(polylineRef.current);
+        if (Array.isArray(polylineRef.current)) {
+          polylineRef.current.forEach(p => map.removeLayer(p));
+        } else {
+          map.removeLayer(polylineRef.current);
+        }
         polylineRef.current = null;
       }
 
       if (selectedLocations.length > 0) {
-        const points = selectedLocations.map((loc) => [loc.latitude, loc.longitude]);
-        
-        polylineRef.current = L.polyline(points, {
-          color: '#d4af37', // Gold route line
-          weight: 4,
-          opacity: 0.85,
-          className: 'animated-route-line', // Flowing animated class
-          lineJoin: 'round',
-        }).addTo(map);
+        if (tourDurationType === 'multi') {
+          const dayColors = {
+            1: '#d4af37', // Gold
+            2: '#009b9e', // Teal
+            3: '#c05a1a', // Terracotta
+            4: '#7c3aed', // Purple
+            5: '#008060', // Green
+          };
+          
+          const polylines = [];
+          const maxDay = Math.max(...selectedLocations.map(l => l.selectedDay || 1));
+          
+          for (let d = 1; d <= maxDay; d++) {
+            const dayLocs = selectedLocations.filter(l => (l.selectedDay || 1) === d);
+            if (dayLocs.length > 0) {
+              const points = dayLocs.map(l => [l.latitude, l.longitude]);
+              const color = dayColors[d] || '#d4af37';
+              
+              const pLine = L.polyline(points, {
+                color: color,
+                weight: 4,
+                opacity: 0.85,
+                className: 'animated-route-line',
+                lineJoin: 'round',
+              }).addTo(map);
+              
+              polylines.push(pLine);
+            }
+          }
+          polylineRef.current = polylines;
 
-        // Dynamic viewport fitting
-        if (selectedLocations.length > 1) {
-          map.fitBounds(polylineRef.current.getBounds(), { padding: [60, 60] });
+          // Fit bounds to all selected locations
+          const allPoints = selectedLocations.map(l => [l.latitude, l.longitude]);
+          if (allPoints.length > 1) {
+            const bounds = L.latLngBounds(allPoints);
+            map.fitBounds(bounds, { padding: [60, 60] });
+          } else if (allPoints.length === 1) {
+            map.setView(allPoints[0], 13);
+          }
         } else {
-          map.setView(points[0], 13); // Centered and zoomed out slightly for single location
+          const points = selectedLocations.map((loc) => [loc.latitude, loc.longitude]);
+          
+          polylineRef.current = L.polyline(points, {
+            color: '#d4af37', // Gold route line
+            weight: 4,
+            opacity: 0.85,
+            className: 'animated-route-line', // Flowing animated class
+            lineJoin: 'round',
+          }).addTo(map);
+
+          // Dynamic viewport fitting
+          if (selectedLocations.length > 1) {
+            map.fitBounds(polylineRef.current.getBounds(), { padding: [60, 60] });
+          } else {
+            map.setView(points[0], 13); // Centered and zoomed out slightly for single location
+          }
         }
 
         // Auto-open popup for the newly added location
@@ -258,7 +303,7 @@ export default function Map({ locations = [], selectedLocations = [], language =
         mapInstance.current = null;
       }
     };
-  }, [locations, selectedLocations, language, activeRegion]);
+  }, [locations, selectedLocations, language, activeRegion, tourDurationType]);
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', minHeight: '400px' }}>

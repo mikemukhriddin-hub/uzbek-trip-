@@ -13,6 +13,8 @@ export default function CheckoutForm({
   onSubmitBooking,
   isSubmitting = false,
   activeRegion = 'samarqand',
+  tourDurationType = 'single',
+  numDays = 2,
 }) {
   const [formData, setFormData] = useState({
     name: '',
@@ -76,12 +78,15 @@ export default function CheckoutForm({
   };
 
   // Pricing calculations
+  const daysCount = tourDurationType === 'multi' ? numDays : 1;
   const guideRate = selectedGuide ? Number(selectedGuide.daily_rate) : 0;
   const transportRate = selectedVehicle
     ? (isOutOfCityRoute ? Number(selectedVehicle.out_of_city_rate) : Number(selectedVehicle.city_rate))
     : 0;
+  const guideTotalRate = guideRate * daysCount;
+  const transportTotalRate = transportRate * daysCount;
   const fixedFee = selectedGuide || selectedVehicle ? 10.00 : 0;
-  const subtotal = guideRate + transportRate + fixedFee;
+  const subtotal = guideTotalRate + transportTotalRate + fixedFee;
   const discountRate = bookingType === 'shared' ? 0.25 : 0;
   const discountAmount = subtotal * discountRate;
   const total = subtotal - discountAmount;
@@ -114,12 +119,14 @@ export default function CheckoutForm({
     onSubmitBooking({
       ...formData,
       bookingType,
-      guideCost: guideRate,
-      transportCost: transportRate,
+      guideCost: guideTotalRate,
+      transportCost: transportTotalRate,
       platformFee: fixedFee,
       subtotalPrice: subtotal,
       discountAmount,
       totalPrice: total,
+      tourDurationType,
+      numDays,
     });
   };
 
@@ -463,7 +470,14 @@ export default function CheckoutForm({
                 </span>
               )}
             </span>
-            <span style={{ color: 'var(--text-primary)', fontWeight: '500' }}>${guideRate.toFixed(2)}</span>
+            <span style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
+              {tourDurationType === 'multi' && selectedGuide ? (
+                <span style={{ fontSize: '11px', color: '#64748b', marginRight: '6px' }}>
+                  (${guideRate.toFixed(2)} × {numDays} {language === 'UZ' ? 'kun' : language === 'RU' ? 'дн' : 'days'})
+                </span>
+              ) : null}
+              ${guideTotalRate.toFixed(2)}
+            </span>
           </div>
 
           {/* Transport service line */}
@@ -486,7 +500,14 @@ export default function CheckoutForm({
                 </span>
               )}
             </span>
-            <span style={{ color: 'var(--text-primary)', fontWeight: '500' }}>${transportRate.toFixed(2)}</span>
+            <span style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
+              {tourDurationType === 'multi' && selectedVehicle ? (
+                <span style={{ fontSize: '11px', color: '#64748b', marginRight: '6px' }}>
+                  (${transportRate.toFixed(2)} × {numDays} {language === 'UZ' ? 'kun' : language === 'RU' ? 'дн' : 'days'})
+                </span>
+              ) : null}
+              ${transportTotalRate.toFixed(2)}
+            </span>
           </div>
 
           {/* Platform fee */}

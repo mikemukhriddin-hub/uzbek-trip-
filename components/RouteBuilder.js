@@ -68,7 +68,10 @@ export default function RouteBuilder({
   locations = [], 
   selectedLocations = [], 
   onToggleLocation, 
-  language = 'EN' 
+  language = 'EN',
+  tourDurationType = 'single',
+  numDays = 2,
+  onUpdateLocationDay
 }) {
   
   // Group locations by category
@@ -225,6 +228,36 @@ export default function RouteBuilder({
                         </span>
                       </div>
                     </div>
+
+                    {isSelected && tourDurationType === 'multi' && (
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', width: '100%', marginBottom: '8px' }}>
+                        <span style={{ fontSize: '11px', color: '#94a3b8', fontWeight: '600' }}>
+                          {language === 'UZ' ? 'Sayohat kuni:' : language === 'RU' ? 'День поездки:' : 'Visit Day:'}
+                        </span>
+                        <select
+                          value={selectedLocations.find(sel => sel.id === loc.id)?.selectedDay || 1}
+                          onChange={(e) => onUpdateLocationDay(loc.id, parseInt(e.target.value, 10))}
+                          onClick={(e) => e.stopPropagation()}
+                          style={{
+                            padding: '4px 8px',
+                            borderRadius: '6px',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            border: '1px solid #10b981',
+                            color: '#10b981',
+                            fontSize: '11px',
+                            fontWeight: '700',
+                            outline: 'none',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          {Array.from({ length: numDays }, (_, i) => i + 1).map((d) => (
+                            <option key={d} value={d} style={{ backgroundColor: '#0f172a', color: '#fff' }}>
+                              {language === 'UZ' ? `${d}-kun` : language === 'RU' ? `День ${d}` : `Day ${d}`}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
 
                     <button
                       onClick={() => onToggleLocation(loc)}
