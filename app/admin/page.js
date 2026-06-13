@@ -509,6 +509,8 @@ export default function AdminPage() {
   });
   const [aiQuery, setAiQuery] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
+  const [imageUploading, setImageUploading] = useState(false);
+  const [imageUploadMsg, setImageUploadMsg] = useState('');
 
   // Vehicles state
   const [vehicles, setVehicles] = useState([]);
@@ -778,6 +780,37 @@ export default function AdminPage() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  // Image Upload Handler
+  const handleImageUpload = async (file, onSuccess) => {
+    if (!file) return;
+    const token = localStorage.getItem('admin_token');
+    setImageUploading(true);
+    setImageUploadMsg('');
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await fetch('/api/admin/upload-image', {
+        method: 'POST',
+        headers: { 'Authorization': token },
+        body: formData,
+      });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        onSuccess(data.url);
+        setImageUploadMsg('✅ Rasm muvaffaqiyatli yuklandi!');
+      } else {
+        setImageUploadMsg('❌ ' + (data.message || 'Yuklash amalga oshmadi'));
+      }
+    } catch (err) {
+      setImageUploadMsg('❌ ' + err.message);
+    } finally {
+      setImageUploading(false);
+      setTimeout(() => setImageUploadMsg(''), 4000);
+    }
   };
 
   // Manage Locations CRUD
@@ -1931,7 +1964,47 @@ export default function AdminPage() {
                 <input type="checkbox" checked={locationForm.is_out_of_city} onChange={e => setLocationForm({...locationForm, is_out_of_city: e.target.checked})} style={{ width: 'auto' }} />
                 {currT.outOfCity}
               </label>
-              <input type="text" placeholder={currT.imageUrl} value={locationForm.image_url} onChange={e => setLocationForm({...locationForm, image_url: e.target.value})} style={{ gridColumn: '1 / -1' }} />
+              {/* === IMAGE UPLOAD WIDGET === */}
+              <div style={{ gridColumn: '1 / -1', background: 'rgba(255,255,255,0.04)', border: '1px dashed rgba(99,102,241,0.4)', borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div style={{ color: '#a5b4fc', fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  📸 Rasm yuklash / Image Upload
+                </div>
+                {/* File picker row */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                  <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(99,102,241,0.2)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: '8px', padding: '8px 14px', cursor: 'pointer', color: '#a5b4fc', fontSize: '13px', fontWeight: 500, transition: 'all 0.2s' }}>
+                    {imageUploading ? <Loader2 size={14} className="animate-spin" /> : '📁'}
+                    {imageUploading ? 'Yuklanmoqda...' : 'Fayl tanlash'}
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+                      style={{ display: 'none' }}
+                      disabled={imageUploading}
+                      onChange={e => {
+                        const file = e.target.files?.[0];
+                        if (file) handleImageUpload(file, (url) => setLocationForm(prev => ({ ...prev, image_url: url })));
+                      }}
+                    />
+                  </label>
+                  {imageUploadMsg && (
+                    <span style={{ fontSize: '12px', color: imageUploadMsg.startsWith('✅') ? '#34d399' : '#f87171' }}>
+                      {imageUploadMsg}
+                    </span>
+                  )}
+                </div>
+                {/* Preview */}
+                {locationForm.image_url && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <img src={locationForm.image_url} alt="preview" style={{ width: '80px', height: '55px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }} onError={e => { e.target.style.display = 'none'; }} />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>yoki URL kiriting:</div>
+                      <input type="text" placeholder={currT.imageUrl} value={locationForm.image_url} onChange={e => setLocationForm({...locationForm, image_url: e.target.value})} style={{ width: '100%', fontSize: '12px', padding: '6px 10px' }} />
+                    </div>
+                  </div>
+                )}
+                {!locationForm.image_url && (
+                  <input type="text" placeholder={currT.imageUrl} value={locationForm.image_url} onChange={e => setLocationForm({...locationForm, image_url: e.target.value})} style={{ fontSize: '12px', padding: '6px 10px' }} />
+                )}
+              </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', gridColumn: '1 / -1' }}>
                 <input type="text" placeholder="Wikipedia Title (EN) (e.g. Registan)" value={locationForm.wikipedia_title_en} onChange={e => setLocationForm({...locationForm, wikipedia_title_en: e.target.value})} />
                 <input type="text" placeholder="Wikipedia Title (RU) (e.g. Регистан)" value={locationForm.wikipedia_title_ru} onChange={e => setLocationForm({...locationForm, wikipedia_title_ru: e.target.value})} />
