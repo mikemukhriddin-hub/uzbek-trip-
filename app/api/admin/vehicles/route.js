@@ -96,7 +96,8 @@ export async function PATCH(req) {
 
     const { data, error } = await supabase
       .from('vehicles')
-      .update({
+      .upsert({
+        id,
         driver_name,
         driver_phone,
         car_model,
@@ -108,7 +109,6 @@ export async function PATCH(req) {
         image_url: image_url !== undefined ? (image_url || null) : undefined,
         region: region
       })
-      .eq('id', id)
       .select()
       .single();
 

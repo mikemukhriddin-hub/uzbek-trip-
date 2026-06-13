@@ -143,7 +143,8 @@ export async function PATCH(req) {
 
     const { data: guide, error: guideErr } = await supabase
       .from('guides')
-      .update({
+      .upsert({
+        id,
         full_name,
         phone_number,
         telegram_chat_id: telegram_chat_id !== undefined ? (telegram_chat_id ? parseInt(telegram_chat_id, 10) : null) : undefined,
@@ -151,7 +152,6 @@ export async function PATCH(req) {
         image_url: image_url !== undefined ? (image_url || null) : undefined,
         region: region !== undefined ? region : undefined
       })
-      .eq('id', id)
       .select()
       .single();
 

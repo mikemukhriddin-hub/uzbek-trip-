@@ -76,7 +76,8 @@ export async function PATCH(req) {
 
     const { data, error } = await supabase
       .from('locations')
-      .update({
+      .upsert({
+        id,
         name_en,
         name_ru,
         name_uz,
@@ -95,7 +96,6 @@ export async function PATCH(req) {
         wikipedia_title_ru: wikipedia_title_ru !== undefined ? wikipedia_title_ru : undefined,
         wikipedia_title_uz: wikipedia_title_uz !== undefined ? wikipedia_title_uz : undefined
       })
-      .eq('id', id)
       .select()
       .single();
 

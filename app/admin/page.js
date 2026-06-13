@@ -921,7 +921,7 @@ export default function AdminPage() {
           alert('Location updated successfully!');
         } else {
           const d = await res.json();
-          alert('Error: ' + d.message);
+          alert('Error: ' + d.message + (d.error ? '\n\nDetails: ' + d.error : ''));
         }
       })
       .catch(err => alert(err.message))
@@ -1000,7 +1000,7 @@ export default function AdminPage() {
           alert('Vehicle updated successfully!');
         } else {
           const d = await res.json();
-          alert('Error: ' + d.message);
+          alert('Error: ' + d.message + (d.error ? '\n\nDetails: ' + d.error : ''));
         }
       })
       .catch(err => alert(err.message))
@@ -1131,7 +1131,7 @@ export default function AdminPage() {
           alert('Guide updated successfully!');
         } else {
           const d = await res.json();
-          alert('Error: ' + d.message);
+          alert('Error: ' + d.message + (d.error ? '\n\nDetails: ' + d.error : ''));
         }
       })
       .catch(err => alert(err.message))
