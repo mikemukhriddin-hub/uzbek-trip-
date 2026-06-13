@@ -504,7 +504,8 @@ export default function AdminPage() {
   const [locationForm, setLocationForm] = useState({
     name_en: '', name_ru: '', name_uz: '', description_en: '', description_ru: '', description_uz: '',
     latitude: '', longitude: '', category: 'historical', is_out_of_city: false,
-    image_url: '', estimated_duration: 90, region: 'samarqand', ticket_price: '0.00'
+    image_url: '', estimated_duration: 90, region: 'samarqand', ticket_price: '0.00',
+    wikipedia_title_en: '', wikipedia_title_ru: '', wikipedia_title_uz: ''
   });
   const [aiQuery, setAiQuery] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
@@ -800,7 +801,8 @@ export default function AdminPage() {
           setLocationForm({
             name_en: '', name_ru: '', name_uz: '', description_en: '', description_ru: '', description_uz: '',
             latitude: '', longitude: '', category: 'historical', is_out_of_city: false,
-            image_url: '', estimated_duration: 90, region: 'samarqand', ticket_price: '0.00'
+            image_url: '', estimated_duration: 90, region: 'samarqand', ticket_price: '0.00',
+            wikipedia_title_en: '', wikipedia_title_ru: '', wikipedia_title_uz: ''
           });
           setAiQuery('');
           alert('Location added successfully!');
@@ -848,7 +850,10 @@ export default function AdminPage() {
             image_url: loc.image_url || '',
             estimated_duration: loc.estimated_duration !== undefined ? loc.estimated_duration.toString() : '90',
             region: locationForm.region || 'samarqand',
-            ticket_price: loc.ticket_price !== undefined ? loc.ticket_price.toString() : '0.00'
+            ticket_price: loc.ticket_price !== undefined ? loc.ticket_price.toString() : '0.00',
+            wikipedia_title_en: loc.wikipedia_title_en || '',
+            wikipedia_title_ru: loc.wikipedia_title_ru || '',
+            wikipedia_title_uz: loc.wikipedia_title_uz || ''
           });
           if (data.isMock) {
             alert(data.message || 'Filled with mock data. Configure GEMINI_API_KEY in .env.local for real AI details.');
@@ -1927,6 +1932,11 @@ export default function AdminPage() {
                 {currT.outOfCity}
               </label>
               <input type="text" placeholder={currT.imageUrl} value={locationForm.image_url} onChange={e => setLocationForm({...locationForm, image_url: e.target.value})} style={{ gridColumn: '1 / -1' }} />
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', gridColumn: '1 / -1' }}>
+                <input type="text" placeholder="Wikipedia Title (EN) (e.g. Registan)" value={locationForm.wikipedia_title_en} onChange={e => setLocationForm({...locationForm, wikipedia_title_en: e.target.value})} />
+                <input type="text" placeholder="Wikipedia Title (RU) (e.g. Регистан)" value={locationForm.wikipedia_title_ru} onChange={e => setLocationForm({...locationForm, wikipedia_title_ru: e.target.value})} />
+                <input type="text" placeholder="Wikipedia Title (UZ) (e.g. Registon)" value={locationForm.wikipedia_title_uz} onChange={e => setLocationForm({...locationForm, wikipedia_title_uz: e.target.value})} />
+              </div>
               <textarea placeholder={currT.descEn} value={locationForm.description_en} onChange={e => setLocationForm({...locationForm, description_en: e.target.value})} style={{ gridColumn: '1 / -1' }} />
               <textarea placeholder={currT.descRu} value={locationForm.description_ru} onChange={e => setLocationForm({...locationForm, description_ru: e.target.value})} style={{ gridColumn: '1 / -1' }} />
               <textarea placeholder={currT.descUz} value={locationForm.description_uz} onChange={e => setLocationForm({...locationForm, description_uz: e.target.value})} style={{ gridColumn: '1 / -1' }} />
@@ -2013,6 +2023,9 @@ export default function AdminPage() {
                             <textarea value={editingResource.data.description_en || ''} placeholder="Description (English)" onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, description_en: e.target.value}})} style={{ padding: '4px', fontSize: '12px', minHeight: '40px' }} />
                             <textarea value={editingResource.data.description_ru || ''} placeholder="Description (Russian)" onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, description_ru: e.target.value}})} style={{ padding: '4px', fontSize: '12px', minHeight: '40px' }} />
                             <textarea value={editingResource.data.description_uz || ''} placeholder="Description (Uzbek)" onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, description_uz: e.target.value}})} style={{ padding: '4px', fontSize: '12px', minHeight: '40px' }} />
+                            <input type="text" value={editingResource.data.wikipedia_title_en || ''} placeholder="Wiki Title (EN)" onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, wikipedia_title_en: e.target.value}})} style={{ padding: '4px', fontSize: '12px' }} />
+                            <input type="text" value={editingResource.data.wikipedia_title_ru || ''} placeholder="Wiki Title (RU)" onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, wikipedia_title_ru: e.target.value}})} style={{ padding: '4px', fontSize: '12px' }} />
+                            <input type="text" value={editingResource.data.wikipedia_title_uz || ''} placeholder="Wiki Title (UZ)" onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, wikipedia_title_uz: e.target.value}})} style={{ padding: '4px', fontSize: '12px' }} />
                           </div>
                         ) : (
                           <div>
@@ -2032,6 +2045,11 @@ export default function AdminPage() {
                             }}>
                               📍 {loc.region === 'qoraqalpoq' ? currT.qoraqalpoq : loc.region === 'toshkent' ? currT.toshkent : loc.region === 'shahrisabz' ? currT.shahrisabz : loc.region === 'xorazm' ? currT.xorazm : loc.region === 'buxoro' ? currT.buxoro : currT.samarqand}
                             </div>
+                            {(loc.wikipedia_title_en || loc.wikipedia_title_ru || loc.wikipedia_title_uz) && (
+                              <div style={{ fontSize: '11px', color: '#d4af37', marginTop: '6px', fontStyle: 'italic' }}>
+                                📖 Wiki: {loc.wikipedia_title_en || '—'} | {loc.wikipedia_title_ru || '—'} | {loc.wikipedia_title_uz || '—'}
+                              </div>
+                            )}
                           </div>
                         )}
                       </td>
