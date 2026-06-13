@@ -337,6 +337,17 @@ export default function RouteBuilder({
                             transition: 'transform 0.4s ease',
                           }}
                           className="location-card-img"
+                          onError={(e) => {
+                            // If Wikimedia image fails, try Wikipedia thumbnail API
+                            const wikiTitle = loc.wikipedia_title_en || loc.name_en?.replace(/ /g, '_');
+                            if (wikiTitle && !e.target.dataset.wikiTried) {
+                              e.target.dataset.wikiTried = '1';
+                              e.target.src = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(wikiTitle)}&prop=pageimages&format=json&pithumbsize=600&redirects=1`;
+                            } else if (!e.target.dataset.fallbackUsed) {
+                              e.target.dataset.fallbackUsed = '1';
+                              e.target.src = LOCATION_IMAGES[loc.id] || '/images/locations/registan.webp';
+                            }
+                          }}
                         />
                       </div>
 

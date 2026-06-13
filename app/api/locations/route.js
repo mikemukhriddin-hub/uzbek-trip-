@@ -18,8 +18,13 @@ export async function GET() {
 
     const dbLocations = (data || []).map(loc => {
       const mockLoc = MOCK_LOCATIONS.find(m => m.name_en === loc.name_en);
+      // If DB has an Unsplash placeholder or no image, use mockData Wikimedia image
+      const resolvedImageUrl = (loc.image_url && !loc.image_url.includes('unsplash.com'))
+        ? loc.image_url
+        : (mockLoc?.image_url || loc.image_url);
       return { 
         ...loc, 
+        image_url: resolvedImageUrl,
         region: loc.region || 'samarqand',
         wikipedia_title_en: loc.wikipedia_title_en || mockLoc?.wikipedia_title_en || '',
         wikipedia_title_ru: loc.wikipedia_title_ru || mockLoc?.wikipedia_title_ru || '',
