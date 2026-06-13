@@ -2056,13 +2056,44 @@ export default function AdminPage() {
                     <tr key={loc.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '14px' }}>
                       <td style={{ padding: '14px 8px' }}>
                         {isEditing ? (
-                          <input 
-                            type="text" 
-                            placeholder="Image URL" 
-                            value={editingResource.data.image_url || ''} 
-                            onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, image_url: e.target.value}})} 
-                            style={{ padding: '4px', fontSize: '12px', width: '120px' }} 
-                          />
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '120px' }}>
+                            {editingResource.data.image_url && (
+                              <div style={{ width: '50px', height: '35px', borderRadius: '4px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                <img 
+                                  src={editingResource.data.image_url} 
+                                  alt="preview" 
+                                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                                  onError={e => { e.target.style.display = 'none'; }} 
+                                />
+                              </div>
+                            )}
+                            <label style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(99,102,241,0.2)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: '4px', padding: '3px 8px', cursor: 'pointer', color: '#a5b4fc', fontSize: '11px', fontWeight: 500, width: 'fit-content' }}>
+                              {imageUploading ? <Loader2 size={10} className="animate-spin" /> : '📁'}
+                              {imageUploading ? '...' : 'Fayl'}
+                              <input
+                                type="file"
+                                accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+                                style={{ display: 'none' }}
+                                disabled={imageUploading}
+                                onChange={e => {
+                                  const file = e.target.files?.[0];
+                                  if (file) handleImageUpload(file, (url) => setEditingResource(prev => ({ ...prev, data: { ...prev.data, image_url: url } })));
+                                }}
+                              />
+                            </label>
+                            <input 
+                              type="text" 
+                              placeholder="Rasm URL" 
+                              value={editingResource.data.image_url || ''} 
+                              onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, image_url: e.target.value}})} 
+                              style={{ padding: '4px', fontSize: '11px', width: '100%', boxSizing: 'border-box' }} 
+                            />
+                            {imageUploadMsg && (
+                              <span style={{ fontSize: '10px', color: imageUploadMsg.startsWith('✅') ? '#34d399' : '#f87171' }}>
+                                {imageUploadMsg}
+                              </span>
+                            )}
+                          </div>
                         ) : (
                           <div style={{ width: '40px', height: '40px', borderRadius: '6px', overflow: 'hidden', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
                             {displayImg ? (
@@ -2208,35 +2239,72 @@ export default function AdminPage() {
                 <option value="qoraqalpoq">Qoraqalpog'iston (Karakalpakstan)</option>
               </select>
               
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <input 
-                  type="text" 
-                  placeholder={currT.imageUrl} 
-                  value={vehicleForm.image_url || ''} 
-                  onChange={e => setVehicleForm({...vehicleForm, image_url: e.target.value})} 
-                  style={{ flex: 1 }}
-                />
-                <button 
-                  type="button" 
-                  onClick={() => {
-                    const suggestedUrl = getFallbackVehicleImage(vehicleForm.car_model);
-                    setVehicleForm({...vehicleForm, image_url: suggestedUrl});
-                  }}
-                  style={{
-                    padding: '8px 12px',
-                    backgroundColor: 'rgba(99,102,241,0.2)',
-                    border: '1.5px solid #6366f1',
-                    borderRadius: '6px',
-                    color: '#a5b4fc',
-                    cursor: 'pointer',
-                    fontSize: '12px',
-                    fontWeight: '600',
-                    transition: 'all 0.2s ease',
-                    whiteSpace: 'nowrap'
-                  }}
-                >
-                  📷 Rasm
-                </button>
+              {/* === IMAGE UPLOAD WIDGET === */}
+              <div style={{ gridColumn: '1 / -1', background: 'rgba(255,255,255,0.04)', border: '1px dashed rgba(99,102,241,0.4)', borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div style={{ color: '#a5b4fc', fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  📸 Haydovchi rasmi / Driver Photo
+                </div>
+                {/* File picker row */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                  <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(99,102,241,0.2)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: '8px', padding: '8px 14px', cursor: 'pointer', color: '#a5b4fc', fontSize: '13px', fontWeight: 500, transition: 'all 0.2s' }}>
+                    {imageUploading ? <Loader2 size={14} className="animate-spin" /> : '📁'}
+                    {imageUploading ? 'Yuklanmoqda...' : 'Fayl tanlash'}
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+                      style={{ display: 'none' }}
+                      disabled={imageUploading}
+                      onChange={e => {
+                        const file = e.target.files?.[0];
+                        if (file) handleImageUpload(file, (url) => setVehicleForm(prev => ({ ...prev, image_url: url })));
+                      }}
+                    />
+                  </label>
+                  {imageUploadMsg && (
+                    <span style={{ fontSize: '12px', color: imageUploadMsg.startsWith('✅') ? '#34d399' : '#f87171' }}>
+                      {imageUploadMsg}
+                    </span>
+                  )}
+                </div>
+                {/* Preview & Manual URL */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                  {vehicleForm.image_url && (
+                    <img src={vehicleForm.image_url} alt="preview" style={{ width: '80px', height: '55px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }} onError={e => { e.target.style.display = 'none'; }} />
+                  )}
+                  <div style={{ flex: 1, minWidth: '200px' }}>
+                    <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>yoki URL kiriting:</div>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <input 
+                        type="text" 
+                        placeholder={currT.imageUrl} 
+                        value={vehicleForm.image_url || ''} 
+                        onChange={e => setVehicleForm({...vehicleForm, image_url: e.target.value})} 
+                        style={{ flex: 1, fontSize: '12px', padding: '6px 10px' }} 
+                      />
+                      <button 
+                        type="button" 
+                        onClick={() => {
+                          const suggestedUrl = getFallbackVehicleImage(vehicleForm.car_model);
+                          setVehicleForm({...vehicleForm, image_url: suggestedUrl});
+                        }}
+                        style={{
+                          padding: '6px 12px',
+                          backgroundColor: 'rgba(99,102,241,0.2)',
+                          border: '1.5px solid #6366f1',
+                          borderRadius: '6px',
+                          color: '#a5b4fc',
+                          cursor: 'pointer',
+                          fontSize: '12px',
+                          fontWeight: '600',
+                          transition: 'all 0.2s ease',
+                          whiteSpace: 'nowrap'
+                        }}
+                      >
+                        Avto rasm
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <label style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#94a3b8', fontSize: '14px', cursor: 'pointer' }}>
@@ -2272,13 +2340,44 @@ export default function AdminPage() {
                     <tr key={v.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '14px' }}>
                       <td style={{ padding: '14px 8px' }}>
                         {isEditing ? (
-                          <input 
-                            type="text" 
-                            placeholder="Image URL" 
-                            value={editingResource.data.image_url || ''} 
-                            onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, image_url: e.target.value}})} 
-                            style={{ padding: '4px', fontSize: '12px', width: '120px' }} 
-                          />
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '120px' }}>
+                            {editingResource.data.image_url && (
+                              <div style={{ width: '50px', height: '35px', borderRadius: '4px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                <img 
+                                  src={editingResource.data.image_url} 
+                                  alt="preview" 
+                                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                                  onError={e => { e.target.style.display = 'none'; }} 
+                                />
+                              </div>
+                            )}
+                            <label style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(99,102,241,0.2)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: '4px', padding: '3px 8px', cursor: 'pointer', color: '#a5b4fc', fontSize: '11px', fontWeight: 500, width: 'fit-content' }}>
+                              {imageUploading ? <Loader2 size={10} className="animate-spin" /> : '📁'}
+                              {imageUploading ? '...' : 'Fayl'}
+                              <input
+                                type="file"
+                                accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+                                style={{ display: 'none' }}
+                                disabled={imageUploading}
+                                onChange={e => {
+                                  const file = e.target.files?.[0];
+                                  if (file) handleImageUpload(file, (url) => setEditingResource(prev => ({ ...prev, data: { ...prev.data, image_url: url } })));
+                                }}
+                              />
+                            </label>
+                            <input 
+                              type="text" 
+                              placeholder="Rasm URL" 
+                              value={editingResource.data.image_url || ''} 
+                              onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, image_url: e.target.value}})} 
+                              style={{ padding: '4px', fontSize: '11px', width: '100%', boxSizing: 'border-box' }} 
+                            />
+                            {imageUploadMsg && (
+                              <span style={{ fontSize: '10px', color: imageUploadMsg.startsWith('✅') ? '#34d399' : '#f87171' }}>
+                                {imageUploadMsg}
+                              </span>
+                            )}
+                          </div>
                         ) : (
                           <div style={{ width: '60px', height: '40px', borderRadius: '4px', overflow: 'hidden', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
                             <img src={v.image_url || VEHICLE_IMAGES[v.id] || 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=400&q=80'} alt={v.car_model} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -2411,36 +2510,73 @@ export default function AdminPage() {
                 <input type="text" placeholder={currT.fullName} value={guideForm.full_name} onChange={e => setGuideForm({...guideForm, full_name: e.target.value})} required />
                 <input type="text" placeholder={currT.phoneNumber} value={guideForm.phone_number} onChange={e => setGuideForm({...guideForm, phone_number: e.target.value})} required />
                 
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  <input 
-                    type="text" 
-                    placeholder={currT.imageUrl} 
-                    value={guideForm.image_url || ''} 
-                    onChange={e => setGuideForm({...guideForm, image_url: e.target.value})} 
-                    style={{ flex: 1 }}
-                  />
-                  <button 
-                    type="button" 
-                    onClick={() => {
-                      const randomAvatar = DEFAULT_AVATARS[Math.floor(Math.random() * DEFAULT_AVATARS.length)];
-                      setGuideForm({...guideForm, image_url: randomAvatar});
-                    }}
-                    style={{
-                      padding: '8px 12px',
-                      backgroundColor: 'rgba(99,102,241,0.2)',
-                      border: '1.5px solid #6366f1',
-                      borderRadius: '6px',
-                      color: '#a5b4fc',
-                      cursor: 'pointer',
-                      fontSize: '12px',
-                      fontWeight: '600',
-                      transition: 'all 0.2s ease',
-                      whiteSpace: 'nowrap'
-                    }}
-                  >
-                    👤 Rasm
-                  </button>
+              {/* === IMAGE UPLOAD WIDGET === */}
+              <div style={{ gridColumn: '1 / -1', background: 'rgba(255,255,255,0.04)', border: '1px dashed rgba(99,102,241,0.4)', borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div style={{ color: '#a5b4fc', fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  📸 Gid rasmi / Guide Photo
                 </div>
+                {/* File picker row */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                  <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(99,102,241,0.2)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: '8px', padding: '8px 14px', cursor: 'pointer', color: '#a5b4fc', fontSize: '13px', fontWeight: 500, transition: 'all 0.2s' }}>
+                    {imageUploading ? <Loader2 size={14} className="animate-spin" /> : '📁'}
+                    {imageUploading ? 'Yuklanmoqda...' : 'Fayl tanlash'}
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+                      style={{ display: 'none' }}
+                      disabled={imageUploading}
+                      onChange={e => {
+                        const file = e.target.files?.[0];
+                        if (file) handleImageUpload(file, (url) => setGuideForm(prev => ({ ...prev, image_url: url })));
+                      }}
+                    />
+                  </label>
+                  {imageUploadMsg && (
+                    <span style={{ fontSize: '12px', color: imageUploadMsg.startsWith('✅') ? '#34d399' : '#f87171' }}>
+                      {imageUploadMsg}
+                    </span>
+                  )}
+                </div>
+                {/* Preview & Manual URL */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                  {guideForm.image_url && (
+                    <img src={guideForm.image_url} alt="preview" style={{ width: '80px', height: '55px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }} onError={e => { e.target.style.display = 'none'; }} />
+                  )}
+                  <div style={{ flex: 1, minWidth: '200px' }}>
+                    <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>yoki URL kiriting:</div>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <input 
+                        type="text" 
+                        placeholder={currT.imageUrl} 
+                        value={guideForm.image_url || ''} 
+                        onChange={e => setGuideForm({...guideForm, image_url: e.target.value})} 
+                        style={{ flex: 1, fontSize: '12px', padding: '6px 10px' }} 
+                      />
+                      <button 
+                        type="button" 
+                        onClick={() => {
+                          const randomAvatar = DEFAULT_AVATARS[Math.floor(Math.random() * DEFAULT_AVATARS.length)];
+                          setGuideForm({...guideForm, image_url: randomAvatar});
+                        }}
+                        style={{
+                          padding: '6px 12px',
+                          backgroundColor: 'rgba(99,102,241,0.2)',
+                          border: '1.5px solid #6366f1',
+                          borderRadius: '6px',
+                          color: '#a5b4fc',
+                          cursor: 'pointer',
+                          fontSize: '12px',
+                          fontWeight: '600',
+                          transition: 'all 0.2s ease',
+                          whiteSpace: 'nowrap'
+                        }}
+                      >
+                        Random rasm
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                   <span style={{ fontSize: '12px', color: '#64748b' }}>{currT.enRate}</span>
@@ -2523,13 +2659,44 @@ export default function AdminPage() {
                       <tr key={g.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '14px' }}>
                         <td style={{ padding: '14px 8px' }}>
                           {isEditing ? (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '120px' }}>
+                            {editingResource.data.image_url && (
+                              <div style={{ width: '40px', height: '40px', borderRadius: '50%', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                <img 
+                                  src={editingResource.data.image_url} 
+                                  alt="preview" 
+                                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                                  onError={e => { e.target.style.display = 'none'; }} 
+                                />
+                              </div>
+                            )}
+                            <label style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(99,102,241,0.2)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: '4px', padding: '3px 8px', cursor: 'pointer', color: '#a5b4fc', fontSize: '11px', fontWeight: 500, width: 'fit-content' }}>
+                              {imageUploading ? <Loader2 size={10} className="animate-spin" /> : '📁'}
+                              {imageUploading ? '...' : 'Fayl'}
+                              <input
+                                type="file"
+                                accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+                                style={{ display: 'none' }}
+                                disabled={imageUploading}
+                                onChange={e => {
+                                  const file = e.target.files?.[0];
+                                  if (file) handleImageUpload(file, (url) => setEditingResource(prev => ({ ...prev, data: { ...prev.data, image_url: url } })));
+                                }}
+                              />
+                            </label>
                             <input 
                               type="text" 
-                              placeholder="Image URL" 
+                              placeholder="Rasm URL" 
                               value={editingResource.data.image_url || ''} 
                               onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, image_url: e.target.value}})} 
-                              style={{ padding: '4px', fontSize: '12px', width: '120px' }} 
+                              style={{ padding: '4px', fontSize: '11px', width: '100%', boxSizing: 'border-box' }} 
                             />
+                            {imageUploadMsg && (
+                              <span style={{ fontSize: '10px', color: imageUploadMsg.startsWith('✅') ? '#34d399' : '#f87171' }}>
+                                {imageUploadMsg}
+                              </span>
+                            )}
+                          </div>
                           ) : (
                             <div style={{ width: '40px', height: '40px', borderRadius: '50%', overflow: 'hidden', backgroundColor: 'rgba(255,255,255,0.05)', border: '1.5px solid var(--text-gold, #d4af37)', boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }}>
                               <img src={g.image_url || GUIDE_IMAGES[g.id] || DEFAULT_AVATARS[0]} alt={g.full_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
