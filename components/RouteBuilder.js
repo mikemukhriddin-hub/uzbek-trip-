@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { MapPin, Check, Plus } from 'lucide-react';
+import { MapPin, Check, Plus, Info } from 'lucide-react';
 import { ThreeDHistorical, ThreeDNature, ThreeDDining } from './icons/ThreeDIcons';
 
 const CATEGORIES = {
@@ -91,7 +91,8 @@ export default function RouteBuilder({
   tourDurationType = 'single',
   numDays = 2,
   onUpdateLocationDay,
-  activeRegion = 'samarqand'
+  activeRegion = 'samarqand',
+  onOpenWikipedia
 }) {
   const [regionFilter, setRegionFilter] = React.useState('all');
 
@@ -432,37 +433,75 @@ export default function RouteBuilder({
                       </div>
                     )}
 
-                    <button
-                      onClick={() => onToggleLocation(loc)}
-                      style={{
-                        backgroundColor: isSelected ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.05)',
-                        border: isSelected ? '1px solid #10b981' : '1px solid var(--border-card)',
-                        color: isSelected ? '#10b981' : 'var(--text-primary)',
-                        padding: '8px 12px',
-                        borderRadius: '8px',
-                        fontSize: '12.5px',
-                        fontWeight: '600',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '8px',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease',
-                        width: '100%'
-                      }}
-                    >
-                      {isSelected ? (
-                        <>
-                          <Check size={15} />
-                          <span>{t.inRoute}</span>
-                        </>
-                      ) : (
-                        <>
-                          <Plus size={15} />
-                          <span>{t.addToRoute}</span>
-                        </>
-                      )}
-                    </button>
+                    <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
+                      <button
+                        onClick={() => onToggleLocation(loc)}
+                        style={{
+                          backgroundColor: isSelected ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+                          border: isSelected ? '1px solid #10b981' : '1px solid var(--border-card)',
+                          color: isSelected ? '#10b981' : 'var(--text-primary)',
+                          padding: '8px 12px',
+                          borderRadius: '8px',
+                          fontSize: '12.5px',
+                          fontWeight: '600',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '8px',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                          flex: 1
+                        }}
+                      >
+                        {isSelected ? (
+                          <>
+                            <Check size={15} />
+                            <span>{t.inRoute}</span>
+                          </>
+                        ) : (
+                          <>
+                            <Plus size={15} />
+                            <span>{t.addToRoute}</span>
+                          </>
+                        )}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (onOpenWikipedia) {
+                            onOpenWikipedia(loc);
+                          }
+                        }}
+                        title={language === 'UZ' ? "Wikipedia ma'lumotlari" : language === 'RU' ? "Информация из Википедии" : "Wikipedia Info"}
+                        style={{
+                          backgroundColor: 'rgba(212, 175, 55, 0.08)',
+                          border: '1px solid rgba(212, 175, 55, 0.25)',
+                          color: '#d4af37',
+                          padding: '8px',
+                          borderRadius: '8px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                          width: '38px',
+                          height: '38px',
+                          flexShrink: 0
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = 'rgba(212, 175, 55, 0.18)';
+                          e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.5)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = 'rgba(212, 175, 55, 0.08)';
+                          e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.25)';
+                        }}
+                      >
+                        <Info size={16} />
+                      </button>
+                    </div>
                   </div>
                 );
               })}

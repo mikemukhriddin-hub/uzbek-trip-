@@ -33,6 +33,7 @@ import CheckoutForm from '@/components/CheckoutForm';
 
 const VerificationModal = dynamic(() => import('@/components/VerificationModal'), { ssr: false });
 const PaymentPortal = dynamic(() => import('@/components/PaymentPortal'), { ssr: false });
+const WikipediaModal = dynamic(() => import('@/components/WikipediaModal'), { ssr: false });
 
 import { MOCK_LOCATIONS, MOCK_GUIDES, MOCK_TARIFFS, MOCK_VEHICLES, UZ_LOCATIONS, TICKET_PRICES } from '@/lib/mockData';
 
@@ -138,11 +139,15 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
       const fallbackPrice = TICKET_PRICES[loc.id] !== undefined ? TICKET_PRICES[loc.id] : 0;
       const finalPrice = dbPrice > 0 ? dbPrice : (fallbackPrice > 0 ? fallbackPrice : dbPrice);
       
+      const mockLoc = MOCK_LOCATIONS.find(m => m.name_en === loc.name_en);
       return {
         ...loc,
         name_uz: loc.name_uz || UZ_LOCATIONS[loc.id]?.name || loc.name_en,
         description_uz: loc.description_uz || UZ_LOCATIONS[loc.id]?.desc || loc.description_en,
-        ticket_price: finalPrice
+        ticket_price: finalPrice,
+        wikipedia_title_en: loc.wikipedia_title_en || mockLoc?.wikipedia_title_en || '',
+        wikipedia_title_ru: loc.wikipedia_title_ru || mockLoc?.wikipedia_title_ru || '',
+        wikipedia_title_uz: loc.wikipedia_title_uz || mockLoc?.wikipedia_title_uz || ''
       };
     });
   });
@@ -167,6 +172,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
   const [draggedLocationId, setDraggedLocationId] = useState(null);
   const [dragOverLocationId, setDragOverLocationId] = useState(null);
   const [dragOverDay, setDragOverDay] = useState(null);
+  const [wikiLocation, setWikiLocation] = useState(null);
 
   // Sync region switches, reset selections and apply theme data-attribute
   useEffect(() => {
@@ -2088,6 +2094,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 numDays={numDays}
                 onUpdateLocationDay={handleUpdateLocationDay}
                 activeRegion={activeRegion}
+                onOpenWikipedia={setWikiLocation}
               />
 
               {/* 🏨 Accommodation Suggestions for Multi-Day Tours */}
@@ -2245,6 +2252,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 language={language}
                 activeRegion={activeRegion}
                 tourDurationType={tourDurationType}
+                onOpenWikipedia={setWikiLocation}
               />
             </div>
           </div>
@@ -2285,6 +2293,18 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
           setSuccessPage(true);
         }}
       />
+
+      {/* Wikipedia Details Modal Overlay */}
+      {wikiLocation && (
+        <WikipediaModal
+          location={wikiLocation}
+          isOpen={!!wikiLocation}
+          onClose={() => setWikiLocation(null)}
+          language={language}
+          onToggleLocation={handleToggleLocation}
+          selectedLocations={selectedLocations}
+        />
+      )}
 
       <footer style={{
         marginTop: 'auto',

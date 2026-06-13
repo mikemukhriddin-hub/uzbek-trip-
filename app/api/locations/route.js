@@ -16,7 +16,16 @@ export async function GET() {
 
     if (error) throw error;
 
-    const dbLocations = (data || []).map(loc => ({ ...loc, region: loc.region || 'samarqand' }));
+    const dbLocations = (data || []).map(loc => {
+      const mockLoc = MOCK_LOCATIONS.find(m => m.name_en === loc.name_en);
+      return { 
+        ...loc, 
+        region: loc.region || 'samarqand',
+        wikipedia_title_en: loc.wikipedia_title_en || mockLoc?.wikipedia_title_en || '',
+        wikipedia_title_ru: loc.wikipedia_title_ru || mockLoc?.wikipedia_title_ru || '',
+        wikipedia_title_uz: loc.wikipedia_title_uz || mockLoc?.wikipedia_title_uz || '',
+      };
+    });
     let result = dbLocations;
 
     const hasBuxoro = result.some(loc => loc.region === 'buxoro');

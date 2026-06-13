@@ -29,7 +29,10 @@ CREATE TABLE locations (
     image_url TEXT, -- Custom image URL for thumbnail
     estimated_duration INT DEFAULT 90, -- Estimated visit duration in minutes
     region VARCHAR(50) DEFAULT 'samarqand',
-    ticket_price DECIMAL(10, 2) DEFAULT 0.00
+    ticket_price DECIMAL(10, 2) DEFAULT 0.00,
+    wikipedia_title_en VARCHAR(255),
+    wikipedia_title_ru VARCHAR(255),
+    wikipedia_title_uz VARCHAR(255)
 );
 
 -- 2. Gidlar asosi

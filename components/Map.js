@@ -16,13 +16,36 @@ const LOCATION_IMAGES = {
   11: '/images/locations/karimbek_restaurant.webp'
 };
 
-export default function Map({ locations = [], selectedLocations = [], language = 'EN', activeRegion = 'samarqand', tourDurationType = 'single' }) {
+export default function Map({ 
+  locations = [], 
+  selectedLocations = [], 
+  language = 'EN', 
+  activeRegion = 'samarqand', 
+  tourDurationType = 'single',
+  onOpenWikipedia 
+}) {
   const [isInteractive, setIsInteractive] = useState(true);
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
   const markersRef = useRef({});
   const polylineRef = useRef(null);
   const prevSelectedIdsRef = useRef([]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.showWikipediaDetails = (id) => {
+        const loc = locations.find(l => l.id === id);
+        if (loc && onOpenWikipedia) {
+          onOpenWikipedia(loc);
+        }
+      };
+    }
+    return () => {
+      if (typeof window !== 'undefined') {
+        delete window.showWikipediaDetails;
+      }
+    };
+  }, [locations, onOpenWikipedia]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -205,6 +228,30 @@ export default function Map({ locations = [], selectedLocations = [], language =
                     : (language === 'UZ' ? 'Tanlanmagan' : language === 'RU' ? 'Не выбрано' : 'Not Selected')}
                 </span>
               </div>
+              <button 
+                onclick="if(window.showWikipediaDetails) window.showWikipediaDetails(${loc.id})"
+                style="
+                  margin-top: 8px;
+                  width: 100%;
+                  padding: 6px 12px;
+                  background-color: rgba(212,175,55,0.15);
+                  border: 1.5px solid rgba(212,175,55,0.4);
+                  border-radius: 6px;
+                  color: #d4af37;
+                  font-size: 11px;
+                  font-weight: 700;
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  gap: 4px;
+                  transition: all 0.2s;
+                "
+                onmouseover="this.style.backgroundColor='rgba(212,175,55,0.25)'"
+                onmouseout="this.style.backgroundColor='rgba(212,175,55,0.15)'"
+              >
+                📖 Wikipedia
+              </button>
             </div>
           </div>
         `;
