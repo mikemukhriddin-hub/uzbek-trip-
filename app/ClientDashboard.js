@@ -34,10 +34,7 @@ import CheckoutForm from '@/components/CheckoutForm';
 const VerificationModal = dynamic(() => import('@/components/VerificationModal'), { ssr: false });
 const PaymentPortal = dynamic(() => import('@/components/PaymentPortal'), { ssr: false });
 const WikipediaModal = dynamic(() => import('@/components/WikipediaModal'), { ssr: false });
-
-import { MOCK_LOCATIONS, MOCK_GUIDES, MOCK_TARIFFS, MOCK_VEHICLES, UZ_LOCATIONS, TICKET_PRICES } from '@/lib/mockData';
-
-
+import { MOCK_LOCATIONS, MOCK_GUIDES, MOCK_TARIFFS, MOCK_VEHICLES, UZ_LOCATIONS, TICKET_PRICES, RECOMMENDED_PACKAGES } from '@/lib/mockData';
 const WEATHER_DATA = {
   samarqand: { temp: '28°C', uz: '☀️ Havo ochiq va quyoshli', ru: '☀️ Ясно, солнечно', en: '☀️ Clear skies & sunny forecast', nameUz: 'Samarqand', nameRu: 'Самарканде', nameEn: 'Samarkand' },
   buxoro: { temp: '31°C', uz: '☀️ Issiq va quyoshli', ru: '☀️ Ясно, солнечно и жарко', en: '☀️ Warm, sunny & clear', nameUz: 'Buxoro', nameRu: 'Бухаре', nameEn: 'Bukhara' },
@@ -329,6 +326,29 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
         }
       }
     });
+  };
+
+  const handleSelectPackage = (pkg) => {
+    const isAlreadySelected = pkg.locationNames.every(name => 
+      selectedLocations.some(loc => loc.name_en.toLowerCase() === name.toLowerCase())
+    ) && selectedLocations.length === pkg.locationNames.length;
+
+    if (isAlreadySelected) {
+      setSelectedLocations([]);
+      return;
+    }
+
+    const pkgLocs = pkg.locationNames.map(name => {
+      return locations.find(loc => loc.name_en.toLowerCase() === name.toLowerCase());
+    }).filter(Boolean);
+
+    setSelectedLocations(pkgLocs.map((loc, idx) => {
+      if (tourDurationType === 'multi') {
+        const day = (idx % numDays) + 1;
+        return { ...loc, selectedDay: day };
+      }
+      return loc;
+    }));
   };
 
   const handleUpdateLocationDay = (locId, newDay) => {
@@ -1751,6 +1771,121 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                   </div>
                 )}
               </div>
+
+              {/* 🎁 Recommended Tour Packages Selector (Klook-style) */}
+              {(() => {
+                const regionPkgs = RECOMMENDED_PACKAGES[activeRegion] || [];
+                if (regionPkgs.length === 0) return null;
+                
+                return (
+                  <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '10px',
+                    padding: '16px',
+                    backgroundColor: 'rgba(212, 175, 55, 0.03)',
+                    border: '1px solid rgba(212, 175, 55, 0.15)',
+                    borderRadius: '12px',
+                    marginBottom: '8px'
+                  }} className="animate-fade-in">
+                    <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text-gold)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      ✨ {language === 'UZ' ? 'Tayyor Sayohat Paketlari' : language === 'RU' ? 'Готовые туристические пакеты' : 'Recommended Tour Packages'}
+                    </span>
+                    <p style={{ fontSize: '11px', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4 }}>
+                      {language === 'UZ' 
+                        ? 'Obidalarni tanlashga qiynalayotgan bo\'lsangiz, tayyor marshrutlarimizdan birini tanlang. Yuklangan joylarni keyinchalik o\'zgartirishingiz mumkin.'
+                        : language === 'RU'
+                          ? 'Если вам сложно выбрать места, выберите один из готовых маршрутов. Загруженные места можно изменять.'
+                          : 'If you find it difficult to choose sights, pick a pre-planned route. You can customize loaded places later.'}
+                    </p>
+                    
+                    <div style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                      gap: '10px',
+                      marginTop: '6px'
+                    }}>
+                      {regionPkgs.map((pkg) => {
+                        const isSelected = pkg.locationNames.every(name => 
+                          selectedLocations.some(loc => loc.name_en.toLowerCase() === name.toLowerCase())
+                        ) && selectedLocations.length === pkg.locationNames.length;
+                        
+                        return (
+                          <div
+                            key={pkg.id}
+                            onClick={() => handleSelectPackage(pkg)}
+                            style={{
+                              padding: '12px',
+                              borderRadius: '10px',
+                              backgroundColor: isSelected ? 'rgba(212, 175, 55, 0.08)' : 'rgba(18, 26, 47, 0.45)',
+                              border: isSelected ? '1.5px solid var(--text-gold)' : '1px solid rgba(255,255,255,0.06)',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: '6px',
+                              transition: 'all 0.2s ease',
+                              position: 'relative',
+                              overflow: 'hidden'
+                            }}
+                            onMouseEnter={(e) => {
+                              if (!isSelected) {
+                                e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.35)';
+                                e.currentTarget.style.backgroundColor = 'rgba(18, 26, 47, 0.6)';
+                              }
+                            }}
+                            onMouseLeave={(e) => {
+                              if (!isSelected) {
+                                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)';
+                                e.currentTarget.style.backgroundColor = 'rgba(18, 26, 47, 0.45)';
+                              }
+                            }}
+                          >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <strong style={{ fontSize: '13px', color: '#fff', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <span>{pkg.emoji}</span>
+                                <span>{pkg.name[language] || pkg.name.EN}</span>
+                              </strong>
+                              {isSelected && (
+                                <span style={{ 
+                                  fontSize: '9px', 
+                                  backgroundColor: 'rgba(16, 185, 129, 0.15)', 
+                                  color: '#10b981', 
+                                  padding: '1px 5px', 
+                                  borderRadius: '4px',
+                                  fontWeight: '800',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '2px'
+                                }}>
+                                  ✓ {language === 'UZ' ? 'Faol' : language === 'RU' ? 'Актив' : 'Active'}
+                                </span>
+                              )}
+                            </div>
+                            <p style={{ fontSize: '11px', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4 }}>
+                              {pkg.description[language] || pkg.description.EN}
+                            </p>
+                            <div style={{
+                              fontSize: '9.5px',
+                              color: 'var(--text-gold)',
+                              fontWeight: '600',
+                              borderTop: '1px solid rgba(255,255,255,0.04)',
+                              paddingTop: '6px',
+                              marginTop: '2px',
+                              display: '-webkit-box',
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: 'vertical',
+                              overflow: 'hidden',
+                              lineHeight: 1.3
+                            }}>
+                              📌 {pkg.locationNames.join(', ')}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })()}
 
               <div style={{ display: 'flex', gap: '16px', alignItems: 'center', fontSize: '13px', fontWeight: '600', color: '#fff', flexWrap: 'wrap' }}>
                 <div>
