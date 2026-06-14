@@ -1012,8 +1012,26 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
     );
   }
 
+  const calculateTotal = () => {
+    const daysCount = tourDurationType === 'multi' ? numDays : 1;
+    const tariff = tariffs.find(
+      t => t.guide_id === selectedGuide?.id && t.language_code.toUpperCase() === selectedGuideLanguage.toUpperCase()
+    );
+    const guideRate = tariff ? Number(tariff.daily_rate) : 0;
+    const transportRate = selectedVehicle
+      ? (isOutOfCityRoute ? Number(selectedVehicle.out_of_city_rate) : Number(selectedVehicle.city_rate))
+      : 0;
+    
+    const guideTotalRate = guideRate * daysCount;
+    const transportTotalRate = transportRate * daysCount;
+    const fixedFee = selectedGuide || selectedVehicle ? 10.00 : 0;
+    const subtotal = guideTotalRate + transportTotalRate + fixedFee;
+    return subtotal;
+  };
+
   return (
     <main style={{ width: '100%', minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+
       <BackgroundGraphics />
       
       {/* 🎬 Ambient Video Background Loop */}
@@ -1842,245 +1860,431 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                             style={{ 
                               display: 'flex', 
                               flexDirection: 'column', 
-                              gap: '6px', 
-                              marginTop: '6px',
-                              padding: '6px',
-                              borderRadius: '10px',
-                              border: isDragOverThisDay ? '1px dashed #10b981' : '1px dashed transparent',
-                              backgroundColor: isDragOverThisDay ? 'rgba(16, 185, 129, 0.05)' : 'transparent',
+                              gap: '8px', 
+                              marginTop: '8px',
+                              padding: '12px',
+                              borderRadius: '12px',
+                              border: isDragOverThisDay ? '1px dashed #10b981' : '1.5px dashed rgba(255, 255, 255, 0.05)',
+                              backgroundColor: isDragOverThisDay ? 'rgba(16, 185, 129, 0.04)' : 'rgba(255, 255, 255, 0.01)',
                               transition: 'all 0.2s'
                             }}
                           >
-                            <div style={{ fontSize: '12px', fontWeight: '800', color: dayColor, borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '4px', display: 'flex', justifyContent: 'space-between' }}>
-                              <span>{language === 'UZ' ? `${dayNum}-KUN` : language === 'RU' ? `ДЕНЬ ${dayNum}` : `DAY ${dayNum}`}</span>
-                              <span style={{ fontSize: '11px', color: '#64748b' }}>
+                            <div style={{ fontSize: '13px', fontWeight: '800', color: dayColor, borderBottom: '1.5px solid rgba(255,255,255,0.06)', paddingBottom: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                📅 {language === 'UZ' ? `${dayNum}-KUN` : language === 'RU' ? `ДЕНЬ ${dayNum}` : `DAY ${dayNum}`}
+                              </span>
+                              <span style={{ fontSize: '11px', color: '#94a3b8', backgroundColor: 'rgba(255,255,255,0.05)', padding: '2px 6px', borderRadius: '6px' }}>
                                 ⏱️ {formatTotalDuration(dayLocs.reduce((sum, l) => sum + (l.estimated_duration || 0), 0), language)}
                               </span>
                             </div>
                             {dayLocs.length === 0 ? (
-                              <div style={{ padding: '12px', textAlign: 'center', color: '#475569', fontSize: '11px', fontStyle: 'italic', border: '1px dashed rgba(255,255,255,0.08)', borderRadius: '8px' }}>
+                              <div style={{ padding: '16px', textAlign: 'center', color: '#64748b', fontSize: '12px', fontStyle: 'italic', border: '1px dashed rgba(255,255,255,0.08)', borderRadius: '10px', marginTop: '4px' }}>
                                 {language === 'UZ' ? 'Bu kunga obidalar qo\'shilmagan' : language === 'RU' ? 'Нет мест на этот день' : 'No places added for this day'}
                               </div>
                             ) : (
-                              dayLocs.map((loc, dayIdx) => {
-                                const isFirstInDay = dayIdx === 0;
-                                const isLastInDay = dayIdx === dayLocs.length - 1;
+                              <div style={{
+                                position: 'relative',
+                                paddingLeft: '24px',
+                                marginTop: '10px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '14px'
+                              }}>
+                                {/* Timeline vertical track line */}
+                                {dayLocs.length > 1 && (
+                                  <div style={{
+                                    position: 'absolute',
+                                    left: '8px',
+                                    top: '14px',
+                                    bottom: '14px',
+                                    width: '2px',
+                                    background: `linear-gradient(to bottom, ${dayColor} 0%, rgba(255,255,255,0.05) 100%)`,
+                                    opacity: 0.35,
+                                    zIndex: 0
+                                  }} />
+                                )}
                                 
-                                let emoji = '🕌';
-                                if (loc.category === 'alternative') emoji = '🌲';
-                                if (loc.category === 'food') emoji = '🍲';
-                                
-                                const isDragged = draggedLocationId === loc.id;
-                                const isDragOverThisLoc = dragOverLocationId === loc.id;
-                                
-                                return (
-                                  <div 
-                                    key={loc.id}
-                                    draggable={true}
-                                    onDragStart={(e) => handleDragStart(e, loc.id)}
-                                    onDragEnd={handleDragEnd}
-                                    onDragOver={handleDragOver}
-                                    onDragEnter={() => setDragOverLocationId(loc.id)}
-                                    onDragLeave={() => setDragOverLocationId(null)}
-                                    onDrop={(e) => handleDropOnLocation(e, loc)}
-                                    style={{
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      justifyContent: 'space-between',
-                                      padding: '8px 12px',
-                                      backgroundColor: isDragOverThisLoc ? 'rgba(16, 185, 129, 0.1)' : 'rgba(5, 7, 16, 0.4)',
-                                      borderRadius: '10px',
-                                      border: isDragOverThisLoc 
-                                        ? '1px dashed #10b981' 
-                                        : '1px solid rgba(255,255,255,0.05)',
-                                      fontSize: '13px',
-                                      opacity: isDragged ? 0.4 : 1,
-                                      cursor: 'grab',
-                                      transition: 'all 0.2s'
-                                    }}
-                                  >
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                      <span style={{ color: '#475569', cursor: 'grab', marginRight: '-2px', fontSize: '14px', userSelect: 'none' }}>☰</span>
-                                      <span style={{ color: dayColor, fontWeight: '800', fontSize: '12px' }}>{dayIdx + 1}.</span>
-                                      <span>{emoji}</span>
-                                      <span style={{ fontWeight: '600', color: '#fff' }}>{language === 'RU' ? loc.name_ru : language === 'UZ' ? loc.name_uz : loc.name_en}</span>
-                                      {loc.is_out_of_city && <span style={{ fontSize: '10px', backgroundColor: 'rgba(212,175,55,0.15)', color: '#d4af37', padding: '1px 5px', borderRadius: '4px' }}>🏔</span>}
-                                    </div>
-                                    
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                      <span style={{ fontSize: '11px', color: '#64748b' }}>⏱️ {loc.estimated_duration}m</span>
-                                      <span style={{ fontSize: '11px', color: '#10b981', fontWeight: '500' }}>
-                                        🎟️ {parseFloat(loc.ticket_price) > 0 ? `$${parseFloat(loc.ticket_price).toFixed(2)}` : (language === 'UZ' ? 'bepul' : language === 'RU' ? 'бесплатно' : 'free')}
-                                      </span>
-                                      <div style={{ display: 'flex', gap: '2px' }}>
-                                        <button
-                                          type="button"
-                                          disabled={isFirstInDay}
-                                          onClick={() => handleMoveLocationUp(loc.id)}
-                                          style={{
-                                            padding: '2px 6px',
-                                            backgroundColor: isFirstInDay ? 'rgba(255,255,255,0.02)' : 'rgba(212,175,55,0.12)',
-                                            border: 'none',
-                                            color: isFirstInDay ? '#475569' : '#d4af37',
-                                            borderRadius: '4px',
-                                            cursor: isFirstInDay ? 'not-allowed' : 'pointer',
-                                            fontSize: '11px',
-                                            fontWeight: 'bold',
-                                            transition: 'all 0.2s'
-                                          }}
-                                        >
-                                          ▲
-                                        </button>
-                                        <button
-                                          type="button"
-                                          disabled={isLastInDay}
-                                          onClick={() => handleMoveLocationDown(loc.id)}
-                                          style={{
-                                            padding: '2px 6px',
-                                            backgroundColor: isLastInDay ? 'rgba(255,255,255,0.02)' : 'rgba(212,175,55,0.12)',
-                                            border: 'none',
-                                            color: isLastInDay ? '#475569' : '#d4af37',
-                                            borderRadius: '4px',
-                                            cursor: isLastInDay ? 'not-allowed' : 'pointer',
-                                            fontSize: '11px',
-                                            fontWeight: 'bold',
-                                            transition: 'all 0.2s'
-                                          }}
-                                        >
-                                          ▼
-                                        </button>
+                                {dayLocs.map((loc, dayIdx) => {
+                                  const isFirstInDay = dayIdx === 0;
+                                  const isLastInDay = dayIdx === dayLocs.length - 1;
+                                  
+                                  let emoji = '🕌';
+                                  let iconColor = '#0070c0'; // historical blue
+                                  if (loc.category === 'alternative') {
+                                    emoji = '🌲';
+                                    iconColor = '#009b9e'; // nature teal
+                                  }
+                                  if (loc.category === 'food') {
+                                    emoji = '🍲';
+                                    iconColor = '#d4af37'; // dining gold
+                                  }
+                                  
+                                  const isDragged = draggedLocationId === loc.id;
+                                  const isDragOverThisLoc = dragOverLocationId === loc.id;
+                                  
+                                  return (
+                                    <div 
+                                      key={loc.id}
+                                      draggable={true}
+                                      onDragStart={(e) => handleDragStart(e, loc.id)}
+                                      onDragEnd={handleDragEnd}
+                                      onDragOver={handleDragOver}
+                                      onDragEnter={() => setDragOverLocationId(loc.id)}
+                                      onDragLeave={() => setDragOverLocationId(null)}
+                                      onDrop={(e) => handleDropOnLocation(e, loc)}
+                                      style={{
+                                        display: 'flex',
+                                        alignItems: 'flex-start',
+                                        gap: '14px',
+                                        position: 'relative',
+                                        opacity: isDragged ? 0.4 : 1,
+                                        cursor: 'grab',
+                                        transition: 'all 0.2s',
+                                        zIndex: 1
+                                      }}
+                                    >
+                                      {/* Timeline Node Badge */}
+                                      <div style={{
+                                        width: '18px',
+                                        height: '18px',
+                                        borderRadius: '50%',
+                                        backgroundColor: isDragOverThisLoc ? '#10b981' : '#0a0f1d',
+                                        border: `2px solid ${isDragOverThisLoc ? '#10b981' : iconColor}`,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontSize: '9px',
+                                        fontWeight: '800',
+                                        color: '#fff',
+                                        flexShrink: 0,
+                                        marginTop: '11px',
+                                        marginLeft: '-32px', // centers it perfectly on the vertical line
+                                        boxShadow: `0 0 8px ${iconColor}40`,
+                                        zIndex: 2,
+                                        transition: 'all 0.2s'
+                                      }}>
+                                        {dayIdx + 1}
                                       </div>
-                                      <button
-                                        type="button"
-                                        onClick={() => handleToggleLocation(loc)}
-                                        style={{
-                                          border: 'none',
-                                          background: 'none',
-                                          color: '#ef4444',
-                                          cursor: 'pointer',
-                                          padding: '0 4px',
-                                          fontWeight: '700',
-                                          fontSize: '14px'
-                                        }}
-                                      >
-                                        ✕
-                                      </button>
+
+                                      {/* Timeline Card */}
+                                      <div style={{
+                                        flex: 1,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: '6px',
+                                        padding: '10px 14px',
+                                        backgroundColor: isDragOverThisLoc ? 'rgba(16, 185, 129, 0.08)' : 'rgba(18, 26, 47, 0.45)',
+                                        borderRadius: '12px',
+                                        border: isDragOverThisLoc 
+                                          ? '1px dashed #10b981' 
+                                          : '1px solid rgba(255,255,255,0.06)',
+                                        transition: 'all 0.2s',
+                                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                                      }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                            <span style={{ color: '#475569', cursor: 'grab', fontSize: '13px', userSelect: 'none', marginRight: '2px' }}>☰</span>
+                                            <span style={{ fontSize: '13px' }}>{emoji}</span>
+                                            <span style={{ fontWeight: '700', color: '#fff', fontSize: '13px' }}>
+                                              {language === 'RU' ? loc.name_ru : language === 'UZ' ? loc.name_uz : loc.name_en}
+                                            </span>
+                                            {loc.is_out_of_city && (
+                                              <span style={{ 
+                                                fontSize: '8.5px', 
+                                                backgroundColor: 'rgba(212,175,55,0.15)', 
+                                                color: '#d4af37', 
+                                                padding: '1px 4px', 
+                                                borderRadius: '4px',
+                                                fontWeight: '800'
+                                              }}>
+                                                🏔 {language === 'UZ' ? 'Tog\'' : language === 'RU' ? 'Горы' : 'Out'}
+                                              </span>
+                                            )}
+                                          </div>
+                                          <button
+                                            type="button"
+                                            onClick={() => handleToggleLocation(loc)}
+                                            style={{
+                                              border: 'none',
+                                              background: 'none',
+                                              color: '#ef4444',
+                                              cursor: 'pointer',
+                                              padding: '2px',
+                                              fontWeight: '700',
+                                              fontSize: '13px',
+                                              opacity: 0.6,
+                                              transition: 'opacity 0.2s'
+                                            }}
+                                            onMouseEnter={(e) => e.currentTarget.style.opacity = 1}
+                                            onMouseLeave={(e) => e.currentTarget.style.opacity = 0.6}
+                                          >
+                                            ✕
+                                          </button>
+                                        </div>
+                                        
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px', paddingTop: '4px', borderTop: '1px solid rgba(255,255,255,0.03)' }}>
+                                          <div style={{ display: 'flex', gap: '6px' }}>
+                                            <span style={{ fontSize: '10.5px', color: '#94a3b8', backgroundColor: 'rgba(255,255,255,0.04)', padding: '2px 5px', borderRadius: '5px' }}>
+                                              ⏱️ {loc.estimated_duration}m
+                                            </span>
+                                            <span style={{ 
+                                              fontSize: '10.5px', 
+                                              color: parseFloat(loc.ticket_price) > 0 ? '#10b981' : '#94a3b8', 
+                                              backgroundColor: parseFloat(loc.ticket_price) > 0 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(255,255,255,0.04)', 
+                                              padding: '2px 5px', 
+                                              borderRadius: '5px',
+                                              fontWeight: parseFloat(loc.ticket_price) > 0 ? '700' : 'normal'
+                                            }}>
+                                              🎟️ {parseFloat(loc.ticket_price) > 0 ? `$${parseFloat(loc.ticket_price).toFixed(2)}` : (language === 'UZ' ? 'bepul' : language === 'RU' ? 'бесплатно' : 'free')}
+                                            </span>
+                                          </div>
+                                          
+                                          <div style={{ display: 'flex', gap: '2px' }}>
+                                            <button
+                                              type="button"
+                                              disabled={isFirstInDay}
+                                              onClick={() => handleMoveLocationUp(loc.id)}
+                                              style={{
+                                                padding: '2px 6px',
+                                                backgroundColor: isFirstInDay ? 'rgba(255,255,255,0.01)' : 'rgba(255,255,255,0.04)',
+                                                border: '1px solid rgba(255,255,255,0.06)',
+                                                color: isFirstInDay ? '#475569' : '#94a3b8',
+                                                borderRadius: '5px',
+                                                cursor: isFirstInDay ? 'not-allowed' : 'pointer',
+                                                fontSize: '9px',
+                                                transition: 'all 0.2s'
+                                              }}
+                                            >
+                                              ▲
+                                            </button>
+                                            <button
+                                              type="button"
+                                              disabled={isLastInDay}
+                                              onClick={() => handleMoveLocationDown(loc.id)}
+                                              style={{
+                                                padding: '2px 6px',
+                                                backgroundColor: isLastInDay ? 'rgba(255,255,255,0.01)' : 'rgba(255,255,255,0.04)',
+                                                border: '1px solid rgba(255,255,255,0.06)',
+                                                color: isLastInDay ? '#475569' : '#94a3b8',
+                                                borderRadius: '5px',
+                                                cursor: isLastInDay ? 'not-allowed' : 'pointer',
+                                                fontSize: '9px',
+                                                transition: 'all 0.2s'
+                                              }}
+                                            >
+                                              ▼
+                                            </button>
+                                          </div>
+                                        </div>
+                                      </div>
                                     </div>
-                                  </div>
-                                );
-                              })
+                                  );
+                                })}
+                              </div>
                             )}
                           </div>
                         );
                       })
                     ) : (
-                      selectedLocations.map((loc, idx) => {
-                        const isFirst = idx === 0;
-                        const isLast = idx === selectedLocations.length - 1;
+                      <div style={{
+                        position: 'relative',
+                        paddingLeft: '24px',
+                        marginTop: '10px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '14px'
+                      }}>
+                        {/* Timeline vertical track line */}
+                        {selectedLocations.length > 1 && (
+                          <div style={{
+                            position: 'absolute',
+                            left: '8px',
+                            top: '14px',
+                            bottom: '14px',
+                            width: '2px',
+                            background: 'linear-gradient(to bottom, #009b9e 0%, rgba(255,255,255,0.05) 100%)',
+                            opacity: 0.35,
+                            zIndex: 0
+                          }} />
+                        )}
                         
-                        let emoji = '🕌';
-                        if (loc.category === 'alternative') emoji = '🌲';
-                        if (loc.category === 'food') emoji = '🍲';
-                        
-                        const isDragged = draggedLocationId === loc.id;
-                        const isDragOverThisLoc = dragOverLocationId === loc.id;
+                        {selectedLocations.map((loc, idx) => {
+                          const isFirst = idx === 0;
+                          const isLast = idx === selectedLocations.length - 1;
+                          
+                          let emoji = '🕌';
+                          let iconColor = '#0070c0'; // historical blue
+                          if (loc.category === 'alternative') {
+                            emoji = '🌲';
+                            iconColor = '#009b9e'; // nature teal
+                          }
+                          if (loc.category === 'food') {
+                            emoji = '🍲';
+                            iconColor = '#d4af37'; // dining gold
+                          }
+                          
+                          const isDragged = draggedLocationId === loc.id;
+                          const isDragOverThisLoc = dragOverLocationId === loc.id;
 
-                        return (
-                          <div 
-                            key={loc.id}
-                            draggable={true}
-                            onDragStart={(e) => handleDragStart(e, loc.id)}
-                            onDragEnd={handleDragEnd}
-                            onDragOver={handleDragOver}
-                            onDragEnter={() => setDragOverLocationId(loc.id)}
-                            onDragLeave={() => setDragOverLocationId(null)}
-                            onDrop={(e) => handleDropOnLocation(e, loc)}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'space-between',
-                              padding: '8px 12px',
-                              backgroundColor: isDragOverThisLoc ? 'rgba(16, 185, 129, 0.1)' : 'rgba(5, 7, 16, 0.4)',
-                              borderRadius: '10px',
-                              border: isDragOverThisLoc 
-                                ? '1px dashed #10b981' 
-                                : '1px solid rgba(255,255,255,0.05)',
-                              fontSize: '13px',
-                              opacity: isDragged ? 0.4 : 1,
-                              cursor: 'grab',
-                              transition: 'all 0.2s'
-                            }}
-                          >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                              <span style={{ color: '#475569', cursor: 'grab', marginRight: '-2px', fontSize: '14px', userSelect: 'none' }}>☰</span>
-                              <span style={{ color: '#009b9e', fontWeight: '800', fontSize: '12px' }}>{idx + 1}.</span>
-                              <span>{emoji}</span>
-                              <span style={{ fontWeight: '600', color: '#fff' }}>{language === 'RU' ? loc.name_ru : language === 'UZ' ? loc.name_uz : loc.name_en}</span>
-                              {loc.is_out_of_city && <span style={{ fontSize: '10px', backgroundColor: 'rgba(212,175,55,0.15)', color: '#d4af37', padding: '1px 5px', borderRadius: '4px' }}>🏔</span>}
-                            </div>
-                            
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                              <span style={{ fontSize: '11px', color: '#64748b' }}>⏱️ {loc.estimated_duration}m</span>
-                              <span style={{ fontSize: '11px', color: '#10b981', fontWeight: '500' }}>
-                                🎟️ {parseFloat(loc.ticket_price) > 0 ? `$${parseFloat(loc.ticket_price).toFixed(2)}` : (language === 'UZ' ? 'bepul' : language === 'RU' ? 'бесплатно' : 'free')}
-                              </span>
-                              <div style={{ display: 'flex', gap: '2px' }}>
-                                <button
-                                  type="button"
-                                  disabled={isFirst}
-                                  onClick={() => handleMoveLocationUp(loc.id)}
-                                  style={{
-                                    padding: '2px 6px',
-                                    backgroundColor: isFirst ? 'rgba(255,255,255,0.02)' : 'rgba(0,112,192,0.12)',
-                                    border: 'none',
-                                    color: isFirst ? '#475569' : '#009b9e',
-                                    borderRadius: '4px',
-                                    cursor: isFirst ? 'not-allowed' : 'pointer',
-                                    fontSize: '11px',
-                                    fontWeight: 'bold',
-                                    transition: 'all 0.2s'
-                                  }}
-                                >
-                                  ▲
-                                </button>
-                                <button
-                                  type="button"
-                                  disabled={isLast}
-                                  onClick={() => handleMoveLocationDown(loc.id)}
-                                  style={{
-                                    padding: '2px 6px',
-                                    backgroundColor: isLast ? 'rgba(255,255,255,0.02)' : 'rgba(0,112,192,0.12)',
-                                    border: 'none',
-                                    color: isLast ? '#475569' : '#009b9e',
-                                    borderRadius: '4px',
-                                    cursor: isLast ? 'not-allowed' : 'pointer',
-                                    fontSize: '11px',
-                                    fontWeight: 'bold',
-                                    transition: 'all 0.2s'
-                                  }}
-                                >
-                                  ▼
-                                </button>
+                          return (
+                            <div 
+                              key={loc.id}
+                              draggable={true}
+                              onDragStart={(e) => handleDragStart(e, loc.id)}
+                              onDragEnd={handleDragEnd}
+                              onDragOver={handleDragOver}
+                              onDragEnter={() => setDragOverLocationId(loc.id)}
+                              onDragLeave={() => setDragOverLocationId(null)}
+                              onDrop={(e) => handleDropOnLocation(e, loc)}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'flex-start',
+                                gap: '14px',
+                                position: 'relative',
+                                opacity: isDragged ? 0.4 : 1,
+                                cursor: 'grab',
+                                transition: 'all 0.2s',
+                                zIndex: 1
+                              }}
+                            >
+                              {/* Timeline Node Badge */}
+                              <div style={{
+                                width: '18px',
+                                height: '18px',
+                                borderRadius: '50%',
+                                backgroundColor: isDragOverThisLoc ? '#10b981' : '#0a0f1d',
+                                border: `2px solid ${isDragOverThisLoc ? '#10b981' : iconColor}`,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '9px',
+                                fontWeight: '800',
+                                color: '#fff',
+                                flexShrink: 0,
+                                marginTop: '11px',
+                                marginLeft: '-32px', // centers it perfectly on the vertical line
+                                boxShadow: `0 0 8px ${iconColor}40`,
+                                zIndex: 2,
+                                transition: 'all 0.2s'
+                              }}>
+                                {idx + 1}
                               </div>
-                              <button
-                                type="button"
-                                onClick={() => handleToggleLocation(loc)}
-                                style={{
-                                  border: 'none',
-                                  background: 'none',
-                                  color: '#ef4444',
-                                  cursor: 'pointer',
-                                  padding: '0 4px',
-                                  fontWeight: '700',
-                                  fontSize: '14px'
-                                }}
-                              >
-                                ✕
-                              </button>
+
+                              {/* Timeline Card */}
+                              <div style={{
+                                flex: 1,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '6px',
+                                padding: '10px 14px',
+                                backgroundColor: isDragOverThisLoc ? 'rgba(16, 185, 129, 0.08)' : 'rgba(18, 26, 47, 0.45)',
+                                borderRadius: '12px',
+                                border: isDragOverThisLoc 
+                                  ? '1px dashed #10b981' 
+                                  : '1px solid rgba(255,255,255,0.06)',
+                                transition: 'all 0.2s',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                              }}>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                    <span style={{ color: '#475569', cursor: 'grab', fontSize: '13px', userSelect: 'none', marginRight: '2px' }}>☰</span>
+                                    <span style={{ fontSize: '13px' }}>{emoji}</span>
+                                    <span style={{ fontWeight: '700', color: '#fff', fontSize: '13px' }}>
+                                      {language === 'RU' ? loc.name_ru : language === 'UZ' ? loc.name_uz : loc.name_en}
+                                    </span>
+                                    {loc.is_out_of_city && (
+                                      <span style={{ 
+                                        fontSize: '8.5px', 
+                                        backgroundColor: 'rgba(212,175,55,0.15)', 
+                                        color: '#d4af37', 
+                                        padding: '1px 4px', 
+                                        borderRadius: '4px',
+                                        fontWeight: '800'
+                                      }}>
+                                        🏔 {language === 'UZ' ? 'Tog\'' : language === 'RU' ? 'Горы' : 'Out'}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleToggleLocation(loc)}
+                                    style={{
+                                      border: 'none',
+                                      background: 'none',
+                                      color: '#ef4444',
+                                      cursor: 'pointer',
+                                      padding: '2px',
+                                      fontWeight: '700',
+                                      fontSize: '13px',
+                                      opacity: 0.6,
+                                      transition: 'opacity 0.2s'
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.opacity = 1}
+                                    onMouseLeave={(e) => e.currentTarget.style.opacity = 0.6}
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                                
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px', paddingTop: '4px', borderTop: '1px solid rgba(255,255,255,0.03)' }}>
+                                  <div style={{ display: 'flex', gap: '6px' }}>
+                                    <span style={{ fontSize: '10.5px', color: '#94a3b8', backgroundColor: 'rgba(255,255,255,0.04)', padding: '2px 5px', borderRadius: '5px' }}>
+                                      ⏱️ {loc.estimated_duration}m
+                                    </span>
+                                    <span style={{ 
+                                      fontSize: '10.5px', 
+                                      color: parseFloat(loc.ticket_price) > 0 ? '#10b981' : '#94a3b8', 
+                                      backgroundColor: parseFloat(loc.ticket_price) > 0 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(255,255,255,0.04)', 
+                                      padding: '2px 5px', 
+                                      borderRadius: '5px',
+                                      fontWeight: parseFloat(loc.ticket_price) > 0 ? '700' : 'normal'
+                                    }}>
+                                      🎟️ {parseFloat(loc.ticket_price) > 0 ? `$${parseFloat(loc.ticket_price).toFixed(2)}` : (language === 'UZ' ? 'bepul' : language === 'RU' ? 'бесплатно' : 'free')}
+                                    </span>
+                                  </div>
+                                  
+                                  <div style={{ display: 'flex', gap: '2px' }}>
+                                    <button
+                                      type="button"
+                                      disabled={isFirst}
+                                      onClick={() => handleMoveLocationUp(loc.id)}
+                                      style={{
+                                        padding: '2px 6px',
+                                        backgroundColor: isFirst ? 'rgba(255,255,255,0.01)' : 'rgba(255,255,255,0.04)',
+                                        border: '1px solid rgba(255,255,255,0.06)',
+                                        color: isFirst ? '#475569' : '#94a3b8',
+                                        borderRadius: '5px',
+                                        cursor: isFirst ? 'not-allowed' : 'pointer',
+                                        fontSize: '9px',
+                                        transition: 'all 0.2s'
+                                      }}
+                                    >
+                                      ▲
+                                    </button>
+                                    <button
+                                      type="button"
+                                      disabled={isLast}
+                                      onClick={() => handleMoveLocationDown(loc.id)}
+                                      style={{
+                                        padding: '2px 6px',
+                                        backgroundColor: isLast ? 'rgba(255,255,255,0.01)' : 'rgba(255,255,255,0.04)',
+                                        border: '1px solid rgba(255,255,255,0.06)',
+                                        color: isLast ? '#475569' : '#94a3b8',
+                                        borderRadius: '5px',
+                                        cursor: isLast ? 'not-allowed' : 'pointer',
+                                        fontSize: '9px',
+                                        transition: 'all 0.2s'
+                                      }}
+                                    >
+                                      ▼
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        );
-                      })
+                          );
+                        })}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -2210,7 +2414,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
             </section>
 
             {/* Step 4: Checkout & invoice */}
-            <section style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <section id="checkout-step" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#fff' }}>{t.step4}</h2>
               <CheckoutForm
                 selectedLocations={selectedLocations}
@@ -2226,7 +2430,6 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 numDays={numDays}
               />
             </section>
-
           </div>
 
           {/* Right Column: Sticky Interactive Map */}
@@ -2304,6 +2507,56 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
           onToggleLocation={handleToggleLocation}
           selectedLocations={selectedLocations}
         />
+      )}
+
+      {/* 📱 Mobile Sticky Floating Bar (Klook-style) */}
+      {selectedLocations.length > 0 && !successPage && !otpModalOpen && !paymentOpen && (
+        <div className="mobile-sticky-bar animate-fade-in">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+            <span style={{ fontSize: '11px', color: '#94a3b8', fontWeight: '600' }}>
+              {language === 'UZ' 
+                ? `${selectedLocations.length} ta joy tanlandi` 
+                : language === 'RU' 
+                  ? `Выбрано: ${selectedLocations.length} мест` 
+                  : `${selectedLocations.length} attractions`}
+            </span>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '3px' }}>
+              <span style={{ fontSize: '12px', color: 'var(--text-gold)', fontWeight: '700' }}>$</span>
+              <span style={{ fontSize: '19px', fontWeight: '800', color: 'var(--text-gold)', letterSpacing: '-0.5px' }}>
+                {calculateTotal().toFixed(2)}
+              </span>
+            </div>
+          </div>
+          
+          <button
+            type="button"
+            onClick={() => {
+              document.getElementById('checkout-step')?.scrollIntoView({ behavior: 'smooth' });
+            }}
+            style={{
+              padding: '10px 18px',
+              borderRadius: '10px',
+              background: 'var(--btn-gold-bg)',
+              color: 'var(--btn-gold-text)',
+              fontSize: '13px',
+              fontWeight: '800',
+              border: 'none',
+              cursor: 'pointer',
+              boxShadow: '0 4px 14px rgba(212,175,55,0.3)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              transition: 'transform 0.15s ease'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1.0)'}
+          >
+            <span>✨</span>
+            <span>
+              {language === 'UZ' ? 'Bron qilish' : language === 'RU' ? 'Забронировать' : 'Book Now'}
+            </span>
+          </button>
+        </div>
       )}
 
       <footer style={{

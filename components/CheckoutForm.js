@@ -501,117 +501,172 @@ export default function CheckoutForm({
         border: bookingType === 'shared'
           ? '1.5px solid rgba(0,155,158,0.4)'
           : '1.5px solid var(--border-card)',
+        borderRadius: '16px',
         transition: 'border-color 0.3s ease',
+        background: 'linear-gradient(180deg, rgba(10, 15, 29, 0.8) 0%, rgba(5, 7, 16, 0.9) 100%)',
       }}>
-        <h4 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)', borderBottom: '1px solid var(--border-card)', paddingBottom: '8px', marginBottom: '12px' }}>
-          {t.invoiceTitle}
+        <h4 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-gold)', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '10px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          📄 {t.invoiceTitle}
         </h4>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '13px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '13px' }}>
 
-          {/* Guide service line */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
-            <span>
-              {t.guideCost}{' '}
-              {selectedGuide ? (
-                <span style={{ fontSize: '11px', color: 'var(--text-gold)', backgroundColor: 'rgba(212,175,55,0.1)', padding: '1px 5px', borderRadius: '3px', marginLeft: '4px' }}>
-                  {selectedGuide.full_name} ({t.guideLang} {selectedGuideLanguage})
-                </span>
-              ) : (
-                <span style={{ fontSize: '11px', color: '#94a3b8', backgroundColor: 'rgba(255,255,255,0.05)', padding: '1px 5px', borderRadius: '3px', marginLeft: '4px' }}>
-                  {language === 'UZ' ? 'Tanlanmagan (Gidsiz)' : language === 'RU' ? 'Не выбран (Без гида)' : 'Not selected (No guide)'}
+          {/* Guide Service Card */}
+          <div style={{ 
+            padding: '12px', 
+            borderRadius: '10px', 
+            backgroundColor: 'rgba(255,255,255,0.02)', 
+            border: '1px solid rgba(255,255,255,0.05)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '6px'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontWeight: '600', color: '#fff', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                👤 {t.guideCost}
+              </span>
+              <span style={{ color: '#fff', fontWeight: '700' }}>
+                ${guideTotalRate.toFixed(2)}
+              </span>
+            </div>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', color: '#94a3b8' }}>
+              <span>
+                {selectedGuide ? (
+                  <span style={{ color: 'var(--text-gold)', backgroundColor: 'rgba(212,175,55,0.08)', padding: '2px 6px', borderRadius: '4px', border: '1px solid rgba(212,175,55,0.15)' }}>
+                    {selectedGuide.full_name} ({selectedGuideLanguage})
+                  </span>
+                ) : (
+                  <span style={{ color: '#64748b' }}>
+                    {language === 'UZ' ? 'Gidsiz sayohat' : language === 'RU' ? 'Без гида' : 'No guide selected'}
+                  </span>
+                )}
+              </span>
+              {tourDurationType === 'multi' && selectedGuide && (
+                <span>
+                  ${guideRate.toFixed(2)} × {numDays} {language === 'UZ' ? 'kun' : language === 'RU' ? 'дн' : 'days'}
                 </span>
               )}
-            </span>
-            <span style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
-              {tourDurationType === 'multi' && selectedGuide ? (
-                <span style={{ fontSize: '11px', color: '#64748b', marginRight: '6px' }}>
-                  (${guideRate.toFixed(2)} × {numDays} {language === 'UZ' ? 'kun' : language === 'RU' ? 'дн' : 'days'})
-                </span>
-              ) : null}
-              ${guideTotalRate.toFixed(2)}
-            </span>
+            </div>
           </div>
 
-          {/* Transport service line */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
-            <span>
-              {t.transportCost}{' '}
-              {selectedVehicle ? (
-                <span style={{ fontSize: '11px', color: '#009b9e', backgroundColor: 'rgba(0,155,158,0.1)', padding: '1px 5px', borderRadius: '3px', marginLeft: '4px' }}>
-                  {selectedVehicle.car_model} ({
-                    activeRegion === 'cross_region'
-                      ? (language === 'UZ' ? '🇺🇿 Viloyatlararo' : language === 'RU' ? '🇺🇿 Межрегиональный' : '🇺🇿 Inter-Province')
-                      : isOutOfCityRoute
-                        ? (language === 'UZ' ? '🏔 Shaxar tashqarisi' : language === 'RU' ? '🏔 Загородный' : '🏔 Out of City')
-                        : (language === 'UZ' ? '🏙 Shahar ichi' : language === 'RU' ? '🏙 В черте города' : '🏙 City rate')
-                  })
-                </span>
-              ) : (
-                <span style={{ fontSize: '11px', color: '#94a3b8', backgroundColor: 'rgba(255,255,255,0.05)', padding: '1px 5px', borderRadius: '3px', marginLeft: '4px' }}>
-                  {language === 'UZ' ? 'Tanlanmagan (Usiz)' : language === 'RU' ? 'Не выбран (Без транспорта)' : 'Not selected (No transport)'}
+          {/* Transport Service Card */}
+          <div style={{ 
+            padding: '12px', 
+            borderRadius: '10px', 
+            backgroundColor: 'rgba(255,255,255,0.02)', 
+            border: '1px solid rgba(255,255,255,0.05)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '6px'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontWeight: '600', color: '#fff', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                🚗 {t.transportCost}
+              </span>
+              <span style={{ color: '#fff', fontWeight: '700' }}>
+                ${transportTotalRate.toFixed(2)}
+              </span>
+            </div>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', color: '#94a3b8' }}>
+              <span>
+                {selectedVehicle ? (
+                  <span style={{ color: '#009b9e', backgroundColor: 'rgba(0,155,158,0.08)', padding: '2px 6px', borderRadius: '4px', border: '1px solid rgba(0,155,158,0.15)' }}>
+                    {selectedVehicle.car_model} ({
+                      activeRegion === 'cross_region'
+                        ? (language === 'UZ' ? '🇺🇿 Viloyatlararo' : language === 'RU' ? '🇺🇿 Межрегиональный' : '🇺🇿 Inter-Province')
+                        : isOutOfCityRoute
+                          ? (language === 'UZ' ? '🏔 Tog\'' : language === 'RU' ? '🏔 Горы' : 'Out of City')
+                          : (language === 'UZ' ? '🏙 Shahar ichi' : language === 'RU' ? '🏙 Город' : 'City rate')
+                    })
+                  </span>
+                ) : (
+                  <span style={{ color: '#64748b' }}>
+                    {language === 'UZ' ? 'Transportsiz sayohat' : language === 'RU' ? 'Без транспорта' : 'No transport selected'}
+                  </span>
+                )}
+              </span>
+              {tourDurationType === 'multi' && selectedVehicle && (
+                <span>
+                  ${transportRate.toFixed(2)} × {numDays} {language === 'UZ' ? 'kun' : language === 'RU' ? 'дн' : 'days'}
                 </span>
               )}
-            </span>
-            <span style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
-              {tourDurationType === 'multi' && selectedVehicle ? (
-                <span style={{ fontSize: '11px', color: '#64748b', marginRight: '6px' }}>
-                  (${transportRate.toFixed(2)} × {numDays} {language === 'UZ' ? 'kun' : language === 'RU' ? 'дн' : 'days'})
-                </span>
-              ) : null}
-              ${transportTotalRate.toFixed(2)}
-            </span>
+            </div>
           </div>
+
+          {/* Ticket Costs - Klook Excluded Cost Style */}
+          {totalTicketsCost > 0 && (
+            <div style={{ 
+              padding: '12px', 
+              borderRadius: '10px', 
+              backgroundColor: 'rgba(251, 191, 36, 0.03)', 
+              border: '1px dashed rgba(251, 191, 36, 0.2)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '6px'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontWeight: '600', color: '#fbbf24', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  🎟️ {language === 'UZ' ? 'Kirish chiptalari (Joyida to\'lanadi)' : language === 'RU' ? 'Входные билеты (На месте)' : 'Entrance Tickets (Pay on site)'}
+                </span>
+                <span style={{ color: '#fbbf24', fontWeight: '700' }}>
+                  ${totalTicketsCost.toFixed(2)}
+                </span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#a1a1aa' }}>
+                <span>
+                  {language === 'UZ' ? '* Tur narxidan alohida to\'lanadi' : language === 'RU' ? '* Оплачивается отдельно от тура' : '* Paid separately at attractions'}
+                </span>
+                <span>
+                  ${selectedLocations.reduce((sum, loc) => sum + (loc.ticket_price || 0), 0).toFixed(2)} × {passengerCount} {language === 'UZ' ? 'kishi' : language === 'RU' ? 'чел' : 'pax'}
+                </span>
+              </div>
+            </div>
+          )}
 
           {/* Platform fee */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
-            <span>{t.platformFee}</span>
-            <span style={{ color: 'var(--text-primary)', fontWeight: '500' }}>${fixedFee.toFixed(2)}</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', padding: '0 4px', fontSize: '12.5px' }}>
+            <span>🛠️ {t.platformFee}</span>
+            <span style={{ color: '#fff' }}>${fixedFee.toFixed(2)}</span>
           </div>
 
-          {/* Ticket Cost */}
-          {totalTicketsCost > 0 && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
-              <span>
-                {language === 'UZ' ? 'Kirish chiptalari (joyida to\'lanadi):' : language === 'RU' ? 'Входные билеты (оплата на месте):' : 'Entrance tickets (paid on site):'}
-                <span style={{ fontSize: '11px', color: '#64748b', marginLeft: '6px' }}>
-                  (${selectedLocations.reduce((sum, loc) => sum + (loc.ticket_price || 0), 0).toFixed(2)} × {passengerCount} {language === 'UZ' ? 'kishi' : language === 'RU' ? 'чел.' : 'pax'})
-                </span>
-              </span>
-              <span style={{ color: '#fbbf24', fontWeight: '700' }}>
-                ${totalTicketsCost.toFixed(2)}
-              </span>
-            </div>
-          )}
-
           {/* Divider */}
-          <div style={{ height: '1px', backgroundColor: 'var(--border-card)', margin: '2px 0' }} />
+          <div style={{ height: '1.5px', backgroundColor: 'rgba(255,255,255,0.06)', margin: '4px 0' }} />
 
-          {/* Subtotal (faqat shared da ko'rinadi) */}
+          {/* Subtotal (only shown in shared) */}
           {bookingType === 'shared' && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)', fontSize: '12px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#64748b', fontSize: '12px', padding: '0 4px' }}>
               <span>{t.subtotal}</span>
-              <span style={{ textDecoration: 'line-through', color: '#475569' }}>${subtotal.toFixed(2)}</span>
+              <span style={{ textDecoration: 'line-through' }}>${subtotal.toFixed(2)}</span>
             </div>
           )}
 
-          {/* Chegirma qatori (faqat shared da ko'rinadi) */}
+          {/* Discount Line (only shown in shared) */}
           {bookingType === 'shared' && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#009b9e', fontSize: '13px', fontWeight: 600 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#009b9e', fontSize: '13px', fontWeight: '700', padding: '0 4px' }}>
               <span>{t.discountLabel}</span>
               <span>-${discountAmount.toFixed(2)}</span>
             </div>
           )}
 
-          {/* Divider */}
-          <div style={{ height: '1px', backgroundColor: 'var(--border-card)', margin: '2px 0' }} />
-
-          {/* Total Price */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '16px', fontWeight: '700' }}>
-            <span style={{ color: bookingType === 'shared' ? '#009b9e' : 'var(--text-gold)' }}>{t.totalPrice}</span>
+          {/* Total Price Section */}
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            fontSize: '16px', 
+            fontWeight: '800',
+            padding: '8px 4px 0 4px',
+            borderTop: bookingType === 'shared' ? '1px dashed rgba(0, 155, 158, 0.25)' : 'none'
+          }}>
+            <span style={{ color: bookingType === 'shared' ? '#009b9e' : 'var(--text-gold)' }}>
+              {t.totalPrice}
+            </span>
             <span style={{
+              fontSize: '20px',
               color: bookingType === 'shared' ? '#009b9e' : 'var(--text-gold)',
-              textShadow: bookingType === 'shared' ? '0 0 10px rgba(0,155,158,0.2)' : '0 0 10px rgba(212,175,55,0.15)',
+              textShadow: bookingType === 'shared' ? '0 0 12px rgba(0,155,158,0.25)' : '0 0 12px rgba(212,175,55,0.2)',
             }}>
               ${total.toFixed(2)}
             </span>
