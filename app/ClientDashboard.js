@@ -1771,10 +1771,11 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                   </div>
                 )}
               </div>
-
               {/* 🎁 Recommended Tour Packages Selector (Klook-style) */}
               {(() => {
-                const regionPkgs = RECOMMENDED_PACKAGES[activeRegion] || [];
+                const regionPkgs = activeRegion === 'cross_region'
+                  ? (RECOMMENDED_PACKAGES[`cross_region_${crossRegionStart}`] || RECOMMENDED_PACKAGES['cross_region'] || [])
+                  : (RECOMMENDED_PACKAGES[activeRegion] || []);
                 if (regionPkgs.length === 0) return null;
                 
                 return (
