@@ -436,9 +436,35 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
       return locations.find(loc => loc.name_en.toLowerCase() === name.toLowerCase());
     }).filter(Boolean);
 
-    setSelectedLocations(pkgLocs.map((loc, idx) => {
+    // Dynamic geographical day scheduling based on starting point
+    const startRegion = activeRegion === 'cross_region' ? crossRegionStart : activeRegion;
+    const REGION_ORDER = ['toshkent', 'samarqand', 'shahrisabz', 'buxoro', 'xorazm', 'qoraqalpoq'];
+    const startIdx = REGION_ORDER.indexOf(startRegion);
+    const orderedRegions = startIdx !== -1 
+      ? [...REGION_ORDER.slice(startIdx), ...REGION_ORDER.slice(0, startIdx)]
+      : REGION_ORDER;
+
+    const uniquePkgRegions = [];
+    pkgLocs.forEach(loc => {
+      const reg = loc.region || 'samarqand';
+      if (!uniquePkgRegions.includes(reg)) {
+        uniquePkgRegions.push(reg);
+      }
+    });
+
+    uniquePkgRegions.sort((a, b) => {
+      return orderedRegions.indexOf(a) - orderedRegions.indexOf(b);
+    });
+
+    const regionToDayMap = {};
+    uniquePkgRegions.forEach((reg, idx) => {
+      regionToDayMap[reg] = (idx % numDays) + 1;
+    });
+
+    setSelectedLocations(pkgLocs.map(loc => {
       if (tourDurationType === 'multi') {
-        const day = (idx % numDays) + 1;
+        const reg = loc.region || 'samarqand';
+        const day = regionToDayMap[reg] || 1;
         return { ...loc, selectedDay: day };
       }
       return loc;
