@@ -82,8 +82,33 @@ export default function CheckoutForm({
   const daysCount = tourDurationType === 'multi' ? numDays : 1;
   const guideRate = selectedGuide ? Number(selectedGuide.daily_rate) : 0;
   const transportRate = selectedVehicle
-    ? (isOutOfCityRoute ? Number(selectedVehicle.out_of_city_rate) : Number(selectedVehicle.city_rate))
+    ? (activeRegion === 'cross_region'
+        ? Number(selectedVehicle.out_of_city_rate) * 1.5
+        : (isOutOfCityRoute ? Number(selectedVehicle.out_of_city_rate) : Number(selectedVehicle.city_rate)))
     : 0;
+
+  // Dynamic badge formatting for transport rates
+  let labelBg = 'rgba(0, 112, 192, 0.06)';
+  let labelBorder = '1px solid rgba(0, 112, 192, 0.2)';
+  let labelColor = '#0070c0';
+  let labelText = '';
+
+  if (activeRegion === 'cross_region') {
+    labelBg = 'rgba(124, 58, 237, 0.06)';
+    labelBorder = '1px solid rgba(124, 58, 237, 0.2)';
+    labelColor = '#7c3aed';
+    labelText = language === 'UZ' ? '🇺🇿 Viloyatlararo' : language === 'RU' ? '🇺🇿 Межрегиональный' : '🇺🇿 Inter-Province';
+  } else if (isOutOfCityRoute) {
+    labelBg = 'rgba(255, 91, 0, 0.06)';
+    labelBorder = '1px solid rgba(255, 91, 0, 0.2)';
+    labelColor = 'var(--primary-blue, #ff5b00)';
+    labelText = language === 'UZ' ? '🏔 Tog\'' : language === 'RU' ? '🏔 Горы' : 'Out of City';
+  } else {
+    labelBg = 'rgba(0, 112, 192, 0.06)';
+    labelBorder = '1px solid rgba(0, 112, 192, 0.2)';
+    labelColor = '#0070c0';
+    labelText = language === 'UZ' ? '🏙 Shahar ichi' : language === 'RU' ? '🏙 Город' : 'City rate';
+  }
   const guideTotalRate = guideRate * daysCount;
   const transportTotalRate = transportRate * daysCount;
   const fixedFee = selectedGuide || selectedVehicle ? 10.00 : 0;
@@ -579,14 +604,8 @@ export default function CheckoutForm({
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', color: 'var(--text-secondary)' }}>
                   <span>
                     {selectedVehicle ? (
-                      <span style={{ color: '#009b9e', backgroundColor: 'rgba(0,155,158,0.06)', padding: '2px 6px', borderRadius: '4px', border: '1px solid rgba(0,155,158,0.15)' }}>
-                        {selectedVehicle.car_model} ({
-                          activeRegion === 'cross_region'
-                            ? (language === 'UZ' ? '🇺🇿 Viloyatlararo' : language === 'RU' ? '🇺🇿 Межрегиональный' : '🇺🇿 Inter-Province')
-                            : isOutOfCityRoute
-                              ? (language === 'UZ' ? '🏔 Tog\'' : language === 'RU' ? '🏔 Горы' : 'Out of City')
-                              : (language === 'UZ' ? '🏙 Shahar ichi' : language === 'RU' ? '🏙 Город' : 'City rate')
-                        })
+                      <span style={{ color: labelColor, backgroundColor: labelBg, padding: '2px 6px', borderRadius: '4px', border: labelBorder }}>
+                        {selectedVehicle.car_model} ({labelText})
                       </span>
                     ) : (
                       <span style={{ color: 'var(--text-secondary)' }}>

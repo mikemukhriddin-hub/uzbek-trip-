@@ -1110,7 +1110,9 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
     );
     const guideRate = tariff ? Number(tariff.daily_rate) : 0;
     const transportRate = selectedVehicle
-      ? (isOutOfCityRoute ? Number(selectedVehicle.out_of_city_rate) : Number(selectedVehicle.city_rate))
+      ? (activeRegion === 'cross_region'
+          ? Number(selectedVehicle.out_of_city_rate) * 1.5
+          : (isOutOfCityRoute ? Number(selectedVehicle.out_of_city_rate) : Number(selectedVehicle.city_rate)))
       : 0;
     
     const guideTotalRate = guideRate * daysCount;
@@ -2725,6 +2727,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                   onSelectVehicle={handleSelectVehicle}
                   isOutOfCityRoute={isOutOfCityRoute}
                   language={language}
+                  activeRegion={activeRegion}
                 />
               </div>
             )}
