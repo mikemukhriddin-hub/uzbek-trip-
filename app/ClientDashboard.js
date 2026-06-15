@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { Compass, Sparkles, MapPin, CheckCircle, XCircle, Languages, AlertCircle, Lock, Info, Sun } from 'lucide-react';
+import { Compass, Sparkles, MapPin, CheckCircle, XCircle, Languages, AlertCircle, Lock, Info, Sun, Moon } from 'lucide-react';
 
 // Dynamically import the Map component with no SSR to bypass Leaflet window errors
 const Map = dynamic(() => import('@/components/Map'), { 
@@ -13,12 +13,12 @@ const Map = dynamic(() => import('@/components/Map'), {
       width: '100%',
       height: '400px',
       borderRadius: '16px',
-      backgroundColor: 'rgba(18, 26, 47, 0.6)',
+      backgroundColor: 'var(--bg-dark)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      border: '1px dashed rgba(212,175,55,0.2)',
-      color: '#94a3b8'
+      border: '1px dashed var(--border-card)',
+      color: '#9e9e9e'
     }}>
       Loading interactive map...
     </div>
@@ -71,9 +71,9 @@ const REGIONS_CONFIG = [
   {
     id: 'cross_region',
     emoji: '🇺🇿',
-    gradient: 'linear-gradient(135deg, #d4af37 0%, #b8860b 100%)',
-    shadow: 'rgba(212, 175, 55, 0.4)',
-    color: '#0a0f1d',
+    gradient: 'linear-gradient(135deg, var(--primary-blue) 0%, var(--deep-turquoise) 100%)',
+    shadow: 'rgba(255, 91, 0, 0.4)',
+    color: 'var(--text-primary)',
     label: { UZ: 'Viloyatlararo', RU: 'Межрегиональный', EN: 'Cross-Region' }
   },
   {
@@ -126,9 +126,55 @@ const REGIONS_CONFIG = [
   }
 ];
 
+const REGIONAL_COVERS = {
+  samarqand: {
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Registan_square_Samarkand.jpg/960px-Registan_square_Samarkand.jpg',
+    descUz: 'Samarqand — dunyoning eng qadimiy shaharlaridan biri, Buyuk Ipak yoʻlining chorrahasi va Temuriylar imperiyasining poytaxti. Bu yerda afsonaviy Registon maydoni, Amir Temur maqbarasi (Go\'ri Amir), Shohi Zinda me\'moriy majmuasi va dunyoga mashhur tarixiy obidalar joylashgan. Registonning muhtasham madrasalari o\'zining feruza gumbazlari va koshin bezaklari bilan butun dunyo sayohatchilarini hayratga soladi. Samarqand nonlari va milliy taomlari o\'ziga xos ta\'mga ega.',
+    descRu: 'Самарканд — один из старейших городов мира, перекресток Великого шелкового пути и столица империи Темуридов. Здесь находятся легендарная площадь Регистан, мавзолей Амира Темура (Гур-Эмир), архитектурный ансамбль Шахи-Зинда и всемирно известные исторические памятники. Величественные медресе Регистана с бирюзовыми куполами и изразцовым декором поражают воображение путешественников со всего мира.',
+    descEn: 'Samarkand is one of the oldest cities in the world, the crossroads of the Silk Road, and the capital of the Timurid Empire. It is home to the legendary Registan Square, the Mausoleum of Amir Timur (Gur-i Amir), the Shah-i-Zinda architectural complex, and world-renowned monuments. The majestic madrasahs of Registan, with their turquoise domes and intricate mosaic tilework, continue to awe travelers worldwide.'
+  },
+  buxoro: {
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Poi_Kalon.jpg/960px-Poi_Kalon.jpg',
+    descUz: 'Buxoro — sharq durdonasi, islom olamining muqaddas shaharlaridan biri va ochiq osmon ostidagi muzey. 2500 yildan ortiq tarixga ega bu shaharda Poi Kalon minorasi, qadimiy Ark qal\'asi, Labi Hovuz ansambli va Chor Minor madrasasi qad rostlab turibdi. Buxoroning tor va qadimiy ko\'chalari, tarixiy savdo toqlari sizni o\'tmishga olib boradi. Buxoro zargarlik, gilamdo\'zlik va misgarlik san\'ati bilan mashhur.',
+    descRu: 'Бухара — жемчужина Востока, один из священных городов ислама и настоящий музей под открытым небом. В этом городе с более чем 2500-летней историей возвышаются минарет Пои-Калян, древняя крепость Арк, ансамбль Ляби-Хауз и медресе Чор-Минор. Узкие старинные улочки и торговые купола переносят в атмосферу восточной сказки.',
+    descEn: 'Bukhara is the pearl of the East, one of the holy cities of Islam, and a living open-air museum. With a history spanning over 2,500 years, it features the Poi Kalyan Minaret, the ancient Ark of Bukhara fortress, the Lyabi-Khauz ensemble, and Chor Minor. The narrow streets and historical trading domes immerse you in the atmosphere of the ancient Silk Road bazaar.'
+  },
+  xorazm: {
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Ichan_Kala_Khiva.jpg/960px-Ichan_Kala_Khiva.jpg',
+    descUz: 'Xiva — ertaklar shahri, sahro bag\'ridagi tirik obida. Uning markaziy qismi — Ichan Qal\'a to\'liqligicha saqlanib qolgan yagona o\'rta asr shachar-qal\'asidir. Kalta Minor, Islom Xo\'ja minorasi va Tosh Hovli saroyi o\'zining betakror xorazmcha ko\'k koshinlari bilan mashhur. Xiva ko\'chalarida yurganda o\'zingizni ming bir kecha ertaklarida yurgandek his qilasiz.',
+    descRu: 'Хива — город-сказка, живой памятник посреди пустыни. Ее исторический центр — Ичан-Кала — единственный полностью сохранившийся средневековый город-крепость в Центральной Азии. Кальта-Минор, минарет Ислам-Ходжа и дворец Таш-Хаули славятся уникальной хорезмской майоликой.',
+    descEn: 'Khiva is a fairytale city, a living monument preserved in the heart of the desert. Its inner fortress, Ichan-Kala, is the only completely intact medieval walled city in Central Asia. The Kalta-Minor Minaret, Islam-Khodja Minaret, and Tosh Khauli Palace showcase stunning, unique Khorezmian blue tiles.'
+  },
+  shahrisabz: {
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Aq_Saroy_Palace_Ruins.jpg/960px-Aq_Saroy_Palace_Ruins.jpg',
+    descUz: 'Shahrisabz — Amir Temurning tug\'ilgan va voyaga yetgan shahri, qadimiy Kesh. Bu yerda Temurning eng ulug\'vor loyihasi bo\'lmish Oqsaroy saroyi xarobalari, Dorut Tilovat va Dorus Siyodat majmualari joylashgan. Shahrisabz tog\' etaklarida joylashgan bo\'lib, toza tog\' havosi va boy uzumzorlari bilan azralib turadi.',
+    descRu: 'Шахрисабз — родина Амира Темура, древний Кеш. Здесь находятся руины грандиозного дворца Ак-Сарай, крупнейшего проекта Темура, а также мемориальные комплексы Дорут-Тиловат и Дорус-Сиядат. Город расположен у подножия гор и славится свежим горным воздухом и виноградниками.',
+    descEn: 'Shakhrisabz is the birthplace of Amir Timur, historically known as Kesh. It houses the ruins of the colossal Ak-Saray Palace—Timur’s grandest building project—as well as the Dorut Tilovat and Dorus Siyodat complexes. Nestled at the foot of the mountains, it offers scenic mountain views and rich vineyards.'
+  },
+  toshkent: {
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Amir_Timur_Square_Tashkent.jpg/960px-Amir_Timur_Square_Tashkent.jpg',
+    descUz: 'Toshkent — O\'zbekistonning poytaxti, Markaziy Osiyodagi eng yirik megapolis. Zamonaviy osmono\'par binolar qadimiy Chorsu bozori, Hazrati Imom (Xast Imom) majmuasi va dunyoning eng qadimiy Usmon Qur\'oni saqlanayotgan kutubxona bilan uyg\'unlashgan. Chiroyli metro bekatlari va yashil bog\'lari bilan tanilgan.',
+    descRu: 'Ташкент — столица Узбекистана, крупнейший мегаполис Центральной Азии. Современные небоскребы гармонично сочетаются с древним базаром Чорсу, комплексом Хазрет Имам (Хаст Имам) и библиотекой, где хранится древнейший Коран Усмана. Город славится красивым метро и зелеными парками.',
+    descEn: 'Tashkent is the capital of Uzbekistan and the largest metropolis in Central Asia. Modern skyscrapers stand alongside the historic Chorsu Bazaar and Hazrati Imam (Khast Imam) complex, which houses the world\'s oldest Uthman Quran. Tashkent is famous for its uniquely themed metro stations and lush green parks.'
+  },
+  qoraqalpoq: {
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Nukus_Museum_of_Art.jpg/960px-Nukus_Museum_of_Art.jpg',
+    descUz: 'Qoraqalpog\'iston — sirli o\'lka, Nukus shahridagi mashhur Savitskiy muzeyi (sahrodagi Luvr) va ekologik fojia timsoli bo\'lgan Orol dengizi hamda kemalar qabristoni bilan tanilgan. Bu yerda Ustyurt platosi va ko\'plab qadimiy qal\'alar (Chilpiq daxmasi) joylashgan bo\'lib, sarguzasht izlovchilar uchun ajoyib maskandir.',
+    descRu: 'Каракалпакстан — загадочный край, известный всемирно популярным музеем Савицкого в Нукусе (Лувр в пустыне), Аральским морем и кладбищем кораблей в Муйнаке. Здесь также находятся плато Устюрт и множество древних крепостей (например, дахма Чилпык).',
+    descEn: 'Karakalpakstan is a land of mystery, home to the famous Savitsky Art Museum in Nukus (often called the "Louvre in the Desert"), the Aral Sea ship graveyard in Muynaq, and the vast Ustyurt Plateau. It features ancient fortresses like Chilpyk Dahma, making it a dream destination for adventurers.'
+  },
+  cross_region: {
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Registan_square_Samarkand.jpg/960px-Registan_square_Samarkand.jpg',
+    descUz: 'Viloyatlararo Kombinatsiyalangan tur — butun O\'zbekiston bo\'ylab unutilmas sayohat. Toshkent poytaxtining zamonaviyligi, Samarqand va Buxoroning ko\'hna madrasalari, Xivaning ertaknamo qal\'alari hamda Mo\'ynoqdagi Orol dengizi bo\'ylab yaxlit sayohat dasturini tuzing. Afrosiyob tezyurar poyezdi yordamida shaharlararo silliq sayohat qiling.',
+    descRu: 'Межрегиональный комбинированный тур — незабываемое путешествие по всему Узбекистану. Объедините в один маршрут современность Ташкента, древность Самарканда и Бухары, сказочность Хивы и тайны Аральского моря в Муйнаке. Пользуйтесь высокоскоростными поездами.',
+    descEn: 'Cross-Region Custom Tour — the ultimate adventure across Uzbekistan. Combine the modern capital of Tashkent, the historic marvels of Samarkand and Bukhara, the fairytale walls of Khiva, and the desert landscapes of Karakalpakstan into one single seamless itinerary.'
+  }
+};
+
 export default function ClientDashboard({ initialLocations = [], initialGuides = [], initialTariffs = [], initialVehicles = [] }) {
   const [language, setLanguage] = useState('UZ'); // Site UI Language - default to UZ
   const [showLangDropdown, setShowLangDropdown] = useState(false);
+  const [theme, setTheme] = useState('light');
   const [locations, setLocations] = useState(() => {
     const base = initialLocations && initialLocations.length > 0 ? initialLocations : MOCK_LOCATIONS;
     return base.map(loc => {
@@ -153,6 +199,9 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
   const [vehicles, setVehicles] = useState(initialVehicles && initialVehicles.length > 0 ? initialVehicles : MOCK_VEHICLES);
 
   const [activeRegion, setActiveRegion] = useState('samarqand'); // 'samarqand', 'buxoro', 'xorazm', 'shahrisabz', 'toshkent', 'qoraqalpoq', or 'cross_region'
+  const [activeTab, setActiveTab] = useState('explore');
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isDescExpanded, setIsDescExpanded] = useState(false);
   const isLoadedRef = useRef(false);
   const [crossRegionStart, setCrossRegionStart] = useState('samarqand'); // starting point for cross-region tours
   const [crossRegionLocationFilter, setCrossRegionLocationFilter] = useState('all'); // sub-region browsing filter
@@ -176,17 +225,27 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
     setSelectedLocations([]);
     setSelectedVehicle(null);
     setSelectedGuide(null);
-    setCrossRegionLocationFilter('all');
+    setCrossRegionLocationFilter(activeRegion === 'cross_region' ? crossRegionStart : 'all');
     setTourDurationType('single');
     setNumDays(2);
     setActivePlanningDay(1);
     setDraggedLocationId(null);
     setDragOverLocationId(null);
     setDragOverDay(null);
+    setIsDescExpanded(false);
     if (typeof document !== 'undefined') {
       document.body.setAttribute('data-region', activeRegion);
     }
   }, [activeRegion]);
+
+  // Scroll listener for fixed navbar transparent-to-solid transitions
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Reset selected locations and other components when changing between single-day and multi-day tours
   useEffect(() => {
@@ -200,6 +259,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
   useEffect(() => {
     setSelectedVehicle(null);
     setSelectedGuide(null);
+    setCrossRegionLocationFilter(crossRegionStart);
   }, [crossRegionStart]);
 
   const filteredLocations = activeRegion === 'cross_region'
@@ -234,6 +294,10 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
 
   // Sync state loaded from localStorage if user has a preference saved
   useEffect(() => {
+    const savedTheme = localStorage.getItem('site_theme') || 'light';
+    setTheme(savedTheme);
+    document.body.setAttribute('data-theme', savedTheme);
+
     const savedLang = localStorage.getItem('site_lang');
     if (savedLang) {
       Promise.resolve().then(() => {
@@ -264,6 +328,13 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
       isLoadedRef.current = true;
     }
   }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(nextTheme);
+    document.body.setAttribute('data-theme', nextTheme);
+    localStorage.setItem('site_theme', nextTheme);
+  };
 
   // Save activeRegion to localStorage when it changes to persist it on refresh
   useEffect(() => {
@@ -771,7 +842,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 {language === 'UZ' ? '❌ Buyurtma bekor qilindi' : language === 'RU' ? '❌ Бронирование отменено' : '❌ Booking Cancelled'}
               </h2>
               
-              <p style={{ fontSize: '15px', color: '#94a3b8', lineHeight: 1.6 }}>
+              <p style={{ fontSize: '15px', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                 {language === 'UZ'
                   ? (selectedGuide && selectedVehicle)
                     ? `Sayohat bekor qilindi. Gidingiz ${selectedGuide.full_name} va haydovchingiz ${selectedVehicle.driver_name} bu haqda ogohlantirildi.`
@@ -815,14 +886,14 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
 
               <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#fff' }}>{t.successTitle}</h2>
               
-              <p style={{ fontSize: '15px', color: '#94a3b8', lineHeight: 1.6 }}>
+              <p style={{ fontSize: '15px', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                 {t.successSub}
               </p>
 
               <div style={{
                 textAlign: 'left',
                 padding: '20px',
-                backgroundColor: 'rgba(10, 15, 29, 0.6)',
+                backgroundColor: 'var(--bg-card)',
                 borderRadius: '12px',
                 border: '1px solid rgba(212, 175, 55, 0.2)',
                 display: 'flex',
@@ -830,33 +901,33 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 gap: '10px',
                 fontSize: '14px'
               }}>
-                <h4 style={{ fontWeight: '700', color: '#d4af37', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '6px' }}>
+                <h4 style={{ fontWeight: '700', color: 'var(--primary-blue)', borderBottom: '1px solid var(--border-card)', paddingBottom: '6px' }}>
                   {t.successDetailTitle}
                 </h4>
                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: '#94a3b8' }}>{t.successGuide}</span>
-                  <strong style={{ color: '#fff' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>{t.successGuide}</span>
+                  <strong style={{ color: 'var(--text-primary)' }}>
                     {selectedGuide 
                       ? `${selectedGuide.full_name} (${selectedGuideLanguage})` 
                       : (language === 'UZ' ? 'Gidsiz' : language === 'RU' ? 'Без гида' : 'No guide')}
                   </strong>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: '#94a3b8' }}>{t.successDriver}</span>
-                  <strong style={{ color: '#fff' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>{t.successDriver}</span>
+                  <strong style={{ color: 'var(--text-primary)' }}>
                     {selectedVehicle 
                       ? `${selectedVehicle.driver_name} (${selectedVehicle.car_model})` 
                       : (language === 'UZ' ? 'Transportsiz (Faqat marshrut)' : language === 'RU' ? 'Без транспорта' : 'No driver (Itinerary only)')}
                   </strong>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: '#94a3b8' }}>{t.successTotal}</span>
-                  <strong style={{ color: '#fff' }}>${bookingData?.totalPrice?.toFixed(2)}</strong>
+                  <span style={{ color: 'var(--text-secondary)' }}>{t.successTotal}</span>
+                  <strong style={{ color: 'var(--text-primary)' }}>${bookingData?.totalPrice?.toFixed(2)}</strong>
                 </div>
                 {bookingData?.depositAmount !== undefined && (
                   <>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ color: '#94a3b8' }}>
+                      <span style={{ color: 'var(--text-secondary)' }}>
                         {language === 'UZ' ? 'To\'langan depozit (20%):' : language === 'RU' ? 'Оплаченный депозит (20%):' : 'Paid Deposit (20%):'}
                       </span>
                       <strong style={{ color: '#10b981' }}>
@@ -864,7 +935,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                       </strong>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ color: '#94a3b8' }}>
+                      <span style={{ color: 'var(--text-secondary)' }}>
                         {language === 'UZ' ? 'Qoldiq (joyida to\'lanadi):' : language === 'RU' ? 'Остаток к оплате (на месте):' : 'Remaining Balance (to pay in cash):'}
                       </span>
                       <strong style={{ color: '#fbbf24' }}>
@@ -998,8 +1069,8 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                     fontWeight: '700',
                     cursor: 'pointer',
                     width: '100%',
-                    backgroundColor: '#d4af37',
-                    color: '#0a0f1d'
+                    backgroundColor: 'var(--primary-blue)',
+                    color: 'var(--text-primary)'
                   }}
                 >
                   {language === 'UZ' ? 'Yo\'q, bandlikni saqlash' : language === 'RU' ? 'Нет, сохранить бронь' : 'No, Keep My Booking'}
@@ -1050,83 +1121,39 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
   };
 
   return (
-    <main style={{ width: '100%', minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+    <main style={{ width: '100%', minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative', backgroundColor: 'var(--bg-dark)' }}>
 
-      <BackgroundGraphics />
-      
-      {/* 🎬 Ambient Video Background Loop */}
-      <div style={{
-        position: 'fixed',
+      {/* ☁ Klook Light-Mode Navbar — transparent to solid white on scroll */}
+      <header className="klook-navbar" style={{
+        position: 'sticky',
         top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: -5,
-        overflow: 'hidden',
-        pointerEvents: 'none',
-        backgroundColor: '#0a0f1d'
-      }}>
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            minWidth: '100%',
-            minHeight: '100%',
-            width: 'auto',
-            height: 'auto',
-            transform: 'translate(-50%, -50%)',
-            objectFit: 'cover',
-            opacity: 0.5,
-          }}
-        >
-          <source src="/videos/bg-loop.mp4" type="video/mp4" />
-        </video>
-        {/* Subtle vignette overlay for text readability */}
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          background: 'linear-gradient(to bottom, rgba(10,15,29,0.8) 0%, rgba(10,15,29,0.5) 35%, rgba(10,15,29,0.5) 65%, rgba(10,15,29,0.85) 100%)',
-          zIndex: 1,
-          pointerEvents: 'none',
-        }} />
-      </div>
-      
-      {/* 🕌 Premium Header */}
-      <header className="premium-header glass-container" style={{
-        margin: '16px',
-        padding: '16px 24px',
+        zIndex: 100,
+        padding: '12px 24px',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        border: '1px solid rgba(212,175,55,0.15)',
-        borderRadius: '16px',
-        position: 'sticky',
-        top: '16px',
-        zIndex: 100
+        background: isScrolled ? (theme === 'dark' ? 'rgba(18, 26, 47, 0.95)' : 'rgba(255, 255, 255, 0.97)') : 'transparent',
+        backdropFilter: isScrolled ? 'blur(12px)' : 'none',
+        borderBottom: isScrolled ? '1px solid var(--border-card)' : '1px solid transparent',
+        boxShadow: isScrolled ? '0 2px 16px rgba(0,0,0,0.06)' : 'none',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div className="brand-icon-container" style={{
+          <div style={{
             width: '36px',
             height: '36px',
-            borderRadius: '8px',
-            backgroundColor: 'rgba(212,175,55,0.15)',
+            borderRadius: '10px',
+            background: 'linear-gradient(135deg, var(--primary-blue) 0%, var(--deep-turquoise) 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#d4af37'
+            color: '#fff',
+            boxShadow: '0 2px 8px rgba(var(--primary-blue-rgb), 0.25)'
           }}>
-            <Compass size={20} className="animate-spin" style={{ animationDuration: '20s' }} />
+            <Compass size={20} />
           </div>
-          <span className="brand-title" style={{ fontSize: '18px', fontWeight: 800, letterSpacing: '0.05em', color: '#fff', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            {activeRegion === 'cross_region' ? 'O\'ZBEKISTON' : activeRegion === 'qoraqalpoq' ? 'QORAQALPOQ' : activeRegion === 'toshkent' ? 'TOSHKENT' : activeRegion === 'shahrisabz' ? 'SHAHRISABZ' : activeRegion === 'xorazm' ? 'XORAZM' : activeRegion === 'buxoro' ? 'BUXORO' : 'SAMARQAND'} <span style={{ color: '#d4af37' }}>CRAFTOUR</span>
+          <span style={{ fontSize: '18px', fontWeight: 800, letterSpacing: '0.02em', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            {activeRegion === 'cross_region' ? 'O\'ZBEKISTON' : activeRegion === 'qoraqalpoq' ? 'QORAQALPOQ' : activeRegion === 'toshkent' ? 'TOSHKENT' : activeRegion === 'shahrisabz' ? 'SHAHRISABZ' : activeRegion === 'xorazm' ? 'XORAZM' : activeRegion === 'buxoro' ? 'BUXORO' : 'SAMARQAND'} <span style={{ color: 'var(--primary-blue)' }}>CRAFTOUR</span>
           </span>
         </div>
 
@@ -1136,14 +1163,14 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '6px',
-            padding: '2px',
-            backgroundColor: 'rgba(5, 7, 16, 0.35)',
-            border: '1px solid rgba(212, 175, 55, 0.15)',
+            gap: '4px',
+            padding: '3px',
+            backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : '#f0f0f0',
+            border: '1px solid var(--border-card)',
             borderRadius: '12px',
             overflowX: 'auto',
             whiteSpace: 'nowrap',
-            maxWidth: 'calc(100% - 400px)', /* ensure it doesn't crowd logo/controls */
+            maxWidth: 'calc(100% - 400px)',
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
             margin: '0 12px'
@@ -1156,107 +1183,135 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 key={reg.id}
                 onClick={() => setActiveRegion(reg.id)}
                 style={{
-                  padding: '8px 14px',
-                  borderRadius: '10px',
+                  padding: '7px 14px',
+                  borderRadius: '9px',
                   border: 'none',
                   background: isActive ? reg.gradient : 'transparent',
-                  color: isActive ? reg.color : '#94a3b8',
+                  color: isActive ? reg.color : 'var(--text-secondary)',
                   fontSize: '12.5px',
                   fontWeight: '700',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '6px',
+                  gap: '5px',
                   transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-                  boxShadow: isActive ? `0 4px 10px ${reg.shadow}` : 'none',
-                  transform: isActive ? 'scale(1.02)' : 'scale(1)',
+                  boxShadow: isActive ? `0 3px 10px ${reg.shadow}` : 'none',
                 }}
                 onMouseEnter={(e) => {
                   if (!isActive) {
-                    e.currentTarget.style.color = '#fff';
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
-                    e.currentTarget.style.transform = 'scale(1.02)';
+                    e.currentTarget.style.color = 'var(--text-primary)';
+                    e.currentTarget.style.background = theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : '#e8e8e8';
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (!isActive) {
-                    e.currentTarget.style.color = '#94a3b8';
+                    e.currentTarget.style.color = 'var(--text-secondary)';
                     e.currentTarget.style.background = 'transparent';
-                    e.currentTarget.style.transform = 'scale(1)';
                   }
                 }}
               >
-                <span style={{ fontSize: '14px' }}>{reg.emoji}</span>
+                <span style={{ fontSize: '13px' }}>{reg.emoji}</span>
                 <span>{reg.label[language] || reg.label['UZ']}</span>
               </button>
             );
           })}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           {/* Discover Info Button */}
           <Link
             href={`/discover?region=${activeRegion}`}
             style={{
-              padding: '8px 16px',
+              padding: '8px 14px',
               borderRadius: '10px',
-              backgroundColor: 'rgba(212, 175, 55, 0.1)',
-              border: '1px solid rgba(212, 175, 55, 0.25)',
-              color: '#d4af37',
+              backgroundColor: 'rgba(var(--primary-blue-rgb), 0.08)',
+              border: '1px solid rgba(255,91,0,0.2)',
+              color: 'var(--primary-blue)',
+              fontSize: '13px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px',
+              textDecoration: 'none',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255,91,0,0.14)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'rgba(var(--primary-blue-rgb), 0.08)'; }}
+          >
+            <Info size={14} />
+            <span>{language === 'UZ' ? 'Ma\'lumot' : language === 'RU' ? 'Инфо' : 'Discover'}</span>
+          </Link>
+
+          {/* Theme Toggle Button */}
+          <button
+            onClick={toggleTheme}
+            style={{
+              padding: '8px 14px',
+              borderRadius: '10px',
+              backgroundColor: theme === 'dark' ? 'rgba(212,175,55,0.12)' : '#f0f0f0',
+              border: theme === 'dark' ? '1px solid rgba(212,175,55,0.3)' : '1px solid var(--border-card)',
+              color: 'var(--text-primary)',
               fontSize: '13px',
               fontWeight: '600',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
-              textDecoration: 'none',
               transition: 'all 0.2s ease'
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(212, 175, 55, 0.2)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'rgba(212, 175, 55, 0.1)'; }}
+            title={language === 'UZ' ? 'Mavzuni o\'zgartirish' : language === 'RU' ? 'Сменить тему' : 'Toggle theme'}
           >
-            <Info size={14} />
-            <span>{language === 'UZ' ? 'Ma\'lumot' : language === 'RU' ? 'Инфо' : 'Discover'}</span>
-          </Link>
+            {theme === 'dark' ? (
+              <>
+                <Moon size={14} style={{ color: 'var(--primary-blue)' }} />
+                <span>{language === 'UZ' ? 'Tun' : language === 'RU' ? 'Ночь' : 'Night'}</span>
+              </>
+            ) : (
+              <>
+                <Sun size={14} style={{ color: 'var(--primary-blue)' }} />
+                <span>{language === 'UZ' ? 'Kun' : language === 'RU' ? 'День' : 'Day'}</span>
+              </>
+            )}
+          </button>
 
-          {/* Premium Dropdown Language Switcher */}
+          {/* Klook-style Language Switcher */}
           <div style={{ position: 'relative' }}>
             <button
               onClick={() => setShowLangDropdown(!showLangDropdown)}
               style={{
-                padding: '8px 16px',
+                padding: '8px 14px',
                 borderRadius: '10px',
-                backgroundColor: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                color: '#fff',
+                backgroundColor: '#f0f0f0',
+                border: '1px solid var(--border-card)',
+                color: 'var(--text-primary)',
                 fontSize: '13px',
                 fontWeight: '600',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px',
+                gap: '6px',
                 transition: 'all 0.2s ease'
               }}
             >
-              <Languages size={14} style={{ color: '#d4af37' }} />
+              <Languages size={14} style={{ color: 'var(--primary-blue)' }} />
               <span>{language === 'EN' ? '🇬🇧 EN' : language === 'RU' ? '🇷🇺 RU' : '🇺🇿 UZ'}</span>
             </button>
             {showLangDropdown && (
               <div style={{
                 position: 'absolute',
-                top: 'calc(100% + 8px)',
+                top: 'calc(100% + 6px)',
                 right: 0,
-                backgroundColor: '#0f172a',
-                border: '1px solid rgba(212,175,55,0.25)',
-                borderRadius: '10px',
+                backgroundColor: 'var(--bg-card)',
+                border: '1px solid var(--border-card)',
+                borderRadius: '12px',
                 padding: '4px',
                 zIndex: 1000,
-                boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+                boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '2px',
-                minWidth: '130px'
+                minWidth: '140px'
               }}>
                 {['EN', 'RU', 'UZ'].map((langCode) => (
                   <button
@@ -1267,27 +1322,27 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                       localStorage.setItem('site_lang', langCode);
                     }}
                     style={{
-                      padding: '8px 12px',
+                      padding: '10px 12px',
                       border: 'none',
-                      background: language === langCode ? 'rgba(212,175,55,0.1)' : 'transparent',
-                      color: language === langCode ? '#d4af37' : '#94a3b8',
+                      background: language === langCode ? 'rgba(var(--primary-blue-rgb), 0.08)' : 'transparent',
+                      color: language === langCode ? 'var(--primary-blue)' : 'var(--text-secondary)',
                       textAlign: 'left',
                       fontSize: '13px',
                       fontWeight: '600',
                       cursor: 'pointer',
-                      borderRadius: '6px',
+                      borderRadius: '8px',
                       transition: 'all 0.2s ease',
                       width: '100%'
                     }}
                     onMouseEnter={(e) => {
                       if (language !== langCode) {
-                        e.currentTarget.style.color = '#fff';
-                        e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)';
+                        e.currentTarget.style.color = 'var(--text-primary)';
+                        e.currentTarget.style.backgroundColor = 'var(--bg-dark)';
                       }
                     }}
                     onMouseLeave={(e) => {
                       if (language !== langCode) {
-                        e.currentTarget.style.color = '#94a3b8';
+                        e.currentTarget.style.color = 'var(--text-secondary)';
                         e.currentTarget.style.backgroundColor = 'transparent';
                       }
                     }}
@@ -1301,14 +1356,14 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
         </div>
       </header>
 
-      {/* 🧭 Interactive Region Ribbon */}
+      {/* 🧭 Region Ribbon (Mobile/Tablet Only) */}
       <div 
         className="ribbon-switcher"
         style={{
           display: 'flex',
           justifyContent: 'center',
           padding: '0 16px',
-          marginBottom: '24px',
+          marginBottom: '8px',
           width: '100%',
           zIndex: 90
         }}
@@ -1318,17 +1373,17 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
-            padding: '6px',
-            background: 'rgba(5, 7, 16, 0.4)',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(212, 175, 55, 0.25)',
-            borderRadius: '16px',
+            gap: '6px',
+            padding: '4px',
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border-card)',
+            borderRadius: '14px',
             overflowX: 'auto',
             whiteSpace: 'nowrap',
             maxWidth: '100%',
-            scrollbarWidth: 'none', // hide scrollbar Firefox
-            msOverflowStyle: 'none' // hide scrollbar IE/Edge
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
           }}
         >
           {REGIONS_CONFIG.map((reg) => {
@@ -1338,37 +1393,34 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 key={reg.id}
                 onClick={() => setActiveRegion(reg.id)}
                 style={{
-                  padding: '10px 18px',
-                  borderRadius: '12px',
+                  padding: '8px 16px',
+                  borderRadius: '10px',
                   border: 'none',
                   background: isActive ? reg.gradient : 'transparent',
-                  color: isActive ? reg.color : '#94a3b8',
-                  fontSize: '13.5px',
+                  color: isActive ? reg.color : 'var(--text-secondary)',
+                  fontSize: '13px',
                   fontWeight: '700',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '8px',
+                  gap: '6px',
                   transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-                  boxShadow: isActive ? `0 4px 12px ${reg.shadow}` : 'none',
-                  transform: isActive ? 'scale(1.02)' : 'scale(1)',
+                  boxShadow: isActive ? `0 3px 10px ${reg.shadow}` : 'none',
                 }}
                 onMouseEnter={(e) => {
                   if (!isActive) {
-                    e.currentTarget.style.color = '#fff';
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
-                    e.currentTarget.style.transform = 'scale(1.02)';
+                    e.currentTarget.style.color = 'var(--text-primary)';
+                    e.currentTarget.style.background = theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : '#f0f0f0';
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (!isActive) {
-                    e.currentTarget.style.color = '#94a3b8';
+                    e.currentTarget.style.color = 'var(--text-secondary)';
                     e.currentTarget.style.background = 'transparent';
-                    e.currentTarget.style.transform = 'scale(1)';
                   }
                 }}
               >
-                <span style={{ fontSize: '16px' }}>{reg.emoji}</span>
+                <span style={{ fontSize: '15px' }}>{reg.emoji}</span>
                 <span>{reg.label[language] || reg.label['UZ']}</span>
               </button>
             );
@@ -1376,13 +1428,181 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
         </div>
       </div>
 
-      {/* 🚀 Main Interface Grid */}
+      {/* 🏞 Klook Hero Banner with Regional Cover Image */}
+      {(() => {
+        const coverData = REGIONAL_COVERS[activeRegion] || REGIONAL_COVERS.samarqand;
+        const coverDesc = language === 'UZ' ? coverData.descUz : language === 'RU' ? coverData.descRu : coverData.descEn;
+        return (
+          <div style={{
+            position: 'relative',
+            width: '100%',
+            height: '340px',
+            overflow: 'hidden',
+            marginBottom: '0',
+          }}>
+            <img
+              src={coverData.image}
+              alt={t.heroTitle}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                display: 'block',
+              }}
+            />
+            {/* Dark gradient overlay for text readability */}
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.05) 100%)',
+            }} />
+            {/* Hero Text */}
+            <div style={{
+              position: 'absolute',
+              bottom: '28px',
+              left: '24px',
+              right: '24px',
+              maxWidth: '1280px',
+              margin: '0 auto',
+            }}>
+              <h1 style={{
+                fontSize: '32px',
+                fontWeight: 900,
+                color: '#fff',
+                margin: 0,
+                letterSpacing: '-0.02em',
+                textShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                lineHeight: 1.2,
+              }}>
+                {t.heroTitle}
+              </h1>
+              <p style={{
+                fontSize: '15px',
+                color: 'rgba(255,255,255,0.9)',
+                margin: '8px 0 0 0',
+                lineHeight: 1.5,
+                fontWeight: '500',
+                maxWidth: '700px',
+              }}>
+                {t.heroSubtitle}
+              </p>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* 📖 Description Expander Card */}
+      {(() => {
+        const coverData = REGIONAL_COVERS[activeRegion] || REGIONAL_COVERS.samarqand;
+        const coverDesc = language === 'UZ' ? coverData.descUz : language === 'RU' ? coverData.descRu : coverData.descEn;
+        return (
+          <div style={{
+            maxWidth: '1280px',
+            margin: '0 auto',
+            width: '100%',
+            padding: '16px 24px 0 24px',
+          }}>
+            <div style={{
+              backgroundColor: 'var(--bg-card)',
+              borderRadius: '16px',
+              padding: '20px 24px',
+              boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
+              border: '1px solid var(--border-card)',
+              marginTop: '-30px',
+              position: 'relative',
+              zIndex: 10,
+            }}>
+              <p style={{
+                fontSize: '14px',
+                color: 'var(--text-primary)',
+                lineHeight: 1.7,
+                margin: 0,
+                overflow: 'hidden',
+                maxHeight: isDescExpanded ? '500px' : '66px',
+                transition: 'max-height 0.4s ease',
+              }}>
+                {coverDesc}
+              </p>
+              <button
+                onClick={() => setIsDescExpanded(!isDescExpanded)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--primary-blue)',
+                  fontSize: '13px',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  padding: '6px 0 0 0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                }}
+              >
+                {isDescExpanded
+                  ? (language === 'UZ' ? 'Kamroq ko\'rsatish ▲' : language === 'RU' ? 'Показать меньше ▲' : 'Show less ▲')
+                  : (language === 'UZ' ? 'Batafsil ko\'rsatish ▼' : language === 'RU' ? 'Показать больше ▼' : 'See more ▼')}
+              </button>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* 🗂 Category Tabs (Klook-style) */}
+      <div style={{
+        maxWidth: '1280px',
+        margin: '0 auto',
+        width: '100%',
+        padding: '20px 24px 0 24px',
+      }}>
+        <div className="no-scrollbar" style={{
+          display: 'flex',
+          gap: '4px',
+          borderBottom: '2px solid var(--border-card)',
+          overflowX: 'auto',
+          whiteSpace: 'nowrap',
+          paddingBottom: '0',
+        }}>
+          {[
+            { id: 'explore', labelUz: '🧭 Tur rejasi', labelRu: '🧭 Маршрут', labelEn: '🧭 Explore' },
+            { id: 'sights', labelUz: '🕌 Diqqatga sazovor joylar', labelRu: '🕌 Достопримечательности', labelEn: '🕌 Attractions' },
+            { id: 'transport', labelUz: '🚗 Transport', labelRu: '🚗 Транспорт', labelEn: '🚗 Transport' },
+            { id: 'guides', labelUz: '🗣 Gidlar', labelRu: '🗣 Гиды', labelEn: '🗣 Guides' },
+          ].map(tab => {
+            const isActiveTab = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                style={{
+                  padding: '12px 20px',
+                  border: 'none',
+                  background: 'transparent',
+                  color: isActiveTab ? 'var(--primary-blue)' : 'var(--text-secondary)',
+                  fontSize: '14px',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  borderBottom: isActiveTab ? '3px solid var(--primary-blue)' : '3px solid transparent',
+                  transition: 'all 0.2s ease',
+                  marginBottom: '-2px',
+                }}
+                onMouseEnter={(e) => {
+                  if (!isActiveTab) e.currentTarget.style.color = 'var(--text-primary)';
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActiveTab) e.currentTarget.style.color = 'var(--text-secondary)';
+                }}
+              >
+                {language === 'UZ' ? tab.labelUz : language === 'RU' ? tab.labelRu : tab.labelEn}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 🚀 Main Content Area */}
       <div style={{
         flex: 1,
-        padding: '0 16px 32px 16px',
-        display: 'grid',
-        gridTemplateColumns: '1fr',
-        gap: '24px',
+        padding: '20px 24px 32px 24px',
         maxWidth: '1280px',
         margin: '0 auto',
         width: '100%'
@@ -1394,80 +1614,26 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
           gap: '24px',
         }}>
           
-          {/* Left Column: Constructor Sidebar */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-            
-            {/* Intro Header - Elevated Hero Section Banner */}
-            <div 
-              className="glass-container gold-glow"
-              style={{ 
-                padding: '24px 28px', 
-                display: 'flex', 
-                flexDirection: 'column', 
-                gap: '12px',
-                border: '1px solid rgba(212, 175, 55, 0.2)',
-                background: 'linear-gradient(135deg, rgba(10, 15, 29, 0.3) 0%, rgba(212, 175, 55, 0.04) 100%)',
-                position: 'relative',
-                overflow: 'hidden'
-              }}
-            >
-              <div style={{
-                position: 'absolute',
-                top: '-50px',
-                right: '-50px',
-                width: '150px',
-                height: '150px',
-                borderRadius: '50%',
-                background: 'rgba(212, 175, 55, 0.08)',
-                filter: 'blur(30px)',
-                pointerEvents: 'none'
-              }} />
-              
-              <h1 style={{ 
-                fontSize: '28px', 
-                fontWeight: 900, 
-                color: '#fff', 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '10px',
-                margin: 0,
-                background: 'linear-gradient(to right, #fff 40%, #fef08a 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                letterSpacing: '-0.02em'
-              }}>
-                {t.heroTitle} <Sparkles size={22} style={{ color: '#d4af37', flexShrink: 0 }} />
-              </h1>
-              
-              <p style={{ 
-                fontSize: '14px', 
-                color: '#cbd5e1', 
-                lineHeight: 1.6,
-                margin: 0,
-                fontWeight: '500'
-              }}>
-                {t.heroSubtitle}
-              </p>
-            </div>
+          {/* Left Column: Constructor Content */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
 
-            {/* 🌤 Live Traveler Info & Weather Banner */}
+            {/* 🌤 Cross-Region Start Selector (only visible when cross_region is active) */}
             {activeRegion === 'cross_region' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }} className="animate-fade-in">
-                <div 
-                  className="glass-container gold-glow" 
-                  style={{
-                    padding: '16px 20px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '12px',
-                    border: '1px solid rgba(212, 175, 55, 0.3)',
-                    background: 'linear-gradient(135deg, rgba(10, 15, 29, 0.4) 0%, rgba(212, 175, 55, 0.06) 100%)',
-                  }}
-                >
+                <div style={{
+                  padding: '18px 22px',
+                  backgroundColor: 'var(--bg-card)',
+                  borderRadius: '16px',
+                  border: '1px solid var(--border-card)',
+                  boxShadow: '0 2px 10px rgba(0,0,0,0.04)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px',
+                }}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    <label style={{ fontSize: '13px', fontWeight: '700', color: '#d4af37', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <label style={{ fontSize: '13px', fontWeight: '700', color: 'var(--primary-blue)', display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <MapPin size={14} />
-                      <span>{language === 'UZ' ? 'Sayohatni boshlash viloyati (Gid va Transport keladigan shahar):' : language === 'RU' ? 'Регион начала поездки (город отправления гида и транспорта):' : 'Starting Region (Where your guide & transport will start):'}</span>
+                      <span>{language === 'UZ' ? 'Sayohatni boshlash viloyati:' : language === 'RU' ? 'Регион начала поездки:' : 'Starting Region:'}</span>
                     </label>
                     <select
                       value={crossRegionStart}
@@ -1475,66 +1641,68 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                       style={{
                         width: '100%',
                         padding: '10px 14px',
-                        borderRadius: '8px',
-                        backgroundColor: 'rgba(10, 15, 29, 0.8)',
-                        border: '1px solid rgba(212, 175, 55, 0.3)',
-                        color: '#fff',
+                        borderRadius: '10px',
+                        backgroundColor: 'var(--input-bg)',
+                        border: '1px solid var(--input-border)',
+                        color: 'var(--text-primary)',
                         fontSize: '14px',
                         outline: 'none',
                         cursor: 'pointer'
                       }}
                     >
-                      <option value="samarqand" style={{ backgroundColor: '#0f172a' }}>{language === 'UZ' ? 'Samarqand' : language === 'RU' ? 'Самарканд' : 'Samarkand'}</option>
-                      <option value="buxoro" style={{ backgroundColor: '#0f172a' }}>{language === 'UZ' ? 'Buxoro' : language === 'RU' ? 'Бухара' : 'Bukhara'}</option>
-                      <option value="xorazm" style={{ backgroundColor: '#0f172a' }}>{language === 'UZ' ? 'Xorazm' : language === 'RU' ? 'Хорезм' : 'Khorezm'}</option>
-                      <option value="shahrisabz" style={{ backgroundColor: '#0f172a' }}>{language === 'UZ' ? 'Shahrisabz' : language === 'RU' ? 'Шахрисабз' : 'Shahrisabz'}</option>
-                      <option value="toshkent" style={{ backgroundColor: '#0f172a' }}>{language === 'UZ' ? 'Toshkent' : language === 'RU' ? 'Ташкент' : 'Tashkent'}</option>
-                      <option value="qoraqalpoq" style={{ backgroundColor: '#0f172a' }}>{language === 'UZ' ? 'Qoraqalpog\'iston' : language === 'RU' ? 'Каракалпакстан' : 'Karakalpakstan'}</option>
+                      <option value="samarqand">{language === 'UZ' ? 'Samarqand' : language === 'RU' ? 'Самарканд' : 'Samarkand'}</option>
+                      <option value="buxoro">{language === 'UZ' ? 'Buxoro' : language === 'RU' ? 'Бухара' : 'Bukhara'}</option>
+                      <option value="xorazm">{language === 'UZ' ? 'Xorazm' : language === 'RU' ? 'Хорезм' : 'Khorezm'}</option>
+                      <option value="shahrisabz">{language === 'UZ' ? 'Shahrisabz' : language === 'RU' ? 'Шахрисабз' : 'Shahrisabz'}</option>
+                      <option value="toshkent">{language === 'UZ' ? 'Toshkent' : language === 'RU' ? 'Ташкент' : 'Tashkent'}</option>
+                      <option value="qoraqalpoq">{language === 'UZ' ? 'Qoraqalpog\'iston' : language === 'RU' ? 'Каракалпакстан' : 'Karakalpakstan'}</option>
                     </select>
                   </div>
                 </div>
 
                 {/* 🚄 Train / Flight Recommendation Card */}
-                <div 
-                  className="glass-container" 
-                  style={{
-                    padding: '16px 20px',
-                    border: '1.5px solid rgba(0, 155, 158, 0.35)',
-                    background: 'linear-gradient(135deg, rgba(10, 15, 29, 0.5) 0%, rgba(0, 155, 158, 0.05) 100%)',
-                    borderRadius: '16px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '8px'
-                  }}
-                >
+                <div style={{
+                  padding: '16px 20px',
+                  backgroundColor: 'var(--bg-card)',
+                  border: '1.5px solid rgba(0, 155, 158, 0.25)',
+                  borderRadius: '16px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '8px',
+                  boxShadow: '0 2px 10px rgba(0,0,0,0.04)',
+                }}>
                   <strong style={{ fontSize: '13px', color: '#009b9e', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <span>🚄</span>
                     {language === 'UZ' ? 'Tezyurar poezdlar tavsiyasi (Afrosiyob):' : language === 'RU' ? 'Рекомендация по поездам (Афросиаб):' : 'High-Speed Train Advice (Afrosiyob):'}
                   </strong>
-                  <p style={{ fontSize: '12px', color: '#cbd5e1', margin: 0, lineHeight: 1.45 }}>
+                  <p style={{ fontSize: '12px', color: '#616161', margin: 0, lineHeight: 1.5 }}>
                     {language === 'UZ'
-                      ? 'Toshkent, Samarqand va Buxoro o\'rtasida mashinadan ko\'ra Afrosiyob tezyurar poyezdida sayohat qilish ancha tez, xavfsiz va qulay. Shaharlararo poezdda kelib, shahar ichida mahalliy transport yollashni tavsiya qilamiz (pastdagi Checkout formida "Alohida mahalliy gid/transport" bandini belgilang).'
+                      ? 'Toshkent, Samarqand va Buxoro o\'rtasida mashinadan ko\'ra Afrosiyob tezyurar poyezdida sayohat qilish ancha tez, xavfsiz va qulay.'
                       : language === 'RU'
-                        ? 'Поездка на высокоскоростном поезде «Афросиаб» между Ташкентом, Самаркандом и Бухарой гораздо быстрее и комфортнее, чем на машине по трассе. Рекомендуем покупать билеты на поезд, а в городах брать местных водителей.'
-                        : 'Traveling via the Afrosiyob high-speed train between Tashkent, Samarkand, and Bukhara is much faster and more comfortable than driving. We recommend booking train tickets for inter-city travel and hiring local drivers inside each city.'}
+                        ? 'Поездка на высокоскоростном поезде «Афросиаб» между Ташкентом, Самаркандом и Бухарой гораздо быстрее и комфортнее.'
+                        : 'Traveling via the Afrosiyob high-speed train between Tashkent, Samarkand, and Bukhara is much faster and more comfortable than driving.'}
                   </p>
                 </div>
               </div>
             )}
 
-            <div 
-              className="glass-container gold-glow" 
-              style={{
-                padding: '16px 20px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-                gap: '16px',
-                border: '1px solid rgba(212, 175, 55, 0.25)',
-                borderRadius: '16px'
-              }}
-            >
+            {/* ========= TAB: EXPLORE (Route planning + Packages) ========= */}
+            {(activeTab === 'explore') && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                
+                {/* 🌤 Weather Banner */}
+                <div style={{
+                  padding: '16px 20px',
+                  backgroundColor: 'var(--bg-card)',
+                  borderRadius: '16px',
+                  border: '1px solid var(--border-card)',
+                  boxShadow: '0 2px 10px rgba(0,0,0,0.04)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: '16px',
+                }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                 <div style={{
                   width: '40px',
@@ -1550,7 +1718,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                   <Sun size={22} className="animate-spin" style={{ animationDuration: '30s' }} />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                  <span style={{ fontSize: '15px', fontWeight: '800', color: '#fff' }}>
+                  <span style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)' }}>
                     {(() => {
                       const weatherReg = activeRegion === 'cross_region' ? crossRegionStart : activeRegion;
                       const weather = WEATHER_DATA[weatherReg] || WEATHER_DATA.samarqand;
@@ -1592,8 +1760,8 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                   alignItems: 'center',
                   gap: '8px',
                   borderRadius: '10px',
-                  backgroundColor: '#d4af37',
-                  color: '#0a0f1d',
+                  backgroundColor: 'var(--primary-blue)',
+                  color: 'var(--bg-card)',
                   transition: 'all 0.2s ease',
                   boxShadow: '0 0 15px rgba(212, 175, 55, 0.15)'
                 }}
@@ -1612,8 +1780,8 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
 
             {/* Step 1: Route Builder */}
             <section style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#fff' }}>{t.step1}</h2>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#94a3b8' }}>
+              <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)' }}>{t.step1}</h2>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: 'var(--text-secondary)' }}>
                 <AlertCircle size={12} style={{ color: '#009b9e' }} />
                 <span>{t.disclaimer}</span>
               </div>
@@ -1624,24 +1792,24 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 flexDirection: 'column',
                 gap: '12px',
                 padding: '16px',
-                backgroundColor: 'rgba(15, 23, 42, 0.6)',
+                backgroundColor: 'var(--bg-card)',
                 borderRadius: '12px',
-                border: '1px solid rgba(212, 175, 55, 0.2)',
+                border: '1px solid var(--border-card)',
                 marginTop: '4px',
                 marginBottom: '8px'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: '13px', fontWeight: '700', color: '#fff' }}>
+                  <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-primary)' }}>
                     {language === 'UZ' ? 'Sayohat turi:' : language === 'RU' ? 'Тип поездки:' : 'Tour Type:'}
                   </span>
                   
                   {/* Toggle Selector */}
                   <div style={{
                     display: 'flex',
-                    backgroundColor: 'rgba(5, 7, 16, 0.5)',
+                    backgroundColor: '#f0f0f0',
                     padding: '2px',
                     borderRadius: '8px',
-                    border: '1px solid rgba(255,255,255,0.08)'
+                    border: '1px solid var(--border-card)'
                   }}>
                     <button
                       type="button"
@@ -1651,7 +1819,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                         borderRadius: '6px',
                         border: 'none',
                         background: tourDurationType === 'single' ? 'linear-gradient(135deg, #0070c0 0%, #009b9e 100%)' : 'transparent',
-                        color: tourDurationType === 'single' ? '#fff' : '#94a3b8',
+                        color: tourDurationType === 'single' ? '#fff' : 'var(--text-secondary)',
                         fontSize: '12px',
                         fontWeight: '700',
                         cursor: 'pointer',
@@ -1667,8 +1835,8 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                         padding: '6px 12px',
                         borderRadius: '6px',
                         border: 'none',
-                        background: tourDurationType === 'multi' ? 'linear-gradient(135deg, #d4af37 0%, #b8860b 100%)' : 'transparent',
-                        color: tourDurationType === 'multi' ? '#0a0f1d' : '#94a3b8',
+                        background: tourDurationType === 'multi' ? 'linear-gradient(135deg, var(--primary-blue) 0%, var(--deep-turquoise) 100%)' : 'transparent',
+                        color: tourDurationType === 'multi' ? 'var(--text-primary)' : 'var(--text-secondary)',
                         fontSize: '12px',
                         fontWeight: '700',
                         cursor: 'pointer',
@@ -1681,9 +1849,9 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 </div>
 
                 {tourDurationType === 'multi' && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '10px' }} className="animate-fade-in">
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', borderTop: '1px solid #eee', paddingTop: '10px' }} className="animate-fade-in">
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
-                      <span style={{ fontSize: '13px', fontWeight: '700', color: '#d4af37' }}>
+                      <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--primary-blue)' }}>
                         {language === 'UZ' ? 'Kunlar soni:' : language === 'RU' ? 'Количество дней:' : 'Number of Days:'}
                       </span>
                       <select
@@ -1698,9 +1866,9 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                         style={{
                           padding: '6px 12px',
                           borderRadius: '6px',
-                          backgroundColor: 'rgba(10, 15, 29, 0.8)',
+                          backgroundColor: 'rgba(255, 91, 0, 0.06)',
                           border: '1px solid rgba(212, 175, 55, 0.3)',
-                          color: '#fff',
+                          color: 'var(--text-primary)',
                           fontSize: '13px',
                           outline: 'none',
                           cursor: 'pointer',
@@ -1716,7 +1884,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
 
                     {/* Day Selection Tabs with selected count badge */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '4px' }}>
-                      <span style={{ fontSize: '11px', color: '#94a3b8', fontWeight: '600' }}>
+                      <span style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: '600' }}>
                         {language === 'UZ' ? 'Hozirgi rejalashtirilayotgan kun (joylar shu kunga qo\'shiladi):' : language === 'RU' ? 'Планируемый день (места будут добавлены на этот день):' : 'Active Planning Day (added places go here):'}
                       </span>
                       <div className="no-scrollbar" style={{ display: 'flex', gap: '6px', overflowX: 'auto', padding: '2px 0' }}>
@@ -1724,13 +1892,13 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                           const isDayActive = activePlanningDay === d;
                           const dayLocationsCount = selectedLocations.filter(loc => (loc.selectedDay || 1) === d).length;
                           const dayColors = {
-                            1: '#d4af37', // Gold
+                            1: 'var(--primary-blue)', // Orange
                             2: '#009b9e', // Teal
                             3: '#c05a1a', // Terracotta
                             4: '#7c3aed', // Purple
                             5: '#008060', // Green
                           };
-                          const activeColor = dayColors[d] || '#d4af37';
+                          const activeColor = dayColors[d] || 'var(--primary-blue)';
                           return (
                             <button
                               key={d}
@@ -1739,9 +1907,9 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                               style={{
                                 padding: '6px 12px',
                                 borderRadius: '8px',
-                                border: isDayActive ? `1px solid ${activeColor}` : '1px solid rgba(255,255,255,0.08)',
-                                backgroundColor: isDayActive ? activeColor : 'rgba(255,255,255,0.03)',
-                                color: isDayActive ? (d === 1 || d === 2 ? '#0a0f1d' : '#fff') : '#94a3b8',
+                                border: isDayActive ? `1px solid ${activeColor}` : '1px solid var(--border-card)',
+                                backgroundColor: isDayActive ? activeColor : (theme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'var(--bg-card)'),
+                                color: isDayActive ? (d === 1 || d === 2 ? 'var(--text-primary)' : '#fff') : 'var(--text-secondary)',
                                 fontSize: '12px',
                                 fontWeight: '700',
                                 cursor: 'pointer',
@@ -1757,8 +1925,8 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                                 fontSize: '10px',
                                 padding: '1px 6px',
                                 borderRadius: '10px',
-                                backgroundColor: isDayActive ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.1)',
-                                color: isDayActive ? (d === 1 || d === 2 ? '#000' : '#fff') : '#cbd5e1',
+                                backgroundColor: isDayActive ? 'rgba(0,0,0,0.15)' : 'var(--border-card)',
+                                color: isDayActive ? (d === 1 || d === 2 ? '#000' : '#fff') : 'var(--text-primary)',
                                 fontWeight: '800'
                               }}>
                                 {dayLocationsCount}
@@ -1784,12 +1952,12 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                     flexDirection: 'column',
                     gap: '10px',
                     padding: '16px',
-                    backgroundColor: 'rgba(212, 175, 55, 0.03)',
-                    border: '1px solid rgba(212, 175, 55, 0.15)',
+                    backgroundColor: 'var(--bg-card)',
+                    border: '1px solid var(--border-card)',
                     borderRadius: '12px',
                     marginBottom: '8px'
                   }} className="animate-fade-in">
-                    <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text-gold)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--primary-blue)', display: 'flex', alignItems: 'center', gap: '6px' }}>
                       ✨ {language === 'UZ' ? 'Tayyor Sayohat Paketlari' : language === 'RU' ? 'Готовые туристические пакеты' : 'Recommended Tour Packages'}
                     </span>
                     <p style={{ fontSize: '11px', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4 }}>
@@ -1818,8 +1986,8 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                             style={{
                               padding: '12px',
                               borderRadius: '10px',
-                              backgroundColor: isSelected ? 'rgba(212, 175, 55, 0.08)' : 'rgba(18, 26, 47, 0.45)',
-                              border: isSelected ? '1.5px solid var(--text-gold)' : '1px solid rgba(255,255,255,0.06)',
+                              backgroundColor: isSelected ? 'rgba(255, 91, 0, 0.06)' : 'var(--bg-card)',
+                              border: isSelected ? '1.5px solid var(--primary-blue)' : '1px solid var(--border-card)',
                               cursor: 'pointer',
                               display: 'flex',
                               flexDirection: 'column',
@@ -1830,19 +1998,19 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                             }}
                             onMouseEnter={(e) => {
                               if (!isSelected) {
-                                e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.35)';
-                                e.currentTarget.style.backgroundColor = 'rgba(18, 26, 47, 0.6)';
+                                e.currentTarget.style.borderColor = 'rgba(255, 91, 0, 0.3)';
+                                e.currentTarget.style.backgroundColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : '#f9f9f9';
                               }
                             }}
                             onMouseLeave={(e) => {
                               if (!isSelected) {
-                                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)';
-                                e.currentTarget.style.backgroundColor = 'rgba(18, 26, 47, 0.45)';
+                                e.currentTarget.style.borderColor = 'var(--border-card)';
+                                e.currentTarget.style.backgroundColor = 'var(--bg-card)';
                               }
                             }}
                           >
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <strong style={{ fontSize: '13px', color: '#fff', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              <strong style={{ fontSize: '13px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
                                 <span>{pkg.emoji}</span>
                                 <span>{pkg.name[language] || pkg.name.EN}</span>
                               </strong>
@@ -1888,9 +2056,9 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 );
               })()}
 
-              <div style={{ display: 'flex', gap: '16px', alignItems: 'center', fontSize: '13px', fontWeight: '600', color: '#fff', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: '16px', alignItems: 'center', fontSize: '13px', fontWeight: '600', color: 'var(--text-primary)', flexWrap: 'wrap' }}>
                 <div>
-                  {t.selectedCount} <span style={{ color: '#d4af37', backgroundColor: 'rgba(212,175,55,0.1)', padding: '2px 8px', borderRadius: '10px' }}>{selectedLocations.length}</span>
+                  {t.selectedCount} <span style={{ color: 'var(--primary-blue)', backgroundColor: 'rgba(var(--primary-blue-rgb), 0.08)', padding: '2px 8px', borderRadius: '10px' }}>{selectedLocations.length}</span>
                 </div>
                 {selectedLocations.length > 0 && (
                   <div>
@@ -1907,7 +2075,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                     overflowX: 'auto',
                     padding: '4px 0',
                     margin: '4px 0 10px 0',
-                    borderBottom: '1px solid rgba(255,255,255,0.08)',
+                    borderBottom: '1px solid var(--border-card)',
                     whiteSpace: 'nowrap'
                   }} 
                   
@@ -1930,11 +2098,11 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                         style={{
                           padding: '6px 12px',
                           borderRadius: '8px',
-                          border: isSelected ? '1px solid #d4af37' : '1px solid rgba(255,255,255,0.08)',
+                          border: isSelected ? '1px solid var(--primary-blue)' : '1px solid var(--border-card)',
                           background: isSelected 
-                            ? 'linear-gradient(135deg, #d4af37 0%, #b8860b 100%)' 
+                            ? 'linear-gradient(135deg, var(--primary-blue) 0%, var(--deep-turquoise) 100%)' 
                             : 'rgba(255, 255, 255, 0.05)',
-                          color: isSelected ? '#0a0f1d' : '#94a3b8',
+                          color: isSelected ? 'var(--text-primary)' : 'var(--text-secondary)',
                           fontSize: '12px',
                           fontWeight: '700',
                           cursor: 'pointer',
@@ -1954,8 +2122,8 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                   className="glass-container gold-glow animate-fade-in" 
                   style={{
                     padding: '18px 20px',
-                    border: '1.5px solid rgba(212, 175, 55, 0.35)',
-                    background: 'linear-gradient(135deg, rgba(10, 15, 29, 0.7) 0%, rgba(212, 175, 55, 0.04) 100%)',
+                    border: '1.5px solid rgba(var(--primary-blue-rgb), 0.35)',
+                    background: 'linear-gradient(135deg, rgba(255, 91, 0, 0.06) 0%, rgba(255, 115, 0, 0.02) 100%)',
                     borderRadius: '16px',
                     display: 'flex',
                     flexDirection: 'column',
@@ -1963,7 +2131,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                     marginBottom: '16px'
                   }}
                 >
-                  <h3 style={{ fontSize: '15px', fontWeight: 800, color: '#d4af37', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <h3 style={{ fontSize: '15px', fontWeight: 800, color: 'var(--primary-blue)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <Compass size={16} className="animate-spin" style={{ animationDuration: '20s' }} />
                     <span>
                       {language === 'UZ' ? 'Siz tanlagan sayohat tartibi (O\'zgartirish mumkin):' : language === 'RU' ? 'Ваш порядок посещения (можно менять):' : 'Your Selected Itinerary (Reorderable):'}
@@ -1977,13 +2145,13 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                         const dayLocs = selectedLocations.filter(loc => (loc.selectedDay || 1) === dayNum);
                         
                         const dayColors = {
-                          1: '#d4af37', // Gold
+                          1: 'var(--primary-blue)', // Orange
                           2: '#009b9e', // Teal
                           3: '#c05a1a', // Terracotta
                           4: '#7c3aed', // Purple
                           5: '#008060', // Green
                         };
-                        const dayColor = dayColors[dayNum] || '#d4af37';
+                        const dayColor = dayColors[dayNum] || 'var(--primary-blue)';
                         const isDragOverThisDay = dragOverDay === dayNum;
                         
                         return (
@@ -2009,12 +2177,12 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                               <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                 📅 {language === 'UZ' ? `${dayNum}-KUN` : language === 'RU' ? `ДЕНЬ ${dayNum}` : `DAY ${dayNum}`}
                               </span>
-                              <span style={{ fontSize: '11px', color: '#94a3b8', backgroundColor: 'rgba(255,255,255,0.05)', padding: '2px 6px', borderRadius: '6px' }}>
+                              <span style={{ fontSize: '11px', color: 'var(--text-secondary)', backgroundColor: '#f0f0f0', padding: '2px 6px', borderRadius: '6px' }}>
                                 ⏱️ {formatTotalDuration(dayLocs.reduce((sum, l) => sum + (l.estimated_duration || 0), 0), language)}
                               </span>
                             </div>
                             {dayLocs.length === 0 ? (
-                              <div style={{ padding: '16px', textAlign: 'center', color: '#64748b', fontSize: '12px', fontStyle: 'italic', border: '1px dashed rgba(255,255,255,0.08)', borderRadius: '10px', marginTop: '4px' }}>
+                              <div style={{ padding: '16px', textAlign: 'center', color: '#9e9e9e', fontSize: '12px', fontStyle: 'italic', border: '1px dashed var(--border-card)', borderRadius: '10px', marginTop: '4px' }}>
                                 {language === 'UZ' ? 'Bu kunga obidalar qo\'shilmagan' : language === 'RU' ? 'Нет мест на этот день' : 'No places added for this day'}
                               </div>
                             ) : (
@@ -2052,7 +2220,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                                   }
                                   if (loc.category === 'food') {
                                     emoji = '🍲';
-                                    iconColor = '#d4af37'; // dining gold
+                                    iconColor = 'var(--primary-blue)'; // dining orange
                                   }
                                   
                                   const isDragged = draggedLocationId === loc.id;
@@ -2084,14 +2252,14 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                                         width: '18px',
                                         height: '18px',
                                         borderRadius: '50%',
-                                        backgroundColor: isDragOverThisLoc ? '#10b981' : '#0a0f1d',
+                                        backgroundColor: isDragOverThisLoc ? '#10b981' : 'var(--primary-blue)',
                                         border: `2px solid ${isDragOverThisLoc ? '#10b981' : iconColor}`,
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                         fontSize: '9px',
                                         fontWeight: '800',
-                                        color: '#fff',
+                                        color: 'var(--text-primary)',
                                         flexShrink: 0,
                                         marginTop: '11px',
                                         marginLeft: '-32px', // centers it perfectly on the vertical line
@@ -2119,16 +2287,16 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                                       }}>
                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
                                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                            <span style={{ color: '#475569', cursor: 'grab', fontSize: '13px', userSelect: 'none', marginRight: '2px' }}>☰</span>
+                                            <span style={{ color: '#9e9e9e', cursor: 'grab', fontSize: '13px', userSelect: 'none', marginRight: '2px' }}>☰</span>
                                             <span style={{ fontSize: '13px' }}>{emoji}</span>
-                                            <span style={{ fontWeight: '700', color: '#fff', fontSize: '13px' }}>
+                                            <span style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '13px' }}>
                                               {language === 'RU' ? loc.name_ru : language === 'UZ' ? loc.name_uz : loc.name_en}
                                             </span>
                                             {loc.is_out_of_city && (
                                               <span style={{ 
                                                 fontSize: '8.5px', 
-                                                backgroundColor: 'rgba(212,175,55,0.15)', 
-                                                color: '#d4af37', 
+                                                backgroundColor: 'rgba(var(--primary-blue-rgb), 0.08)', 
+                                                color: 'var(--primary-blue)', 
                                                 padding: '1px 4px', 
                                                 borderRadius: '4px',
                                                 fontWeight: '800'
@@ -2160,12 +2328,12 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                                         
                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px', paddingTop: '4px', borderTop: '1px solid rgba(255,255,255,0.03)' }}>
                                           <div style={{ display: 'flex', gap: '6px' }}>
-                                            <span style={{ fontSize: '10.5px', color: '#94a3b8', backgroundColor: 'rgba(255,255,255,0.04)', padding: '2px 5px', borderRadius: '5px' }}>
+                                            <span style={{ fontSize: '10.5px', color: 'var(--text-secondary)', backgroundColor: '#f0f0f0', padding: '2px 5px', borderRadius: '5px' }}>
                                               ⏱️ {loc.estimated_duration}m
                                             </span>
                                             <span style={{ 
                                               fontSize: '10.5px', 
-                                              color: parseFloat(loc.ticket_price) > 0 ? '#10b981' : '#94a3b8', 
+                                              color: parseFloat(loc.ticket_price) > 0 ? '#10b981' : 'var(--text-secondary)', 
                                               backgroundColor: parseFloat(loc.ticket_price) > 0 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(255,255,255,0.04)', 
                                               padding: '2px 5px', 
                                               borderRadius: '5px',
@@ -2183,8 +2351,8 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                                               style={{
                                                 padding: '2px 6px',
                                                 backgroundColor: isFirstInDay ? 'rgba(255,255,255,0.01)' : 'rgba(255,255,255,0.04)',
-                                                border: '1px solid rgba(255,255,255,0.06)',
-                                                color: isFirstInDay ? '#475569' : '#94a3b8',
+                                                border: '1px solid #eee',
+                                                color: isFirstInDay ? '#475569' : 'var(--text-secondary)',
                                                 borderRadius: '5px',
                                                 cursor: isFirstInDay ? 'not-allowed' : 'pointer',
                                                 fontSize: '9px',
@@ -2200,8 +2368,8 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                                               style={{
                                                 padding: '2px 6px',
                                                 backgroundColor: isLastInDay ? 'rgba(255,255,255,0.01)' : 'rgba(255,255,255,0.04)',
-                                                border: '1px solid rgba(255,255,255,0.06)',
-                                                color: isLastInDay ? '#475569' : '#94a3b8',
+                                                border: '1px solid #eee',
+                                                color: isLastInDay ? '#475569' : 'var(--text-secondary)',
                                                 borderRadius: '5px',
                                                 cursor: isLastInDay ? 'not-allowed' : 'pointer',
                                                 fontSize: '9px',
@@ -2256,7 +2424,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                           }
                           if (loc.category === 'food') {
                             emoji = '🍲';
-                            iconColor = '#d4af37'; // dining gold
+                            iconColor = 'var(--primary-blue)'; // dining orange
                           }
                           
                           const isDragged = draggedLocationId === loc.id;
@@ -2288,14 +2456,14 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                                 width: '18px',
                                 height: '18px',
                                 borderRadius: '50%',
-                                backgroundColor: isDragOverThisLoc ? '#10b981' : '#0a0f1d',
+                                backgroundColor: isDragOverThisLoc ? '#10b981' : 'var(--primary-blue)',
                                 border: `2px solid ${isDragOverThisLoc ? '#10b981' : iconColor}`,
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 fontSize: '9px',
                                 fontWeight: '800',
-                                color: '#fff',
+                                color: 'var(--text-primary)',
                                 flexShrink: 0,
                                 marginTop: '11px',
                                 marginLeft: '-32px', // centers it perfectly on the vertical line
@@ -2323,16 +2491,16 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                               }}>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
                                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                    <span style={{ color: '#475569', cursor: 'grab', fontSize: '13px', userSelect: 'none', marginRight: '2px' }}>☰</span>
+                                    <span style={{ color: '#9e9e9e', cursor: 'grab', fontSize: '13px', userSelect: 'none', marginRight: '2px' }}>☰</span>
                                     <span style={{ fontSize: '13px' }}>{emoji}</span>
-                                    <span style={{ fontWeight: '700', color: '#fff', fontSize: '13px' }}>
+                                    <span style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '13px' }}>
                                       {language === 'RU' ? loc.name_ru : language === 'UZ' ? loc.name_uz : loc.name_en}
                                     </span>
                                     {loc.is_out_of_city && (
                                       <span style={{ 
                                         fontSize: '8.5px', 
-                                        backgroundColor: 'rgba(212,175,55,0.15)', 
-                                        color: '#d4af37', 
+                                        backgroundColor: 'rgba(var(--primary-blue-rgb), 0.08)', 
+                                        color: 'var(--primary-blue)', 
                                         padding: '1px 4px', 
                                         borderRadius: '4px',
                                         fontWeight: '800'
@@ -2364,12 +2532,12 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                                 
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px', paddingTop: '4px', borderTop: '1px solid rgba(255,255,255,0.03)' }}>
                                   <div style={{ display: 'flex', gap: '6px' }}>
-                                    <span style={{ fontSize: '10.5px', color: '#94a3b8', backgroundColor: 'rgba(255,255,255,0.04)', padding: '2px 5px', borderRadius: '5px' }}>
+                                    <span style={{ fontSize: '10.5px', color: 'var(--text-secondary)', backgroundColor: '#f0f0f0', padding: '2px 5px', borderRadius: '5px' }}>
                                       ⏱️ {loc.estimated_duration}m
                                     </span>
                                     <span style={{ 
                                       fontSize: '10.5px', 
-                                      color: parseFloat(loc.ticket_price) > 0 ? '#10b981' : '#94a3b8', 
+                                      color: parseFloat(loc.ticket_price) > 0 ? '#10b981' : 'var(--text-secondary)', 
                                       backgroundColor: parseFloat(loc.ticket_price) > 0 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(255,255,255,0.04)', 
                                       padding: '2px 5px', 
                                       borderRadius: '5px',
@@ -2387,8 +2555,8 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                                       style={{
                                         padding: '2px 6px',
                                         backgroundColor: isFirst ? 'rgba(255,255,255,0.01)' : 'rgba(255,255,255,0.04)',
-                                        border: '1px solid rgba(255,255,255,0.06)',
-                                        color: isFirst ? '#475569' : '#94a3b8',
+                                        border: '1px solid #eee',
+                                        color: isFirst ? '#475569' : 'var(--text-secondary)',
                                         borderRadius: '5px',
                                         cursor: isFirst ? 'not-allowed' : 'pointer',
                                         fontSize: '9px',
@@ -2404,8 +2572,8 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                                       style={{
                                         padding: '2px 6px',
                                         backgroundColor: isLast ? 'rgba(255,255,255,0.01)' : 'rgba(255,255,255,0.04)',
-                                        border: '1px solid rgba(255,255,255,0.06)',
-                                        color: isLast ? '#475569' : '#94a3b8',
+                                        border: '1px solid #eee',
+                                        color: isLast ? '#475569' : 'var(--text-secondary)',
                                         borderRadius: '5px',
                                         cursor: isLast ? 'not-allowed' : 'pointer',
                                         fontSize: '9px',
@@ -2445,8 +2613,8 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                     className="glass-container animate-fade-in" 
                     style={{
                       padding: '18px 20px',
-                      border: '1.5px solid rgba(212, 175, 55, 0.25)',
-                      background: 'linear-gradient(135deg, rgba(10, 15, 29, 0.6) 0%, rgba(212, 175, 55, 0.03) 100%)',
+                      border: '1.5px solid rgba(var(--primary-blue-rgb), 0.25)',
+                      background: 'linear-gradient(135deg, rgba(255, 91, 0, 0.06) 0%, rgba(255, 115, 0, 0.02) 100%)',
                       borderRadius: '16px',
                       display: 'flex',
                       flexDirection: 'column',
@@ -2454,7 +2622,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                       marginTop: '16px'
                     }}
                   >
-                    <h3 style={{ fontSize: '15px', fontWeight: 800, color: '#d4af37', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <h3 style={{ fontSize: '15px', fontWeight: 800, color: 'var(--primary-blue)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <span>🏨</span>
                       <span>
                         {language === 'UZ' ? 'Tavsiya etiladigan mehmonxonalar:' : language === 'RU' ? 'Рекомендуемое проживание:' : 'Recommended Accommodations:'}
@@ -2478,7 +2646,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                         
                         return (
                           <div key={reg} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            <span style={{ fontSize: '12px', fontWeight: '800', color: '#cbd5e1', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '3px' }}>
+                            <span style={{ fontSize: '12px', fontWeight: '800', color: '#616161', borderBottom: '1px solid #eee', paddingBottom: '3px' }}>
                               📍 {regName}
                             </span>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '10px' }}>
@@ -2487,19 +2655,19 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                                   key={hIdx}
                                   style={{
                                     padding: '10px 14px',
-                                    backgroundColor: 'rgba(5, 7, 16, 0.4)',
+                                    backgroundColor: 'var(--bg-card-hover)',
                                     borderRadius: '10px',
-                                    border: '1px solid rgba(255,255,255,0.05)',
+                                    border: '1px solid #eee',
                                     display: 'flex',
                                     flexDirection: 'column',
                                     gap: '4px'
                                   }}
                                 >
                                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <strong style={{ fontSize: '13.5px', color: '#fff' }}>{hotel.name}</strong>
+                                    <strong style={{ fontSize: '13.5px', color: 'var(--text-primary)' }}>{hotel.name}</strong>
                                     <span style={{ fontSize: '11px', color: '#fbbf24', fontWeight: '700' }}>{hotel.rating}</span>
                                   </div>
-                                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11.5px', color: '#cbd5e1' }}>
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11.5px', color: '#616161' }}>
                                     <span>{language === 'UZ' ? hotel.descUz : language === 'RU' ? hotel.descRu : hotel.descEn}</span>
                                     <strong style={{ color: '#009b9e', marginLeft: '10px', whiteSpace: 'nowrap' }}>{hotel.price}</strong>
                                   </div>
@@ -2511,7 +2679,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                       })}
                     </div>
                     
-                    <p style={{ fontSize: '11px', color: '#64748b', margin: '4px 0 0 0', lineHeight: 1.4, borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '8px' }}>
+                    <p style={{ fontSize: '11px', color: '#64748b', margin: '4px 0 0 0', lineHeight: 1.4, borderTop: '1px solid #eee', paddingTop: '8px' }}>
                       💡 {language === 'UZ'
                         ? 'Menejerimiz sayohat buyurtmangizni tasdiqlaganidan so\'ng, ushbu mehmonxonalarni band qilishda sizga bepul yordam beradi.'
                         : language === 'RU'
@@ -2522,36 +2690,66 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 );
               })()}
             </section>
+              </div>
+            )}
 
-            {/* Step 2: Vehicle Selection */}
-            <section style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#fff' }}>{t.step2}</h2>
-              <VehicleSelector
-                vehicles={filteredVehicles}
-                selectedVehicleId={selectedVehicle?.id}
-                onSelectVehicle={handleSelectVehicle}
-                isOutOfCityRoute={isOutOfCityRoute}
-                language={language}
-              />
-            </section>
+            {/* ========= TAB: SIGHTS (Attractions grid) ========= */}
+            {(activeTab === 'sights') && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)' }}>
+                  {language === 'UZ' ? '🕌 Diqqatga sazovor joylar' : language === 'RU' ? '🕌 Достопримечательности' : '🕌 Attractions'}
+                </h2>
+                <RouteBuilder
+                  locations={filteredLocations}
+                  selectedLocations={selectedLocations}
+                  onToggleLocation={handleToggleLocation}
+                  language={language}
+                  tourDurationType={tourDurationType}
+                  numDays={numDays}
+                  onUpdateLocationDay={handleUpdateLocationDay}
+                  activeRegion={activeRegion}
+                  onOpenWikipedia={setWikiLocation}
+                />
+              </div>
+            )}
 
-            {/* Step 3: Guide Selection */}
-            <section style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#fff' }}>{t.step3}</h2>
-              <GuideSelector
-                guides={filteredGuides}
-                tariffs={tariffs}
-                selectedGuideId={selectedGuide?.id}
-                selectedGuideLanguage={selectedGuideLanguage}
-                onSelectGuide={handleSelectGuide}
-                onSelectGuideLanguage={handleSelectGuideLanguage}
-                language={language}
-              />
-            </section>
+            {/* ========= TAB: TRANSPORT ========= */}
+            {(activeTab === 'transport') && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)' }}>
+                  {language === 'UZ' ? '🚗 Transportni tanlang' : language === 'RU' ? '🚗 Выберите транспорт' : '🚗 Choose Transport'}
+                </h2>
+                <VehicleSelector
+                  vehicles={filteredVehicles}
+                  selectedVehicleId={selectedVehicle?.id}
+                  onSelectVehicle={handleSelectVehicle}
+                  isOutOfCityRoute={isOutOfCityRoute}
+                  language={language}
+                />
+              </div>
+            )}
 
-            {/* Step 4: Checkout & invoice */}
-            <section id="checkout-step" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#fff' }}>{t.step4}</h2>
+            {/* ========= TAB: GUIDES ========= */}
+            {(activeTab === 'guides') && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)' }}>
+                  {language === 'UZ' ? '🗣 Gidni tanlang' : language === 'RU' ? '🗣 Выберите гида' : '🗣 Choose Your Guide'}
+                </h2>
+                <GuideSelector
+                  guides={filteredGuides}
+                  tariffs={tariffs}
+                  selectedGuideId={selectedGuide?.id}
+                  selectedGuideLanguage={selectedGuideLanguage}
+                  onSelectGuide={handleSelectGuide}
+                  onSelectGuideLanguage={handleSelectGuideLanguage}
+                  language={language}
+                />
+              </div>
+            )}
+
+            {/* 👤 Checkout (Always visible) */}
+            <section id="checkout-step" style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '16px' }}>
+              <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)' }}>{t.step4}</h2>
               <CheckoutForm
                 selectedLocations={selectedLocations}
                 selectedVehicle={selectedVehicle}
@@ -2581,7 +2779,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
               flexDirection: 'column',
               gap: '12px'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#d4af37', fontWeight: '600', fontSize: '14px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary-blue)', fontWeight: '600', fontSize: '14px' }}>
                 <MapPin size={16} />
                 <span>Interactive Route Visualizer</span>
               </div>
@@ -2592,6 +2790,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 activeRegion={activeRegion}
                 tourDurationType={tourDurationType}
                 onOpenWikipedia={setWikiLocation}
+                theme={theme}
               />
             </div>
           </div>
@@ -2649,7 +2848,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
       {selectedLocations.length > 0 && !successPage && !otpModalOpen && !paymentOpen && (
         <div className="mobile-sticky-bar animate-fade-in">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-            <span style={{ fontSize: '11px', color: '#94a3b8', fontWeight: '600' }}>
+            <span style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: '600' }}>
               {language === 'UZ' 
                 ? `${selectedLocations.length} ta joy tanlandi` 
                 : language === 'RU' 
@@ -2657,8 +2856,8 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                   : `${selectedLocations.length} attractions`}
             </span>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '3px' }}>
-              <span style={{ fontSize: '12px', color: 'var(--text-gold)', fontWeight: '700' }}>$</span>
-              <span style={{ fontSize: '19px', fontWeight: '800', color: 'var(--text-gold)', letterSpacing: '-0.5px' }}>
+              <span style={{ fontSize: '12px', color: 'var(--primary-blue)', fontWeight: '700' }}>$</span>
+              <span style={{ fontSize: '19px', fontWeight: '800', color: 'var(--primary-blue)', letterSpacing: '-0.5px' }}>
                 {calculateTotal().toFixed(2)}
               </span>
             </div>
@@ -2672,13 +2871,13 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
             style={{
               padding: '10px 18px',
               borderRadius: '10px',
-              background: 'var(--btn-gold-bg)',
-              color: 'var(--btn-gold-text)',
+              background: 'linear-gradient(135deg, var(--primary-blue) 0%, var(--deep-turquoise) 100%)',
+              color: '#fff',
               fontSize: '13px',
               fontWeight: '800',
               border: 'none',
               cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(212,175,55,0.3)',
+              boxShadow: '0 4px 14px rgba(255,91,0,0.3)',
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
@@ -2698,7 +2897,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
       <footer style={{
         marginTop: 'auto',
         padding: '24px 16px',
-        borderTop: '1px solid rgba(212, 175, 55, 0.1)',
+        borderTop: '1px solid var(--border-card)',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -2706,7 +2905,8 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
         width: '100%',
         margin: '40px auto 0 auto',
         fontSize: '13px',
-        color: '#64748b'
+        color: '#9e9e9e',
+        backgroundColor: 'var(--bg-card)',
       }}>
         <div>
           © {new Date().getFullYear()} {activeRegion === 'qoraqalpoq' ? 'Qoraqalpog\'iston' : activeRegion === 'toshkent' ? 'Toshkent' : activeRegion === 'shahrisabz' ? 'Shahrisabz' : activeRegion === 'xorazm' ? 'Xorazm' : activeRegion === 'buxoro' ? 'Buxoro' : 'Samarqand'} CrafTour. {language === 'RU' ? 'Все права защищены.' : 'All rights reserved.'}
@@ -2717,13 +2917,13 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
             display: 'flex',
             alignItems: 'center',
             gap: '6px',
-            color: '#64748b',
+            color: '#9e9e9e',
             textDecoration: 'none',
             opacity: 0.5,
             transition: 'opacity 0.2s, color 0.2s',
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.opacity = 1; e.currentTarget.style.color = '#d4af37'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.opacity = 0.5; e.currentTarget.style.color = '#64748b'; }}
+          onMouseEnter={(e) => { e.currentTarget.style.opacity = 1; e.currentTarget.style.color = 'var(--primary-blue)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.opacity = 0.5; e.currentTarget.style.color = '#9e9e9e'; }}
         >
           <Lock size={12} />
           <span>{language === 'RU' ? 'Панель администратора' : 'Admin Portal'}</span>

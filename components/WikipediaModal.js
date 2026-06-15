@@ -113,8 +113,8 @@ export default function WikipediaModal({
           width: '100%',
           maxWidth: '640px',
           borderRadius: '24px',
-          border: '1px solid rgba(212, 175, 55, 0.25)',
-          backgroundColor: '#0a0f1d',
+          border: '1px solid rgba(var(--primary-blue-rgb), 0.25)',
+          backgroundColor: 'var(--bg-card)',
           display: 'flex',
           flexDirection: 'column',
           maxHeight: '90vh',
@@ -132,8 +132,8 @@ export default function WikipediaModal({
           flexShrink: 0
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <BookOpen size={20} style={{ color: '#d4af37' }} />
-            <span style={{ fontSize: '16px', fontWeight: '800', color: '#d4af37', letterSpacing: '0.5px' }}>
+            <BookOpen size={20} style={{ color: 'var(--primary-blue)' }} />
+            <span style={{ fontSize: '16px', fontWeight: '800', color: 'var(--primary-blue)', letterSpacing: '0.5px' }}>
               {getLocalizedValue(text.title)}
             </span>
           </div>
@@ -142,7 +142,7 @@ export default function WikipediaModal({
             style={{
               background: 'none',
               border: 'none',
-              color: '#94a3b8',
+              color: 'var(--text-secondary)',
               cursor: 'pointer',
               padding: '6px',
               borderRadius: '50%',
@@ -153,7 +153,7 @@ export default function WikipediaModal({
               transition: 'all 0.2s'
             }}
             onMouseEnter={(e) => e.currentTarget.style.color = '#fff'}
-            onMouseLeave={(e) => e.currentTarget.style.color = '#94a3b8'}
+            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
           >
             <X size={18} />
           </button>
@@ -178,9 +178,9 @@ export default function WikipediaModal({
                 style={{
                   padding: '6px 16px',
                   borderRadius: '10px',
-                  border: isActive ? '1px solid rgba(212, 175, 55, 0.4)' : '1px solid transparent',
-                  background: isActive ? 'rgba(212, 175, 55, 0.12)' : 'rgba(255, 255, 255, 0.03)',
-                  color: isActive ? '#d4af37' : '#94a3b8',
+                  border: isActive ? '1px solid rgba(255, 91, 0, 0.4)' : '1px solid transparent',
+                  background: isActive ? 'rgba(255, 91, 0, 0.12)' : 'rgba(255, 255, 255, 0.03)',
+                  color: isActive ? 'var(--primary-blue)' : 'var(--text-secondary)',
                   fontSize: '12.5px',
                   fontWeight: '700',
                   cursor: 'pointer',
@@ -231,7 +231,7 @@ export default function WikipediaModal({
               bottom: 0,
               left: 0,
               right: 0,
-              background: 'linear-gradient(to top, rgba(10, 15, 29, 0.95), transparent)',
+              background: 'linear-gradient(to top, rgba(0, 0, 0, 0.75), transparent)',
               padding: '16px 20px',
               display: 'flex',
               flexDirection: 'column',
@@ -241,7 +241,7 @@ export default function WikipediaModal({
                 {wikiData?.title || name}
               </h3>
               {wikiData?.description && (
-                <span style={{ fontSize: '12.5px', color: '#d4af37', fontWeight: '600' }}>
+                <span style={{ fontSize: '12.5px', color: 'var(--primary-blue)', fontWeight: '600' }}>
                   {wikiData.description}
                 </span>
               )}
@@ -263,7 +263,7 @@ export default function WikipediaModal({
                 {getLocalizedValue(text.duration)}
               </span>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#fff', fontSize: '13px', fontWeight: '600' }}>
-                <Clock size={14} style={{ color: '#d4af37' }} />
+                <Clock size={14} style={{ color: 'var(--primary-blue)' }} />
                 <span>
                   {location.estimated_duration 
                     ? (activeLang === 'uz' ? `${location.estimated_duration} daqiqa` : activeLang === 'ru' ? `${location.estimated_duration} мин` : `${location.estimated_duration} mins`) 
@@ -277,7 +277,7 @@ export default function WikipediaModal({
                 {getLocalizedValue(text.ticket)}
               </span>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#fff', fontSize: '13px', fontWeight: '600' }}>
-                <Ticket size={14} style={{ color: '#d4af37' }} />
+                <Ticket size={14} style={{ color: 'var(--primary-blue)' }} />
                 <span>
                   {parseFloat(location.ticket_price) > 0 
                     ? `$${parseFloat(location.ticket_price).toFixed(2)}` 
@@ -291,7 +291,7 @@ export default function WikipediaModal({
                 📍 Hudud
               </span>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#fff', fontSize: '13px', fontWeight: '600' }}>
-                <MapPin size={14} style={{ color: '#d4af37' }} />
+                <MapPin size={14} style={{ color: 'var(--primary-blue)' }} />
                 <span style={{ textTransform: 'capitalize' }}>
                   {location.region || 'samarqand'}
                 </span>
@@ -303,8 +303,8 @@ export default function WikipediaModal({
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {loading ? (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 0', gap: '12px' }}>
-                <Loader2 size={32} className="animate-spin" style={{ color: '#d4af37' }} />
-                <span style={{ fontSize: '13px', color: '#94a3b8' }}>
+                <Loader2 size={32} className="animate-spin" style={{ color: 'var(--primary-blue)' }} />
+                <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
                   {activeLang === 'uz' ? 'Wikipediaʼdan maʼlumot yuklanmoqda...' : activeLang === 'ru' ? 'Загрузка данных из Википедии...' : 'Loading Wikipedia summary...'}
                 </span>
               </div>
@@ -324,7 +324,7 @@ export default function WikipediaModal({
                 </div>
                 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <span style={{ fontSize: '11px', color: '#d4af37', fontWeight: '700', textTransform: 'uppercase' }}>
+                  <span style={{ fontSize: '11px', color: 'var(--primary-blue)', fontWeight: '700', textTransform: 'uppercase' }}>
                     {getLocalizedValue(text.localDesc)}
                   </span>
                   <p style={{ margin: 0, fontSize: '13.5px', color: '#cbd5e1', lineHeight: '1.6', fontWeight: '400' }}>
@@ -358,7 +358,7 @@ export default function WikipediaModal({
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: '6px',
-                      color: '#d4af37',
+                      color: 'var(--primary-blue)',
                       fontSize: '13px',
                       fontWeight: '700',
                       textDecoration: 'none',
@@ -366,7 +366,7 @@ export default function WikipediaModal({
                       borderBottom: '1.5px solid transparent',
                       transition: 'all 0.2s'
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.borderBottomColor = '#d4af37'}
+                    onMouseEnter={(e) => e.currentTarget.style.borderBottomColor = 'var(--primary-blue)'}
                     onMouseLeave={(e) => e.currentTarget.style.borderBottomColor = 'transparent'}
                   >
                     <span>{getLocalizedValue(text.readMore)}</span>
@@ -417,9 +417,9 @@ export default function WikipediaModal({
             style={{
               padding: '12px 20px',
               borderRadius: '12px',
-              backgroundColor: isSelected ? 'rgba(239, 68, 68, 0.15)' : '#d4af37',
-              border: isSelected ? '1px solid #ef4444' : '1px solid #d4af37',
-              color: isSelected ? '#ef4444' : '#0a0f1d',
+              backgroundColor: isSelected ? 'rgba(239, 68, 68, 0.15)' : 'var(--primary-blue)',
+              border: isSelected ? '1px solid #ef4444' : '1px solid var(--primary-blue)',
+              color: isSelected ? '#ef4444' : 'var(--bg-card)',
               fontSize: '13.5px',
               fontWeight: '800',
               cursor: 'pointer',
@@ -429,22 +429,22 @@ export default function WikipediaModal({
               justifyContent: 'center',
               gap: '8px',
               transition: 'all 0.2s',
-              boxShadow: isSelected ? 'none' : '0 4px 14px rgba(212, 175, 55, 0.3)'
+              boxShadow: isSelected ? 'none' : '0 4px 14px rgba(255, 91, 0, 0.3)'
             }}
             onMouseEnter={(e) => {
               if (isSelected) {
                 e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.25)';
               } else {
-                e.currentTarget.style.backgroundColor = '#e5c04f';
-                e.currentTarget.style.boxShadow = '0 6px 20px rgba(212, 175, 55, 0.45)';
+                e.currentTarget.style.backgroundColor = 'var(--deep-turquoise)';
+                e.currentTarget.style.boxShadow = '0 6px 20px rgba(255, 91, 0, 0.45)';
               }
             }}
             onMouseLeave={(e) => {
               if (isSelected) {
                 e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.15)';
               } else {
-                e.currentTarget.style.backgroundColor = '#d4af37';
-                e.currentTarget.style.boxShadow = '0 4px 14px rgba(212, 175, 55, 0.3)';
+                e.currentTarget.style.backgroundColor = 'var(--primary-blue)';
+                e.currentTarget.style.boxShadow = '0 4px 14px rgba(255, 91, 0, 0.3)';
               }
             }}
           >

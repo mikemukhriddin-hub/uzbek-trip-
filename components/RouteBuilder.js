@@ -24,7 +24,7 @@ const CATEGORIES = {
     RU: 'Национальная кухня',
     UZ: 'Milliy taomlar',
     icon: ThreeDDining,
-    color: '#d4af37',
+    color: 'var(--primary-blue)',
   },
 };
 
@@ -128,12 +128,12 @@ export default function RouteBuilder({
           flexDirection: 'column',
           gap: '10px',
           padding: '14px 16px',
-          backgroundColor: 'rgba(212, 175, 55, 0.04)',
-          border: '1px solid rgba(212, 175, 55, 0.15)',
+          backgroundColor: 'rgba(255, 91, 0, 0.04)',
+          border: '1px solid rgba(var(--primary-blue-rgb), 0.15)',
           borderRadius: '16px',
           marginBottom: '4px'
         }} className="animate-fade-in">
-          <span style={{ fontSize: '13px', fontWeight: '700', color: '#d4af37', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--primary-blue)', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <MapPin size={14} />
             <span>
               {language === 'UZ' ? 'Viloyat bo\'yicha saralash:' : language === 'RU' ? 'Фильтр по регионам:' : 'Filter attractions by region:'}
@@ -160,9 +160,9 @@ export default function RouteBuilder({
                     padding: '8px 12px',
                     borderRadius: '8px',
                     border: 'none',
-                    background: isSelected ? 'rgba(212, 175, 55, 0.12)' : 'rgba(255, 255, 255, 0.03)',
-                    border: isSelected ? '1px solid rgba(212, 175, 55, 0.4)' : '1px solid rgba(255, 255, 255, 0.05)',
-                    color: isSelected ? '#d4af37' : '#94a3b8',
+                    background: isSelected ? 'rgba(255, 91, 0, 0.12)' : 'rgba(255, 255, 255, 0.03)',
+                    border: isSelected ? '1px solid rgba(255, 91, 0, 0.4)' : '1px solid rgba(255, 255, 255, 0.05)',
+                    color: isSelected ? 'var(--primary-blue)' : 'var(--text-secondary)',
                     fontSize: '12px',
                     fontWeight: '700',
                     cursor: 'pointer',
@@ -179,7 +179,7 @@ export default function RouteBuilder({
                   }}
                   onMouseLeave={(e) => {
                     if (!isSelected) {
-                      e.currentTarget.style.color = '#94a3b8';
+                      e.currentTarget.style.color = 'var(--text-secondary)';
                       e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.03)';
                     }
                   }}
@@ -266,8 +266,8 @@ export default function RouteBuilder({
                             top: '8px',
                             left: '8px',
                             zIndex: 2,
-                            backgroundColor: 'rgba(212, 175, 55, 0.92)',
-                            color: '#0a0f1d',
+                            backgroundColor: 'rgba(255, 91, 0, 0.92)',
+                            color: 'var(--bg-card)',
                             fontSize: '10px',
                             fontWeight: '700',
                             padding: '3px 8px',
@@ -285,15 +285,15 @@ export default function RouteBuilder({
                             top: '8px',
                             right: '8px',
                             zIndex: 2,
-                            backgroundColor: 'rgba(10, 15, 29, 0.82)',
+                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
                             backdropFilter: 'blur(4px)',
-                            color: '#fff',
+                            color: 'var(--text-primary)',
                             fontSize: '10px',
                             fontWeight: '600',
                             padding: '3px 8px',
                             borderRadius: '6px',
-                            border: '1px solid rgba(255, 255, 255, 0.1)',
-                            boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+                            border: '1px solid rgba(0, 0, 0, 0.08)',
+                            boxShadow: '0 2px 6px rgba(0,0,0,0.04)',
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: '4px'
@@ -307,15 +307,15 @@ export default function RouteBuilder({
                           bottom: '8px',
                           left: '8px',
                           zIndex: 2,
-                          backgroundColor: 'rgba(10, 15, 29, 0.82)',
+                          backgroundColor: 'rgba(255, 255, 255, 0.95)',
                           backdropFilter: 'blur(4px)',
-                          color: '#fff',
+                          color: 'var(--text-primary)',
                           fontSize: '10px',
                           fontWeight: '600',
                           padding: '3px 8px',
                           borderRadius: '6px',
-                          border: '1px solid rgba(255, 255, 255, 0.1)',
-                          boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+                          border: '1px solid rgba(0, 0, 0, 0.08)',
+                          boxShadow: '0 2px 6px rgba(0,0,0,0.04)',
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: '4px'
@@ -403,7 +403,7 @@ export default function RouteBuilder({
                             🎟️ {language === 'UZ' ? 'Kirish bileti' : language === 'RU' ? 'Входной билет' : 'Entrance ticket'}:
                           </span>
                           <span style={{ 
-                            color: parseFloat(loc.ticket_price) > 0 ? '#10b981' : '#94a3b8',
+                            color: parseFloat(loc.ticket_price) > 0 ? '#10b981' : 'var(--text-secondary)',
                             fontWeight: '800'
                           }}>
                             {parseFloat(loc.ticket_price) > 0 
@@ -416,7 +416,7 @@ export default function RouteBuilder({
 
                     {isSelected && tourDurationType === 'multi' && (
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', width: '100%', marginBottom: '8px' }}>
-                        <span style={{ fontSize: '11px', color: '#94a3b8', fontWeight: '600' }}>
+                        <span style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: '600' }}>
                           {language === 'UZ' ? 'Sayohat kuni:' : language === 'RU' ? 'День поездки:' : 'Visit Day:'}
                         </span>
                         <select
@@ -426,9 +426,9 @@ export default function RouteBuilder({
                           style={{
                             padding: '4px 8px',
                             borderRadius: '6px',
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            border: '1px solid #10b981',
-                            color: '#10b981',
+                            backgroundColor: 'var(--bg-card)',
+                            border: '1px solid var(--border-card)',
+                            color: 'var(--text-primary)',
                             fontSize: '11px',
                             fontWeight: '700',
                             outline: 'none',
@@ -436,7 +436,7 @@ export default function RouteBuilder({
                           }}
                         >
                           {Array.from({ length: numDays }, (_, i) => i + 1).map((d) => (
-                            <option key={d} value={d} style={{ backgroundColor: '#0f172a', color: '#fff' }}>
+                            <option key={d} value={d} style={{ backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)' }}>
                               {language === 'UZ' ? `${d}-kun` : language === 'RU' ? `День ${d}` : `Day ${d}`}
                             </option>
                           ))}
@@ -448,9 +448,9 @@ export default function RouteBuilder({
                       <button
                         onClick={() => onToggleLocation(loc)}
                         style={{
-                          backgroundColor: isSelected ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.05)',
-                          border: isSelected ? '1px solid #10b981' : '1px solid var(--border-card)',
-                          color: isSelected ? '#10b981' : 'var(--text-primary)',
+                          backgroundColor: isSelected ? 'rgba(16, 185, 129, 0.12)' : 'var(--primary-blue, var(--primary-blue))',
+                          border: isSelected ? '1px solid #10b981' : 'none',
+                          color: isSelected ? '#10b981' : 'var(--bg-card)',
                           padding: '8px 12px',
                           borderRadius: '8px',
                           fontSize: '12.5px',
@@ -487,9 +487,9 @@ export default function RouteBuilder({
                         }}
                         title={language === 'UZ' ? "Wikipedia ma'lumotlari" : language === 'RU' ? "Информация из Википедии" : "Wikipedia Info"}
                         style={{
-                          backgroundColor: 'rgba(212, 175, 55, 0.08)',
-                          border: '1px solid rgba(212, 175, 55, 0.25)',
-                          color: '#d4af37',
+                          backgroundColor: 'rgba(0, 0, 0, 0.03)',
+                          border: '1px solid rgba(0, 0, 0, 0.08)',
+                          color: 'var(--text-secondary)',
                           padding: '8px',
                           borderRadius: '8px',
                           display: 'flex',
@@ -502,12 +502,14 @@ export default function RouteBuilder({
                           flexShrink: 0
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = 'rgba(212, 175, 55, 0.18)';
-                          e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.5)';
+                          e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.06)';
+                          e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.15)';
+                          e.currentTarget.style.color = 'var(--primary-blue, var(--primary-blue))';
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = 'rgba(212, 175, 55, 0.08)';
-                          e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.25)';
+                          e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.03)';
+                          e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.08)';
+                          e.currentTarget.style.color = 'var(--text-secondary)';
                         }}
                       >
                         <Info size={16} />

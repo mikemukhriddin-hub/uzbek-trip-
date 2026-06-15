@@ -1198,8 +1198,8 @@ export default function AdminPage() {
             style={{
               padding: '8px 16px',
               borderRadius: '10px',
-              backgroundColor: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.1)',
+              backgroundColor: 'rgba(0, 0, 0, 0.04)',
+              border: '1px solid rgba(0, 0, 0, 0.06)',
               color: '#fff',
               fontSize: '13px',
               fontWeight: '600',
@@ -1210,7 +1210,7 @@ export default function AdminPage() {
               transition: 'all 0.2s ease'
             }}
           >
-            <Languages size={14} style={{ color: '#6366f1' }} />
+            <Languages size={14} style={{ color: '#FF5B00' }} />
             <span>{language === 'EN' ? '🇬🇧 EN' : language === 'RU' ? '🇷🇺 RU' : '🇺🇿 UZ'}</span>
           </button>
           {showLangDropdown && (
@@ -1219,7 +1219,7 @@ export default function AdminPage() {
               top: 'calc(100% + 8px)',
               right: 0,
               backgroundColor: '#0f172a',
-              border: '1px solid rgba(99,102,241,0.25)',
+              border: '1px solid rgba(255, 91, 0,0.25)',
               borderRadius: '10px',
               padding: '4px',
               zIndex: 1000,
@@ -1240,8 +1240,8 @@ export default function AdminPage() {
                   style={{
                     padding: '8px 12px',
                     border: 'none',
-                    background: language === langCode ? 'rgba(99,102,241,0.1)' : 'transparent',
-                    color: language === langCode ? '#6366f1' : '#94a3b8',
+                    background: language === langCode ? 'rgba(255, 91, 0,0.1)' : 'transparent',
+                    color: language === langCode ? '#FF5B00' : '#757575',
                     textAlign: 'left',
                     fontSize: '13px',
                     fontWeight: '600',
@@ -1263,20 +1263,20 @@ export default function AdminPage() {
         }}>
           <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <div style={{
-              width: '56px', height: '56px', borderRadius: '12px', backgroundColor: 'rgba(99, 102, 241, 0.15)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6366f1', margin: '0 auto'
+              width: '56px', height: '56px', borderRadius: '12px', backgroundColor: 'rgba(255, 91, 0, 0.15)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FF5B00', margin: '0 auto'
             }}>
               <Lock size={26} />
             </div>
             <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#fff', letterSpacing: '0.05em' }}>
-              SAMARQAND <span style={{ color: '#6366f1' }}>CRAFTOUR</span>
+              SAMARQAND <span style={{ color: '#FF5B00' }}>CRAFTOUR</span>
             </h2>
-            <p style={{ fontSize: '13px', color: '#94a3b8' }}>{currT.adminSubtitle}</p>
+            <p style={{ fontSize: '13px', color: '#757575' }}>{currT.adminSubtitle}</p>
           </div>
 
           <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <label style={{ fontSize: '12px', fontWeight: '600', color: '#94a3b8' }}>{currT.enterPassword}</label>
+              <label style={{ fontSize: '12px', fontWeight: '600', color: '#757575' }}>{currT.enterPassword}</label>
               <input
                 type="password"
                 placeholder="••••••••"
@@ -1353,18 +1353,18 @@ export default function AdminPage() {
       }}>
         {/* STATS SUMMARY CARD */}
         <div className="glass-container indigo-glow" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <h3 style={{ margin: 0, fontSize: '15px', color: '#6366f1', fontWeight: '800', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '8px', letterSpacing: '0.05em' }}>
+          <h3 style={{ margin: 0, fontSize: '15px', color: '#FF5B00', fontWeight: '800', borderBottom: '1px solid rgba(0, 0, 0, 0.08)', paddingBottom: '8px', letterSpacing: '0.05em' }}>
             {language === 'UZ' ? '📊 UMUMIY STATISTIKA' : language === 'RU' ? '📊 ОБЩАЯ СТАТИСТИКА' : '📊 GENERAL ANALYTICS'}
           </h3>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-            <div style={{ padding: '12px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-              <span style={{ fontSize: '11px', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>
+            <div style={{ padding: '12px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(0, 0, 0, 0.04)' }}>
+              <span style={{ fontSize: '11px', color: '#757575', display: 'block', marginBottom: '4px' }}>
                 {language === 'UZ' ? 'Jami tushum' : language === 'RU' ? 'Общая выручка' : 'Total Revenue'}
               </span>
               <strong style={{ fontSize: '20px', color: '#10b981' }}>${totalRevenue.toFixed(2)}</strong>
             </div>
-            <div style={{ padding: '12px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-              <span style={{ fontSize: '11px', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>
+            <div style={{ padding: '12px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(0, 0, 0, 0.04)' }}>
+              <span style={{ fontSize: '11px', color: '#757575', display: 'block', marginBottom: '4px' }}>
                 {language === 'UZ' ? 'Buyurtmalar soni' : language === 'RU' ? 'Всего заказов' : 'Total Bookings'}
               </span>
               <strong style={{ fontSize: '20px', color: '#fff' }}>{stats.all}</strong>
@@ -1405,11 +1405,11 @@ export default function AdminPage() {
 
         {/* REVENUE LINE CHART CARD */}
         <div className="glass-container indigo-glow" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <h3 style={{ margin: 0, fontSize: '15px', color: '#6366f1', fontWeight: '800', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '8px', letterSpacing: '0.05em' }}>
+          <h3 style={{ margin: 0, fontSize: '15px', color: '#FF5B00', fontWeight: '800', borderBottom: '1px solid rgba(0, 0, 0, 0.08)', paddingBottom: '8px', letterSpacing: '0.05em' }}>
             {language === 'UZ' ? '📈 KUNLIK DAROMAD O\'SISHI' : language === 'RU' ? '📈 ДИНАМИКА ВЫРУЧКИ' : '📈 DAILY REVENUE TREND'}
           </h3>
           {data.length === 0 ? (
-            <div style={{ height: '140px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', fontSize: '13px' }}>
+            <div style={{ height: '140px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#757575', fontSize: '13px' }}>
               No chart data available
             </div>
           ) : (
@@ -1422,14 +1422,14 @@ export default function AdminPage() {
                     y1={15 + ratio * 95} 
                     x2="380" 
                     y2={15 + ratio * 95} 
-                    stroke="rgba(255,255,255,0.08)" 
+                    stroke="rgba(0, 0, 0, 0.08)" 
                     strokeDasharray="4 4" 
                   />
                 ))}
                 
                 <line x1="30" y1="110" x2="380" y2="110" stroke="rgba(255,255,255,0.2)" />
-                <text x="25" y="20" fill="#94a3b8" fontSize="8" textAnchor="end">${maxRev.toFixed(0)}</text>
-                <text x="25" y="113" fill="#94a3b8" fontSize="8" textAnchor="end">$0</text>
+                <text x="25" y="20" fill="#757575" fontSize="8" textAnchor="end">${maxRev.toFixed(0)}</text>
+                <text x="25" y="113" fill="#757575" fontSize="8" textAnchor="end">$0</text>
 
                 {(() => {
                   const points = data.map((d, index) => {
@@ -1472,7 +1472,7 @@ export default function AdminPage() {
                             <text
                               x={x}
                               y="126"
-                              fill="#94a3b8"
+                              fill="#757575"
                               fontSize="8"
                               textAnchor="middle"
                             >
@@ -1498,23 +1498,23 @@ export default function AdminPage() {
       {/* Header */}
       <header className="glass-container" style={{
         padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        border: '1px solid rgba(99,102,241,0.15)', borderRadius: '16px', marginBottom: '24px', width: '100%'
+        border: '1px solid rgba(255, 91, 0,0.15)', borderRadius: '16px', marginBottom: '24px', width: '100%'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={{
-            width: '36px', height: '36px', borderRadius: '8px', backgroundColor: 'rgba(99,102,241,0.15)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6366f1'
+            width: '36px', height: '36px', borderRadius: '8px', backgroundColor: 'rgba(255, 91, 0,0.15)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FF5B00'
           }}>
             <Compass size={20} />
           </div>
           <span style={{ fontSize: '18px', fontWeight: 800, letterSpacing: '0.05em', color: '#fff' }}>
-            SAMARQAND <span style={{ color: '#6366f1' }}>CRAFTOUR</span> <span style={{ fontSize: '12px', color: '#94a3b8', marginLeft: '8px', fontWeight: 'normal' }}>{userRole === 'guide' ? `${currT.guideRole}: ${guideName}` : currT.adminRole}</span>
+            SAMARQAND <span style={{ color: '#FF5B00' }}>CRAFTOUR</span> <span style={{ fontSize: '12px', color: '#757575', marginLeft: '8px', fontWeight: 'normal' }}>{userRole === 'guide' ? `${currT.guideRole}: ${guideName}` : currT.adminRole}</span>
           </span>
         </div>
 
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
           {/* Region Filter Segmented Selector */}
-          <div style={{ display: 'flex', gap: '4px', backgroundColor: 'rgba(255,255,255,0.03)', padding: '4px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.08)' }}>
+          <div style={{ display: 'flex', gap: '4px', backgroundColor: 'rgba(255,255,255,0.03)', padding: '4px', borderRadius: '10px', border: '1px solid rgba(0, 0, 0, 0.08)' }}>
             {['all', 'samarqand', 'buxoro', 'xorazm', 'shahrisabz', 'toshkent', 'qoraqalpoq'].map((reg) => (
               <button
                 key={reg}
@@ -1522,9 +1522,9 @@ export default function AdminPage() {
                 style={{
                   padding: '6px 12px',
                   borderRadius: '7px',
-                  backgroundColor: regionFilter === reg ? 'rgba(99,102,241,0.15)' : 'transparent',
+                  backgroundColor: regionFilter === reg ? 'rgba(255, 91, 0,0.15)' : 'transparent',
                   color: regionFilter === reg ? '#818cf8' : '#64748b',
-                  border: regionFilter === reg ? '1.5px solid rgba(99,102,241,0.3)' : '1.5px solid transparent',
+                  border: regionFilter === reg ? '1.5px solid rgba(255, 91, 0,0.3)' : '1.5px solid transparent',
                   fontSize: '12px',
                   fontWeight: '700',
                   cursor: 'pointer',
@@ -1544,8 +1544,8 @@ export default function AdminPage() {
               style={{
                 padding: '8px 12px',
                 borderRadius: '10px',
-                backgroundColor: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.1)',
+                backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                border: '1px solid rgba(0, 0, 0, 0.06)',
                 color: '#fff',
                 fontSize: '13px',
                 fontWeight: '600',
@@ -1556,7 +1556,7 @@ export default function AdminPage() {
                 transition: 'all 0.2s ease'
               }}
             >
-              <Languages size={14} style={{ color: '#6366f1' }} />
+              <Languages size={14} style={{ color: '#FF5B00' }} />
               <span>{language === 'EN' ? '🇬🇧 EN' : language === 'RU' ? '🇷🇺 RU' : '🇺🇿 UZ'}</span>
             </button>
             {showLangDropdown && (
@@ -1565,7 +1565,7 @@ export default function AdminPage() {
                 top: 'calc(100% + 8px)',
                 right: 0,
                 backgroundColor: '#0f172a',
-                border: '1px solid rgba(99,102,241,0.25)',
+                border: '1px solid rgba(255, 91, 0,0.25)',
                 borderRadius: '10px',
                 padding: '4px',
                 zIndex: 1000,
@@ -1586,8 +1586,8 @@ export default function AdminPage() {
                     style={{
                       padding: '8px 12px',
                       border: 'none',
-                      background: language === langCode ? 'rgba(99,102,241,0.1)' : 'transparent',
-                      color: language === langCode ? '#6366f1' : '#94a3b8',
+                      background: language === langCode ? 'rgba(255, 91, 0,0.1)' : 'transparent',
+                      color: language === langCode ? '#FF5B00' : '#757575',
                       textAlign: 'left',
                       fontSize: '13px',
                       fontWeight: '600',
@@ -1604,7 +1604,7 @@ export default function AdminPage() {
             )}
           </div>
 
-          <button onClick={() => fetchAllData()} style={{ padding: '8px 12px', borderRadius: '10px', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }} disabled={loading}>
+          <button onClick={() => fetchAllData()} style={{ padding: '8px 12px', borderRadius: '10px', backgroundColor: 'rgba(0, 0, 0, 0.04)', border: '1px solid rgba(0, 0, 0, 0.06)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }} disabled={loading}>
             <RefreshCw size={14} className={loading ? 'animate-spin' : ''} /> {currT.refreshButton}
           </button>
           <button onClick={handleLogout} style={{ padding: '8px 12px', borderRadius: '10px', backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600' }}>
@@ -1614,7 +1614,7 @@ export default function AdminPage() {
       </header>
 
       {/* Main Tab Controls */}
-      <div style={{ display: 'flex', gap: '16px', marginBottom: '20px', borderBottom: '1px solid rgba(255,255,255,0.1)', overflowX: 'auto' }}>
+      <div style={{ display: 'flex', gap: '16px', marginBottom: '20px', borderBottom: '1px solid rgba(0, 0, 0, 0.06)', overflowX: 'auto' }}>
         {['bookings', 'locations', 'vehicles', 'guides']
           .filter(tab => userRole === 'admin' || tab === 'bookings' || tab === 'guides')
           .map(tab => (
@@ -1623,8 +1623,8 @@ export default function AdminPage() {
               onClick={() => { setActiveTab(tab); setEditingResource(null); }}
               style={{
                 padding: '12px 24px', backgroundColor: 'transparent', border: 'none',
-                color: activeTab === tab ? '#6366f1' : '#94a3b8',
-                borderBottom: activeTab === tab ? '2px solid #6366f1' : '2px solid transparent',
+                color: activeTab === tab ? '#FF5B00' : '#757575',
+                borderBottom: activeTab === tab ? '2px solid #FF5B00' : '2px solid transparent',
                 fontWeight: '700', fontSize: '15px', cursor: 'pointer', textTransform: 'capitalize'
               }}
             >
@@ -1653,9 +1653,9 @@ export default function AdminPage() {
                   onClick={() => setBookingFilter(status)}
                   style={{
                     padding: '8px 16px', borderRadius: '20px',
-                    backgroundColor: bookingFilter === status ? '#6366f1' : 'rgba(255,255,255,0.05)',
-                    color: bookingFilter === status ? '#0a0f1d' : '#fff',
-                    border: bookingFilter === status ? '1px solid #6366f1' : '1px solid rgba(255,255,255,0.1)',
+                    backgroundColor: bookingFilter === status ? '#FF5B00' : 'rgba(0, 0, 0, 0.04)',
+                    color: bookingFilter === status ? '#fff' : '#757575',
+                    border: bookingFilter === status ? '1px solid #FF5B00' : '1px solid rgba(0, 0, 0, 0.06)',
                     fontWeight: '600', textTransform: 'capitalize', cursor: 'pointer'
                   }}
                 >
@@ -1671,9 +1671,9 @@ export default function AdminPage() {
                   style={{
                     padding: '8px 16px',
                     borderRadius: '20px',
-                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                    color: '#6366f1',
-                    border: '1px solid rgba(99, 102, 241, 0.3)',
+                    backgroundColor: 'rgba(255, 91, 0, 0.1)',
+                    color: '#FF5B00',
+                    border: '1px solid rgba(255, 91, 0, 0.3)',
                     fontWeight: '600',
                     cursor: 'pointer',
                     display: 'flex',
@@ -1681,8 +1681,8 @@ export default function AdminPage() {
                     gap: '6px',
                     transition: 'all 0.2s ease'
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(99, 102, 241, 0.2)'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'rgba(99, 102, 241, 0.1)'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255, 91, 0, 0.2)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255, 91, 0, 0.1)'; }}
                 >
                   <Download size={14} />
                   <span>{language === 'UZ' ? 'CSV yuklash' : language === 'RU' ? 'Скачать CSV' : 'Export CSV'}</span>
@@ -1717,18 +1717,18 @@ export default function AdminPage() {
 
           <div className="glass-container" style={{ padding: '20px', overflowX: 'auto' }}>
             {loading && bookings.length === 0 ? (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '200px', gap: '10px', color: '#94a3b8' }}>
-                <Loader2 size={32} className="animate-spin" style={{ color: '#6366f1' }} />
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '200px', gap: '10px', color: '#757575' }}>
+                <Loader2 size={32} className="animate-spin" style={{ color: '#FF5B00' }} />
                 <span>{currT.loadingBookings}</span>
               </div>
             ) : filteredBookings.length === 0 ? (
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '200px', color: '#94a3b8' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '200px', color: '#757575' }}>
                 {currT.noBookings}
               </div>
             ) : (
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '900px' }}>
                 <thead>
-                  <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', color: '#94a3b8', fontSize: '13px' }}>
+                  <tr style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.08)', color: '#757575', fontSize: '13px' }}>
                     <th style={{ padding: '12px 8px' }}>{currT.bookingId}</th>
                     <th style={{ padding: '12px 8px' }}>{currT.touristDetails}</th>
                     <th style={{ padding: '12px 8px' }}>{currT.tourDate}</th>
@@ -1745,15 +1745,15 @@ export default function AdminPage() {
                     const colors = getStatusColor(booking.status);
                     const waLink = booking.tourist_phone ? `https://wa.me/${booking.tourist_phone.replace(/\+/g, '').trim()}` : '#';
                     return (
-                      <tr key={booking.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '14px' }}>
+                      <tr key={booking.id} style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.04)', fontSize: '14px' }}>
                         <td style={{ padding: '16px 8px' }}>
-                          <div style={{ fontWeight: '700', color: '#6366f1' }}>#{booking.id}</div>
+                          <div style={{ fontWeight: '700', color: '#FF5B00' }}>#{booking.id}</div>
                           <span style={{ fontSize: '11px', color: '#64748b' }}>{new Date(booking.created_at).toLocaleDateString()}</span>
                         </td>
                         <td style={{ padding: '16px 8px' }}>
                           <div style={{ fontWeight: '600' }}>{booking.tourist_name}</div>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', marginTop: '4px', fontSize: '12px' }}>
-                            <a href={`mailto:${booking.tourist_email}`} style={{ color: '#94a3b8', textDecoration: 'none' }}>✉ {booking.tourist_email}</a>
+                            <a href={`mailto:${booking.tourist_email}`} style={{ color: '#757575', textDecoration: 'none' }}>✉ {booking.tourist_email}</a>
                             <a href={waLink} target="_blank" rel="noopener noreferrer" style={{ color: '#009b9e', textDecoration: 'none', fontWeight: '700' }}>📞 {booking.tourist_phone} ↗</a>
                           </div>
                         </td>
@@ -1769,9 +1769,9 @@ export default function AdminPage() {
                               borderRadius: '20px',
                               fontSize: '10px',
                               fontWeight: '700',
-                              backgroundColor: booking.booking_type === 'shared' ? 'rgba(0,155,158,0.15)' : 'rgba(99,102,241,0.12)',
-                              color: booking.booking_type === 'shared' ? '#009b9e' : '#6366f1',
-                              border: booking.booking_type === 'shared' ? '1px solid rgba(0,155,158,0.3)' : '1px solid rgba(99,102,241,0.25)',
+                              backgroundColor: booking.booking_type === 'shared' ? 'rgba(0,155,158,0.15)' : 'rgba(255, 91, 0,0.12)',
+                              color: booking.booking_type === 'shared' ? '#009b9e' : '#FF5B00',
+                              border: booking.booking_type === 'shared' ? '1px solid rgba(0,155,158,0.3)' : '1px solid rgba(255, 91, 0,0.25)',
                             }}>
                               {booking.booking_type === 'shared' ? '🤝 Shared' : '🔒 Private'}
                             </span>
@@ -1817,7 +1817,7 @@ export default function AdminPage() {
                             )}
                           </div>
                         </td>
-                        <td style={{ padding: '16px 8px', fontWeight: '800', color: '#6366f1' }}>${parseFloat(booking.total_price).toFixed(2)}</td>
+                        <td style={{ padding: '16px 8px', fontWeight: '800', color: '#FF5B00' }}>${parseFloat(booking.total_price).toFixed(2)}</td>
                         <td style={{ padding: '16px 8px' }}>
                           {booking.payment_status === 'deposit_paid' ? (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
@@ -1843,7 +1843,7 @@ export default function AdminPage() {
                           {actionLoading === booking.id ? <Loader2 size={16} className="animate-spin" /> : (
                             <div style={{ display: 'flex', gap: '6px', justifyContent: 'center', alignItems: 'center' }}>
                               {booking.status === 'pending' && (
-                                <button onClick={() => updateBookingStatus(booking.id, 'confirmed')} title={currT.confirmed} style={{ padding: '4px', background: 'rgba(99,102,241,0.1)', color: '#6366f1', border: '1px solid #6366f1', cursor: 'pointer', borderRadius: '4px' }}><CheckCircle size={14} /></button>
+                                <button onClick={() => updateBookingStatus(booking.id, 'confirmed')} title={currT.confirmed} style={{ padding: '4px', background: 'rgba(255, 91, 0,0.1)', color: '#FF5B00', border: '1px solid #FF5B00', cursor: 'pointer', borderRadius: '4px' }}><CheckCircle size={14} /></button>
                               )}
                               {booking.status !== 'completed' && booking.status !== 'cancelled' && (
                                 <>
@@ -1881,15 +1881,15 @@ export default function AdminPage() {
       {activeTab === 'locations' && (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '24px' }}>
           <div className="glass-container" style={{ padding: '24px' }}>
-            <h3 style={{ color: '#6366f1', marginBottom: '16px', fontSize: '18px', display: 'flex', alignItems: 'center', gap: '8px' }}><Plus size={18} /> {currT.addLocation}</h3>
+            <h3 style={{ color: '#FF5B00', marginBottom: '16px', fontSize: '18px', display: 'flex', alignItems: 'center', gap: '8px' }}><Plus size={18} /> {currT.addLocation}</h3>
             
             {/* AI Auto-fill Assistant */}
             <div style={{
               marginBottom: '24px',
               padding: '16px',
               borderRadius: '12px',
-              backgroundColor: 'rgba(99, 102, 241, 0.03)',
-              border: '1px dashed rgba(99, 102, 241, 0.2)',
+              backgroundColor: 'rgba(255, 91, 0, 0.03)',
+              border: '1px dashed rgba(255, 91, 0, 0.2)',
               display: 'flex',
               flexDirection: 'column',
               gap: '12px'
@@ -1915,7 +1915,7 @@ export default function AdminPage() {
                     display: 'flex',
                     alignItems: 'center',
                     gap: '8px',
-                    backgroundColor: '#6366f1',
+                    backgroundColor: '#FF5B00',
                     border: 'none',
                     borderRadius: '8px',
                     color: '#fff',
@@ -1960,18 +1960,18 @@ export default function AdminPage() {
                 <option value="toshkent">Toshkent (Tashkent)</option>
                 <option value="qoraqalpoq">Qoraqalpog'iston (Karakalpakstan)</option>
               </select>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#94a3b8', fontSize: '14px', cursor: 'pointer' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#757575', fontSize: '14px', cursor: 'pointer' }}>
                 <input type="checkbox" checked={locationForm.is_out_of_city} onChange={e => setLocationForm({...locationForm, is_out_of_city: e.target.checked})} style={{ width: 'auto' }} />
                 {currT.outOfCity}
               </label>
               {/* === IMAGE UPLOAD WIDGET === */}
-              <div style={{ gridColumn: '1 / -1', background: 'rgba(255,255,255,0.04)', border: '1px dashed rgba(99,102,241,0.4)', borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <div style={{ color: '#a5b4fc', fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div style={{ gridColumn: '1 / -1', background: 'rgba(255,255,255,0.04)', border: '1px dashed rgba(255, 91, 0,0.4)', borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div style={{ color: '#ff7300', fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
                   📸 Rasm yuklash / Image Upload
                 </div>
                 {/* File picker row */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                  <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(99,102,241,0.2)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: '8px', padding: '8px 14px', cursor: 'pointer', color: '#a5b4fc', fontSize: '13px', fontWeight: 500, transition: 'all 0.2s' }}>
+                  <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255, 91, 0,0.2)', border: '1px solid rgba(255, 91, 0,0.4)', borderRadius: '8px', padding: '8px 14px', cursor: 'pointer', color: '#ff7300', fontSize: '13px', fontWeight: 500, transition: 'all 0.2s' }}>
                     {imageUploading ? <Loader2 size={14} className="animate-spin" /> : '📁'}
                     {imageUploading ? 'Yuklanmoqda...' : 'Fayl tanlash'}
                     <input
@@ -1994,7 +1994,7 @@ export default function AdminPage() {
                 {/* Preview */}
                 {locationForm.image_url && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <img src={locationForm.image_url} alt="preview" style={{ width: '80px', height: '55px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }} onError={e => { e.target.style.display = 'none'; }} />
+                    <img src={locationForm.image_url} alt="preview" style={{ width: '80px', height: '55px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(0, 0, 0, 0.06)' }} onError={e => { e.target.style.display = 'none'; }} />
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>yoki URL kiriting:</div>
                       <input type="text" placeholder={currT.imageUrl} value={locationForm.image_url} onChange={e => setLocationForm({...locationForm, image_url: e.target.value})} style={{ width: '100%', fontSize: '12px', padding: '6px 10px' }} />
@@ -2023,7 +2023,7 @@ export default function AdminPage() {
             <h3 style={{ color: '#fff', marginBottom: '16px', fontSize: '18px' }}>{currT.existingLocations} ({filteredLocations.length})</h3>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px' }}>
               <thead>
-                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', color: '#94a3b8', fontSize: '13px' }}>
+                <tr style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.08)', color: '#757575', fontSize: '13px' }}>
                   <th style={{ padding: '12px 8px' }}>{currT.photo}</th>
                   <th style={{ padding: '12px 8px' }}>{currT.category}</th>
                   <th style={{ padding: '12px 8px' }}>{currT.nameEnRuUz}</th>
@@ -2053,12 +2053,12 @@ export default function AdminPage() {
                   const displayImg = loc.image_url || defaultImages[loc.id];
                   
                   return (
-                    <tr key={loc.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '14px' }}>
+                    <tr key={loc.id} style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.04)', fontSize: '14px' }}>
                       <td style={{ padding: '14px 8px' }}>
                         {isEditing ? (
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '120px' }}>
                             {editingResource.data.image_url && (
-                              <div style={{ width: '50px', height: '35px', borderRadius: '4px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+                              <div style={{ width: '50px', height: '35px', borderRadius: '4px', overflow: 'hidden', border: '1px solid rgba(0, 0, 0, 0.06)' }}>
                                 <img 
                                   src={editingResource.data.image_url} 
                                   alt="preview" 
@@ -2067,7 +2067,7 @@ export default function AdminPage() {
                                 />
                               </div>
                             )}
-                            <label style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(99,102,241,0.2)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: '4px', padding: '3px 8px', cursor: 'pointer', color: '#a5b4fc', fontSize: '11px', fontWeight: 500, width: 'fit-content' }}>
+                            <label style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(255, 91, 0,0.2)', border: '1px solid rgba(255, 91, 0,0.4)', borderRadius: '4px', padding: '3px 8px', cursor: 'pointer', color: '#ff7300', fontSize: '11px', fontWeight: 500, width: 'fit-content' }}>
                               {imageUploading ? <Loader2 size={10} className="animate-spin" /> : '📁'}
                               {imageUploading ? '...' : 'Fayl'}
                               <input
@@ -2095,7 +2095,7 @@ export default function AdminPage() {
                             )}
                           </div>
                         ) : (
-                          <div style={{ width: '40px', height: '40px', borderRadius: '6px', overflow: 'hidden', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                          <div style={{ width: '40px', height: '40px', borderRadius: '6px', overflow: 'hidden', backgroundColor: 'rgba(0, 0, 0, 0.04)', border: '1px solid rgba(0, 0, 0, 0.06)' }}>
                             {displayImg ? (
                               <img src={displayImg} alt={loc.name_en} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                             ) : (
@@ -2107,8 +2107,8 @@ export default function AdminPage() {
                       <td style={{ padding: '14px 8px' }}>
                         <span style={{
                           padding: '2px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold',
-                          backgroundColor: loc.category === 'historical' ? 'rgba(0,112,192,0.15)' : loc.category === 'food' ? 'rgba(16,185,129,0.15)' : 'rgba(99,102,241,0.15)',
-                          color: loc.category === 'historical' ? '#0070c0' : loc.category === 'food' ? '#10b981' : '#6366f1'
+                          backgroundColor: loc.category === 'historical' ? 'rgba(0,112,192,0.15)' : loc.category === 'food' ? 'rgba(16,185,129,0.15)' : 'rgba(255, 91, 0,0.15)',
+                          color: loc.category === 'historical' ? '#0070c0' : loc.category === 'food' ? '#10b981' : '#FF5B00'
                         }}>{currT[loc.category] || loc.category}</span>
                       </td>
                       <td style={{ padding: '14px 8px' }}>
@@ -2134,23 +2134,23 @@ export default function AdminPage() {
                         ) : (
                           <div>
                             <div style={{ fontWeight: '600' }}>{loc.name_en}</div>
-                            <div style={{ color: '#94a3b8', fontSize: '12px' }}>{loc.name_ru}</div>
-                            <div style={{ color: '#6366f1', fontSize: '12px' }}>{loc.name_uz || ''}</div>
+                            <div style={{ color: '#757575', fontSize: '12px' }}>{loc.name_ru}</div>
+                            <div style={{ color: '#FF5B00', fontSize: '12px' }}>{loc.name_uz || ''}</div>
                             <div style={{ 
-                              color: loc.region === 'qoraqalpoq' ? '#a78bfa' : loc.region === 'toshkent' ? '#60a5fa' : loc.region === 'shahrisabz' ? '#34d399' : loc.region === 'xorazm' ? '#00a896' : loc.region === 'buxoro' ? '#ffa066' : '#a5b4fc', 
+                              color: loc.region === 'qoraqalpoq' ? '#a78bfa' : loc.region === 'toshkent' ? '#60a5fa' : loc.region === 'shahrisabz' ? '#34d399' : loc.region === 'xorazm' ? '#00a896' : loc.region === 'buxoro' ? '#ffa066' : '#ff7300', 
                               fontSize: '11px', 
                               marginTop: '6px', 
                               display: 'inline-block', 
                               padding: '2px 8px', 
-                              backgroundColor: loc.region === 'qoraqalpoq' ? 'rgba(124, 58, 237, 0.2)' : loc.region === 'toshkent' ? 'rgba(30, 64, 175, 0.2)' : loc.region === 'shahrisabz' ? 'rgba(0, 163, 108, 0.2)' : loc.region === 'xorazm' ? 'rgba(2, 128, 144, 0.2)' : loc.region === 'buxoro' ? 'rgba(192, 90, 26, 0.2)' : 'rgba(99, 102, 241, 0.15)', 
+                              backgroundColor: loc.region === 'qoraqalpoq' ? 'rgba(124, 58, 237, 0.2)' : loc.region === 'toshkent' ? 'rgba(30, 64, 175, 0.2)' : loc.region === 'shahrisabz' ? 'rgba(0, 163, 108, 0.2)' : loc.region === 'xorazm' ? 'rgba(2, 128, 144, 0.2)' : loc.region === 'buxoro' ? 'rgba(192, 90, 26, 0.2)' : 'rgba(255, 91, 0, 0.15)', 
                               borderRadius: '4px', 
-                              border: loc.region === 'qoraqalpoq' ? '1px solid rgba(124, 58, 237, 0.3)' : loc.region === 'toshkent' ? '1px solid rgba(30, 64, 175, 0.3)' : loc.region === 'shahrisabz' ? '1px solid rgba(0, 163, 108, 0.3)' : loc.region === 'xorazm' ? '1px solid rgba(2, 128, 144, 0.3)' : loc.region === 'buxoro' ? '1px solid rgba(192, 90, 26, 0.3)' : '1px solid rgba(99, 102, 241, 0.2)',
+                              border: loc.region === 'qoraqalpoq' ? '1px solid rgba(124, 58, 237, 0.3)' : loc.region === 'toshkent' ? '1px solid rgba(30, 64, 175, 0.3)' : loc.region === 'shahrisabz' ? '1px solid rgba(0, 163, 108, 0.3)' : loc.region === 'xorazm' ? '1px solid rgba(2, 128, 144, 0.3)' : loc.region === 'buxoro' ? '1px solid rgba(192, 90, 26, 0.3)' : '1px solid rgba(255, 91, 0, 0.2)',
                               fontWeight: '600'
                             }}>
                               📍 {loc.region === 'qoraqalpoq' ? currT.qoraqalpoq : loc.region === 'toshkent' ? currT.toshkent : loc.region === 'shahrisabz' ? currT.shahrisabz : loc.region === 'xorazm' ? currT.xorazm : loc.region === 'buxoro' ? currT.buxoro : currT.samarqand}
                             </div>
                             {(loc.wikipedia_title_en || loc.wikipedia_title_ru || loc.wikipedia_title_uz) && (
-                              <div style={{ fontSize: '11px', color: '#d4af37', marginTop: '6px', fontStyle: 'italic' }}>
+                              <div style={{ fontSize: '11px', color: '#FF5B00', marginTop: '6px', fontStyle: 'italic' }}>
                                 📖 Wiki: {loc.wikipedia_title_en || '—'} | {loc.wikipedia_title_ru || '—'} | {loc.wikipedia_title_uz || '—'}
                               </div>
                             )}
@@ -2178,7 +2178,7 @@ export default function AdminPage() {
                             <input type="text" value={editingResource.data.longitude} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, longitude: e.target.value}})} style={{ width: '80px', padding: '4px', fontSize: '12px' }} />
                           </div>
                         ) : (
-                          <span style={{ color: '#94a3b8' }}>Lat: {loc.latitude} / Lng: {loc.longitude}</span>
+                          <span style={{ color: '#757575' }}>Lat: {loc.latitude} / Lng: {loc.longitude}</span>
                         )}
                       </td>
                       <td style={{ padding: '14px 8px' }}>
@@ -2198,7 +2198,7 @@ export default function AdminPage() {
                               </>
                             ) : (
                               <>
-                                <button onClick={() => setEditingResource({ type: 'location', id: loc.id, data: { ...loc } })} style={{ padding: '4px', background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer' }}><Edit3 size={16} /></button>
+                                <button onClick={() => setEditingResource({ type: 'location', id: loc.id, data: { ...loc } })} style={{ padding: '4px', background: 'transparent', border: 'none', color: '#757575', cursor: 'pointer' }}><Edit3 size={16} /></button>
                                 <button onClick={() => handleDeleteLocation(loc.id)} style={{ padding: '4px', background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer' }}><Trash2 size={16} /></button>
                               </>
                             )}
@@ -2220,7 +2220,7 @@ export default function AdminPage() {
       {activeTab === 'vehicles' && (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '24px' }}>
           <div className="glass-container" style={{ padding: '24px' }}>
-            <h3 style={{ color: '#6366f1', marginBottom: '16px', fontSize: '18px', display: 'flex', alignItems: 'center', gap: '8px' }}><Car size={18} /> {currT.addVehicle}</h3>
+            <h3 style={{ color: '#FF5B00', marginBottom: '16px', fontSize: '18px', display: 'flex', alignItems: 'center', gap: '8px' }}><Car size={18} /> {currT.addVehicle}</h3>
             <form onSubmit={handleAddVehicle} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
               <input type="text" placeholder={currT.driverName} value={vehicleForm.driver_name} onChange={e => setVehicleForm({...vehicleForm, driver_name: e.target.value})} required />
               <input type="text" placeholder={currT.driverPhone} value={vehicleForm.driver_phone} onChange={e => setVehicleForm({...vehicleForm, driver_phone: e.target.value})} required />
@@ -2240,13 +2240,13 @@ export default function AdminPage() {
               </select>
               
               {/* === IMAGE UPLOAD WIDGET === */}
-              <div style={{ gridColumn: '1 / -1', background: 'rgba(255,255,255,0.04)', border: '1px dashed rgba(99,102,241,0.4)', borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <div style={{ color: '#a5b4fc', fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div style={{ gridColumn: '1 / -1', background: 'rgba(255,255,255,0.04)', border: '1px dashed rgba(255, 91, 0,0.4)', borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div style={{ color: '#ff7300', fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
                   📸 Haydovchi rasmi / Driver Photo
                 </div>
                 {/* File picker row */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                  <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(99,102,241,0.2)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: '8px', padding: '8px 14px', cursor: 'pointer', color: '#a5b4fc', fontSize: '13px', fontWeight: 500, transition: 'all 0.2s' }}>
+                  <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255, 91, 0,0.2)', border: '1px solid rgba(255, 91, 0,0.4)', borderRadius: '8px', padding: '8px 14px', cursor: 'pointer', color: '#ff7300', fontSize: '13px', fontWeight: 500, transition: 'all 0.2s' }}>
                     {imageUploading ? <Loader2 size={14} className="animate-spin" /> : '📁'}
                     {imageUploading ? 'Yuklanmoqda...' : 'Fayl tanlash'}
                     <input
@@ -2269,7 +2269,7 @@ export default function AdminPage() {
                 {/* Preview & Manual URL */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                   {vehicleForm.image_url && (
-                    <img src={vehicleForm.image_url} alt="preview" style={{ width: '80px', height: '55px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }} onError={e => { e.target.style.display = 'none'; }} />
+                    <img src={vehicleForm.image_url} alt="preview" style={{ width: '80px', height: '55px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(0, 0, 0, 0.06)' }} onError={e => { e.target.style.display = 'none'; }} />
                   )}
                   <div style={{ flex: 1, minWidth: '200px' }}>
                     <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>yoki URL kiriting:</div>
@@ -2289,10 +2289,10 @@ export default function AdminPage() {
                         }}
                         style={{
                           padding: '6px 12px',
-                          backgroundColor: 'rgba(99,102,241,0.2)',
-                          border: '1.5px solid #6366f1',
+                          backgroundColor: 'rgba(255, 91, 0,0.2)',
+                          border: '1.5px solid #FF5B00',
                           borderRadius: '6px',
-                          color: '#a5b4fc',
+                          color: '#ff7300',
                           cursor: 'pointer',
                           fontSize: '12px',
                           fontWeight: '600',
@@ -2307,7 +2307,7 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#94a3b8', fontSize: '14px', cursor: 'pointer' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#757575', fontSize: '14px', cursor: 'pointer' }}>
                 <input type="checkbox" checked={!!vehicleForm.bot_active} onChange={e => setVehicleForm({...vehicleForm, bot_active: e.target.checked})} style={{ width: 'auto' }} />
                 {currT.botStatusCol} ({currT.active})
               </label>
@@ -2321,7 +2321,7 @@ export default function AdminPage() {
             <h3 style={{ color: '#fff', marginBottom: '16px', fontSize: '18px' }}>{currT.driversRates} ({filteredVehicles.length})</h3>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px' }}>
               <thead>
-                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', color: '#94a3b8', fontSize: '13px' }}>
+                <tr style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.08)', color: '#757575', fontSize: '13px' }}>
                   <th style={{ padding: '12px 8px' }}>{currT.photo}</th>
                   <th style={{ padding: '12px 8px' }}>{currT.driver}</th>
                   <th style={{ padding: '12px 8px' }}>{currT.phone}</th>
@@ -2337,12 +2337,12 @@ export default function AdminPage() {
                 {filteredVehicles.map((v) => {
                   const isEditing = editingResource?.type === 'vehicle' && editingResource?.id === v.id;
                   return (
-                    <tr key={v.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '14px' }}>
+                    <tr key={v.id} style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.04)', fontSize: '14px' }}>
                       <td style={{ padding: '14px 8px' }}>
                         {isEditing ? (
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '120px' }}>
                             {editingResource.data.image_url && (
-                              <div style={{ width: '50px', height: '35px', borderRadius: '4px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+                              <div style={{ width: '50px', height: '35px', borderRadius: '4px', overflow: 'hidden', border: '1px solid rgba(0, 0, 0, 0.06)' }}>
                                 <img 
                                   src={editingResource.data.image_url} 
                                   alt="preview" 
@@ -2351,7 +2351,7 @@ export default function AdminPage() {
                                 />
                               </div>
                             )}
-                            <label style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(99,102,241,0.2)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: '4px', padding: '3px 8px', cursor: 'pointer', color: '#a5b4fc', fontSize: '11px', fontWeight: 500, width: 'fit-content' }}>
+                            <label style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(255, 91, 0,0.2)', border: '1px solid rgba(255, 91, 0,0.4)', borderRadius: '4px', padding: '3px 8px', cursor: 'pointer', color: '#ff7300', fontSize: '11px', fontWeight: 500, width: 'fit-content' }}>
                               {imageUploading ? <Loader2 size={10} className="animate-spin" /> : '📁'}
                               {imageUploading ? '...' : 'Fayl'}
                               <input
@@ -2379,7 +2379,7 @@ export default function AdminPage() {
                             )}
                           </div>
                         ) : (
-                          <div style={{ width: '60px', height: '40px', borderRadius: '4px', overflow: 'hidden', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                          <div style={{ width: '60px', height: '40px', borderRadius: '4px', overflow: 'hidden', backgroundColor: 'rgba(0, 0, 0, 0.04)', border: '1px solid rgba(0, 0, 0, 0.06)' }}>
                             <img src={v.image_url || VEHICLE_IMAGES[v.id] || 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=400&q=80'} alt={v.car_model} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                           </div>
                         )}
@@ -2401,14 +2401,14 @@ export default function AdminPage() {
                           <div>
                             <div style={{ fontWeight: '600' }}>{v.driver_name}</div>
                             <div style={{ 
-                              color: v.region === 'qoraqalpoq' ? '#a78bfa' : v.region === 'toshkent' ? '#60a5fa' : v.region === 'shahrisabz' ? '#34d399' : v.region === 'xorazm' ? '#00a896' : v.region === 'buxoro' ? '#ffa066' : '#a5b4fc', 
+                              color: v.region === 'qoraqalpoq' ? '#a78bfa' : v.region === 'toshkent' ? '#60a5fa' : v.region === 'shahrisabz' ? '#34d399' : v.region === 'xorazm' ? '#00a896' : v.region === 'buxoro' ? '#ffa066' : '#ff7300', 
                               fontSize: '11px', 
                               marginTop: '4px', 
                               display: 'inline-block', 
                               padding: '2px 6px', 
-                              backgroundColor: v.region === 'qoraqalpoq' ? 'rgba(124, 58, 237, 0.2)' : v.region === 'toshkent' ? 'rgba(30, 64, 175, 0.2)' : v.region === 'shahrisabz' ? 'rgba(0, 163, 108, 0.2)' : v.region === 'xorazm' ? 'rgba(2, 128, 144, 0.2)' : v.region === 'buxoro' ? 'rgba(192, 90, 26, 0.2)' : 'rgba(99, 102, 241, 0.15)', 
+                              backgroundColor: v.region === 'qoraqalpoq' ? 'rgba(124, 58, 237, 0.2)' : v.region === 'toshkent' ? 'rgba(30, 64, 175, 0.2)' : v.region === 'shahrisabz' ? 'rgba(0, 163, 108, 0.2)' : v.region === 'xorazm' ? 'rgba(2, 128, 144, 0.2)' : v.region === 'buxoro' ? 'rgba(192, 90, 26, 0.2)' : 'rgba(255, 91, 0, 0.15)', 
                               borderRadius: '4px', 
-                              border: v.region === 'qoraqalpoq' ? '1px solid rgba(124, 58, 237, 0.3)' : v.region === 'toshkent' ? '1px solid rgba(30, 64, 175, 0.3)' : v.region === 'shahrisabz' ? '1px solid rgba(0, 163, 108, 0.3)' : v.region === 'xorazm' ? '1px solid rgba(2, 128, 144, 0.3)' : v.region === 'buxoro' ? '1px solid rgba(192, 90, 26, 0.3)' : '1px solid rgba(99, 102, 241, 0.2)',
+                              border: v.region === 'qoraqalpoq' ? '1px solid rgba(124, 58, 237, 0.3)' : v.region === 'toshkent' ? '1px solid rgba(30, 64, 175, 0.3)' : v.region === 'shahrisabz' ? '1px solid rgba(0, 163, 108, 0.3)' : v.region === 'xorazm' ? '1px solid rgba(2, 128, 144, 0.3)' : v.region === 'buxoro' ? '1px solid rgba(192, 90, 26, 0.3)' : '1px solid rgba(255, 91, 0, 0.2)',
                               fontWeight: '600'
                             }}>
                               📍 {v.region === 'qoraqalpoq' ? currT.qoraqalpoq : v.region === 'toshkent' ? currT.toshkent : v.region === 'shahrisabz' ? currT.shahrisabz : v.region === 'xorazm' ? currT.xorazm : v.region === 'buxoro' ? currT.buxoro : currT.samarqand}
@@ -2420,7 +2420,7 @@ export default function AdminPage() {
                         {isEditing ? (
                           <input type="text" value={editingResource.data.driver_phone} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, driver_phone: e.target.value}})} style={{ padding: '4px', fontSize: '12px' }} />
                         ) : (
-                          <span style={{ color: '#94a3b8' }}>{v.driver_phone}</span>
+                          <span style={{ color: '#757575' }}>{v.driver_phone}</span>
                         )}
                       </td>
                       <td style={{ padding: '14px 8px' }}>
@@ -2436,7 +2436,7 @@ export default function AdminPage() {
                           </div>
                         )}
                       </td>
-                      <td style={{ padding: '14px 8px', fontWeight: '700', color: '#6366f1' }}>
+                      <td style={{ padding: '14px 8px', fontWeight: '700', color: '#FF5B00' }}>
                         {isEditing ? (
                           <input type="number" value={editingResource.data.city_rate} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, city_rate: e.target.value}})} style={{ width: '80px', padding: '4px', fontSize: '12px' }} />
                         ) : (
@@ -2454,7 +2454,7 @@ export default function AdminPage() {
                         {isEditing ? (
                           <input type="text" placeholder="Chat ID" value={editingResource.data.telegram_chat_id || ''} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, telegram_chat_id: e.target.value}})} style={{ width: '110px', padding: '4px', fontSize: '12px' }} />
                         ) : (
-                          <span style={{ color: '#94a3b8' }}>{v.telegram_chat_id || '-'}</span>
+                          <span style={{ color: '#757575' }}>{v.telegram_chat_id || '-'}</span>
                         )}
                       </td>
                       <td style={{ padding: '14px 8px' }}>
@@ -2480,7 +2480,7 @@ export default function AdminPage() {
                               </>
                             ) : (
                               <>
-                                <button onClick={() => setEditingResource({ type: 'vehicle', id: v.id, data: { ...v } })} style={{ padding: '4px', background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer' }}><Edit3 size={16} /></button>
+                                <button onClick={() => setEditingResource({ type: 'vehicle', id: v.id, data: { ...v } })} style={{ padding: '4px', background: 'transparent', border: 'none', color: '#757575', cursor: 'pointer' }}><Edit3 size={16} /></button>
                                 <button onClick={() => handleDeleteVehicle(v.id)} style={{ padding: '4px', background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer' }}><Trash2 size={16} /></button>
                               </>
                             )}
@@ -2505,19 +2505,19 @@ export default function AdminPage() {
           {/* Add Guide Form */}
           {userRole === 'admin' && (
             <div className="glass-container" style={{ padding: '24px' }}>
-              <h3 style={{ color: '#6366f1', marginBottom: '16px', fontSize: '18px', display: 'flex', alignItems: 'center', gap: '8px' }}><Languages size={18} /> {currT.addGuide}</h3>
+              <h3 style={{ color: '#FF5B00', marginBottom: '16px', fontSize: '18px', display: 'flex', alignItems: 'center', gap: '8px' }}><Languages size={18} /> {currT.addGuide}</h3>
               <form onSubmit={handleAddGuide} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
                 <input type="text" placeholder={currT.fullName} value={guideForm.full_name} onChange={e => setGuideForm({...guideForm, full_name: e.target.value})} required />
                 <input type="text" placeholder={currT.phoneNumber} value={guideForm.phone_number} onChange={e => setGuideForm({...guideForm, phone_number: e.target.value})} required />
                 
               {/* === IMAGE UPLOAD WIDGET === */}
-              <div style={{ gridColumn: '1 / -1', background: 'rgba(255,255,255,0.04)', border: '1px dashed rgba(99,102,241,0.4)', borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <div style={{ color: '#a5b4fc', fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div style={{ gridColumn: '1 / -1', background: 'rgba(255,255,255,0.04)', border: '1px dashed rgba(255, 91, 0,0.4)', borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div style={{ color: '#ff7300', fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
                   📸 Gid rasmi / Guide Photo
                 </div>
                 {/* File picker row */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                  <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(99,102,241,0.2)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: '8px', padding: '8px 14px', cursor: 'pointer', color: '#a5b4fc', fontSize: '13px', fontWeight: 500, transition: 'all 0.2s' }}>
+                  <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255, 91, 0,0.2)', border: '1px solid rgba(255, 91, 0,0.4)', borderRadius: '8px', padding: '8px 14px', cursor: 'pointer', color: '#ff7300', fontSize: '13px', fontWeight: 500, transition: 'all 0.2s' }}>
                     {imageUploading ? <Loader2 size={14} className="animate-spin" /> : '📁'}
                     {imageUploading ? 'Yuklanmoqda...' : 'Fayl tanlash'}
                     <input
@@ -2540,7 +2540,7 @@ export default function AdminPage() {
                 {/* Preview & Manual URL */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                   {guideForm.image_url && (
-                    <img src={guideForm.image_url} alt="preview" style={{ width: '80px', height: '55px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }} onError={e => { e.target.style.display = 'none'; }} />
+                    <img src={guideForm.image_url} alt="preview" style={{ width: '80px', height: '55px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(0, 0, 0, 0.06)' }} onError={e => { e.target.style.display = 'none'; }} />
                   )}
                   <div style={{ flex: 1, minWidth: '200px' }}>
                     <div style={{ fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>yoki URL kiriting:</div>
@@ -2560,10 +2560,10 @@ export default function AdminPage() {
                         }}
                         style={{
                           padding: '6px 12px',
-                          backgroundColor: 'rgba(99,102,241,0.2)',
-                          border: '1.5px solid #6366f1',
+                          backgroundColor: 'rgba(255, 91, 0,0.2)',
+                          border: '1.5px solid #FF5B00',
                           borderRadius: '6px',
-                          color: '#a5b4fc',
+                          color: '#ff7300',
                           cursor: 'pointer',
                           fontSize: '12px',
                           fontWeight: '600',
@@ -2614,7 +2614,7 @@ export default function AdminPage() {
                   </select>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', justifyContent: 'center' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#94a3b8', fontSize: '14px', cursor: 'pointer', marginTop: '16px' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#757575', fontSize: '14px', cursor: 'pointer', marginTop: '16px' }}>
                     <input type="checkbox" checked={!!guideForm.bot_active} onChange={e => setGuideForm({...guideForm, bot_active: e.target.checked})} style={{ width: 'auto' }} />
                     {currT.botStatusCol} ({currT.active})
                   </label>
@@ -2634,7 +2634,7 @@ export default function AdminPage() {
             </h3>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px' }}>
               <thead>
-                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', color: '#94a3b8', fontSize: '13px' }}>
+                <tr style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.08)', color: '#757575', fontSize: '13px' }}>
                   <th style={{ padding: '12px 8px' }}>{currT.photo}</th>
                   <th style={{ padding: '12px 8px' }}>{currT.name}</th>
                   <th style={{ padding: '12px 8px' }}>{currT.phoneNumber}</th>
@@ -2656,12 +2656,12 @@ export default function AdminPage() {
                     const isEditing = editingResource?.type === 'guide' && editingResource?.id === g.id;
                     
                     return (
-                      <tr key={g.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '14px' }}>
+                      <tr key={g.id} style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.04)', fontSize: '14px' }}>
                         <td style={{ padding: '14px 8px' }}>
                           {isEditing ? (
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '120px' }}>
                             {editingResource.data.image_url && (
-                              <div style={{ width: '40px', height: '40px', borderRadius: '50%', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+                              <div style={{ width: '40px', height: '40px', borderRadius: '50%', overflow: 'hidden', border: '1px solid rgba(0, 0, 0, 0.06)' }}>
                                 <img 
                                   src={editingResource.data.image_url} 
                                   alt="preview" 
@@ -2670,7 +2670,7 @@ export default function AdminPage() {
                                 />
                               </div>
                             )}
-                            <label style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(99,102,241,0.2)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: '4px', padding: '3px 8px', cursor: 'pointer', color: '#a5b4fc', fontSize: '11px', fontWeight: 500, width: 'fit-content' }}>
+                            <label style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(255, 91, 0,0.2)', border: '1px solid rgba(255, 91, 0,0.4)', borderRadius: '4px', padding: '3px 8px', cursor: 'pointer', color: '#ff7300', fontSize: '11px', fontWeight: 500, width: 'fit-content' }}>
                               {imageUploading ? <Loader2 size={10} className="animate-spin" /> : '📁'}
                               {imageUploading ? '...' : 'Fayl'}
                               <input
@@ -2698,7 +2698,7 @@ export default function AdminPage() {
                             )}
                           </div>
                           ) : (
-                            <div style={{ width: '40px', height: '40px', borderRadius: '50%', overflow: 'hidden', backgroundColor: 'rgba(255,255,255,0.05)', border: '1.5px solid var(--text-gold, #d4af37)', boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }}>
+                            <div style={{ width: '40px', height: '40px', borderRadius: '50%', overflow: 'hidden', backgroundColor: 'rgba(0, 0, 0, 0.04)', border: '1.5px solid var(--text-gold, #FF5B00)', boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }}>
                               <img src={g.image_url || GUIDE_IMAGES[g.id] || DEFAULT_AVATARS[0]} alt={g.full_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                             </div>
                           )}
@@ -2720,14 +2720,14 @@ export default function AdminPage() {
                             <div>
                               <div style={{ fontWeight: '600' }}>{g.full_name}</div>
                                <div style={{ 
-                                 color: g.region === 'qoraqalpoq' ? '#a78bfa' : g.region === 'toshkent' ? '#60a5fa' : g.region === 'shahrisabz' ? '#34d399' : g.region === 'xorazm' ? '#00a896' : g.region === 'buxoro' ? '#ffa066' : '#a5b4fc', 
+                                 color: g.region === 'qoraqalpoq' ? '#a78bfa' : g.region === 'toshkent' ? '#60a5fa' : g.region === 'shahrisabz' ? '#34d399' : g.region === 'xorazm' ? '#00a896' : g.region === 'buxoro' ? '#ffa066' : '#ff7300', 
                                  fontSize: '11px', 
                                  marginTop: '4px', 
                                  display: 'inline-block', 
                                  padding: '2px 6px', 
-                                 backgroundColor: g.region === 'qoraqalpoq' ? 'rgba(124, 58, 237, 0.2)' : g.region === 'toshkent' ? 'rgba(30, 64, 175, 0.2)' : g.region === 'shahrisabz' ? 'rgba(0, 163, 108, 0.2)' : g.region === 'xorazm' ? 'rgba(2, 128, 144, 0.2)' : g.region === 'buxoro' ? 'rgba(192, 90, 26, 0.2)' : 'rgba(99, 102, 241, 0.15)', 
+                                 backgroundColor: g.region === 'qoraqalpoq' ? 'rgba(124, 58, 237, 0.2)' : g.region === 'toshkent' ? 'rgba(30, 64, 175, 0.2)' : g.region === 'shahrisabz' ? 'rgba(0, 163, 108, 0.2)' : g.region === 'xorazm' ? 'rgba(2, 128, 144, 0.2)' : g.region === 'buxoro' ? 'rgba(192, 90, 26, 0.2)' : 'rgba(255, 91, 0, 0.15)', 
                                  borderRadius: '4px', 
-                                 border: g.region === 'qoraqalpoq' ? '1px solid rgba(124, 58, 237, 0.3)' : g.region === 'toshkent' ? '1px solid rgba(30, 64, 175, 0.3)' : g.region === 'shahrisabz' ? '1px solid rgba(0, 163, 108, 0.3)' : g.region === 'xorazm' ? '1px solid rgba(2, 128, 144, 0.3)' : g.region === 'buxoro' ? '1px solid rgba(192, 90, 26, 0.3)' : '1px solid rgba(99, 102, 241, 0.2)',
+                                 border: g.region === 'qoraqalpoq' ? '1px solid rgba(124, 58, 237, 0.3)' : g.region === 'toshkent' ? '1px solid rgba(30, 64, 175, 0.3)' : g.region === 'shahrisabz' ? '1px solid rgba(0, 163, 108, 0.3)' : g.region === 'xorazm' ? '1px solid rgba(2, 128, 144, 0.3)' : g.region === 'buxoro' ? '1px solid rgba(192, 90, 26, 0.3)' : '1px solid rgba(255, 91, 0, 0.2)',
                                  fontWeight: '600'
                                }}>
                                  📍 {g.region === 'qoraqalpoq' ? currT.qoraqalpoq : g.region === 'toshkent' ? currT.toshkent : g.region === 'shahrisabz' ? currT.shahrisabz : g.region === 'xorazm' ? currT.xorazm : g.region === 'buxoro' ? currT.buxoro : currT.samarqand}
@@ -2739,15 +2739,15 @@ export default function AdminPage() {
                           {isEditing ? (
                             <input type="text" value={editingResource.data.phone_number} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, phone_number: e.target.value}})} style={{ padding: '4px', fontSize: '12px' }} />
                           ) : (
-                            <span style={{ color: '#94a3b8' }}>{g.phone_number}</span>
+                            <span style={{ color: '#757575' }}>{g.phone_number}</span>
                           )}
                         </td>
                         {userRole === 'admin' && (
                           <td style={{ padding: '14px 8px' }}>
                             <code style={{ 
                               padding: '2px 6px', 
-                              backgroundColor: 'rgba(99,102,241,0.1)', 
-                              color: '#6366f1', 
+                              backgroundColor: 'rgba(255, 91, 0,0.1)', 
+                              color: '#FF5B00', 
                               borderRadius: '4px',
                               fontFamily: 'monospace',
                               fontSize: '12px',
@@ -2757,7 +2757,7 @@ export default function AdminPage() {
                         )}
                         
                         {/* English Rate */}
-                        <td style={{ padding: '14px 8px', fontWeight: '600', color: '#6366f1' }}>
+                        <td style={{ padding: '14px 8px', fontWeight: '600', color: '#FF5B00' }}>
                           {isEditing ? (
                             <input type="number" value={editingResource.data.en_rate} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, en_rate: e.target.value}})} style={{ width: '70px', padding: '4px', fontSize: '12px' }} />
                           ) : (
@@ -2766,7 +2766,7 @@ export default function AdminPage() {
                         </td>
 
                         {/* Russian Rate */}
-                        <td style={{ padding: '14px 8px', fontWeight: '600', color: '#6366f1' }}>
+                        <td style={{ padding: '14px 8px', fontWeight: '600', color: '#FF5B00' }}>
                           {isEditing ? (
                             <input type="number" value={editingResource.data.ru_rate} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, ru_rate: e.target.value}})} style={{ width: '70px', padding: '4px', fontSize: '12px' }} />
                           ) : (
@@ -2775,7 +2775,7 @@ export default function AdminPage() {
                         </td>
 
                         {/* Uzbek Rate */}
-                        <td style={{ padding: '14px 8px', fontWeight: '600', color: '#6366f1' }}>
+                        <td style={{ padding: '14px 8px', fontWeight: '600', color: '#FF5B00' }}>
                           {isEditing ? (
                             <input type="number" value={editingResource.data.uz_rate} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, uz_rate: e.target.value}})} style={{ width: '70px', padding: '4px', fontSize: '12px' }} />
                           ) : (
@@ -2784,7 +2784,7 @@ export default function AdminPage() {
                         </td>
 
                         {/* Spanish Rate */}
-                        <td style={{ padding: '14px 8px', fontWeight: '600', color: '#6366f1' }}>
+                        <td style={{ padding: '14px 8px', fontWeight: '600', color: '#FF5B00' }}>
                           {isEditing ? (
                             <input type="number" value={editingResource.data.es_rate} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, es_rate: e.target.value}})} style={{ width: '70px', padding: '4px', fontSize: '12px' }} />
                           ) : (
@@ -2793,7 +2793,7 @@ export default function AdminPage() {
                         </td>
 
                         {/* French Rate */}
-                        <td style={{ padding: '14px 8px', fontWeight: '600', color: '#6366f1' }}>
+                        <td style={{ padding: '14px 8px', fontWeight: '600', color: '#FF5B00' }}>
                           {isEditing ? (
                             <input type="number" value={editingResource.data.fr_rate} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, fr_rate: e.target.value}})} style={{ width: '70px', padding: '4px', fontSize: '12px' }} />
                           ) : (
@@ -2806,7 +2806,7 @@ export default function AdminPage() {
                           {isEditing ? (
                             <input type="text" placeholder="Chat ID" value={editingResource.data.telegram_chat_id || ''} onChange={e => setEditingResource({...editingResource, data: {...editingResource.data, telegram_chat_id: e.target.value}})} style={{ width: '110px', padding: '4px', fontSize: '12px' }} />
                           ) : (
-                            <span style={{ color: '#94a3b8' }}>{g.telegram_chat_id || '-'}</span>
+                            <span style={{ color: '#757575' }}>{g.telegram_chat_id || '-'}</span>
                           )}
                         </td>
 
@@ -2851,7 +2851,7 @@ export default function AdminPage() {
                                       image_url: g.image_url || '',
                                       region: g.region || 'samarqand'
                                     } 
-                                  })} style={{ padding: '4px', background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer' }}><Edit3 size={16} /></button>
+                                  })} style={{ padding: '4px', background: 'transparent', border: 'none', color: '#757575', cursor: 'pointer' }}><Edit3 size={16} /></button>
                                   {userRole === 'admin' && (
                                     <button onClick={() => handleDeleteGuide(g.id)} style={{ padding: '4px', background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer' }}><Trash2 size={16} /></button>
                                   )}

@@ -3,43 +3,76 @@
    ======================================================== */
 
 :root {
-  /* Color Palette (Inspirations: Registan Mosaics, Gold leaf, Blue Domes) */
-  --primary-blue: #0070c0;
-  --primary-blue-rgb: 0, 112, 192;
-  --accent-gold: #d4af37;
-  --accent-gold-rgb: 212, 175, 55;
-  --deep-turquoise: #009b9e;
+  /* Color Palette (Klook Redesign Theme - Bright and Modern) */
+  --primary-blue: #FF5B00; /* Klook Orange is primary brand color */
+  --primary-blue-rgb: 255, 91, 0;
+  --accent-gold: #FF5B00;
+  --accent-gold-rgb: 255, 91, 0;
+  --deep-turquoise: #ff7300;
   
-  /* Slate & Dark Theme Gradients */
-  --bg-dark: #0a0f1d;
-  --bg-dark-card: rgba(18, 26, 47, 0.7);
-  --bg-dark-border: rgba(212, 175, 55, 0.15);
-  --text-dark-primary: #f1f5f9;
-  --text-dark-secondary: #94a3b8;
+  /* Slate & Dark Theme Gradients — overridden with Klook Bright/White theme */
+  --bg-dark: #f5f5f5;
+  --bg-dark-card: #ffffff;
+  --bg-dark-border: #e0e0e0;
+  --text-dark-primary: #212121;
+  --text-dark-secondary: #4b5563;
 
   /* Light Theme Gradients */
-  --bg-light: #f4f6fa;
-  --bg-light-card: rgba(255, 255, 255, 0.85);
-  --bg-light-border: rgba(0, 112, 192, 0.12);
-  --text-light-primary: #0f172a;
-  --text-light-secondary: #475569;
+  --bg-light: #f5f5f5;
+  --bg-light-card: #ffffff;
+  --bg-light-border: #e0e0e0;
+  --text-light-primary: #212121;
+  --text-light-secondary: #4b5563;
 
-  /* Core active variables mapping to dark theme values by default */
-  --bg-card: rgba(10, 15, 29, 0.45);
-  --border-card: rgba(212, 175, 55, 0.15);
-  --text-primary: #f1f5f9;
+  /* Core active variables mapping to Klook values */
+  --bg-card: #ffffff;
+  --bg-card-hover: #fafafa;
+  --border-card: #e0e0e0;
+  --border-card-hover: #ff5b00;
+  --text-primary: #212121;
+  --text-secondary: #4b5563;
+  --text-gold: #ff5b00; /* Klook Orange */
+  --btn-gold-bg: linear-gradient(135deg, #ff5b00 0%, #ff7300 100%);
+  --btn-gold-text: #ffffff;
+  --input-bg: #ffffff;
+  --input-border: #e0e0e0;
+  --input-text: #212121;
+  --shadow-color: rgba(0, 0, 0, 0.05);
+  --shadow-hover: 0 12px 30px rgba(0, 0, 0, 0.08);
+
+  /* Font Aliases */
+  --font-family-title: var(--font-inter), sans-serif;
+  --font-family-body: var(--font-inter), sans-serif;
+}
+
+/* Dark Mode — Classic Samarkand Night theme variables */
+body[data-theme="dark"] {
+  --primary-blue: #d4af37; /* Gold */
+  --primary-blue-rgb: 212, 175, 55;
+  --accent-gold: #d4af37;
+  --accent-gold-rgb: 212, 175, 55;
+  --deep-turquoise: #b8860b;
+
+  --bg-dark: #0a0f1d;
+  --bg-dark-card: #121a2f;
+  --bg-dark-border: rgba(255, 255, 255, 0.08);
+  --text-dark-primary: #ffffff;
+  --text-dark-secondary: #94a3b8;
+
+  --bg-card: #121a2f;
+  --bg-card-hover: #1a2542;
+  --border-card: rgba(255, 255, 255, 0.08);
+  --border-card-hover: #d4af37;
+  --text-primary: #ffffff;
   --text-secondary: #94a3b8;
   --text-gold: #d4af37;
   --btn-gold-bg: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
   --btn-gold-text: #0a0f1d;
-  --input-bg: rgba(10, 15, 29, 0.6);
-  --input-border: rgba(212, 175, 55, 0.3);
-  --input-text: #fff;
-  --shadow-color: rgba(0, 0, 0, 0.37);
-
-  /* Font Aliases */
-  --font-family-title: var(--font-playfair), serif;
-  --font-family-body: var(--font-inter), sans-serif;
+  --input-bg: #0f172a;
+  --input-border: rgba(255, 255, 255, 0.12);
+  --input-text: #ffffff;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --shadow-hover: 0 12px 30px rgba(0, 0, 0, 0.5);
 }
 
 /* ========================================================
@@ -49,37 +82,32 @@ body[data-region="buxoro"] {
   --primary-blue: #c05a1a; /* Terracotta Orange */
   --primary-blue-rgb: 192, 90, 26;
   --deep-turquoise: #b25329; /* Rich clay / copper */
-  
-  /* Custom backgrounds for card/borders to match terracotta */
-  --bg-dark-card: rgba(35, 23, 18, 0.7);
-  --bg-dark-border: rgba(192, 90, 26, 0.15);
-  
-  --bg-card: rgba(35, 23, 18, 0.45);
-  --border-card: rgba(192, 90, 26, 0.15);
+  --border-card-hover: #c05a1a;
 }
 
 body[data-region="buxoro"] .selected-card-historical {
   border-color: #c05a1a !important;
-  box-shadow: 0 0 18px rgba(192, 90, 26, 0.35) !important;
-  background: rgba(192, 90, 26, 0.08) !important;
+  box-shadow: 0 0 18px rgba(192, 90, 26, 0.15) !important;
+  background: rgba(192, 90, 26, 0.04) !important;
 }
 
 body[data-region="buxoro"] .selected-card-alternative {
   border-color: #b25329 !important;
-  box-shadow: 0 0 18px rgba(178, 83, 41, 0.35) !important;
-  background: rgba(178, 83, 41, 0.08) !important;
+  box-shadow: 0 0 18px rgba(178, 83, 41, 0.15) !important;
+  background: rgba(178, 83, 41, 0.04) !important;
 }
 
 body[data-region="buxoro"] .blue-glow {
-  box-shadow: 0 0 15px rgba(192, 90, 26, 0.25);
+  box-shadow: 0 0 15px rgba(192, 90, 26, 0.15);
 }
 
 body[data-region="buxoro"] .btn-primary {
   background: linear-gradient(135deg, #c05a1a 0%, #b25329 100%);
+  color: #ffffff !important;
 }
 
 body[data-region="buxoro"] .btn-primary:hover {
-  box-shadow: 0 4px 15px rgba(192, 90, 26, 0.4);
+  box-shadow: 0 4px 15px rgba(192, 90, 26, 0.25);
 }
 
 /* ========================================================
@@ -89,37 +117,32 @@ body[data-region="xorazm"] {
   --primary-blue: #028090; /* Kalta-Minor Teal/Turquoise */
   --primary-blue-rgb: 2, 128, 144;
   --deep-turquoise: #00a896; /* Secondary/Glow Teal */
-  
-  /* Custom backgrounds for card/borders to match teal/turquoise */
-  --bg-dark-card: rgba(10, 32, 35, 0.7);
-  --bg-dark-border: rgba(2, 128, 144, 0.15);
-  
-  --bg-card: rgba(10, 32, 35, 0.45);
-  --border-card: rgba(2, 128, 144, 0.15);
+  --border-card-hover: #028090;
 }
 
 body[data-region="xorazm"] .selected-card-historical {
   border-color: #028090 !important;
-  box-shadow: 0 0 18px rgba(2, 128, 144, 0.35) !important;
-  background: rgba(2, 128, 144, 0.08) !important;
+  box-shadow: 0 0 18px rgba(2, 128, 144, 0.15) !important;
+  background: rgba(2, 128, 144, 0.04) !important;
 }
 
 body[data-region="xorazm"] .selected-card-alternative {
   border-color: #00a896 !important;
-  box-shadow: 0 0 18px rgba(0, 168, 150, 0.35) !important;
-  background: rgba(0, 168, 150, 0.08) !important;
+  box-shadow: 0 0 18px rgba(0, 168, 150, 0.15) !important;
+  background: rgba(0, 168, 150, 0.04) !important;
 }
 
 body[data-region="xorazm"] .blue-glow {
-  box-shadow: 0 0 15px rgba(2, 128, 144, 0.25);
+  box-shadow: 0 0 15px rgba(2, 128, 144, 0.15);
 }
 
 body[data-region="xorazm"] .btn-primary {
   background: linear-gradient(135deg, #028090 0%, #00a896 100%);
+  color: #ffffff !important;
 }
 
 body[data-region="xorazm"] .btn-primary:hover {
-  box-shadow: 0 4px 15px rgba(2, 128, 144, 0.4);
+  box-shadow: 0 4px 15px rgba(2, 128, 144, 0.25);
 }
 
 
@@ -130,66 +153,55 @@ body[data-region="shahrisabz"] {
   --primary-blue: #008060; /* Temurid Jade Green */
   --primary-blue-rgb: 0, 128, 96;
   --deep-turquoise: #00a36c; /* Emerald/Glow Green */
-  
-  /* Custom backgrounds for card/borders to match jade/emerald green */
-  --bg-dark-card: rgba(8, 32, 24, 0.7);
-  --bg-dark-border: rgba(0, 128, 96, 0.15);
-  
-  --bg-card: rgba(8, 32, 24, 0.45);
-  --border-card: rgba(0, 128, 96, 0.15);
+  --border-card-hover: #008060;
 }
 
 body[data-region="shahrisabz"] .selected-card-historical {
   border-color: #008060 !important;
-  box-shadow: 0 0 18px rgba(0, 128, 96, 0.35) !important;
-  background: rgba(0, 128, 96, 0.08) !important;
+  box-shadow: 0 0 18px rgba(0, 128, 96, 0.15) !important;
+  background: rgba(0, 128, 96, 0.04) !important;
 }
 
 body[data-region="shahrisabz"] .selected-card-alternative {
   border-color: #00a36c !important;
-  box-shadow: 0 0 18px rgba(0, 163, 108, 0.35) !important;
-  background: rgba(0, 163, 108, 0.08) !important;
+  box-shadow: 0 0 18px rgba(0, 163, 108, 0.15) !important;
+  background: rgba(0, 163, 108, 0.04) !important;
 }
 
 body[data-region="shahrisabz"] .blue-glow {
-  box-shadow: 0 0 15px rgba(0, 128, 96, 0.25);
+  box-shadow: 0 0 15px rgba(0, 128, 96, 0.15);
 }
 
 body[data-region="shahrisabz"] .btn-primary {
   background: linear-gradient(135deg, #008060 0%, #00a36c 100%);
+  color: #ffffff !important;
 }
 
 body[data-region="shahrisabz"] .btn-primary:hover {
-  box-shadow: 0 4px 15px rgba(0, 128, 96, 0.4);
+  box-shadow: 0 4px 15px rgba(0, 128, 96, 0.25);
 }
 
 
 /* ========================================================
    🏙️ TOSHKENT REGION SPECIAL THEME OVERRIDES
-   Capital Sapphire Blue — Modern Uzbekistan
    ======================================================== */
 body[data-region="toshkent"] {
   --primary-blue: #1e40af; /* Capital Sapphire Blue */
   --primary-blue-rgb: 30, 64, 175;
   --deep-turquoise: #3b82f6; /* Sky Blue Glow */
-
-  --bg-dark-card: rgba(10, 18, 40, 0.7);
-  --bg-dark-border: rgba(30, 64, 175, 0.15);
-
-  --bg-card: rgba(10, 18, 40, 0.45);
-  --border-card: rgba(30, 64, 175, 0.15);
+  --border-card-hover: #1e40af;
 }
 
 body[data-region="toshkent"] .selected-card-historical {
   border-color: #1e40af !important;
-  box-shadow: 0 0 18px rgba(30, 64, 175, 0.35) !important;
-  background: rgba(30, 64, 175, 0.08) !important;
+  box-shadow: 0 0 18px rgba(30, 64, 175, 0.15) !important;
+  background: rgba(30, 64, 175, 0.04) !important;
 }
 
 body[data-region="toshkent"] .selected-card-alternative {
   border-color: #3b82f6 !important;
-  box-shadow: 0 0 18px rgba(59, 130, 246, 0.35) !important;
-  background: rgba(59, 130, 246, 0.08) !important;
+  box-shadow: 0 0 18px rgba(59, 130, 246, 0.15) !important;
+  background: rgba(59, 130, 246, 0.04) !important;
 }
 
 body[data-region="toshkent"] .blue-glow {
@@ -198,46 +210,43 @@ body[data-region="toshkent"] .blue-glow {
 
 body[data-region="toshkent"] .btn-primary {
   background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  color: #ffffff !important;
 }
 
 body[data-region="toshkent"] .btn-primary:hover {
-  box-shadow: 0 4px 15px rgba(30, 64, 175, 0.4);
+  box-shadow: 0 4px 15px rgba(30, 64, 175, 0.25);
 }
 
 body[data-region="qoraqalpoq"] {
   --primary-blue: #7c3aed; /* Amethyst Purple */
   --primary-blue-rgb: 124, 58, 237;
   --deep-turquoise: #a78bfa; /* Sky Purple Glow */
-
-  --bg-dark-card: rgba(15, 10, 35, 0.7);
-  --bg-dark-border: rgba(124, 58, 237, 0.15);
-
-  --bg-card: rgba(15, 10, 35, 0.45);
-  --border-card: rgba(124, 58, 237, 0.15);
+  --border-card-hover: #7c3aed;
 }
 
 body[data-region="qoraqalpoq"] .selected-card-historical {
   border-color: #7c3aed !important;
-  box-shadow: 0 0 18px rgba(124, 58, 237, 0.35) !important;
-  background: rgba(124, 58, 237, 0.08) !important;
+  box-shadow: 0 0 18px rgba(124, 58, 237, 0.15) !important;
+  background: rgba(124, 58, 237, 0.04) !important;
 }
 
 body[data-region="qoraqalpoq"] .selected-card-alternative {
   border-color: #a78bfa !important;
-  box-shadow: 0 0 18px rgba(167, 139, 250, 0.35) !important;
-  background: rgba(167, 139, 250, 0.08) !important;
+  box-shadow: 0 0 18px rgba(167, 139, 250, 0.15) !important;
+  background: rgba(167, 139, 250, 0.04) !important;
 }
 
 body[data-region="qoraqalpoq"] .blue-glow {
-  box-shadow: 0 0 15px rgba(124, 58, 237, 0.25);
+  box-shadow: 0 0 15px rgba(124, 58, 237, 0.15);
 }
 
 body[data-region="qoraqalpoq"] .btn-primary {
   background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%);
+  color: #ffffff !important;
 }
 
 body[data-region="qoraqalpoq"] .btn-primary:hover {
-  box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+  box-shadow: 0 4px 15px rgba(124, 58, 237, 0.25);
 }
 
 
@@ -246,41 +255,35 @@ body[data-region="qoraqalpoq"] .btn-primary:hover {
    Gold & Imperial Sapphire - All Uzbekistan
    ======================================================== */
 body[data-region="cross_region"] {
-  --primary-blue: #d4af37; /* Gold */
-  --primary-blue-rgb: 212, 175, 55;
-  --deep-turquoise: #b8860b; /* Goldenrod/Bronze */
-  
-  /* Custom backgrounds for card/borders to match gold */
-  --bg-dark-card: rgba(26, 22, 10, 0.7);
-  --bg-dark-border: rgba(212, 175, 55, 0.2);
-  
-  --bg-card: rgba(26, 22, 10, 0.45);
-  --border-card: rgba(212, 175, 55, 0.2);
+  --primary-blue: #ff5b00; /* Klook Orange for cross-region */
+  --primary-blue-rgb: 255, 91, 0;
+  --deep-turquoise: #ff7300;
+  --border-card-hover: #ff5b00;
 }
 
 body[data-region="cross_region"] .selected-card-historical {
-  border-color: #d4af37 !important;
-  box-shadow: 0 0 18px rgba(212, 175, 55, 0.45) !important;
-  background: rgba(212, 175, 55, 0.08) !important;
+  border-color: #ff5b00 !important;
+  box-shadow: 0 0 18px rgba(255, 91, 0, 0.15) !important;
+  background: rgba(255, 91, 0, 0.04) !important;
 }
 
 body[data-region="cross_region"] .selected-card-alternative {
-  border-color: #b8860b !important;
-  box-shadow: 0 0 18px rgba(184, 134, 11, 0.45) !important;
-  background: rgba(184, 134, 11, 0.08) !important;
+  border-color: #ff7300 !important;
+  box-shadow: 0 0 18px rgba(255, 115, 0, 0.15) !important;
+  background: rgba(255, 115, 0, 0.04) !important;
 }
 
 body[data-region="cross_region"] .blue-glow {
-  box-shadow: 0 0 15px rgba(212, 175, 55, 0.35);
+  box-shadow: 0 0 15px rgba(255, 91, 0, 0.15);
 }
 
 body[data-region="cross_region"] .btn-primary {
-  background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
-  color: #0a0f1d !important;
+  background: linear-gradient(135deg, #ff5b00 0%, #ff7300 100%);
+  color: #ffffff !important;
 }
 
 body[data-region="cross_region"] .btn-primary:hover {
-  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.5);
+  box-shadow: 0 4px 15px rgba(255, 91, 0, 0.25);
 }
 
 /* Hide scrollbar utility for the region switcher */
@@ -295,11 +298,11 @@ body[data-region="cross_region"] .btn-primary:hover {
 
 
 
-/* Default to Dark Mode for the rich, magical, atmospheric "Samarkand Night" vibe */
+/* Klook Light Mode — Clean, bright, modern travel booking UI */
 body {
   margin: 0;
   padding: 0;
-  background-color: transparent;
+  background-color: #f5f5f5;
   color: var(--text-dark-primary);
   font-family: var(--font-family-body);
   -webkit-font-smoothing: antialiased;
@@ -327,34 +330,31 @@ h1, h2, h3, h4, h5, h6 {
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(10, 15, 29, 0.5);
+  background: #f5f5f5;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(212, 175, 55, 0.3);
+  background: #cccccc;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(212, 175, 55, 0.5);
+  background: #aaaaaa;
 }
 
 /* Custom interactive classes */
 .glass-container {
-  background: rgba(10, 15, 29, 0.35);
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border: 1.5px solid rgba(212, 175, 55, 0.2);
+  background: var(--bg-card, #ffffff) !important;
+  border: 1px solid var(--border-card, #e0e0e0) !important;
   border-radius: 16px;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35);
+  box-shadow: 0 2px 12px var(--shadow-color, rgba(0, 0, 0, 0.04));
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0) 100%);
 }
 
 .gold-glow {
-  box-shadow: 0 0 15px rgba(212, 175, 55, 0.25);
+  box-shadow: 0 2px 16px rgba(255, 91, 0, 0.08);
 }
 
 .blue-glow {
-  box-shadow: 0 0 15px rgba(0, 112, 192, 0.25);
+  box-shadow: 0 2px 16px rgba(0, 112, 192, 0.10);
 }
 
 /* Animations */
@@ -385,16 +385,16 @@ h1, h2, h3, h4, h5, h6 {
 /* Leaflet Overrides to match our premium aesthetic */
 .leaflet-container {
   border-radius: 14px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
   font-family: var(--font-family-body) !important;
 }
 
 .leaflet-popup-content-wrapper {
-  background: #121a2f !important;
-  color: #f1f5f9 !important;
-  border: 1px solid rgba(212, 175, 55, 0.4) !important;
+  background: #ffffff !important;
+  color: #212121 !important;
+  border: 1px solid #e0e0e0 !important;
   border-radius: 14px !important;
-  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
   overflow: hidden;
 }
 
@@ -403,18 +403,18 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .leaflet-popup-tip {
-  background: #121a2f !important;
-  border: 1px solid rgba(212, 175, 55, 0.4) !important;
+  background: #ffffff !important;
+  border: 1px solid #e0e0e0 !important;
 }
 
 .leaflet-bar a {
-  background-color: #121a2f !important;
-  color: #d4af37 !important;
-  border-bottom: 1px solid rgba(212, 175, 55, 0.2) !important;
+  background-color: #ffffff !important;
+  color: #FF5B00 !important;
+  border-bottom: 1px solid #e0e0e0 !important;
 }
 .leaflet-bar a:hover {
-  background-color: #1a2542 !important;
-  color: #fff !important;
+  background-color: #fff5f0 !important;
+  color: #ff7300 !important;
 }
 
 /* 🗺 Animated route line dash animation */
@@ -436,7 +436,7 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #0a0f1d;
+  color: #212121;
   font-family: sans-serif;
   font-weight: 800;
   border-radius: 50%;
@@ -446,9 +446,9 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Form inputs styling */
 input, select, textarea {
-  background: rgba(10, 15, 29, 0.6);
-  border: 1px solid rgba(212, 175, 55, 0.3);
-  color: #fff;
+  background: var(--input-bg, #ffffff);
+  border: 1px solid var(--input-border, #e0e0e0);
+  color: var(--input-text, #212121);
   border-radius: 8px;
   padding: 10px 14px;
   font-family: var(--font-family-body);
@@ -457,8 +457,8 @@ input, select, textarea {
 
 input:focus, select:focus, textarea:focus {
   outline: none;
-  border-color: var(--accent-gold);
-  box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
+  border-color: var(--border-card-hover, #ff5b00);
+  box-shadow: 0 0 8px rgba(255, 91, 0, 0.15);
 }
 
 /* Button styles */
@@ -478,8 +478,8 @@ input:focus, select:focus, textarea:focus {
 }
 
 .btn-gold {
-  background: linear-gradient(135deg, var(--accent-gold) 0%, #b8860b 100%);
-  color: #0a0f1d;
+  background: linear-gradient(135deg, #FF5B00 0%, #ff7300 100%);
+  color: #ffffff;
   border: none;
   border-radius: 10px;
   font-weight: 700;
@@ -503,7 +503,7 @@ input:focus, select:focus, textarea:focus {
   justify-content: center;
   cursor: pointer;
   user-select: none;
-  --hover-accent: #d4af37;
+  --hover-accent: #FF5B00;
 }
 
 .icon-3d-card {
@@ -511,16 +511,16 @@ input:focus, select:focus, textarea:focus {
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%);
-  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(135deg, rgba(255, 91, 0, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
+  border: 1.5px solid #e0e0e0;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
   transform-style: preserve-3d;
   box-shadow: 
-    0 4px 12px rgba(0, 0, 0, 0.3),
-    inset 0 1px 1px rgba(255, 255, 255, 0.15); /* Glass top edge shine */
+    0 4px 12px rgba(0, 0, 0, 0.06),
+    inset 0 1px 1px rgba(255, 255, 255, 0.5); /* Light top edge shine */
   overflow: hidden;
 }
 
@@ -550,20 +550,20 @@ input:focus, select:focus, textarea:focus {
 /* 3D floating and rotation on hover */
 .icon-3d-container:hover .icon-3d-card {
   transform: rotateX(16deg) rotateY(-18deg) translateZ(8px);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.02) 100%);
+  background: linear-gradient(135deg, rgba(255, 91, 0, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
   border-color: var(--hover-accent);
   box-shadow: 
-    -6px 8px 18px rgba(0, 0, 0, 0.45),
+    -6px 8px 18px rgba(0, 0, 0, 0.1),
     0 0 14px color-mix(in srgb, var(--hover-accent) 30%, transparent),
-    inset 0 1px 2px rgba(255, 255, 255, 0.25);
+    inset 0 1px 2px rgba(255, 255, 255, 0.5);
 }
 
 .icon-3d-card-selected {
-  border-color: #d4af37 !important;
-  background: rgba(212, 175, 55, 0.12) !important;
+  border-color: #FF5B00 !important;
+  background: rgba(255, 91, 0, 0.08) !important;
   box-shadow: 
-    0 0 12px rgba(212, 175, 55, 0.3),
-    inset 0 1px 1px rgba(255, 255, 255, 0.2) !important;
+    0 0 12px rgba(255, 91, 0, 0.15),
+    inset 0 1px 1px rgba(255, 255, 255, 0.3) !important;
 }
 
 .icon-3d-svg {
@@ -595,9 +595,9 @@ input:focus, select:focus, textarea:focus {
 
 .glass-container:hover {
   transform: translateY(-4px);
-  background-color: rgba(15, 23, 42, 0.50);
-  border-color: rgba(212, 175, 55, 0.35) !important;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+  background-color: var(--bg-card-hover, #ffffff) !important;
+  border-color: var(--border-card-hover, #d0d0d0) !important;
+  box-shadow: 0 8px 24px var(--shadow-hover, rgba(0, 0, 0, 0.08));
 }
 
 /* Custom category selections */
@@ -614,9 +614,9 @@ input:focus, select:focus, textarea:focus {
 }
 
 .selected-card-food {
-  border-color: #d4af37 !important;
-  box-shadow: 0 0 18px rgba(212, 175, 55, 0.35) !important;
-  background: rgba(212, 175, 55, 0.08) !important;
+  border-color: #FF5B00 !important;
+  box-shadow: 0 0 18px rgba(255, 91, 0, 0.15) !important;
+  background: rgba(255, 91, 0, 0.06) !important;
 }
 
 /* Hover transitions for vehicle and guide images */
@@ -737,63 +737,24 @@ input:focus, select:focus, textarea:focus {
    🕌 MOBILE & TABLET RESPONSIVENESS SYSTEM
    ======================================================== */
 
-/* Premium Responsive Header */
-.premium-header {
-  margin: 8px !important;
-  padding: 10px 14px !important;
-  border-radius: 12px !important;
-  top: 8px !important;
+/* Premium Responsive Navbar (Klook Light Mode) */
+.klook-navbar {
+  padding: 8px 14px !important;
 }
 
-.premium-header .brand-title {
+.klook-navbar .brand-title {
   font-size: 13px !important;
 }
 
-.premium-header .brand-icon-container {
-  width: 28px !important;
-  height: 28px !important;
-}
-
-.premium-header .brand-icon-container svg {
-  width: 16px !important;
-  height: 16px !important;
-}
-
 @media (min-width: 640px) {
-  .premium-header {
-    margin: 12px !important;
-    padding: 12px 18px !important;
-  }
-  .premium-header .brand-title {
-    font-size: 15px !important;
-  }
-  .premium-header .brand-icon-container {
-    width: 32px !important;
-    height: 32px !important;
-  }
-  .premium-header .brand-icon-container svg {
-    width: 18px !important;
-    height: 18px !important;
+  .klook-navbar {
+    padding: 10px 18px !important;
   }
 }
 
 @media (min-width: 1024px) {
-  .premium-header {
-    margin: 16px !important;
-    padding: 16px 24px !important;
-    border-radius: 16px !important;
-    top: 16px !important;
-  }
-  .premium-header .brand-title {
-    font-size: 18px !important;
-  }
-  .premium-header .brand-icon-container {
-    width: 36px !important;
-    height: 36px !important;
-  }
-  .premium-header .brand-icon-container svg {
-    width: 20px !important;
-    height: 20px !important;
+  .klook-navbar {
+    padding: 12px 24px !important;
   }
 }
 
@@ -943,11 +904,11 @@ input:focus, select:focus, textarea:focus {
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(10, 15, 29, 0.94);
+  background: #ffffff;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-top: 1.5px solid rgba(212, 175, 55, 0.3);
-  box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.5);
+  border-top: 1.5px solid #e0e0e0;
+  box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.05);
   padding: 14px 20px;
   display: flex;
   justify-content: space-between;
@@ -964,6 +925,26 @@ input:focus, select:focus, textarea:focus {
 @media (min-width: 1024px) {
   .mobile-sticky-bar {
     display: none !important;
+  }
+}
+
+/* Checkout Split Layout */
+.checkout-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .checkout-grid {
+    grid-template-columns: 3fr 2fr !important;
+    align-items: start;
+  }
+  .checkout-sticky-summary {
+    position: sticky !important;
+    top: 130px !important;
+    z-index: 10;
   }
 }
 

@@ -160,11 +160,11 @@ export default function VerificationModal({
             width: '56px',
             height: '56px',
             borderRadius: '50%',
-            backgroundColor: 'rgba(212, 175, 55, 0.12)',
+            backgroundColor: 'rgba(255, 91, 0, 0.12)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#d4af37',
+            color: 'var(--primary-blue)',
           }}>
             <MailCheck size={28} />
           </div>
@@ -183,8 +183,8 @@ export default function VerificationModal({
               lineHeight: 1.6,
               padding: '16px',
               borderRadius: '8px',
-              backgroundColor: 'rgba(212, 175, 55, 0.05)',
-              border: '1px solid rgba(212, 175, 55, 0.25)',
+              backgroundColor: 'rgba(255, 91, 0, 0.05)',
+              border: '1px solid rgba(var(--primary-blue-rgb), 0.25)',
               marginTop: '8px',
               textAlign: 'center',
               width: '100%'
@@ -204,7 +204,7 @@ export default function VerificationModal({
                   ? `Код подтверждения: `
                   : `Verification code: `
                 }
-                <strong style={{ color: '#d4af37', fontSize: '16px', letterSpacing: '1px' }}>{propOtpCode}</strong>
+                <strong style={{ color: 'var(--primary-blue)', fontSize: '16px', letterSpacing: '1px' }}>{propOtpCode}</strong>
               </p>
               <p style={{ margin: '0', fontWeight: '500', color: '#009b9e' }}>
                 {language === 'UZ'
@@ -216,8 +216,8 @@ export default function VerificationModal({
               </p>
             </div>
           ) : (
-            <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: 1.5 }}>
-              {t.intro} <strong style={{ color: '#fff' }}>{email}</strong>
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+              {t.intro} <strong style={{ color: 'var(--text-primary)' }}>{email}</strong>
             </p>
           )}
         </div>
@@ -239,7 +239,7 @@ export default function VerificationModal({
           )}
 
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-            <label style={{ fontSize: '13px', color: '#94a3b8', fontWeight: '500' }}>
+            <label style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '500' }}>
               {t.enterCode}
             </label>
             <input
@@ -255,8 +255,8 @@ export default function VerificationModal({
                 width: '180px',
                 padding: '10px',
                 fontWeight: '700',
-                border: '2px solid rgba(212, 175, 55, 0.3)',
-                color: '#d4af37',
+                border: '2px solid rgba(255, 91, 0, 0.3)',
+                color: 'var(--primary-blue)',
                 backgroundColor: 'rgba(10, 15, 29, 0.8)',
               }}
             />
@@ -266,7 +266,7 @@ export default function VerificationModal({
           {emailSent !== false && (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', fontSize: '12px', marginTop: '-4px', marginBottom: '4px' }}>
               {!canResend ? (
-                <span style={{ color: '#94a3b8' }}>
+                <span style={{ color: 'var(--text-secondary)' }}>
                   {language === 'UZ' 
                     ? `Kodni qayta yuborish (${formatTime(timeLeft)})` 
                     : language === 'RU'
@@ -281,7 +281,7 @@ export default function VerificationModal({
                   style={{
                     background: 'none',
                     border: 'none',
-                    color: '#d4af37',
+                    color: 'var(--primary-blue)',
                     textDecoration: 'underline',
                     cursor: isResending ? 'not-allowed' : 'pointer',
                     fontWeight: '600',
@@ -291,12 +291,12 @@ export default function VerificationModal({
                     gap: '4px'
                   }}
                   onMouseEnter={(e) => e.target.style.color = '#fff'}
-                  onMouseLeave={(e) => e.target.style.color = '#d4af37'}
+                  onMouseLeave={(e) => e.target.style.color = 'var(--primary-blue)'}
                 >
                   {isResending ? (
                     <>
-                      <Loader2 size={12} className="animate-spin" style={{ color: '#d4af37' }} />
-                      <span style={{ color: '#cbd5e1' }}>Sending...</span>
+                      <Loader2 size={12} className="animate-spin" style={{ color: 'var(--primary-blue)' }} />
+                      <span style={{ color: 'var(--text-secondary)' }}>Sending...</span>
                     </>
                   ) : (
                     <span>
@@ -332,7 +332,7 @@ export default function VerificationModal({
             alignItems: 'flex-start'
           }}>
             <ShieldCheck size={16} style={{ color: '#009b9e', marginTop: '2px', flexShrink: 0 }} />
-            <p style={{ fontSize: '11px', color: '#e2e8f0', lineHeight: 1.4 }}>
+            <p style={{ fontSize: '11px', color: 'var(--text-primary)', lineHeight: 1.4 }}>
               {t.safetyNotice}
             </p>
           </div>
@@ -342,7 +342,7 @@ export default function VerificationModal({
             <div style={{
               textAlign: 'center',
               fontSize: '11.5px',
-              color: '#94a3b8',
+              color: 'var(--text-secondary)',
               lineHeight: 1.45,
               marginTop: '-4px'
             }}>
@@ -363,9 +363,9 @@ export default function VerificationModal({
                 flex: 1,
                 padding: '12px',
                 borderRadius: '8px',
-                border: '1px solid rgba(255,255,255,0.08)',
-                backgroundColor: 'rgba(255,255,255,0.02)',
-                color: '#94a3b8',
+                border: '1px solid var(--border-card)',
+                backgroundColor: 'var(--bg-card)',
+                color: 'var(--text-secondary)',
                 fontSize: '13px',
                 fontWeight: '500',
                 cursor: 'pointer',

@@ -22,7 +22,8 @@ export default function Map({
   language = 'EN', 
   activeRegion = 'samarqand', 
   tourDurationType = 'single',
-  onOpenWikipedia 
+  onOpenWikipedia,
+  theme = 'light'
 }) {
   const [isInteractive, setIsInteractive] = useState(true);
   const mapRef = useRef(null);
@@ -30,6 +31,7 @@ export default function Map({
   const markersRef = useRef({});
   const polylineRef = useRef(null);
   const prevSelectedIdsRef = useRef([]);
+  const tileLayerRef = useRef(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -54,6 +56,15 @@ export default function Map({
       }, 0);
     }
   }, []);
+
+  useEffect(() => {
+    if (mapInstance.current && tileLayerRef.current) {
+      const tileUrl = theme === 'dark'
+        ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+        : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+      tileLayerRef.current.setUrl(tileUrl);
+    }
+  }, [theme]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -103,8 +114,11 @@ export default function Map({
           scrollWheelZoom: true,
         }).setView(defaultCenter, defaultZoom);
 
-        // Use a beautiful dark tile layer to match the premium theme
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        const tileUrl = theme === 'dark'
+          ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+          : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+
+        tileLayerRef.current = L.tileLayer(tileUrl, {
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
           subdomains: 'abcd',
           maxZoom: 20,
@@ -165,7 +179,7 @@ export default function Map({
             ? '#b25329'
             : '#009b9e';
         }
-        if (loc.category === 'food') color = '#d4af37';
+        if (loc.category === 'food') color = 'var(--primary-blue)';
 
         // Select specific category icon/emoji for unselected markers
         let categoryEmoji = '🕌'; // Historical
@@ -176,21 +190,21 @@ export default function Map({
         const iconHtml = isSelected
           ? `<div class="custom-route-marker" style="
               background-color: ${color};
-              border: 2px solid #ffffff;
+              border: 2px solid var(--bg-card);
               box-shadow: 0 0 14px ${color};
               width: 24px;
               height: 24px;
               display: flex;
               align-items: center;
               justify-content: center;
-              color: #0a0f1d;
+              color: var(--text-primary);
               font-size: 11px;
               font-weight: 900;
             ">${selectedIndex + 1}</div>`
           : `<div style="
               background-color: ${color};
               border-radius: 50%;
-              border: 1.5px solid #ffffff;
+              border: 1.5px solid var(--bg-card);
               box-shadow: 0 0 6px rgba(0,0,0,0.5);
               width: 20px;
               height: 20px;
@@ -217,8 +231,8 @@ export default function Map({
               <img src="${imgUrl}" alt="${name}" style="width: 100%; height: 100%; object-fit: cover;" />
               <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(18,26,47,0.95), transparent); height: 40px;"></div>
             </div>
-            <div style="padding: 12px; display: flex; flex-direction: column; gap: 6px; background-color: #121a2f;">
-              <strong style="font-size: 13.5px; color: #d4af37; line-height: 1.3;">${name}</strong>
+            <div style="padding: 12px; display: flex; flex-direction: column; gap: 6px; background-color: var(--bg-card);">
+              <strong style="font-size: 13.5px; color: var(--primary-blue); line-height: 1.3;">${name}</strong>
               <p style="margin: 0; font-size: 11px; line-height: 1.4; color: #cbd5e1;">${desc}</p>
               <div style="margin-top: 6px; display: flex; justify-content: space-between; align-items: center; font-size: 10.5px;">
                 <span style="color: #94a3b8; font-weight: 500;">⏱️ ${loc.estimated_duration ? (language === 'UZ' ? `${loc.estimated_duration} daq` : language === 'RU' ? `${loc.estimated_duration} мин` : `${loc.estimated_duration}m`) : ''}</span>
@@ -234,10 +248,10 @@ export default function Map({
                   margin-top: 8px;
                   width: 100%;
                   padding: 6px 12px;
-                  background-color: rgba(212,175,55,0.15);
-                  border: 1.5px solid rgba(212,175,55,0.4);
+                  background-color: rgba(var(--primary-blue-rgb), 0.15);
+                  border: 1.5px solid rgba(255,91,0,0.4);
                   border-radius: 6px;
-                  color: #d4af37;
+                  color: var(--primary-blue);
                   font-size: 11px;
                   font-weight: 700;
                   cursor: pointer;
@@ -247,8 +261,8 @@ export default function Map({
                   gap: 4px;
                   transition: all 0.2s;
                 "
-                onmouseover="this.style.backgroundColor='rgba(212,175,55,0.25)'"
-                onmouseout="this.style.backgroundColor='rgba(212,175,55,0.15)'"
+                onmouseover="this.style.backgroundColor='rgba(var(--primary-blue-rgb), 0.25)'"
+                onmouseout="this.style.backgroundColor='rgba(var(--primary-blue-rgb), 0.15)'"
               >
                 📖 Wikipedia
               </button>
@@ -276,7 +290,7 @@ export default function Map({
       if (selectedLocations.length > 0) {
         if (tourDurationType === 'multi') {
           const dayColors = {
-            1: '#d4af37', // Gold
+            1: 'var(--primary-blue)', // Klook Orange
             2: '#009b9e', // Teal
             3: '#c05a1a', // Terracotta
             4: '#7c3aed', // Purple
@@ -290,7 +304,7 @@ export default function Map({
             const dayLocs = selectedLocations.filter(l => (l.selectedDay || 1) === d);
             if (dayLocs.length > 0) {
               const points = dayLocs.map(l => [l.latitude, l.longitude]);
-              const color = dayColors[d] || '#d4af37';
+              const color = dayColors[d] || 'var(--primary-blue)';
               
               const pLine = L.polyline(points, {
                 color: color,
@@ -317,7 +331,7 @@ export default function Map({
           const points = selectedLocations.map((loc) => [loc.latitude, loc.longitude]);
           
           polylineRef.current = L.polyline(points, {
-            color: '#d4af37', // Gold route line
+            color: 'var(--primary-blue)', // Klook orange route line
             weight: 4,
             opacity: 0.85,
             className: 'animated-route-line', // Flowing animated class
@@ -361,7 +375,7 @@ export default function Map({
           left: 0,
           width: '100%',
           height: '100%',
-          backgroundColor: 'rgba(10, 15, 29, 0.75)',
+          backgroundColor: 'rgba(0, 0, 0, 0.55)',
           backdropFilter: 'blur(3px)',
           zIndex: 1000,
           display: 'flex',
@@ -380,14 +394,14 @@ export default function Map({
             onClick={() => setIsInteractive(true)}
             style={{
               padding: '8px 16px',
-              backgroundColor: '#d4af37',
-              color: '#0a0f1d',
+              backgroundColor: 'var(--primary-blue)',
+              color: 'var(--bg-card)',
               border: 'none',
               borderRadius: '8px',
               fontWeight: '700',
               cursor: 'pointer',
               fontSize: '12px',
-              boxShadow: '0 4px 12px rgba(212, 175, 55, 0.3)'
+              boxShadow: '0 4px 12px rgba(255, 91, 0, 0.3)'
             }}
           >
             {language === 'UZ' ? 'Faollashtirish' : language === 'RU' ? 'Активировать' : 'Activate'}
@@ -401,7 +415,7 @@ export default function Map({
           height: '100%', 
           minHeight: '400px', 
           borderRadius: '16px', 
-          border: '1px solid rgba(212,175,55,0.2)',
+          border: '1px solid rgba(255,91,0,0.2)',
           pointerEvents: isInteractive ? 'auto' : 'none'
         }} 
       />

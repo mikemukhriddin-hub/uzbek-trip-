@@ -41,22 +41,23 @@ export default function VehicleSelector({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-        <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#d4af37' }}>{t.title}</h3>
+        <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)' }}>{t.title}</h3>
         <div style={{
           fontSize: '12px',
-          padding: '6px 12px',
-          borderRadius: '6px',
-          backgroundColor: isOutOfCityRoute ? 'rgba(212, 175, 55, 0.1)' : 'rgba(0, 112, 192, 0.1)',
-          border: `1px solid ${isOutOfCityRoute ? 'rgba(212, 175, 55, 0.2)' : 'rgba(0, 112, 192, 0.2)'}`,
-          color: isOutOfCityRoute ? '#d4af37' : '#009b9e',
+          padding: '8px 12px',
+          borderRadius: '8px',
+          backgroundColor: isOutOfCityRoute ? 'rgba(255, 91, 0, 0.06)' : 'rgba(0, 112, 192, 0.06)',
+          border: `1px solid ${isOutOfCityRoute ? 'rgba(var(--primary-blue-rgb), 0.15)' : 'rgba(0, 112, 192, 0.15)'}`,
+          color: isOutOfCityRoute ? 'var(--primary-blue, var(--primary-blue))' : '#0070c0',
           display: 'inline-block',
-          width: 'fit-content'
+          width: 'fit-content',
+          fontWeight: '600'
         }}>
           <strong>{t.rateType}: </strong>
           <span>{isOutOfCityRoute ? t.mountainRate : t.cityRate}</span>
         </div>
         {isOutOfCityRoute && (
-          <p style={{ fontSize: '11px', color: '#94a3b8', marginTop: '4px' }}>
+          <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px' }}>
             {t.rateReason}
           </p>
         )}
@@ -70,17 +71,18 @@ export default function VehicleSelector({
           return (
             <div
               key={car.id}
-              className={`glass-container animate-fade-in ${isSelected ? 'gold-glow' : ''}`}
+              className="glass-container animate-fade-in"
               onClick={() => onSelectVehicle(car)}
               style={{
                 padding: '16px',
                 cursor: 'pointer',
-                border: isSelected ? '1px solid #d4af37' : '1px solid rgba(255, 255, 255, 0.05)',
+                border: isSelected ? '1px solid var(--primary-blue, var(--primary-blue))' : '1px solid var(--border-card, var(--border-card))',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 gap: '16px',
-                backgroundColor: isSelected ? 'rgba(212, 175, 55, 0.05)' : 'rgba(10, 15, 29, 0.3)'
+                backgroundColor: isSelected ? 'rgba(255, 91, 0, 0.04)' : 'var(--bg-card)',
+                boxShadow: isSelected ? '0 4px 12px rgba(var(--primary-blue-rgb), 0.08)' : '0 4px 12px rgba(0,0,0,0.02)'
               }}
             >
               <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
@@ -91,8 +93,8 @@ export default function VehicleSelector({
                   borderRadius: '8px', 
                   overflow: 'hidden',
                   flexShrink: 0,
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.25)'
+                  border: '1px solid var(--border-card)',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
                 }}>
                   <img 
                     src={car.image_url || VEHICLE_IMAGES[car.id] || 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=400&q=80'} 
@@ -108,11 +110,11 @@ export default function VehicleSelector({
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                  <span style={{ fontWeight: 600, fontSize: '15px', color: '#fff' }}>
+                  <span style={{ fontWeight: 700, fontSize: '15px', color: 'var(--text-primary)' }}>
                     {car.car_model}
                   </span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', fontSize: '11px', color: '#94a3b8' }}>
-                    <span>{t.plate} <code style={{ color: '#fff', backgroundColor: 'rgba(255,255,255,0.08)', padding: '1px 4px', borderRadius: '3px' }}>{car.car_number}</code></span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', fontSize: '11px', color: 'var(--text-secondary)' }}>
+                    <span>{t.plate} <code style={{ color: 'var(--text-primary)', backgroundColor: 'var(--bg-dark)', padding: '2px 4px', borderRadius: '3px', fontWeight: 'bold' }}>{car.car_number}</code></span>
                     <span>•</span>
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
                       <User size={11} /> {car.driver_name}
@@ -122,20 +124,21 @@ export default function VehicleSelector({
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
-                <span style={{ fontSize: '20px', fontWeight: '700', color: isSelected ? '#d4af37' : '#f1f5f9' }}>
+                <span style={{ fontSize: '20px', fontWeight: '700', color: isSelected ? 'var(--primary-blue, var(--primary-blue))' : 'var(--text-primary)' }}>
                   ${Number(currentPrice).toFixed(0)}
                 </span>
                 
                 <div style={{
-                  padding: '4px 8px',
+                  padding: '6px 12px',
                   borderRadius: '6px',
-                  fontSize: '11px',
-                  fontWeight: '600',
+                  fontSize: '11.5px',
+                  fontWeight: '700',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '4px',
-                  backgroundColor: isSelected ? '#d4af37' : 'rgba(255,255,255,0.05)',
-                  color: isSelected ? '#0a0f1d' : '#e2e8f0',
+                  backgroundColor: isSelected ? 'var(--primary-blue, var(--primary-blue))' : 'var(--bg-dark)',
+                  border: isSelected ? 'none' : '1px solid var(--border-card)',
+                  color: isSelected ? 'var(--bg-card)' : 'var(--text-secondary)',
                   transition: 'all 0.2s ease'
                 }}>
                   {isSelected ? <Check size={12} /> : null}

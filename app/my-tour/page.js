@@ -16,7 +16,9 @@ import {
   DollarSign, 
   Phone,
   HelpCircle,
-  Coins
+  Coins,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 const getStatusColor = (status) => {
@@ -43,6 +45,7 @@ function MyTourContent() {
   const [errorMsg, setErrorMsg] = useState('');
   const [language, setLanguage] = useState('UZ'); // Default to UZ
   const [showLangDropdown, setShowLangDropdown] = useState(false);
+  const [theme, setTheme] = useState('light');
 
   // Cancel flow states
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
@@ -51,6 +54,10 @@ function MyTourContent() {
 
   useEffect(() => {
     // Sync state loaded from localStorage if user has a preference saved
+    const savedTheme = localStorage.getItem('site_theme') || 'light';
+    setTheme(savedTheme);
+    document.body.setAttribute('data-theme', savedTheme);
+
     const savedLang = localStorage.getItem('site_lang');
     setTimeout(() => {
       if (savedLang) {
@@ -68,6 +75,13 @@ function MyTourContent() {
       }
     }, 0);
   }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(nextTheme);
+    document.body.setAttribute('data-theme', nextTheme);
+    localStorage.setItem('site_theme', nextTheme);
+  };
 
   useEffect(() => {
     if (!id || !token) {
@@ -205,10 +219,10 @@ function MyTourContent() {
 
   if (loading) {
     return (
-      <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#0a0f1d', color: '#fff' }}>
+      <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-dark)', color: 'var(--text-primary)' }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
-          <Loader2 size={32} className="animate-spin" style={{ color: '#d4af37' }} />
-          <span style={{ fontSize: '14px', color: '#94a3b8' }}>Loading tour details...</span>
+          <Loader2 size={32} className="animate-spin" style={{ color: 'var(--primary-blue)' }} />
+          <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Loading tour details...</span>
         </div>
       </main>
     );
@@ -216,11 +230,11 @@ function MyTourContent() {
 
   if (errorMsg || !booking) {
     return (
-      <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backgroundColor: '#0a0f1d' }}>
+      <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backgroundColor: 'var(--bg-dark)' }}>
         <div className="glass-container gold-glow" style={{ width: '100%', maxWidth: '480px', padding: '36px', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <XCircle size={44} style={{ color: '#ef4444', margin: '0 auto' }} />
-          <h3 style={{ fontSize: '18px', fontWeight: '700', color: '#fff' }}>Error</h3>
-          <p style={{ fontSize: '14px', color: '#94a3b8', lineHeight: 1.5 }}>
+          <h3 style={{ fontSize: '18px', fontWeight: '700', color: 'var(--text-primary)' }}>Error</h3>
+          <p style={{ fontSize: '14px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
             {errorMsg || t.notFound}
           </p>
           <Link href="/" className="btn-gold" style={{ padding: '10px 20px', display: 'inline-block', textDecoration: 'none', alignSelf: 'center', fontSize: '13px' }}>
@@ -235,7 +249,7 @@ function MyTourContent() {
   const showCancelOption = booking.status === 'confirmed' || booking.status === 'pending';
 
   return (
-    <main style={{ minHeight: '100vh', padding: '40px 24px', backgroundColor: '#0a0f1d', color: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <main style={{ minHeight: '100vh', padding: '40px 24px', backgroundColor: 'var(--bg-dark)', color: 'var(--text-primary)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       
       {/* Header */}
       <header style={{ 
@@ -247,21 +261,22 @@ function MyTourContent() {
         marginBottom: '32px' 
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Compass size={28} style={{ color: '#d4af37' }} />
+          <Compass size={28} style={{ color: 'var(--primary-blue)' }} />
           <span style={{ fontSize: '20px', fontWeight: 800, letterSpacing: '0.05em' }}>
-            SAMARQAND <span style={{ color: '#d4af37' }}>CRAFTOUR</span>
+            SAMARQAND <span style={{ color: 'var(--primary-blue)' }}>CRAFTOUR</span>
           </span>
         </div>
 
-        <div style={{ position: 'relative' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {/* Theme Toggle Button */}
           <button
-            onClick={() => setShowLangDropdown(!showLangDropdown)}
+            onClick={toggleTheme}
             style={{
               padding: '6px 12px',
               borderRadius: '8px',
-              backgroundColor: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              color: '#fff',
+              backgroundColor: theme === 'dark' ? 'rgba(212,175,55,0.12)' : 'var(--bg-card-hover)',
+              border: theme === 'dark' ? '1px solid rgba(212,175,55,0.3)' : '1px solid var(--border-card)',
+              color: 'var(--text-primary)',
               fontSize: '12px',
               fontWeight: '600',
               cursor: 'pointer',
@@ -270,63 +285,96 @@ function MyTourContent() {
               gap: '6px',
               transition: 'all 0.2s ease'
             }}
+            title={language === 'UZ' ? 'Mavzuni o\'zgartirish' : language === 'RU' ? 'Сменить тему' : 'Toggle theme'}
           >
-            <Languages size={12} style={{ color: '#d4af37' }} />
-            <span>{language === 'EN' ? '🇬🇧 EN' : language === 'RU' ? '🇷🇺 RU' : '🇺🇿 UZ'}</span>
+            {theme === 'dark' ? (
+              <>
+                <Moon size={12} style={{ color: 'var(--primary-blue)' }} />
+                <span>{language === 'UZ' ? 'Tun' : language === 'RU' ? 'Ночь' : 'Night'}</span>
+              </>
+            ) : (
+              <>
+                <Sun size={12} style={{ color: 'var(--primary-blue)' }} />
+                <span>{language === 'UZ' ? 'Kun' : language === 'RU' ? 'День' : 'Day'}</span>
+              </>
+            )}
           </button>
-          {showLangDropdown && (
-            <div style={{
-              position: 'absolute',
-              top: 'calc(100% + 6px)',
-              right: 0,
-              backgroundColor: '#0f172a',
-              border: '1px solid rgba(212,175,55,0.25)',
-              borderRadius: '8px',
-              padding: '4px',
-              zIndex: 1000,
-              boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '2px',
-              minWidth: '120px'
-            }}>
-              {['EN', 'RU', 'UZ'].map((langCode) => (
-                <button
-                  key={langCode}
-                  onClick={() => {
-                    setLanguage(langCode);
-                    setShowLangDropdown(false);
-                    localStorage.setItem('site_lang', langCode);
-                  }}
-                  style={{
-                    padding: '6px 10px',
-                    border: 'none',
-                    background: language === langCode ? 'rgba(212,175,55,0.1)' : 'transparent',
-                    color: language === langCode ? '#d4af37' : '#94a3b8',
-                    textAlign: 'left',
-                    fontSize: '12px',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    borderRadius: '4px',
-                    transition: 'all 0.2s ease',
-                    width: '100%'
-                  }}
-                >
-                  {langCode === 'EN' ? '🇬🇧 English' : langCode === 'RU' ? '🇷🇺 Русский' : '🇺🇿 O\'zbekcha'}
-                </button>
-              ))}
-            </div>
-          )}
+
+          <div style={{ position: 'relative' }}>
+            <button
+              onClick={() => setShowLangDropdown(!showLangDropdown)}
+              style={{
+                padding: '6px 12px',
+                borderRadius: '8px',
+                backgroundColor: 'var(--bg-card-hover)',
+                border: '1px solid var(--border-card)',
+                color: 'var(--text-primary)',
+                fontSize: '12px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <Languages size={12} style={{ color: 'var(--primary-blue)' }} />
+              <span>{language === 'EN' ? '🇬🇧 EN' : language === 'RU' ? '🇷🇺 RU' : '🇺🇿 UZ'}</span>
+            </button>
+            {showLangDropdown && (
+              <div style={{
+                position: 'absolute',
+                top: 'calc(100% + 6px)',
+                right: 0,
+                backgroundColor: 'var(--bg-card)',
+                border: '1px solid var(--border-card)',
+                borderRadius: '8px',
+                padding: '4px',
+                zIndex: 1000,
+                boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '2px',
+                minWidth: '120px'
+              }}>
+                {['EN', 'RU', 'UZ'].map((langCode) => (
+                  <button
+                    key={langCode}
+                    onClick={() => {
+                      setLanguage(langCode);
+                      setShowLangDropdown(false);
+                      localStorage.setItem('site_lang', langCode);
+                    }}
+                    style={{
+                      padding: '6px 10px',
+                      border: 'none',
+                      background: language === langCode ? 'rgba(var(--primary-blue-rgb), 0.08)' : 'transparent',
+                      color: language === langCode ? 'var(--primary-blue)' : 'var(--text-secondary)',
+                      textAlign: 'left',
+                      fontSize: '12px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      borderRadius: '4px',
+                      transition: 'all 0.2s ease',
+                      width: '100%'
+                    }}
+                  >
+                    {langCode === 'EN' ? '🇬🇧 English' : langCode === 'RU' ? '🇷🇺 Русский' : '🇺🇿 O\'zbekcha'}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
       {/* Main Container */}
       <div className="glass-container gold-glow" style={{ width: '100%', maxWidth: '600px', padding: '32px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
         
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '16px' }}>
-          <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#fff' }}>{t.title}</h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-card)', paddingBottom: '16px' }}>
+          <h2 style={{ fontSize: '20px', fontWeight: 700, color: 'var(--text-primary)' }}>{t.title}</h2>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '13px', color: '#94a3b8' }}>{t.status}</span>
+            <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{t.status}</span>
             <span style={{ 
               padding: '4px 10px', 
               borderRadius: '8px', 
@@ -359,27 +407,27 @@ function MyTourContent() {
         {/* Tourist details */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '14px' }}>
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-            <User size={16} style={{ color: '#d4af37' }} />
-            <span style={{ color: '#94a3b8', width: '110px' }}>{t.touristName}</span>
-            <strong style={{ color: '#fff' }}>{booking.tourist_name}</strong>
+            <User size={16} style={{ color: 'var(--primary-blue)' }} />
+            <span style={{ color: 'var(--text-secondary)', width: '110px' }}>{t.touristName}</span>
+            <strong style={{ color: 'var(--text-primary)' }}>{booking.tourist_name}</strong>
           </div>
           
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-            <Calendar size={16} style={{ color: '#d4af37' }} />
-            <span style={{ color: '#94a3b8', width: '110px' }}>{t.travelDate}</span>
-            <strong style={{ color: '#fff' }}>{booking.booking_date} ({booking.customer_language})</strong>
+            <Calendar size={16} style={{ color: 'var(--primary-blue)' }} />
+            <span style={{ color: 'var(--text-secondary)', width: '110px' }}>{t.travelDate}</span>
+            <strong style={{ color: 'var(--text-primary)' }}>{booking.booking_date} ({booking.customer_language})</strong>
           </div>
         </div>
 
         {/* Route Sights */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '14px' }}>
-          <span style={{ color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <MapPin size={16} style={{ color: '#d4af37' }} />
+          <span style={{ color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <MapPin size={16} style={{ color: 'var(--primary-blue)' }} />
             {t.routeSights}
           </span>
           <div style={{ paddingLeft: '24px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
             {booking.booking_items?.sort((a,b) => a.visit_order - b.visit_order).map((item, idx) => (
-              <div key={idx} style={{ color: '#e2e8f0' }}>
+              <div key={idx} style={{ color: 'var(--text-primary)' }}>
                 {item.visit_order > 100 
                   ? (language === 'UZ' 
                       ? `${Math.floor(item.visit_order / 100)}-kun, ${item.visit_order % 100}` 
@@ -389,29 +437,29 @@ function MyTourContent() {
                   : item.visit_order
                 }. {language === 'UZ' ? (item.location?.name_uz || item.location?.name_en) : language === 'RU' ? item.location?.name_ru : item.location?.name_en}
               </div>
-            )) || <span style={{ color: '#64748b' }}>None</span>}
+            )) || <span style={{ color: '#9e9e9e' }}>None</span>}
           </div>
         </div>
 
         {/* Guide & Driver card */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', backgroundColor: 'rgba(10,15,29,0.5)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.04)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', backgroundColor: 'var(--bg-card-hover)', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-card)' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <span style={{ fontSize: '12px', color: '#94a3b8' }}>{t.guideTitle}</span>
-            <strong style={{ fontSize: '14px', color: '#fff' }}>
+            <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{t.guideTitle}</span>
+            <strong style={{ fontSize: '14px', color: 'var(--text-primary)' }}>
               {booking.guide ? booking.guide.full_name : (language === 'UZ' ? 'Gidsiz sayohat' : language === 'RU' ? 'Без гида' : 'No Guide')}
             </strong>
             {booking.guide?.phone_number && (
               <span style={{ fontSize: '12px', color: '#009b9e' }}>📞 {booking.guide.phone_number}</span>
             )}
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', borderLeft: '1px solid rgba(255,255,255,0.08)', paddingLeft: '16px' }}>
-            <span style={{ fontSize: '12px', color: '#94a3b8' }}>{t.driverTitle}</span>
-            <strong style={{ fontSize: '14px', color: '#fff' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', borderLeft: '1px solid var(--border-card)', paddingLeft: '16px' }}>
+            <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{t.driverTitle}</span>
+            <strong style={{ fontSize: '14px', color: 'var(--text-primary)' }}>
               {booking.vehicle ? booking.vehicle.driver_name : (language === 'UZ' ? 'Transportsiz sayohat' : language === 'RU' ? 'Без транспорта' : 'No Vehicle')}
             </strong>
             {booking.vehicle ? (
               <>
-                <span style={{ fontSize: '11px', color: '#cbd5e1' }}>{t.carModel} {booking.vehicle.car_model}</span>
+                <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{t.carModel} {booking.vehicle.car_model}</span>
                 {booking.vehicle.driver_phone && (
                   <span style={{ fontSize: '12px', color: '#009b9e' }}>📞 {booking.vehicle.driver_phone}</span>
                 )}
@@ -425,19 +473,19 @@ function MyTourContent() {
           display: 'flex',
           flexDirection: 'column',
           gap: '10px',
-          backgroundColor: 'rgba(255, 255, 255, 0.02)',
+          backgroundColor: 'var(--bg-card-hover)',
           padding: '16px',
           borderRadius: '12px',
-          border: '1px solid rgba(255, 255, 255, 0.05)',
+          border: '1px solid var(--border-card)',
           fontSize: '13px'
         }}>
-          <h4 style={{ margin: '0 0 6px 0', fontSize: '14px', color: '#d4af37', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <h4 style={{ margin: '0 0 6px 0', fontSize: '14px', color: 'var(--primary-blue)', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <Coins size={15} />
             {language === 'UZ' ? 'To\'lov hisoboti' : language === 'RU' ? 'Платежный баланс' : 'Payment Summary'}
           </h4>
           
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: '#94a3b8' }}>
+            <span style={{ color: 'var(--text-secondary)' }}>
               {language === 'UZ' ? 'To\'lov holati:' : language === 'RU' ? 'Статус оплаты:' : 'Payment Status:'}
             </span>
             <span style={{
@@ -460,25 +508,25 @@ function MyTourContent() {
           {booking.payment_status === 'deposit_paid' && (
             <>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#94a3b8' }}>
+                <span style={{ color: 'var(--text-secondary)' }}>
                   {language === 'UZ' ? 'To\'langan depozit:' : language === 'RU' ? 'Оплаченный депозит:' : 'Deposit Paid:'}
                 </span>
                 <strong style={{ color: '#10b981' }}>
                   ${parseFloat(booking.deposit_amount || 0).toFixed(2)} 
-                  <span style={{ fontSize: '11px', color: '#94a3b8', fontWeight: '500', marginLeft: '4px' }}>
+                  <span style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: '500', marginLeft: '4px' }}>
                     ({booking.payment_method?.toUpperCase()})
                   </span>
                 </strong>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#94a3b8' }}>
+                <span style={{ color: 'var(--text-secondary)' }}>
                   {language === 'UZ' ? 'Qoldiq (joyida to\'lanadi):' : language === 'RU' ? 'Остаток (оплата наличными):' : 'Remaining Balance (to guide/driver):'}
                 </span>
                 <strong style={{ color: '#fbbf24' }}>
                   ${(parseFloat(booking.total_price) - parseFloat(booking.deposit_amount || 0)).toFixed(2)}
                 </strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#64748b' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#9e9e9e' }}>
                 <span>Tx ID:</span>
                 <span>{booking.payment_tx_id || 'N/A'}</span>
               </div>
@@ -487,33 +535,33 @@ function MyTourContent() {
         </div>
 
         {/* Cost and Actions */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '16px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-card)', paddingTop: '16px' }}>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{ fontSize: '12px', color: '#94a3b8' }}>{t.estimatedCost}</span>
-            <strong style={{ fontSize: '20px', color: '#d4af37', textShadow: '0 0 10px rgba(212,175,55,0.3)' }}>${parseFloat(booking.total_price).toFixed(2)}</strong>
+            <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{t.estimatedCost}</span>
+            <strong style={{ fontSize: '20px', color: 'var(--primary-blue)' }}>${parseFloat(booking.total_price).toFixed(2)}</strong>
           </div>
           
-          <Link href="/" style={{ padding: '10px 20px', border: '1px solid rgba(255,255,255,0.08)', backgroundColor: 'rgba(255,255,255,0.02)', color: '#fff', borderRadius: '10px', textDecoration: 'none', fontSize: '13px', fontWeight: '500' }}>
+          <Link href="/" style={{ padding: '10px 20px', border: '1px solid var(--border-card)', backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)', borderRadius: '10px', textDecoration: 'none', fontSize: '13px', fontWeight: '500' }}>
             {t.backBtn}
           </Link>
         </div>
 
         {/* Cancel trigger */}
         {showCancelOption && !bookingCancelled && (
-          <div style={{ textAlign: 'center', borderTop: '1px solid rgba(255,255,255,0.04)', paddingTop: '16px' }}>
+          <div style={{ textAlign: 'center', borderTop: '1px solid var(--border-card)', paddingTop: '16px' }}>
             <button
               onClick={() => setShowCancelConfirm(true)}
               style={{
                 background: 'none',
                 border: 'none',
-                color: '#64748b',
+                color: '#9e9e9e',
                 textDecoration: 'underline',
                 fontSize: '12px',
                 cursor: 'pointer',
                 transition: 'color 0.2s',
               }}
               onMouseEnter={(e) => e.target.style.color = '#ef4444'}
-              onMouseLeave={(e) => e.target.style.color = '#64748b'}
+              onMouseLeave={(e) => e.target.style.color = '#9e9e9e'}
             >
               {t.cancelBtn}
             </button>
@@ -530,7 +578,7 @@ function MyTourContent() {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(5, 7, 16, 0.85)',
+          backgroundColor: 'rgba(0, 0, 0, 0.4)',
           backdropFilter: 'blur(8px)',
           display: 'flex',
           alignItems: 'center',
@@ -545,7 +593,7 @@ function MyTourContent() {
               maxWidth: '460px',
               padding: '30px',
               border: '1px solid rgba(239, 68, 68, 0.4)',
-              backgroundColor: '#0f172a',
+              backgroundColor: 'var(--bg-card)',
               textAlign: 'center',
               display: 'flex',
               flexDirection: 'column',
@@ -567,10 +615,10 @@ function MyTourContent() {
             </div>
 
             <div>
-              <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#fff', marginBottom: '8px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '8px' }}>
                 {t.cancelConfirmTitle}
               </h3>
-              <p style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: 1.6 }}>
+              <p style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                 {t.cancelConfirmDesc}
               </p>
             </div>
@@ -586,8 +634,8 @@ function MyTourContent() {
                   fontWeight: '700',
                   cursor: 'pointer',
                   width: '100%',
-                  backgroundColor: '#d4af37',
-                  color: '#0a0f1d'
+                  backgroundColor: 'var(--primary-blue)',
+                  color: 'var(--bg-card)'
                 }}
               >
                 {t.cancelKeep}
@@ -622,8 +670,8 @@ function MyTourContent() {
 export default function MyTourPage() {
   return (
     <Suspense fallback={
-      <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#0a0f1d' }}>
-        <Loader2 size={32} className="animate-spin" style={{ color: '#d4af37' }} />
+      <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-dark)' }}>
+        <Loader2 size={32} className="animate-spin" style={{ color: 'var(--primary-blue)' }} />
       </main>
     }>
       <MyTourContent />

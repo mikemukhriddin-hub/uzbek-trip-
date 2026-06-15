@@ -68,7 +68,7 @@ export default function GuideSelector({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-gold)' }}>{t.title}</h3>
+        <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)' }}>{t.title}</h3>
         
         {/* Language Selection Pills */}
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -81,16 +81,17 @@ export default function GuideSelector({
                 style={{
                   padding: '8px 12px',
                   borderRadius: '8px',
-                  border: isSelected ? '1.5px solid var(--text-gold)' : '1px solid var(--border-card)',
-                  backgroundColor: isSelected ? 'rgba(212,175,55,0.12)' : 'rgba(255,255,255,0.03)',
+                  border: isSelected ? '1px solid var(--text-gold)' : '1px solid var(--border-card)',
+                  backgroundColor: isSelected ? 'rgba(255, 91, 0, 0.06)' : 'var(--bg-card)',
                   color: isSelected ? 'var(--text-gold)' : 'var(--text-secondary)',
                   fontSize: '13px',
-                  fontWeight: isSelected ? '600' : '400',
+                  fontWeight: isSelected ? '700' : '500',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px',
                   transition: 'all 0.2s ease',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
                 }}
               >
                 <Languages size={14} />
@@ -110,6 +111,7 @@ export default function GuideSelector({
             color: 'var(--text-secondary)',
             border: '1px dashed var(--border-card)',
             borderRadius: '12px',
+            backgroundColor: 'var(--bg-card)',
             gridColumn: '1 / -1'
           }}>
             {t.noGuides}
@@ -122,17 +124,18 @@ export default function GuideSelector({
             return (
               <div
                 key={guide.id}
-                className={`glass-container animate-fade-in ${isSelected ? 'selected-card-glow' : ''}`}
+                className="glass-container animate-fade-in"
                 onClick={() => onSelectGuide(guide)}
                 style={{
                   padding: '16px',
                   cursor: 'pointer',
-                  border: isSelected ? '1.5px solid var(--text-gold)' : '1px solid var(--border-card)',
+                  border: isSelected ? '1px solid var(--text-gold)' : '1px solid var(--border-card)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   gap: '16px',
-                  backgroundColor: isSelected ? 'rgba(212, 175, 55, 0.05)' : 'var(--bg-card)'
+                  backgroundColor: isSelected ? 'rgba(255, 91, 0, 0.04)' : 'var(--bg-card)',
+                  boxShadow: isSelected ? '0 4px 12px rgba(var(--primary-blue-rgb), 0.08)' : '0 4px 12px rgba(0,0,0,0.02)'
                 }}
               >
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
@@ -144,7 +147,7 @@ export default function GuideSelector({
                     overflow: 'hidden',
                     flexShrink: 0,
                     border: '1.5px solid var(--text-gold)',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
                   }}>
                     <img 
                       src={guide.image_url || GUIDE_IMAGES[guide.id] || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80'} 
@@ -160,7 +163,7 @@ export default function GuideSelector({
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                    <span style={{ fontWeight: 600, fontSize: '15px', color: 'var(--text-primary)' }}>
+                    <span style={{ fontWeight: 700, fontSize: '15px', color: 'var(--text-primary)' }}>
                       {guide.full_name}
                     </span>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: 'var(--text-secondary)' }}>
@@ -180,15 +183,15 @@ export default function GuideSelector({
                   </span>
                   
                   <div style={{
-                    padding: '4px 8px',
+                    padding: '6px 12px',
                     borderRadius: '6px',
-                    fontSize: '11px',
-                    fontWeight: '600',
+                    fontSize: '11.5px',
+                    fontWeight: '700',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '4px',
-                    background: isSelected ? 'var(--btn-gold-bg)' : 'rgba(255,255,255,0.05)',
-                    color: isSelected ? 'var(--btn-gold-text)' : 'var(--text-primary)',
+                    background: isSelected ? 'var(--btn-gold-bg)' : 'var(--bg-dark)',
+                    color: isSelected ? 'var(--btn-gold-text)' : 'var(--text-secondary)',
                     border: isSelected ? 'none' : '1px solid var(--border-card)',
                     transition: 'all 0.2s ease'
                   }}>

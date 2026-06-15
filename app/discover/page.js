@@ -6,6 +6,7 @@ import {
   ArrowLeft, 
   Languages, 
   Sun, 
+  Moon,
   Cloud, 
   CloudRain, 
   ChevronLeft, 
@@ -445,6 +446,7 @@ export default function DiscoverPage({ searchParams }) {
   const isLoadedRef = useRef(false);
   const [language, setLanguage] = useState('EN');
   const [showLangDropdown, setShowLangDropdown] = useState(false);
+  const [theme, setTheme] = useState('light');
   const [activeSlide, setActiveSlide] = useState(0);
   const [usdAmount, setUsdAmount] = useState('100');
   const [uzsAmount, setUzsAmount] = useState('1280000');
@@ -462,7 +464,11 @@ export default function DiscoverPage({ searchParams }) {
 
   // Sync state loaded from localStorage if user was previously reading in RU/UZ
   useEffect(() => {
-    // Basic local language check
+    // Basic local language/theme check
+    const savedTheme = localStorage.getItem('site_theme') || 'light';
+    setTheme(savedTheme);
+    document.body.setAttribute('data-theme', savedTheme);
+
     const savedLang = localStorage.getItem('site_lang');
     if (savedLang) {
       Promise.resolve().then(() => {
@@ -485,6 +491,13 @@ export default function DiscoverPage({ searchParams }) {
       isLoadedRef.current = true;
     }
   }, [regionParam]);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(nextTheme);
+    document.body.setAttribute('data-theme', nextTheme);
+    localStorage.setItem('site_theme', nextTheme);
+  };
 
   // Sync activeRegion changes to document.body and localStorage
   useEffect(() => {
@@ -620,7 +633,7 @@ export default function DiscoverPage({ searchParams }) {
   };
 
   return (
-    <main style={{ width: '100%', minHeight: '100vh', padding: '16px', display: 'flex', flexDirection: 'column', backgroundColor: '#0a0f1d', color: '#fff', position: 'relative', overflowX: 'hidden' }}>
+    <main style={{ width: '100%', minHeight: '100vh', padding: '16px', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-dark)', color: 'var(--text-primary)', position: 'relative', overflowX: 'hidden' }}>
       <BackgroundGraphics />
 
       {/* 🕌 Premium Sticky Header */}
@@ -629,7 +642,7 @@ export default function DiscoverPage({ searchParams }) {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        border: '1px solid rgba(212,175,55,0.15)',
+        border: '1px solid rgba(var(--primary-blue-rgb), 0.15)',
         borderRadius: '16px',
         position: 'sticky',
         top: '16px',
@@ -642,31 +655,31 @@ export default function DiscoverPage({ searchParams }) {
           display: 'flex',
           alignItems: 'center',
           gap: '8px',
-          color: '#cbd5e1',
+          color: 'var(--text-secondary)',
           textDecoration: 'none',
           fontSize: '13px',
           fontWeight: '600',
           transition: 'color 0.2s'
         }}
-        onMouseEnter={(e) => e.currentTarget.style.color = '#d4af37'}
-        onMouseLeave={(e) => e.currentTarget.style.color = '#cbd5e1'}
+        onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary-blue)'}
+        onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
         >
           <ArrowLeft size={16} />
           <span>{t.backBtn}</span>
         </Link>
 
         <div className="discover-title-block" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Compass size={20} className="animate-spin" style={{ color: '#d4af37', animationDuration: '20s' }} />
-          <span className="brand-title" style={{ fontSize: '16px', fontWeight: 800, letterSpacing: '0.05em', color: '#fff' }}>
-            {activeRegion === 'xorazm' ? 'XORAZM' : activeRegion === 'buxoro' ? 'BUXORO' : 'SAMARQAND'} <span style={{ color: '#d4af37' }}>DISCOVER</span>
+          <Compass size={20} className="animate-spin" style={{ color: 'var(--primary-blue)', animationDuration: '20s' }} />
+          <span className="brand-title" style={{ fontSize: '16px', fontWeight: 800, letterSpacing: '0.05em', color: 'var(--text-primary)' }}>
+            {activeRegion === 'xorazm' ? 'XORAZM' : activeRegion === 'buxoro' ? 'BUXORO' : 'SAMARQAND'} <span style={{ color: 'var(--primary-blue)' }}>DISCOVER</span>
           </span>
         </div>
 
         {/* Region Switcher */}
         <div className="discover-header-switcher no-scrollbar" style={{
           display: 'flex',
-          backgroundColor: 'rgba(5, 7, 16, 0.4)',
-          border: '1px solid rgba(212, 175, 55, 0.25)',
+          backgroundColor: 'rgba(0, 0, 0, 0.04)',
+          border: '1px solid rgba(255, 91, 0, 0.2)',
           borderRadius: '12px',
           padding: '3px',
           gap: '2px',
@@ -681,7 +694,7 @@ export default function DiscoverPage({ searchParams }) {
               background: activeRegion === 'samarqand' 
                 ? 'linear-gradient(135deg, #0070c0 0%, #009b9e 100%)' 
                 : 'transparent',
-              color: activeRegion === 'samarqand' ? '#fff' : '#94a3b8',
+              color: activeRegion === 'samarqand' ? '#fff' : 'var(--text-secondary)',
               fontSize: '12px',
               fontWeight: '700',
               cursor: 'pointer',
@@ -700,7 +713,7 @@ export default function DiscoverPage({ searchParams }) {
               background: activeRegion === 'buxoro' 
                 ? 'linear-gradient(135deg, #c05a1a 0%, #b25329 100%)' 
                 : 'transparent',
-              color: activeRegion === 'buxoro' ? '#fff' : '#94a3b8',
+              color: activeRegion === 'buxoro' ? '#fff' : 'var(--text-secondary)',
               fontSize: '12px',
               fontWeight: '700',
               cursor: 'pointer',
@@ -719,7 +732,7 @@ export default function DiscoverPage({ searchParams }) {
               background: activeRegion === 'xorazm' 
                 ? 'linear-gradient(135deg, #028090 0%, #00a896 100%)' 
                 : 'transparent',
-              color: activeRegion === 'xorazm' ? '#fff' : '#94a3b8',
+              color: activeRegion === 'xorazm' ? '#fff' : 'var(--text-secondary)',
               fontSize: '12px',
               fontWeight: '700',
               cursor: 'pointer',
@@ -738,7 +751,7 @@ export default function DiscoverPage({ searchParams }) {
               background: activeRegion === 'shahrisabz' 
                 ? 'linear-gradient(135deg, #008060 0%, #00a36c 100%)' 
                 : 'transparent',
-              color: activeRegion === 'shahrisabz' ? '#fff' : '#94a3b8',
+              color: activeRegion === 'shahrisabz' ? '#fff' : 'var(--text-secondary)',
               fontSize: '12px',
               fontWeight: '700',
               cursor: 'pointer',
@@ -757,7 +770,7 @@ export default function DiscoverPage({ searchParams }) {
               background: activeRegion === 'toshkent' 
                 ? 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)' 
                 : 'transparent',
-              color: activeRegion === 'toshkent' ? '#fff' : '#94a3b8',
+              color: activeRegion === 'toshkent' ? '#fff' : 'var(--text-secondary)',
               fontSize: '12px',
               fontWeight: '700',
               cursor: 'pointer',
@@ -776,7 +789,7 @@ export default function DiscoverPage({ searchParams }) {
               background: activeRegion === 'qoraqalpoq' 
                 ? 'linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%)' 
                 : 'transparent',
-              color: activeRegion === 'qoraqalpoq' ? '#fff' : '#94a3b8',
+              color: activeRegion === 'qoraqalpoq' ? '#fff' : 'var(--text-secondary)',
               fontSize: '12px',
               fontWeight: '700',
               cursor: 'pointer',
@@ -788,83 +801,117 @@ export default function DiscoverPage({ searchParams }) {
           </button>
         </div>
 
-        {/* Premium Dropdown Language Switcher */}
-        <div className="discover-lang-wrapper" style={{ position: 'relative' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {/* Theme Toggle Button */}
           <button
-            onClick={() => setShowLangDropdown(!showLangDropdown)}
+            onClick={toggleTheme}
             style={{
-              padding: '8px 16px',
+              padding: '8px 14px',
               borderRadius: '10px',
-              backgroundColor: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              color: '#fff',
+              backgroundColor: theme === 'dark' ? 'rgba(212,175,55,0.12)' : 'rgba(0,0,0,0.04)',
+              border: theme === 'dark' ? '1px solid rgba(212,175,55,0.3)' : '1px solid rgba(0,0,0,0.08)',
+              color: 'var(--text-primary)',
               fontSize: '13px',
               fontWeight: '600',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              gap: '8px',
+              gap: '6px',
               transition: 'all 0.2s ease'
             }}
+            title={language === 'UZ' ? 'Mavzuni o\'zgartirish' : language === 'RU' ? 'Сменить тему' : 'Toggle theme'}
           >
-            <Languages size={14} style={{ color: '#d4af37' }} />
-            <span>{language === 'EN' ? '🇬🇧 EN' : language === 'RU' ? '🇷🇺 RU' : '🇺🇿 UZ'}</span>
+            {theme === 'dark' ? (
+              <>
+                <Moon size={14} style={{ color: 'var(--primary-blue)' }} />
+                <span>{language === 'UZ' ? 'Tun' : language === 'RU' ? 'Ночь' : 'Night'}</span>
+              </>
+            ) : (
+              <>
+                <Sun size={14} style={{ color: 'var(--primary-blue)' }} />
+                <span>{language === 'UZ' ? 'Kun' : language === 'RU' ? 'День' : 'Day'}</span>
+              </>
+            )}
           </button>
-          {showLangDropdown && (
-            <div style={{
-              position: 'absolute',
-              top: 'calc(100% + 8px)',
-              right: 0,
-              backgroundColor: '#0f172a',
-              border: '1px solid rgba(212,175,55,0.25)',
-              borderRadius: '10px',
-              padding: '4px',
-              zIndex: 1000,
-              boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '2px',
-              minWidth: '130px'
-            }}>
-              {['EN', 'RU', 'UZ'].map((langCode) => (
-                <button
-                  key={langCode}
-                  onClick={() => {
-                    setLanguage(langCode);
-                    setShowLangDropdown(false);
-                    localStorage.setItem('site_lang', langCode);
-                  }}
-                  style={{
-                    padding: '8px 12px',
-                    border: 'none',
-                    background: language === langCode ? 'rgba(212,175,55,0.1)' : 'transparent',
-                    color: language === langCode ? '#d4af37' : '#94a3b8',
-                    textAlign: 'left',
-                    fontSize: '13px',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    borderRadius: '6px',
-                    transition: 'all 0.2s ease',
-                    width: '100%'
-                  }}
-                  onMouseEnter={(e) => {
-                    if (language !== langCode) {
-                      e.currentTarget.style.color = '#fff';
-                      e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (language !== langCode) {
-                      e.currentTarget.style.color = '#94a3b8';
-                      e.currentTarget.style.backgroundColor = 'transparent';
-                    }
-                  }}
-                >
-                  {langCode === 'EN' ? '🇬🇧 English' : langCode === 'RU' ? '🇷🇺 Русский' : '🇺🇿 O\'zbekcha'}
-                </button>
-              ))}
-            </div>
-          )}
+
+          {/* Premium Dropdown Language Switcher */}
+          <div className="discover-lang-wrapper" style={{ position: 'relative' }}>
+            <button
+              onClick={() => setShowLangDropdown(!showLangDropdown)}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '10px',
+                backgroundColor: 'rgba(0,0,0,0.04)',
+                border: '1px solid rgba(0,0,0,0.08)',
+                color: 'var(--text-primary)',
+                fontSize: '13px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <Languages size={14} style={{ color: 'var(--primary-blue)' }} />
+              <span>{language === 'EN' ? '🇬🇧 EN' : language === 'RU' ? '🇷🇺 RU' : '🇺🇿 UZ'}</span>
+            </button>
+            {showLangDropdown && (
+              <div style={{
+                position: 'absolute',
+                top: 'calc(100% + 8px)',
+                right: 0,
+                backgroundColor: 'var(--bg-card)',
+                border: '1px solid rgba(255,91,0,0.2)',
+                borderRadius: '10px',
+                padding: '4px',
+                zIndex: 1000,
+                boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '2px',
+                minWidth: '130px'
+              }}>
+                {['EN', 'RU', 'UZ'].map((langCode) => (
+                  <button
+                    key={langCode}
+                    onClick={() => {
+                      setLanguage(langCode);
+                      setShowLangDropdown(false);
+                      localStorage.setItem('site_lang', langCode);
+                    }}
+                    style={{
+                      padding: '8px 12px',
+                      border: 'none',
+                      background: language === langCode ? 'rgba(var(--primary-blue-rgb), 0.08)' : 'transparent',
+                      color: language === langCode ? 'var(--primary-blue)' : 'var(--text-secondary)',
+                      textAlign: 'left',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      borderRadius: '6px',
+                      transition: 'all 0.2s ease',
+                      width: '100%'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (language !== langCode) {
+                        e.currentTarget.style.color = 'var(--text-primary)';
+                        e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.04)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (language !== langCode) {
+                        e.currentTarget.style.color = 'var(--text-secondary)';
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                      }
+                    }}
+                  >
+                    {langCode === 'EN' ? '🇬🇧 English' : langCode === 'RU' ? '🇷🇺 Русский' : '🇺🇿 O\'zbekcha'}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
@@ -881,10 +928,10 @@ export default function DiscoverPage({ searchParams }) {
         
         {/* Title Section */}
         <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '12px' }}>
-          <h1 style={{ fontSize: '32px', fontWeight: 800, color: '#fff', letterSpacing: '0.02em' }}>
+          <h1 style={{ fontSize: '32px', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '0.02em' }}>
             {t.pageTitle}
           </h1>
-          <p style={{ fontSize: '15px', color: '#94a3b8', maxWidth: '600px', margin: '0 auto', lineHeight: 1.5 }}>
+          <p style={{ fontSize: '15px', color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto', lineHeight: 1.5 }}>
             {t.pageSubtitle}
           </p>
         </div>
@@ -904,8 +951,8 @@ export default function DiscoverPage({ searchParams }) {
             gap: '16px',
             minHeight: '400px'
           }}>
-            <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#fff', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Award size={18} style={{ color: '#d4af37' }} />
+            <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Award size={18} style={{ color: 'var(--primary-blue)' }} />
               {t.slideshowTitle}
             </h2>
 
@@ -916,7 +963,7 @@ export default function DiscoverPage({ searchParams }) {
               height: '240px',
               borderRadius: '12px',
               overflow: 'hidden',
-              border: '1px solid rgba(255,255,255,0.06)'
+              border: '1px solid rgba(0,0,0,0.06)'
             }}>
               {/* Slide Image */}
               <img 
@@ -941,9 +988,9 @@ export default function DiscoverPage({ searchParams }) {
                   width: '32px',
                   height: '32px',
                   borderRadius: '50%',
-                  backgroundColor: 'rgba(5, 7, 16, 0.65)',
-                  border: '1px solid rgba(255,255,255,0.2)',
-                  color: '#fff',
+                  backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                  border: '1px solid rgba(0,0,0,0.1)',
+                  color: 'var(--text-primary)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -964,9 +1011,9 @@ export default function DiscoverPage({ searchParams }) {
                   width: '32px',
                   height: '32px',
                   borderRadius: '50%',
-                  backgroundColor: 'rgba(5, 7, 16, 0.65)',
-                  border: '1px solid rgba(255,255,255,0.2)',
-                  color: '#fff',
+                  backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                  border: '1px solid rgba(0,0,0,0.1)',
+                  color: 'var(--text-primary)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -977,14 +1024,14 @@ export default function DiscoverPage({ searchParams }) {
                 <ChevronRight size={16} />
               </button>
 
-              {/* Page dots indicators */}
+              {/* Slide Pagination Dots */}
               <div style={{
                 position: 'absolute',
                 bottom: '12px',
                 left: '50%',
                 transform: 'translateX(-50%)',
                 display: 'flex',
-                gap: '8px',
+                gap: '6px',
                 zIndex: 10
               }}>
                 {slides.map((_, idx) => (
@@ -995,7 +1042,7 @@ export default function DiscoverPage({ searchParams }) {
                       width: '8px',
                       height: '8px',
                       borderRadius: '50%',
-                      backgroundColor: idx === activeSlide ? '#d4af37' : 'rgba(255,255,255,0.3)',
+                      backgroundColor: idx === activeSlide ? 'var(--primary-blue)' : 'rgba(0,0,0,0.2)',
                       cursor: 'pointer',
                       transition: 'background-color 0.2s'
                     }}
@@ -1006,10 +1053,10 @@ export default function DiscoverPage({ searchParams }) {
 
             {/* Slide Information */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }} className="animate-fade-in">
-              <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#d4af37' }}>
+              <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--primary-blue)' }}>
                 {language === 'UZ' ? slides[activeSlide]?.title_uz : language === 'RU' ? slides[activeSlide]?.title_ru : slides[activeSlide]?.title_en}
               </h3>
-              <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: 1.5 }}>
+              <p style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
                 {language === 'UZ' ? slides[activeSlide]?.desc_uz : language === 'RU' ? slides[activeSlide]?.desc_ru : slides[activeSlide]?.desc_en}
               </p>
             </div>
@@ -1024,13 +1071,13 @@ export default function DiscoverPage({ searchParams }) {
             justifyContent: 'space-between'
           }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#fff', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Sun size={18} style={{ color: '#fbbf24' }} />
                 {t.weatherTitle}
               </h2>
 
               {/* Main Weather Display */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '20px', backgroundColor: 'rgba(10, 15, 29, 0.4)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.03)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '20px', backgroundColor: 'rgba(0, 0, 0, 0.03)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.06)' }}>
                 <div style={{
                   width: '48px',
                   height: '48px',
@@ -1044,8 +1091,8 @@ export default function DiscoverPage({ searchParams }) {
                   <Sun size={28} className="animate-spin" style={{ animationDuration: '30s' }} />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <span style={{ fontSize: '28px', fontWeight: '800', color: '#fff', lineHeight: 1 }}>
-                    {activeRegion === 'xorazm' ? '33°C' : activeRegion === 'buxoro' ? '31°C' : '28°C'} <span style={{ fontSize: '14px', fontWeight: '400', color: '#94a3b8' }}>/ {activeRegion === 'xorazm' ? '91°F' : activeRegion === 'buxoro' ? '88°F' : '82°F'}</span>
+                  <span style={{ fontSize: '28px', fontWeight: '800', color: 'var(--text-primary)', lineHeight: 1 }}>
+                    {activeRegion === 'xorazm' ? '33°C' : activeRegion === 'buxoro' ? '31°C' : '28°C'} <span style={{ fontSize: '14px', fontWeight: '400', color: 'var(--text-secondary)' }}>/ {activeRegion === 'xorazm' ? '91°F' : activeRegion === 'buxoro' ? '88°F' : '82°F'}</span>
                   </span>
                   <span style={{
                     fontSize: '13px',
@@ -1065,36 +1112,36 @@ export default function DiscoverPage({ searchParams }) {
                 gap: '4px',
                 fontSize: '13px',
                 lineHeight: 1.5,
-                backgroundColor: 'rgba(212, 175, 55, 0.05)',
-                borderLeft: '3px solid #d4af37',
+                backgroundColor: 'rgba(255, 91, 0, 0.05)',
+                borderLeft: '3px solid var(--primary-blue)',
                 padding: '12px',
                 borderRadius: '0 8px 8px 0'
               }}>
-                <strong style={{ color: '#d4af37' }}>{t.weatherTipTitle}</strong>
-                <span style={{ color: '#e2e8f0' }}>{t.weatherTipDesc}</span>
+                <strong style={{ color: 'var(--primary-blue)' }}>{t.weatherTipTitle}</strong>
+                <span style={{ color: 'var(--text-primary)' }}>{t.weatherTipDesc}</span>
               </div>
             </div>
 
             {/* 3-day forecast */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <span style={{ fontSize: '12px', fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 {t.weatherForecast}
               </span>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', padding: '10px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.04)' }}>
-                  <span style={{ fontSize: '11px', color: '#94a3b8' }}>{t.tomorrow}</span>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', padding: '10px', backgroundColor: 'rgba(0,0,0,0.02)', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.04)' }}>
+                  <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{t.tomorrow}</span>
                   <Sun size={16} style={{ color: '#fbbf24' }} />
-                  <strong style={{ fontSize: '13px', color: '#fff' }}>{activeRegion === 'xorazm' ? '34°C' : activeRegion === 'buxoro' ? '32°C' : '29°C'}</strong>
+                  <strong style={{ fontSize: '13px', color: 'var(--text-primary)' }}>{activeRegion === 'xorazm' ? '34°C' : activeRegion === 'buxoro' ? '32°C' : '29°C'}</strong>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', padding: '10px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.04)' }}>
-                  <span style={{ fontSize: '11px', color: '#94a3b8' }}>{t.dayAfter}</span>
-                  {activeRegion === 'xorazm' ? <Sun size={16} style={{ color: '#fbbf24' }} /> : activeRegion === 'buxoro' ? <Sun size={16} style={{ color: '#fbbf24' }} /> : <Cloud size={16} style={{ color: '#94a3b8' }} />}
-                  <strong style={{ fontSize: '13px', color: '#fff' }}>{activeRegion === 'xorazm' ? '33°C' : activeRegion === 'buxoro' ? '31°C' : '27°C'}</strong>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', padding: '10px', backgroundColor: 'rgba(0,0,0,0.02)', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.04)' }}>
+                  <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{t.dayAfter}</span>
+                  {activeRegion === 'xorazm' ? <Sun size={16} style={{ color: '#fbbf24' }} /> : activeRegion === 'buxoro' ? <Sun size={16} style={{ color: '#fbbf24' }} /> : <Cloud size={16} style={{ color: 'var(--text-secondary)' }} />}
+                  <strong style={{ fontSize: '13px', color: 'var(--text-primary)' }}>{activeRegion === 'xorazm' ? '33°C' : activeRegion === 'buxoro' ? '31°C' : '27°C'}</strong>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', padding: '10px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.04)' }}>
-                  <span style={{ fontSize: '11px', color: '#94a3b8' }}>{t.dayThree}</span>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', padding: '10px', backgroundColor: 'rgba(0,0,0,0.02)', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.04)' }}>
+                  <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{t.dayThree}</span>
                   <Sun size={16} style={{ color: '#fbbf24' }} />
-                  <strong style={{ fontSize: '13px', color: '#fff' }}>{activeRegion === 'xorazm' ? '35°C' : activeRegion === 'buxoro' ? '33°C' : '30°C'}</strong>
+                  <strong style={{ fontSize: '13px', color: 'var(--text-primary)' }}>{activeRegion === 'xorazm' ? '35°C' : activeRegion === 'buxoro' ? '33°C' : '30°C'}</strong>
                 </div>
               </div>
             </div>
@@ -1106,11 +1153,11 @@ export default function DiscoverPage({ searchParams }) {
         {/* Middle Section: Festival & Events Calendar */}
         <section className="glass-container gold-glow" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#fff', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Calendar size={18} style={{ color: '#d4af37' }} />
+            <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Calendar size={18} style={{ color: 'var(--primary-blue)' }} />
               {t.eventsTitle}
             </h2>
-            <p style={{ fontSize: '12px', color: '#94a3b8' }}>{t.eventsSub}</p>
+            <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{t.eventsSub}</p>
           </div>
 
           {/* Events Grid layout */}
@@ -1124,9 +1171,9 @@ export default function DiscoverPage({ searchParams }) {
                 key={evt.id}
                 style={{
                   padding: '16px',
-                  backgroundColor: 'rgba(10, 15, 29, 0.4)',
+                  backgroundColor: 'var(--bg-card)',
                   borderRadius: '12px',
-                  border: '1px solid rgba(212, 175, 55, 0.1)',
+                  border: '1px solid rgba(0, 0, 0, 0.08)',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '8px',
@@ -1134,22 +1181,22 @@ export default function DiscoverPage({ searchParams }) {
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.3)';
+                  e.currentTarget.style.borderColor = 'rgba(255, 91, 0, 0.3)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.1)';
+                  e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.08)';
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '6px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid rgba(0,0,0,0.06)', paddingBottom: '6px' }}>
                   <span style={{ fontSize: '11px', fontWeight: '700', color: '#009b9e', backgroundColor: 'rgba(0, 155, 158, 0.1)', padding: '2px 8px', borderRadius: '6px' }}>
                     {language === 'UZ' ? evt.date_uz : language === 'RU' ? evt.date_ru : evt.date_en}
                   </span>
                 </div>
-                <h4 style={{ fontSize: '14px', fontWeight: '700', color: '#fff' }}>
+                <h4 style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text-primary)' }}>
                   {language === 'UZ' ? evt.title_uz : language === 'RU' ? evt.title_ru : evt.title_en}
                 </h4>
-                <p style={{ fontSize: '12px', color: '#94a3b8', lineHeight: 1.5 }}>
+                <p style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
                   {language === 'UZ' ? evt.desc_uz : language === 'RU' ? evt.desc_ru : evt.desc_en}
                 </p>
               </div>
@@ -1159,8 +1206,8 @@ export default function DiscoverPage({ searchParams }) {
 
         {/* Bottom Section: Info Grid (Etiquette, Currency Converter, Contacts) */}
         <section style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#fff', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <BookOpen size={18} style={{ color: '#d4af37' }} />
+          <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <BookOpen size={18} style={{ color: 'var(--primary-blue)' }} />
             {t.tipsTitle}
           </h2>
 
@@ -1172,14 +1219,14 @@ export default function DiscoverPage({ searchParams }) {
             
             {/* 🕌 Cultural Etiquette Card */}
             <div className="glass-container gold-glow" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <h3 style={{ fontSize: '15px', fontWeight: '700', color: '#d4af37', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h3 style={{ fontSize: '15px', fontWeight: '700', color: 'var(--primary-blue)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Info size={16} />
                 {t.etiquetteTitle}
               </h3>
-              <p style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: 1.6 }}>
+              <p style={{ fontSize: '13px', color: 'var(--text-primary)', lineHeight: 1.6 }}>
                 {t.etiquetteDesc}
               </p>
-              <div style={{ display: 'flex', gap: '8px', fontSize: '12px', color: '#94a3b8', backgroundColor: 'rgba(255,255,255,0.02)', padding: '10px', borderRadius: '8px', border: '1px dashed rgba(255,255,255,0.06)' }}>
+              <div style={{ display: 'flex', gap: '8px', fontSize: '12px', color: 'var(--text-secondary)', backgroundColor: 'rgba(0,0,0,0.02)', padding: '10px', borderRadius: '8px', border: '1px dashed rgba(0,0,0,0.08)' }}>
                 <AlertTriangle size={14} style={{ color: '#ef4444', flexShrink: 0 }} />
                 <span>
                   {language === 'UZ'
@@ -1193,18 +1240,18 @@ export default function DiscoverPage({ searchParams }) {
 
             {/* 💵 Currency Converter */}
             <div className="glass-container gold-glow" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <h3 style={{ fontSize: '15px', fontWeight: '700', color: '#d4af37', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h3 style={{ fontSize: '15px', fontWeight: '700', color: 'var(--primary-blue)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <TrendingUp size={16} />
                 {t.currencyTitle}
               </h3>
-              <span style={{ fontSize: '11px', color: '#94a3b8' }}>
+              <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
                 {t.currencySub}
               </span>
 
               {/* Conversion Inputs */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: 'rgba(10,15,29,0.5)', padding: '6px 12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)' }}>
-                  <DollarSign size={14} style={{ color: '#94a3b8' }} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: 'var(--bg-card-hover)', padding: '6px 12px', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.08)' }}>
+                  <DollarSign size={14} style={{ color: 'var(--text-secondary)' }} />
                   <input 
                     type="number" 
                     value={usdAmount}
@@ -1213,17 +1260,17 @@ export default function DiscoverPage({ searchParams }) {
                     style={{
                       background: 'none',
                       border: 'none',
-                      color: '#fff',
+                      color: 'var(--text-primary)',
                       fontSize: '14px',
                       width: '100%',
                       outline: 'none'
                     }}
                   />
-                  <span style={{ fontSize: '12px', color: '#94a3b8', fontWeight: '700' }}>USD</span>
+                  <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '700' }}>USD</span>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: 'rgba(10,15,29,0.5)', padding: '6px 12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)' }}>
-                  <span style={{ fontSize: '14px', color: '#94a3b8', paddingLeft: '4px' }}>сум</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: 'var(--bg-card-hover)', padding: '6px 12px', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.08)' }}>
+                  <span style={{ fontSize: '14px', color: 'var(--text-secondary)', paddingLeft: '4px' }}>сум</span>
                   <input 
                     type="number" 
                     value={uzsAmount}
@@ -1232,24 +1279,24 @@ export default function DiscoverPage({ searchParams }) {
                     style={{
                       background: 'none',
                       border: 'none',
-                      color: '#fff',
+                      color: 'var(--text-primary)',
                       fontSize: '14px',
                       width: '100%',
                       outline: 'none'
                     }}
                   />
-                  <span style={{ fontSize: '12px', color: '#94a3b8', fontWeight: '700' }}>UZS</span>
+                  <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '700' }}>UZS</span>
                 </div>
               </div>
             </div>
 
             {/* 📞 Contacts Card */}
             <div className="glass-container gold-glow" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <h3 style={{ fontSize: '15px', fontWeight: '700', color: '#d4af37', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h3 style={{ fontSize: '15px', fontWeight: '700', color: 'var(--primary-blue)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <PhoneCall size={16} />
                 {t.contactsTitle}
               </h3>
-              <p style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: 1.6, whiteSpace: 'pre-line' }}>
+              <p style={{ fontSize: '13px', color: 'var(--text-primary)', lineHeight: 1.6, whiteSpace: 'pre-line' }}>
                 {t.contactsDesc}
               </p>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: 'rgba(0,155,158,0.06)', border: '1px solid rgba(0,155,158,0.2)', padding: '10px', borderRadius: '8px', color: '#009b9e', fontSize: '12px', fontWeight: '600' }}>

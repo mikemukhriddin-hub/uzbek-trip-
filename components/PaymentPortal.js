@@ -426,8 +426,8 @@ export default function PaymentPortal({
           maxWidth: '460px',
           padding: '28px',
           position: 'relative',
-          border: '1px solid rgba(212, 175, 55, 0.35)',
-          backgroundColor: '#0a0f1d',
+          border: '1px solid rgba(var(--primary-blue-rgb), 0.35)',
+          backgroundColor: 'var(--bg-card)',
           display: 'flex',
           flexDirection: 'column',
           gap: '20px'
@@ -454,18 +454,18 @@ export default function PaymentPortal({
 
         {/* Header Invoice details */}
         {step !== 'success' && (
-          <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '16px' }}>
-            <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#fff', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Lock size={18} style={{ color: '#d4af37' }} />
+          <div style={{ borderBottom: '1px solid var(--border-card)', paddingBottom: '16px' }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Lock size={18} style={{ color: 'var(--primary-blue)' }} />
               {t.title}
             </h3>
-            <p style={{ fontSize: '12px', color: '#94a3b8', lineHeight: 1.4, marginBottom: '12px' }}>
+            <p style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: 1.4, marginBottom: '12px' }}>
               {t.depositNotice}
             </p>
             
             {/* Invoice box */}
             <div style={{
-              backgroundColor: 'rgba(255, 255, 255, 0.03)',
+              backgroundColor: 'var(--bg-dark)',
               borderRadius: '8px',
               padding: '12px 16px',
               display: 'flex',
@@ -473,13 +473,13 @@ export default function PaymentPortal({
               gap: '6px',
               fontSize: '13px'
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
                 <span>{t.totalPrice}</span>
-                <span style={{ color: '#fff', fontWeight: 600 }}>${totalPrice.toFixed(2)}</span>
+                <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>${totalPrice.toFixed(2)}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '15px', fontWeight: 700 }}>
-                <span style={{ color: '#d4af37' }}>{t.depositPrice}</span>
-                <span style={{ color: '#d4af37' }}>
+                <span style={{ color: 'var(--primary-blue)' }}>{t.depositPrice}</span>
+                <span style={{ color: 'var(--primary-blue)' }}>
                   ${depositUsd.toFixed(2)}
                   {residency === 'local' && (
                     <span style={{ fontSize: '12px', color: '#009b9e', marginLeft: '6px' }}>
@@ -565,8 +565,8 @@ export default function PaymentPortal({
                 transition: 'all 0.2s ease',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = '#d4af37';
-                e.currentTarget.style.backgroundColor = 'rgba(212, 175, 55, 0.05)';
+                e.currentTarget.style.borderColor = 'var(--primary-blue)';
+                e.currentTarget.style.backgroundColor = 'rgba(255, 91, 0, 0.05)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
@@ -574,7 +574,7 @@ export default function PaymentPortal({
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <Globe size={24} style={{ color: '#d4af37' }} />
+                <Globe size={24} style={{ color: 'var(--primary-blue)' }} />
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                   <strong style={{ color: '#fff', fontSize: '14px' }}>{t.intlResident}</strong>
                   <span style={{ color: '#64748b', fontSize: '11px' }}>{t.intlDesc}</span>
@@ -974,11 +974,11 @@ export default function PaymentPortal({
               <CheckCircle size={36} />
             </div>
 
-            <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#fff' }}>
+            <h3 style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text-primary)' }}>
               {t.successTitle}
             </h3>
 
-            <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: 1.6 }}>
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
               {t.successDesc}
             </p>
           </div>
