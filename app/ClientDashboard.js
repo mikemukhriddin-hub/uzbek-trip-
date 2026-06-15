@@ -171,6 +171,27 @@ const REGIONAL_COVERS = {
   }
 };
 
+const TRAIN_OPTIONS = [
+  { 
+    id: 'afrosiyob_economy', 
+    name: { UZ: '🚄 Afrosiyob Ekonom-klass', RU: '🚄 Афросиаб Эконом-класс', EN: '🚄 Afrosiyob Economy Class' }, 
+    price: 15.00,
+    emoji: '🎫'
+  },
+  { 
+    id: 'afrosiyob_business', 
+    name: { UZ: '🚄 Afrosiyob Biznes-klass', RU: '🚄 Афросиаб Бизнес-класс', EN: '🚄 Afrosiyob Business Class' }, 
+    price: 30.00,
+    emoji: '⭐'
+  },
+  { 
+    id: 'afrosiyob_vip', 
+    name: { UZ: '🚄 Afrosiyob VIP-klass', RU: '🚄 Афросиаб VIP-класс', EN: '🚄 Afrosiyob VIP Class' }, 
+    price: 50.00,
+    emoji: '👑'
+  },
+];
+
 export default function ClientDashboard({ initialLocations = [], initialGuides = [], initialTariffs = [], initialVehicles = [] }) {
   const [language, setLanguage] = useState('UZ'); // Site UI Language - default to UZ
   const [showLangDropdown, setShowLangDropdown] = useState(false);
@@ -209,6 +230,8 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
   // Constructor States
   const [selectedLocations, setSelectedLocations] = useState([]);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [transportType, setTransportType] = useState('vehicle'); // 'vehicle' or 'train'
+  const [selectedTrain, setSelectedTrain] = useState(null);
   const [selectedGuide, setSelectedGuide] = useState(null);
   const [tourDurationType, setTourDurationType] = useState('single'); // 'single' or 'multi'
   const [numDays, setNumDays] = useState(2); // 2 to 5 days
@@ -420,6 +443,9 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
       }
       return loc;
     }));
+
+    // Auto-progress to transport tab
+    setActiveTab('transport');
   };
 
   const handleUpdateLocationDay = (locId, newDay) => {
@@ -572,7 +598,9 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
     setVerificationError('');
 
     const payload = {
-      touristName: formData.name,
+      touristName: transportType === 'train' && selectedTrain
+        ? `${formData.name} (Train: ${selectedTrain.name.EN})`
+        : formData.name,
       touristEmail: formData.email,
       touristPhone: formData.phone,
       bookingDate: formData.date,
@@ -1109,15 +1137,19 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
       t => t.guide_id === selectedGuide?.id && t.language_code.toUpperCase() === selectedGuideLanguage.toUpperCase()
     );
     const guideRate = tariff ? Number(tariff.daily_rate) : 0;
-    const transportRate = selectedVehicle
-      ? (activeRegion === 'cross_region'
-          ? Number(selectedVehicle.out_of_city_rate) * 1.5
-          : (isOutOfCityRoute ? Number(selectedVehicle.out_of_city_rate) : Number(selectedVehicle.city_rate)))
-      : 0;
+    const transportRate = transportType === 'train'
+      ? (selectedTrain ? Number(selectedTrain.price) : 0)
+      : (selectedVehicle
+          ? (activeRegion === 'cross_region'
+              ? Number(selectedVehicle.out_of_city_rate) * 1.5
+              : (isOutOfCityRoute ? Number(selectedVehicle.out_of_city_rate) : Number(selectedVehicle.city_rate)))
+          : 0);
     
     const guideTotalRate = guideRate * daysCount;
-    const transportTotalRate = transportRate * daysCount;
-    const fixedFee = selectedGuide || selectedVehicle ? 10.00 : 0;
+    const transportTotalRate = transportType === 'train'
+      ? transportRate // train ticket is calculated per person at checkout, here we show the base ticket rate
+      : transportRate * daysCount;
+    const fixedFee = selectedGuide || selectedVehicle || (transportType === 'train' && selectedTrain) ? 10.00 : 0;
     const subtotal = guideTotalRate + transportTotalRate + fixedFee;
     return subtotal;
   };
@@ -2692,6 +2724,34 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 );
               })()}
             </section>
+
+            {/* Next Step Wizard Button */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '24px' }}>
+              <button
+                onClick={() => {
+                  setActiveTab('transport');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '12px 24px',
+                  borderRadius: '12px',
+                  fontSize: '14px',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  backgroundColor: 'var(--primary-blue, #ff5b00)',
+                  color: '#fff',
+                  border: 'none',
+                  boxShadow: '0 4px 14px rgba(255, 91, 0, 0.25)',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                <span>{language === 'UZ' ? 'Keyingi: Transportni tanlash 🚗' : language === 'RU' ? 'Далее: Выбрать транспорт 🚗' : 'Next: Choose Transport 🚗'}</span>
+                <span>➡️</span>
+              </button>
+            </div>
               </div>
             )}
 
@@ -2712,23 +2772,231 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                   activeRegion={activeRegion}
                   onOpenWikipedia={setWikiLocation}
                 />
+
+                {/* Next Step Wizard Button */}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '24px' }}>
+                  <button
+                    onClick={() => {
+                      setActiveTab('transport');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '12px 24px',
+                      borderRadius: '12px',
+                      fontSize: '14px',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      backgroundColor: 'var(--primary-blue, #ff5b00)',
+                      color: '#fff',
+                      border: 'none',
+                      boxShadow: '0 4px 14px rgba(255, 91, 0, 0.25)',
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    <span>{language === 'UZ' ? 'Keyingi: Transportni tanlash 🚗' : language === 'RU' ? 'Далее: Выбрать транспорт 🚗' : 'Next: Choose Transport 🚗'}</span>
+                    <span>➡️</span>
+                  </button>
+                </div>
               </div>
             )}
 
             {/* ========= TAB: TRANSPORT ========= */}
             {(activeTab === 'transport') && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
                   {language === 'UZ' ? '🚗 Transportni tanlang' : language === 'RU' ? '🚗 Выберите транспорт' : '🚗 Choose Transport'}
                 </h2>
-                <VehicleSelector
-                  vehicles={filteredVehicles}
-                  selectedVehicleId={selectedVehicle?.id}
-                  onSelectVehicle={handleSelectVehicle}
-                  isOutOfCityRoute={isOutOfCityRoute}
-                  language={language}
-                  activeRegion={activeRegion}
-                />
+
+                {/* Transport Type Toggle Buttons */}
+                <div style={{
+                  display: 'flex',
+                  backgroundColor: 'var(--bg-dark, #f5f5f5)',
+                  padding: '4px',
+                  borderRadius: '12px',
+                  border: '1px solid var(--border-card, #e0e0e0)',
+                  width: 'fit-content',
+                  alignSelf: 'flex-start',
+                }}>
+                  <button
+                    onClick={() => setTransportType('vehicle')}
+                    style={{
+                      padding: '8px 16px',
+                      borderRadius: '8px',
+                      border: 'none',
+                      fontSize: '13px',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      backgroundColor: transportType === 'vehicle' ? 'var(--bg-card, #ffffff)' : 'transparent',
+                      color: transportType === 'vehicle' ? 'var(--primary-blue, #ff5b00)' : 'var(--text-secondary, #757575)',
+                      boxShadow: transportType === 'vehicle' ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
+                      transition: 'all 0.2s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <span>🚗</span>
+                    <span>{language === 'UZ' ? 'Avtomobil' : language === 'RU' ? 'Автомобиль' : 'Car / Vehicle'}</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setTransportType('train');
+                      if (!selectedTrain) {
+                        setSelectedTrain(TRAIN_OPTIONS[0]); // default select economy
+                      }
+                    }}
+                    style={{
+                      padding: '8px 16px',
+                      borderRadius: '8px',
+                      border: 'none',
+                      fontSize: '13px',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      backgroundColor: transportType === 'train' ? 'var(--bg-card, #ffffff)' : 'transparent',
+                      color: transportType === 'train' ? 'var(--primary-blue, #ff5b00)' : 'var(--text-secondary, #757575)',
+                      boxShadow: transportType === 'train' ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
+                      transition: 'all 0.2s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    <span>🚄</span>
+                    <span>{language === 'UZ' ? 'Tezyurar poyezd' : language === 'RU' ? 'Скоростной поезд' : 'Fast Train'}</span>
+                  </button>
+                </div>
+
+                {transportType === 'vehicle' ? (
+                  <VehicleSelector
+                    vehicles={filteredVehicles}
+                    selectedVehicleId={selectedVehicle?.id}
+                    onSelectVehicle={handleSelectVehicle}
+                    isOutOfCityRoute={isOutOfCityRoute}
+                    language={language}
+                    activeRegion={activeRegion}
+                  />
+                ) : (
+                  /* Train Selector Section */
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div style={{
+                      fontSize: '12px',
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      backgroundColor: 'rgba(124, 58, 237, 0.06)',
+                      border: '1px solid rgba(124, 58, 237, 0.15)',
+                      color: '#7c3aed',
+                      display: 'inline-block',
+                      width: 'fit-content',
+                      fontWeight: '600'
+                    }}>
+                      <strong>{language === 'UZ' ? 'Qo\'llanilgan tarif turi:' : language === 'RU' ? 'Применяемый тариф:' : 'Applied Rate Type:'} </strong>
+                      <span>{language === 'UZ' ? '🚄 Poyezd chipta tarifi (kishi boshiga)' : language === 'RU' ? '🚄 Железнодорожный тариф (за чел)' : '🚄 Train Ticket Tariff (per person)'}</span>
+                    </div>
+                    
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '12px' }}>
+                      {TRAIN_OPTIONS.map((train) => {
+                        const isSelected = selectedTrain?.id === train.id;
+                        return (
+                          <div
+                            key={train.id}
+                            className="glass-container animate-fade-in"
+                            onClick={() => setSelectedTrain(train)}
+                            style={{
+                              padding: '16px',
+                              cursor: 'pointer',
+                              border: isSelected ? '1px solid #7c3aed' : '1px solid var(--border-card)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              gap: '16px',
+                              backgroundColor: isSelected ? 'rgba(124, 58, 237, 0.03)' : 'var(--bg-card)',
+                              boxShadow: isSelected ? '0 4px 12px rgba(124, 58, 237, 0.06)' : '0 4px 12px rgba(0,0,0,0.02)',
+                              transition: 'all 0.2s ease',
+                              borderRadius: '12px'
+                            }}
+                          >
+                            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                              <div style={{
+                                width: '45px',
+                                height: '45px',
+                                borderRadius: '10px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                backgroundColor: isSelected ? 'rgba(124, 58, 237, 0.1)' : 'var(--bg-dark)',
+                                fontSize: '20px',
+                                border: '1px solid var(--border-card)'
+                              }}>
+                                {train.emoji}
+                              </div>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                <span style={{ fontWeight: 700, fontSize: '15px', color: 'var(--text-primary)' }}>
+                                  {train.name[language] || train.name.EN}
+                                </span>
+                                <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
+                                  {language === 'UZ' ? 'Tezkor Afrosiyob qatnovi uchun chipta band qilish' : language === 'RU' ? 'Бронирование билетов на скорый поезд Афросиаб' : 'Ticket reservation for Afrosiyob high-speed link'}
+                                </span>
+                              </div>
+                            </div>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
+                              <span style={{ fontSize: '18px', fontWeight: '700', color: isSelected ? '#7c3aed' : 'var(--text-primary)' }}>
+                                ${train.price.toFixed(0)} <span style={{ fontSize: '11px', fontWeight: 'normal', color: 'var(--text-secondary)' }}>/{language === 'UZ' ? 'kishi' : language === 'RU' ? 'чел' : 'pax'}</span>
+                              </span>
+                              <div style={{
+                                padding: '5px 12px',
+                                borderRadius: '6px',
+                                fontSize: '11px',
+                                fontWeight: '700',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                backgroundColor: isSelected ? '#7c3aed' : 'var(--bg-dark)',
+                                color: isSelected ? '#fff' : 'var(--text-secondary)',
+                                border: isSelected ? 'none' : '1px solid var(--border-card)',
+                                transition: 'all 0.2s ease'
+                              }}>
+                                {isSelected ? <Check size={11} /> : null}
+                                <span>{isSelected ? (language === 'UZ' ? 'Tanlandi' : language === 'RU' ? 'Выбран' : 'Selected') : (language === 'UZ' ? 'Tanlash' : language === 'RU' ? 'Выбрать' : 'Select')}</span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Next Step Wizard Button */}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '12px' }}>
+                  <button
+                    onClick={() => {
+                      setActiveTab('guides');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '12px 24px',
+                      borderRadius: '12px',
+                      fontSize: '14px',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      backgroundColor: 'var(--primary-blue, #ff5b00)',
+                      color: '#fff',
+                      border: 'none',
+                      boxShadow: '0 4px 14px rgba(255, 91, 0, 0.25)',
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    <span>{language === 'UZ' ? 'Keyingi: Gidni tanlash 🗣' : language === 'RU' ? 'Далее: Выбрать гида 🗣' : 'Next: Choose Guide 🗣'}</span>
+                    <span>➡️</span>
+                  </button>
+                </div>
               </div>
             )}
 
@@ -2747,6 +3015,33 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                   onSelectGuideLanguage={handleSelectGuideLanguage}
                   language={language}
                 />
+
+                {/* Next Step Wizard Button */}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '24px' }}>
+                  <button
+                    onClick={() => {
+                      document.getElementById('checkout-step')?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '12px 24px',
+                      borderRadius: '12px',
+                      fontSize: '14px',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      backgroundColor: '#00a36c',
+                      color: '#fff',
+                      border: 'none',
+                      boxShadow: '0 4px 14px rgba(0, 163, 108, 0.25)',
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    <span>{language === 'UZ' ? 'Keyingi: Buyurtmani rasmiylashtirish ✍️' : language === 'RU' ? 'Далее: Оформить заказ ✍️' : 'Next: Complete Booking ✍️'}</span>
+                    <span>➡️</span>
+                  </button>
+                </div>
               </div>
             )}
 
@@ -2765,6 +3060,8 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 activeRegion={activeRegion}
                 tourDurationType={tourDurationType}
                 numDays={numDays}
+                transportType={transportType}
+                selectedTrain={selectedTrain}
               />
             </section>
           </div>

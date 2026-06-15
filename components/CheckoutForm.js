@@ -15,6 +15,8 @@ export default function CheckoutForm({
   activeRegion = 'samarqand',
   tourDurationType = 'single',
   numDays = 2,
+  transportType = 'vehicle',
+  selectedTrain = null,
 }) {
   const [formData, setFormData] = useState({
     name: '',
@@ -79,13 +81,17 @@ export default function CheckoutForm({
   };
 
   // Pricing calculations
+  const passengerCount = Number(formData.passengerCount) || 1;
   const daysCount = tourDurationType === 'multi' ? numDays : 1;
   const guideRate = selectedGuide ? Number(selectedGuide.daily_rate) : 0;
-  const transportRate = selectedVehicle
-    ? (activeRegion === 'cross_region'
-        ? Number(selectedVehicle.out_of_city_rate) * 1.5
-        : (isOutOfCityRoute ? Number(selectedVehicle.out_of_city_rate) : Number(selectedVehicle.city_rate)))
-    : 0;
+  
+  const transportRate = transportType === 'train'
+    ? (selectedTrain ? Number(selectedTrain.price) : 0)
+    : (selectedVehicle
+        ? (activeRegion === 'cross_region'
+            ? Number(selectedVehicle.out_of_city_rate) * 1.5
+            : (isOutOfCityRoute ? Number(selectedVehicle.out_of_city_rate) : Number(selectedVehicle.city_rate)))
+        : 0);
 
   // Dynamic badge formatting for transport rates
   let labelBg = 'rgba(0, 112, 192, 0.06)';
@@ -110,14 +116,14 @@ export default function CheckoutForm({
     labelText = language === 'UZ' ? '🏙 Shahar ichi' : language === 'RU' ? '🏙 Город' : 'City rate';
   }
   const guideTotalRate = guideRate * daysCount;
-  const transportTotalRate = transportRate * daysCount;
-  const fixedFee = selectedGuide || selectedVehicle ? 10.00 : 0;
+  const transportTotalRate = transportType === 'train'
+    ? transportRate * passengerCount
+    : transportRate * daysCount;
+  const fixedFee = selectedGuide || selectedVehicle || (transportType === 'train' && selectedTrain) ? 10.00 : 0;
   const subtotal = guideTotalRate + transportTotalRate + fixedFee;
   const discountRate = bookingType === 'shared' ? 0.25 : 0;
   const discountAmount = subtotal * discountRate;
   const total = subtotal - discountAmount;
-
-  const passengerCount = formData.passengerCount || 1;
   const totalTicketsCost = selectedLocations.reduce((sum, loc) => sum + (loc.ticket_price || 0), 0) * passengerCount;
 
   const handleInputChange = (e) => {
@@ -594,7 +600,7 @@ export default function CheckoutForm({
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontWeight: '600', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    🚗 {t.transportCost}
+                    {transportType === 'train' ? '🚄' : '🚗'} {t.transportCost}
                   </span>
                   <span style={{ color: 'var(--text-primary)', fontWeight: '700' }}>
                     ${transportTotalRate.toFixed(2)}
@@ -603,20 +609,38 @@ export default function CheckoutForm({
                 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', color: 'var(--text-secondary)' }}>
                   <span>
-                    {selectedVehicle ? (
-                      <span style={{ color: labelColor, backgroundColor: labelBg, padding: '2px 6px', borderRadius: '4px', border: labelBorder }}>
-                        {selectedVehicle.car_model} ({labelText})
-                      </span>
+                    {transportType === 'train' ? (
+                      selectedTrain ? (
+                        <span style={{ color: '#7c3aed', backgroundColor: 'rgba(124, 58, 237, 0.06)', padding: '2px 6px', borderRadius: '4px', border: '1px solid rgba(124, 58, 237, 0.2)' }}>
+                          {selectedTrain.name[language] || selectedTrain.name.EN}
+                        </span>
+                      ) : (
+                        <span style={{ color: 'var(--text-secondary)' }}>
+                          {language === 'UZ' ? 'Poyezd tanlanmagan' : language === 'RU' ? 'Поезд не выбран' : 'No train selected'}
+                        </span>
+                      )
                     ) : (
-                      <span style={{ color: 'var(--text-secondary)' }}>
-                        {language === 'UZ' ? 'Transportsiz sayohat' : language === 'RU' ? 'Без транспорта' : 'No transport selected'}
-                      </span>
+                      selectedVehicle ? (
+                        <span style={{ color: labelColor, backgroundColor: labelBg, padding: '2px 6px', borderRadius: '4px', border: labelBorder }}>
+                          {selectedVehicle.car_model} ({labelText})
+                        </span>
+                      ) : (
+                        <span style={{ color: 'var(--text-secondary)' }}>
+                          {language === 'UZ' ? 'Transportsiz sayohat' : language === 'RU' ? 'Без транспорта' : 'No transport selected'}
+                        </span>
+                      )
                     )}
                   </span>
-                  {tourDurationType === 'multi' && selectedVehicle && (
+                  {transportType === 'train' && selectedTrain ? (
                     <span>
-                      ${transportRate.toFixed(2)} × {numDays} {language === 'UZ' ? 'kun' : language === 'RU' ? 'дн' : 'days'}
+                      ${transportRate.toFixed(2)} × {passengerCount} {language === 'UZ' ? 'yo\'lovchi' : language === 'RU' ? 'чел' : 'pax'}
                     </span>
+                  ) : (
+                    tourDurationType === 'multi' && selectedVehicle && (
+                      <span>
+                        ${transportRate.toFixed(2)} × {numDays} {language === 'UZ' ? 'kun' : language === 'RU' ? 'дн' : 'days'}
+                      </span>
+                    )
                   )}
                 </div>
               </div>
