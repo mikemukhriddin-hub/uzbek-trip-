@@ -2844,9 +2844,17 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                   <button
                     onClick={() => {
                       setTransportType('train');
-                      if (!selectedTrain) {
-                        setSelectedTrain(TRAIN_OPTIONS[0]); // default select economy
-                      }
+                      setSelectedTrain({
+                        id: 'train_self',
+                        name: {
+                          UZ: '🚄 Tezyurar poyezd (Uzrailways)',
+                          RU: '🚄 Скоростной поезд (Uzrailways)',
+                          EN: '🚄 Fast Train (Uzrailways)'
+                        },
+                        price: 0.00,
+                        emoji: '🚄'
+                      });
+                      window.open('https://eticket.railway.uz/', '_blank');
                     }}
                     style={{
                       padding: '8px 16px',
@@ -2880,7 +2888,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                   />
                 ) : (
                   /* Train Selector Section */
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <div style={{
                       fontSize: '12px',
                       padding: '8px 12px',
@@ -2893,79 +2901,69 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                       fontWeight: '600'
                     }}>
                       <strong>{language === 'UZ' ? 'Qo\'llanilgan tarif turi:' : language === 'RU' ? 'Применяемый тариф:' : 'Applied Rate Type:'} </strong>
-                      <span>{language === 'UZ' ? '🚄 Poyezd chipta tarifi (kishi boshiga)' : language === 'RU' ? '🚄 Железнодорожный тариф (за чел)' : '🚄 Train Ticket Tariff (per person)'}</span>
+                      <span>{language === 'UZ' ? '🚄 Poyezd chiptasi (Mijoz o\'zi xarid qiladi)' : language === 'RU' ? '🚄 Ж/Д билет (Покупка клиентом)' : '🚄 Train Ticket (Self-purchased)'}</span>
                     </div>
-                    
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '12px' }}>
-                      {TRAIN_OPTIONS.map((train) => {
-                        const isSelected = selectedTrain?.id === train.id;
-                        return (
-                          <div
-                            key={train.id}
-                            className="glass-container animate-fade-in"
-                            onClick={() => setSelectedTrain(train)}
-                            style={{
-                              padding: '16px',
-                              cursor: 'pointer',
-                              border: isSelected ? '1px solid #7c3aed' : '1px solid var(--border-card)',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'space-between',
-                              gap: '16px',
-                              backgroundColor: isSelected ? 'rgba(124, 58, 237, 0.03)' : 'var(--bg-card)',
-                              boxShadow: isSelected ? '0 4px 12px rgba(124, 58, 237, 0.06)' : '0 4px 12px rgba(0,0,0,0.02)',
-                              transition: 'all 0.2s ease',
-                              borderRadius: '12px'
-                            }}
-                          >
-                            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                              <div style={{
-                                width: '45px',
-                                height: '45px',
-                                borderRadius: '10px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                backgroundColor: isSelected ? 'rgba(124, 58, 237, 0.1)' : 'var(--bg-dark)',
-                                fontSize: '20px',
-                                border: '1px solid var(--border-card)'
-                              }}>
-                                {train.emoji}
-                              </div>
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                                <span style={{ fontWeight: 700, fontSize: '15px', color: 'var(--text-primary)' }}>
-                                  {train.name[language] || train.name.EN}
-                                </span>
-                                <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
-                                  {language === 'UZ' ? 'Tezkor Afrosiyob qatnovi uchun chipta band qilish' : language === 'RU' ? 'Бронирование билетов на скорый поезд Афросиаб' : 'Ticket reservation for Afrosiyob high-speed link'}
-                                </span>
-                              </div>
-                            </div>
 
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
-                              <span style={{ fontSize: '18px', fontWeight: '700', color: isSelected ? '#7c3aed' : 'var(--text-primary)' }}>
-                                ${train.price.toFixed(0)} <span style={{ fontSize: '11px', fontWeight: 'normal', color: 'var(--text-secondary)' }}>/{language === 'UZ' ? 'kishi' : language === 'RU' ? 'чел' : 'pax'}</span>
-                              </span>
-                              <div style={{
-                                padding: '5px 12px',
-                                borderRadius: '6px',
-                                fontSize: '11px',
-                                fontWeight: '700',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '4px',
-                                backgroundColor: isSelected ? '#7c3aed' : 'var(--bg-dark)',
-                                color: isSelected ? '#fff' : 'var(--text-secondary)',
-                                border: isSelected ? 'none' : '1px solid var(--border-card)',
-                                transition: 'all 0.2s ease'
-                              }}>
-                                {isSelected ? <Check size={11} /> : null}
-                                <span>{isSelected ? (language === 'UZ' ? 'Tanlandi' : language === 'RU' ? 'Выбран' : 'Selected') : (language === 'UZ' ? 'Tanlash' : language === 'RU' ? 'Выбрать' : 'Select')}</span>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
+                    <div style={{
+                      padding: '24px',
+                      backgroundColor: 'var(--bg-card)',
+                      border: '1.5px solid rgba(124, 58, 237, 0.25)',
+                      borderRadius: '16px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      textAlign: 'center',
+                      gap: '14px',
+                      boxShadow: '0 4px 16px rgba(0,0,0,0.03)',
+                    }}>
+                      <div style={{
+                        width: '60px',
+                        height: '60px',
+                        borderRadius: '50%',
+                        backgroundColor: 'rgba(124, 58, 237, 0.1)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '28px',
+                        marginBottom: '4px'
+                      }}>
+                        🚄
+                      </div>
+                      
+                      <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>
+                        {language === 'UZ' ? 'Uzrailways rasmiy saytidan chipta olish' : language === 'RU' ? 'Покупка билетов на официальном сайте Uzrailways' : 'Purchase Tickets on Official Uzrailways Site'}
+                      </h3>
+                      
+                      <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: 0, maxWidth: '500px', lineHeight: 1.5 }}>
+                        {language === 'UZ'
+                          ? 'Tezyurar poyezdlar (Afrosiyob) chiptalari tez tugashi va pasport ma\'lumotlari talab etilishi sababli, chiptalarni Uzrailways saytidan to\'g\'ridan-to\'g\'ri xarid qilishingiz tavsiya etiladi. Sayohat narxi tarkibiga poyezd chiptasi to\'lovi qo\'shilmaydi ($0.00).'
+                          : language === 'RU'
+                            ? 'Из-за быстрого выкупа билетов на поезда «Афросиаб» и необходимости паспортных данных, мы рекомендуем покупать их напрямую на Uzrailways. Плата за транспорт в нашей системе составит $0.00.'
+                            : 'Due to fast booking rates of Afrosiyob trains and passport requirements, you should purchase tickets directly on the official Uzrailways site. Transport fees on our platform will be set to $0.00.'}
+                      </p>
+
+                      <button
+                        onClick={() => window.open('https://eticket.railway.uz/', '_blank')}
+                        style={{
+                          marginTop: '8px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          padding: '12px 28px',
+                          borderRadius: '12px',
+                          fontSize: '14px',
+                          fontWeight: '700',
+                          cursor: 'pointer',
+                          backgroundColor: '#7c3aed',
+                          color: '#fff',
+                          border: 'none',
+                          boxShadow: '0 4px 14px rgba(124, 58, 237, 0.3)',
+                          transition: 'all 0.2s ease',
+                        }}
+                      >
+                        <span>{language === 'UZ' ? 'Uzrailways saytiga o\'tish' : language === 'RU' ? 'Перейти на Uzrailways' : 'Go to Uzrailways'}</span>
+                        <span>🚄</span>
+                      </button>
                     </div>
                   </div>
                 )}

@@ -632,8 +632,8 @@ export default function CheckoutForm({
                     )}
                   </span>
                   {transportType === 'train' && selectedTrain ? (
-                    <span>
-                      ${transportRate.toFixed(2)} × {passengerCount} {language === 'UZ' ? 'yo\'lovchi' : language === 'RU' ? 'чел' : 'pax'}
+                    <span style={{ fontSize: '11px', color: '#7c3aed', fontWeight: 'bold' }}>
+                      {language === 'UZ' ? 'Mijoz o\'zi xarid qiladi' : language === 'RU' ? 'Покупка клиентом' : 'Self-purchased'}
                     </span>
                   ) : (
                     tourDurationType === 'multi' && selectedVehicle && (
