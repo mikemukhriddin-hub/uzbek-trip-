@@ -16,6 +16,44 @@ const LOCATION_IMAGES = {
   11: '/images/locations/karimbek_restaurant.webp'
 };
 
+async function fetchOSRMRoute(points) {
+  if (points.length < 2) return null;
+  try {
+    const coordsStr = points.map(p => `${p[1]},${p[0]}`).join(';');
+    const res = await fetch(`https://router.project-osrm.org/route/v1/driving/${coordsStr}?overview=full&geometries=geojson`);
+    if (!res.ok) throw new Error('OSRM API error');
+    const data = await res.json();
+    if (data.code !== 'Ok' || !data.routes || data.routes.length === 0) {
+      throw new Error('No route found');
+    }
+    const route = data.routes[0];
+    const coords = route.geometry.coordinates.map(c => [c[1], c[0]]);
+    return {
+      coordinates: coords,
+      distance: route.distance, // in meters
+      duration: route.duration, // in seconds
+    };
+  } catch (err) {
+    console.warn('Failed to fetch OSRM route, using straight lines fallback:', err);
+    return null;
+  }
+}
+
+function getHaversineDistance(p1, p2) {
+  const R = 6371e3; // Earth radius in meters
+  const phi1 = p1[0] * Math.PI / 180;
+  const phi2 = p2[0] * Math.PI / 180;
+  const deltaPhi = (p2[0] - p1[0]) * Math.PI / 180;
+  const deltaLambda = (p2[1] - p1[1]) * Math.PI / 180;
+
+  const a = Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+            Math.cos(phi1) * Math.cos(phi2) *
+            Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c; // in meters
+}
+
 export default function Map({ 
   locations = [], 
   selectedLocations = [], 
@@ -26,12 +64,212 @@ export default function Map({
   theme = 'light'
 }) {
   const [isInteractive, setIsInteractive] = useState(true);
+  const [isNavigating, setIsNavigating] = useState(false);
+  const [isSimulating, setIsSimulating] = useState(false);
+  const [navStats, setNavStats] = useState(null);
+
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
   const markersRef = useRef({});
   const polylineRef = useRef(null);
   const prevSelectedIdsRef = useRef([]);
   const tileLayerRef = useRef(null);
+  
+  const LRef = useRef(null);
+  const routeCoordsRef = useRef([]);
+  const userMarkerRef = useRef(null);
+  const simIntervalRef = useRef(null);
+  const watchIdRef = useRef(null);
+  const simulatedIndexRef = useRef(0);
+
+  const stopNavigation = () => {
+    setIsNavigating(false);
+    setIsSimulating(false);
+    setNavStats(null);
+    if (simIntervalRef.current) {
+      clearInterval(simIntervalRef.current);
+      simIntervalRef.current = null;
+    }
+    if (watchIdRef.current) {
+      if (typeof window !== 'undefined' && navigator.geolocation) {
+        navigator.geolocation.clearWatch(watchIdRef.current);
+      }
+      watchIdRef.current = null;
+    }
+    if (userMarkerRef.current && mapInstance.current) {
+      try {
+        mapInstance.current.removeLayer(userMarkerRef.current);
+      } catch (e) {
+        console.warn('Error removing user marker:', e);
+      }
+      userMarkerRef.current = null;
+    }
+  };
+
+  const startNavigation = async (simulate = false) => {
+    if (selectedLocations.length === 0) return;
+    stopNavigation();
+    
+    setIsNavigating(true);
+    const coords = routeCoordsRef.current;
+    if (!coords || coords.length === 0) {
+      alert(language === 'UZ' ? 'Marshrut hali hisoblanmadi. Iltimos kuting...' : 'Route not calculated yet. Please wait...');
+      setIsNavigating(false);
+      return;
+    }
+
+    const L = LRef.current;
+    const map = mapInstance.current;
+    if (!L || !map) return;
+
+    const userIcon = L.divIcon({
+      className: 'pulsing-user-dot-container',
+      html: '<div class="pulsing-user-dot"></div>',
+      iconSize: [16, 16],
+      iconAnchor: [8, 8],
+    });
+
+    const startPos = coords[0];
+    userMarkerRef.current = L.marker(startPos, { icon: userIcon }).addTo(map);
+    map.setView(startPos, 17);
+
+    if (simulate) {
+      setIsSimulating(true);
+      simulatedIndexRef.current = 0;
+      
+      const interval = setInterval(() => {
+        const nextIdx = simulatedIndexRef.current + 2;
+        if (nextIdx >= coords.length) {
+          clearInterval(interval);
+          setIsSimulating(false);
+          setIsNavigating(false);
+          setNavStats(null);
+          if (userMarkerRef.current) {
+            map.removeLayer(userMarkerRef.current);
+            userMarkerRef.current = null;
+          }
+          alert(language === 'UZ' ? 'Sayohat yakunlandi!' : language === 'RU' ? 'Путешествие завершено!' : 'Journey finished!');
+          return;
+        }
+
+        simulatedIndexRef.current = nextIdx;
+        const currentPos = coords[nextIdx];
+        if (userMarkerRef.current) {
+          userMarkerRef.current.setLatLng(currentPos);
+        }
+        map.setView(currentPos, 17);
+
+        // Calculate stats along route
+        let distanceLeft = 0;
+        for (let i = nextIdx; i < coords.length - 1; i++) {
+          distanceLeft += getHaversineDistance(coords[i], coords[i+1]);
+        }
+
+        const speed = 45; // Simulated driving speed
+        const timeLeftMin = Math.round((distanceLeft / ((speed * 1000) / 3600)) / 60);
+
+        let nextDestinationName = '';
+        const remainingTarget = selectedLocations.find(loc => {
+          const dist = getHaversineDistance(currentPos, [loc.latitude, loc.longitude]);
+          return dist > 60; // Has not reached yet
+        });
+
+        if (remainingTarget) {
+          nextDestinationName = language === 'RU' ? remainingTarget.name_ru : language === 'UZ' ? (remainingTarget.name_uz || remainingTarget.name_en) : remainingTarget.name_en;
+        } else {
+          const lastLoc = selectedLocations[selectedLocations.length - 1];
+          nextDestinationName = language === 'RU' ? lastLoc.name_ru : language === 'UZ' ? (lastLoc.name_uz || lastLoc.name_en) : lastLoc.name_en;
+        }
+
+        setNavStats({
+          distanceLeft: (distanceLeft / 1000).toFixed(1),
+          timeLeft: timeLeftMin > 0 ? timeLeftMin : 1,
+          speed: speed,
+          nextInstruction: language === 'UZ' 
+            ? `${nextDestinationName} tomonga harakatlanmoqdasiz` 
+            : language === 'RU'
+            ? `Движение в сторону: ${nextDestinationName}`
+            : `Heading towards: ${nextDestinationName}`
+        });
+
+      }, 800);
+
+      simIntervalRef.current = interval;
+    } else {
+      setIsSimulating(false);
+      if (!navigator.geolocation) {
+        alert(language === 'UZ' ? 'GPS brauzeringiz tomonidan qo\'llab-quvvatlanmaydi.' : 'GPS not supported by your browser.');
+        setIsNavigating(false);
+        return;
+      }
+
+      const success = (pos) => {
+        const { latitude, longitude, speed } = pos.coords;
+        const currentPos = [latitude, longitude];
+
+        if (userMarkerRef.current) {
+          userMarkerRef.current.setLatLng(currentPos);
+        }
+        map.setView(currentPos, 17);
+
+        // Find closest index on active route
+        let closestIndex = 0;
+        let minDist = Infinity;
+        for (let i = 0; i < coords.length; i++) {
+          const d = getHaversineDistance(currentPos, coords[i]);
+          if (d < minDist) {
+            minDist = d;
+            closestIndex = i;
+          }
+        }
+
+        let distanceLeft = 0;
+        for (let i = closestIndex; i < coords.length - 1; i++) {
+          distanceLeft += getHaversineDistance(coords[i], coords[i+1]);
+        }
+
+        const currentSpeed = speed ? Math.round(speed * 3.6) : 0;
+        const speedMS = speed || 1.4; // fallback to walking speed 5km/h
+        const timeLeftMin = Math.round((distanceLeft / speedMS) / 60);
+
+        let nextDestinationName = '';
+        const remainingTarget = selectedLocations.find(loc => {
+          const dist = getHaversineDistance(currentPos, [loc.latitude, loc.longitude]);
+          return dist > 60;
+        });
+
+        if (remainingTarget) {
+          nextDestinationName = language === 'RU' ? remainingTarget.name_ru : language === 'UZ' ? (remainingTarget.name_uz || remainingTarget.name_en) : remainingTarget.name_en;
+        } else {
+          const lastLoc = selectedLocations[selectedLocations.length - 1];
+          nextDestinationName = language === 'RU' ? lastLoc.name_ru : language === 'UZ' ? (lastLoc.name_uz || lastLoc.name_en) : lastLoc.name_en;
+        }
+
+        setNavStats({
+          distanceLeft: (distanceLeft / 1000).toFixed(1),
+          timeLeft: timeLeftMin > 0 ? timeLeftMin : 1,
+          speed: currentSpeed,
+          nextInstruction: language === 'UZ' 
+            ? `${nextDestinationName} tomonga harakatlanmoqdasiz` 
+            : language === 'RU'
+            ? `Движение в сторону: ${nextDestinationName}`
+            : `Heading towards: ${nextDestinationName}`
+        });
+      };
+
+      const error = (err) => {
+        console.warn('GPS error:', err);
+      };
+
+      const options = {
+        enableHighAccuracy: true,
+        maximumAge: 1000,
+        timeout: 10000,
+      };
+
+      watchIdRef.current = navigator.geolocation.watchPosition(success, error, options);
+    }
+  };
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -71,6 +309,7 @@ export default function Map({
 
     const initMap = async () => {
       const L = await import('leaflet');
+      LRef.current = L;
 
       // Setup Leaflet standard marker asset paths
       delete L.Icon.Default.prototype._getIconUrl;
@@ -181,12 +420,10 @@ export default function Map({
         }
         if (loc.category === 'food') color = 'var(--primary-blue)';
 
-        // Select specific category icon/emoji for unselected markers
         let categoryEmoji = '🕌'; // Historical
         if (loc.category === 'alternative') categoryEmoji = '🌲';
         if (loc.category === 'food') categoryEmoji = '🍲';
 
-        // Styling for custom divIcon markers
         const iconHtml = isSelected
           ? `<div class="custom-route-marker" style="
               background-color: ${color};
@@ -222,7 +459,6 @@ export default function Map({
           iconAnchor: isSelected ? [12, 12] : [10, 10],
         });
 
-        // Fallback for location image using local assets lookup
         const imgUrl = loc.image_url || LOCATION_IMAGES[loc.id] || '/images/locations/registan.webp';
 
         const popupText = `
@@ -277,7 +513,7 @@ export default function Map({
         markersRef.current[loc.id] = marker;
       });
 
-      // Draw polyline connecting selected locations in order
+      // Clean existing polyline routes
       if (polylineRef.current) {
         if (Array.isArray(polylineRef.current)) {
           polylineRef.current.forEach(p => map.removeLayer(p));
@@ -290,15 +526,16 @@ export default function Map({
       if (selectedLocations.length > 0) {
         if (tourDurationType === 'multi') {
           const dayColors = {
-            1: 'var(--primary-blue)', // Klook Orange
-            2: '#009b9e', // Teal
-            3: '#c05a1a', // Terracotta
-            4: '#7c3aed', // Purple
-            5: '#008060', // Green
+            1: 'var(--primary-blue)',
+            2: '#009b9e',
+            3: '#c05a1a',
+            4: '#7c3aed',
+            5: '#008060',
           };
           
           const polylines = [];
           const maxDay = Math.max(...selectedLocations.map(l => l.selectedDay || 1));
+          let allRouteCoords = [];
           
           for (let d = 1; d <= maxDay; d++) {
             const dayLocs = selectedLocations.filter(l => (l.selectedDay || 1) === d);
@@ -306,7 +543,18 @@ export default function Map({
               const points = dayLocs.map(l => [l.latitude, l.longitude]);
               const color = dayColors[d] || 'var(--primary-blue)';
               
-              const pLine = L.polyline(points, {
+              let routePoints = points;
+              let routeData = null;
+              if (points.length >= 2) {
+                routeData = await fetchOSRMRoute(points);
+                if (routeData) {
+                  routePoints = routeData.coordinates;
+                }
+              }
+              
+              allRouteCoords = allRouteCoords.concat(routePoints);
+              
+              const pLine = L.polyline(routePoints, {
                 color: color,
                 weight: 4,
                 opacity: 0.85,
@@ -318,8 +566,8 @@ export default function Map({
             }
           }
           polylineRef.current = polylines;
+          routeCoordsRef.current = allRouteCoords;
 
-          // Fit bounds to all selected locations
           const allPoints = selectedLocations.map(l => [l.latitude, l.longitude]);
           if (allPoints.length > 1) {
             const bounds = L.latLngBounds(allPoints);
@@ -329,24 +577,33 @@ export default function Map({
           }
         } else {
           const points = selectedLocations.map((loc) => [loc.latitude, loc.longitude]);
+          let routePoints = points;
+          let routeData = null;
+
+          if (points.length >= 2) {
+            routeData = await fetchOSRMRoute(points);
+            if (routeData) {
+              routePoints = routeData.coordinates;
+            }
+          }
+
+          routeCoordsRef.current = routePoints;
           
-          polylineRef.current = L.polyline(points, {
-            color: 'var(--primary-blue)', // Klook orange route line
+          polylineRef.current = L.polyline(routePoints, {
+            color: 'var(--primary-blue)',
             weight: 4,
             opacity: 0.85,
-            className: 'animated-route-line', // Flowing animated class
+            className: 'animated-route-line',
             lineJoin: 'round',
           }).addTo(map);
 
-          // Dynamic viewport fitting
           if (selectedLocations.length > 1) {
             map.fitBounds(polylineRef.current.getBounds(), { padding: [60, 60] });
           } else {
-            map.setView(points[0], 13); // Centered and zoomed out slightly for single location
+            map.setView(points[0], 13);
           }
         }
 
-        // Auto-open popup for the newly added location
         if (newlyAddedId && markersRef.current[newlyAddedId]) {
           const marker = markersRef.current[newlyAddedId];
           setTimeout(() => {
@@ -359,6 +616,7 @@ export default function Map({
     initMap();
 
     return () => {
+      stopNavigation();
       if (mapInstance.current) {
         mapInstance.current.remove();
         mapInstance.current = null;
@@ -368,6 +626,221 @@ export default function Map({
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', minHeight: '400px' }}>
+      <style>{`
+        @keyframes pulse-blue {
+          0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); }
+          70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
+          100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+        }
+        .pulsing-user-dot {
+          width: 16px;
+          height: 16px;
+          background-color: #2563eb;
+          border-radius: 50%;
+          border: 2.5px solid #ffffff;
+          animation: pulse-blue 1.8s infinite;
+        }
+        @keyframes slideUp {
+          from { transform: translateY(20px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+      `}</style>
+
+      {/* Floating Navigate Button */}
+      {!isNavigating && selectedLocations.length > 0 && (
+        <button
+          onClick={() => startNavigation(false)}
+          onDoubleClick={() => startNavigation(true)}
+          title={language === 'UZ' ? "Yo'nalishni boshlash (Simulyatsiya qilish uchun 2 marta bosing)" : "Start navigation (Double click to simulate)"}
+          style={{
+            position: 'absolute',
+            bottom: '24px',
+            right: '24px',
+            zIndex: 1000,
+            padding: '12px 20px',
+            backgroundColor: 'var(--primary-blue)',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '50px',
+            fontWeight: '700',
+            fontSize: '13px',
+            boxShadow: '0 6px 20px rgba(255, 91, 0, 0.4)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            transition: 'all 0.2s ease-in-out',
+            fontFamily: 'sans-serif'
+          }}
+        >
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+          </svg>
+          <span>{language === 'UZ' ? 'Navigatsiya' : language === 'RU' ? 'Навигация' : 'Navigate'}</span>
+        </button>
+      )}
+
+      {/* HUD Navigation Panel Overlay */}
+      {isNavigating && (
+        <div style={{
+          position: 'absolute',
+          bottom: '16px',
+          left: '16px',
+          right: '16px',
+          zIndex: 1000,
+          backgroundColor: 'rgba(15, 23, 42, 0.88)',
+          backdropFilter: 'blur(12px)',
+          border: '1.5px solid rgba(255, 91, 0, 0.3)',
+          borderRadius: '16px',
+          padding: '16px',
+          color: '#f1f5f9',
+          boxShadow: '0 10px 30px rgba(0,0,0,0.6)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '12px',
+          fontFamily: 'sans-serif',
+          animation: 'slideUp 0.3s ease-out'
+        }}>
+          {/* Header Line */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
+              <span style={{ fontSize: '20px' }}>🧭</span>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{ fontSize: '10px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: '700' }}>
+                  {isSimulating 
+                    ? (language === 'UZ' ? 'Simulyatsiya rejimi (Demo)' : language === 'RU' ? 'Режим симуляции' : 'Simulation Mode')
+                    : (language === 'UZ' ? 'Jonli GPS yo\'nalishi' : language === 'RU' ? 'Живая GPS навигация' : 'Live GPS Navigation')}
+                </span>
+                <span style={{ fontSize: '13.5px', fontWeight: '700', color: '#fff' }}>
+                  {navStats?.nextInstruction || (language === 'UZ' ? 'Joylashuv aniqlanmoqda...' : 'Locating...')}
+                </span>
+              </div>
+            </div>
+            
+            {/* Speed HUD indicator */}
+            <div style={{
+              backgroundColor: 'rgba(255, 91, 0, 0.15)',
+              border: '1px solid rgba(255, 91, 0, 0.3)',
+              padding: '6px 12px',
+              borderRadius: '12px',
+              textAlign: 'center',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              minWidth: '65px'
+            }}>
+              <span style={{ fontSize: '16px', fontWeight: '900', color: 'var(--primary-blue)' }}>
+                {navStats ? navStats.speed : 0}
+              </span>
+              <span style={{ fontSize: '8px', color: '#cbd5e1' }}>km/h</span>
+            </div>
+          </div>
+
+          {/* Progress bar */}
+          {isSimulating && routeCoordsRef.current.length > 0 && (
+            <div style={{ width: '100%', height: '4px', backgroundColor: '#334155', borderRadius: '2px', overflow: 'hidden' }}>
+              <div style={{
+                width: `${(simulatedIndexRef.current / routeCoordsRef.current.length) * 100}%`,
+                height: '100%',
+                backgroundColor: 'var(--primary-blue)',
+                transition: 'width 0.3s ease'
+              }} />
+            </div>
+          )}
+
+          {/* Stats grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            <div style={{ backgroundColor: 'rgba(30, 41, 59, 0.5)', padding: '10px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.05)' }}>
+              <div style={{ fontSize: '10px', color: '#94a3b8' }}>
+                {language === 'UZ' ? 'Qolgan masofa' : language === 'RU' ? 'Осталось' : 'Distance left'}
+              </div>
+              <div style={{ fontSize: '15px', fontWeight: '700', color: '#10b981', marginTop: '2px' }}>
+                {navStats ? `${navStats.distanceLeft} km` : '--'}
+              </div>
+            </div>
+            <div style={{ backgroundColor: 'rgba(30, 41, 59, 0.5)', padding: '10px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.05)' }}>
+              <div style={{ fontSize: '10px', color: '#94a3b8' }}>
+                {language === 'UZ' ? 'Yetib borish vaqti' : language === 'RU' ? 'Время' : 'Time left'}
+              </div>
+              <div style={{ fontSize: '15px', fontWeight: '700', color: '#3b82f6', marginTop: '2px' }}>
+                {navStats ? `${navStats.timeLeft} daq` : '--'}
+              </div>
+            </div>
+          </div>
+
+          {/* Action buttons */}
+          <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+            <button
+              onClick={() => {
+                if (isSimulating) {
+                  startNavigation(false);
+                } else {
+                  startNavigation(true);
+                }
+              }}
+              style={{
+                flex: 1,
+                padding: '8px 12px',
+                backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: '#fff',
+                borderRadius: '8px',
+                fontWeight: '600',
+                fontSize: '11px',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px'
+              }}
+            >
+              {isSimulating ? (
+                <>
+                  <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                    <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                  </svg>
+                  <span>📱 Real GPS</span>
+                </>
+              ) : (
+                <>
+                  <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M12 2v2M12 4a5 5 0 0 1 5 5v2H7V9a5 5 0 0 1 5-5z"></path>
+                  </svg>
+                  <span>🤖 Demo Simulyatsiya</span>
+                </>
+              )}
+            </button>
+            
+            <button
+              onClick={stopNavigation}
+              style={{
+                padding: '8px 16px',
+                backgroundColor: '#ef4444',
+                border: 'none',
+                color: '#fff',
+                borderRadius: '8px',
+                fontWeight: '700',
+                fontSize: '11px',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}
+            >
+              <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              </svg>
+              <span>{language === 'UZ' ? 'To\'xtatish' : language === 'RU' ? 'Стоп' : 'Stop'}</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       {!isInteractive && (
         <div style={{
           position: 'absolute',
