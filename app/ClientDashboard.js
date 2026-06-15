@@ -219,12 +219,12 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
   const [tariffs, setTariffs] = useState(initialTariffs && initialTariffs.length > 0 ? initialTariffs : MOCK_TARIFFS);
   const [vehicles, setVehicles] = useState(initialVehicles && initialVehicles.length > 0 ? initialVehicles : MOCK_VEHICLES);
 
-  const [activeRegion, setActiveRegion] = useState('samarqand'); // 'samarqand', 'buxoro', 'xorazm', 'shahrisabz', 'toshkent', 'qoraqalpoq', or 'cross_region'
+  const [activeRegion, setActiveRegion] = useState(''); // 'samarqand', 'buxoro', 'xorazm', 'shahrisabz', 'toshkent', 'qoraqalpoq', or 'cross_region'
   const [activeTab, setActiveTab] = useState('explore');
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDescExpanded, setIsDescExpanded] = useState(false);
   const isLoadedRef = useRef(false);
-  const [crossRegionStart, setCrossRegionStart] = useState('samarqand'); // starting point for cross-region tours
+  const [crossRegionStart, setCrossRegionStart] = useState(''); // starting point for cross-region tours
   const [crossRegionLocationFilter, setCrossRegionLocationFilter] = useState('all'); // sub-region browsing filter
 
   // Constructor States
@@ -1213,7 +1213,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
             <Compass size={20} />
           </div>
           <span style={{ fontSize: '18px', fontWeight: 800, letterSpacing: '0.02em', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            {activeRegion === 'cross_region' ? 'O\'ZBEKISTON' : activeRegion === 'qoraqalpoq' ? 'QORAQALPOQ' : activeRegion === 'toshkent' ? 'TOSHKENT' : activeRegion === 'shahrisabz' ? 'SHAHRISABZ' : activeRegion === 'xorazm' ? 'XORAZM' : activeRegion === 'buxoro' ? 'BUXORO' : 'SAMARQAND'} <span style={{ color: 'var(--primary-blue)' }}>CRAFTOUR</span>
+            {activeRegion === '' ? (language === 'UZ' ? 'O\'ZBEKISTON' : language === 'RU' ? 'УЗБЕКИСТАН' : 'UZBEKISTAN') : activeRegion === 'cross_region' ? 'O\'ZBEKISTON' : activeRegion === 'qoraqalpoq' ? 'QORAQALPOQ' : activeRegion === 'toshkent' ? 'TOSHKENT' : activeRegion === 'shahrisabz' ? 'SHAHRISABZ' : activeRegion === 'xorazm' ? 'XORAZM' : activeRegion === 'buxoro' ? 'BUXORO' : 'SAMARQAND'} <span style={{ color: 'var(--primary-blue)' }}>CRAFTOUR</span>
           </span>
         </div>
 
@@ -1236,6 +1236,32 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
             margin: '0 12px'
           }}
         >
+          {activeRegion !== '' && (
+            <button
+              onClick={() => {
+                setActiveRegion('');
+                localStorage.removeItem('active_region');
+              }}
+              style={{
+                padding: '7px 14px',
+                borderRadius: '9px',
+                border: 'none',
+                background: 'rgba(255, 91, 0, 0.1)',
+                color: 'var(--primary-blue)',
+                fontSize: '12.5px',
+                fontWeight: '700',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px',
+                transition: 'all 0.2s ease',
+                marginRight: '6px'
+              }}
+            >
+              <span>⬅️</span>
+              <span>{language === 'UZ' ? 'Viloyatni o\'zgartirish' : language === 'RU' ? 'Сменить регион' : 'Change Region'}</span>
+            </button>
+          )}
           {REGIONS_CONFIG.map((reg) => {
             const isActive = activeRegion === reg.id;
             return (
@@ -1446,6 +1472,31 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
             boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
           }}
         >
+          {activeRegion !== '' && (
+            <button
+              type="button"
+              onClick={() => {
+                setActiveRegion('');
+                localStorage.removeItem('active_region');
+              }}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '10px',
+                border: 'none',
+                background: 'rgba(255, 91, 0, 0.1)',
+                color: 'var(--primary-blue)',
+                fontSize: '13px',
+                fontWeight: '700',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                transition: 'all 0.25s ease',
+              }}
+            >
+              <span>⬅️ Ortga</span>
+            </button>
+          )}
           {REGIONS_CONFIG.map((reg) => {
             const isActive = activeRegion === reg.id;
             return (
@@ -1488,9 +1539,198 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
         </div>
       </div>
 
-      {/* 🏞 Klook Hero Banner with Regional Cover Image */}
-      {(() => {
-        const coverData = REGIONAL_COVERS[activeRegion] || REGIONAL_COVERS.samarqand;
+      {activeRegion === '' ? (
+        <div style={{
+          maxWidth: '1280px',
+          width: '100%',
+          margin: '0 auto',
+          padding: '40px 24px 80px 24px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '32px'
+        }} className="animate-fade-in">
+          {/* Main Title and Prompt */}
+          <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '12px', maxWidth: '700px' }}>
+            <h1 style={{
+              fontSize: '36px',
+              fontWeight: 900,
+              color: 'var(--text-primary)',
+              margin: 0,
+              letterSpacing: '-0.02em',
+              lineHeight: 1.2,
+            }}>
+              {language === 'UZ' 
+                ? 'Sayohatni boshlash uchun viloyatni tanlang' 
+                : language === 'RU' 
+                  ? 'Выберите регион для начала путешествия' 
+                  : 'Select a region to start your journey'}
+            </h1>
+            <p style={{
+              fontSize: '15px',
+              color: 'var(--text-secondary)',
+              margin: 0,
+              lineHeight: 1.6,
+              fontWeight: '500'
+            }}>
+              {language === 'UZ'
+                ? 'O\'zbekistonning tarixiy shaharlari bo\'ylab unutilmas shaxsiy sayohatingizni loyihalashtiring. Gidlar, transport va obidalarni o\'zingiz tanlang!'
+                : language === 'RU'
+                  ? 'Спланируйте уникальное путешествие по историческим городам Узбекистана. Выбирайте гидов, транспорт и места самостоятельно!'
+                  : 'Design your own custom itinerary across historical cities of Uzbekistan. Choose guides, transport, and attractions manually!'}
+            </p>
+          </div>
+
+          {/* Grid of Regions */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: '20px',
+            width: '100%',
+            marginTop: '10px'
+          }}>
+            {REGIONS_CONFIG.map((reg) => {
+              const taglineUz = reg.id === 'cross_region'
+                ? 'Butun mamlakat bo\'ylab kombinatsiyalangan sayohat'
+                : reg.id === 'toshkent'
+                  ? 'Zamonaviy va qadimiy poytaxt bo\'ylab sayohat'
+                  : reg.id === 'samarqand'
+                    ? 'Buyuk Ipak yo\'lining afsonaviy yuragi'
+                    : reg.id === 'buxoro'
+                      ? 'Islom madaniyatining ko\'hna gavhari'
+                      : reg.id === 'xorazm'
+                        ? 'Ertaknamo Xiva va ko\'hna qal\'alar'
+                        : reg.id === 'shahrisabz'
+                          ? 'Amir Temurning ko\'hna vatani'
+                          : 'Orol dengizi, o\'tovlar va san\'at muzeyi';
+
+              const taglineRu = reg.id === 'cross_region'
+                ? 'Комбинированный тур по всей стране'
+                : reg.id === 'toshkent'
+                  ? 'Путешествие по современной и древней столице'
+                  : reg.id === 'samarqand'
+                    ? 'Легендарное сердце Великого шелкового пути'
+                    : reg.id === 'buxoro'
+                      ? 'Древняя жемчужина исламской культуры'
+                      : reg.id === 'xorazm'
+                        ? 'Сказочная Хива и старинные крепости'
+                        : reg.id === 'shahrisabz'
+                          ? 'Древняя родина великого Амира Темура'
+                          : 'Аральское море, юрты и музей искусств';
+
+              const taglineEn = reg.id === 'cross_region'
+                ? 'Combined tour across the whole country'
+                : reg.id === 'toshkent'
+                  ? 'Explore the modern and ancient capital'
+                  : reg.id === 'samarqand'
+                    ? 'The legendary heart of the Silk Road'
+                    : reg.id === 'buxoro'
+                      ? 'Ancient jewel of Islamic culture'
+                      : reg.id === 'xorazm'
+                        ? 'Fairytale Khiva and ancient fortresses'
+                        : reg.id === 'shahrisabz'
+                          ? 'The historic home city of Amir Temur'
+                          : 'Aral Sea, yurt camps and art museum';
+
+              return (
+                <div
+                  key={reg.id}
+                  onClick={() => {
+                    setActiveRegion(reg.id);
+                    if (reg.id === 'cross_region') {
+                      setCrossRegionStart('');
+                    }
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-6px)';
+                    e.currentTarget.style.boxShadow = `0 14px 40px ${reg.shadow}`;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = `0 8px 30px ${reg.shadow}`;
+                  }}
+                  style={{
+                    padding: '32px 24px',
+                    borderRadius: '20px',
+                    background: reg.gradient,
+                    color: reg.color,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    gap: '40px',
+                    boxShadow: `0 8px 30px ${reg.shadow}`,
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    minHeight: '220px'
+                  }}
+                >
+                  <div style={{
+                    position: 'absolute',
+                    right: '-20px',
+                    bottom: '-20px',
+                    fontSize: '120px',
+                    opacity: 0.15,
+                    pointerEvents: 'none',
+                    userSelect: 'none',
+                    lineHeight: 1
+                  }}>
+                    {reg.emoji}
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <span style={{ fontSize: '32px', filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.15))' }}>
+                      {reg.emoji}
+                    </span>
+                    <span style={{
+                      backgroundColor: 'rgba(255,255,255,0.15)',
+                      backdropFilter: 'blur(4px)',
+                      padding: '4px 10px',
+                      borderRadius: '10px',
+                      fontSize: '11px',
+                      fontWeight: '800',
+                      letterSpacing: '0.05em',
+                      textTransform: 'uppercase'
+                    }}>
+                      {reg.id === 'cross_region' 
+                        ? (language === 'UZ' ? 'Ko\'p viloyatli' : language === 'RU' ? 'Мульти-регион' : 'Multi-region')
+                        : (language === 'UZ' ? 'Viloyat' : language === 'RU' ? 'Регион' : 'Province')}
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', zIndex: 2 }}>
+                    <h3 style={{
+                      fontSize: '22px',
+                      fontWeight: '800',
+                      margin: 0,
+                      textShadow: '0 2px 4px rgba(0,0,0,0.15)',
+                      lineHeight: 1.2
+                    }}>
+                      {reg.label[language] || reg.label['UZ']}
+                    </h3>
+                    <p style={{
+                      fontSize: '13px',
+                      color: 'rgba(255,255,255,0.85)',
+                      margin: 0,
+                      fontWeight: '500',
+                      lineHeight: 1.4,
+                      maxWidth: '90%'
+                    }}>
+                      {language === 'UZ' ? taglineUz : language === 'RU' ? taglineRu : taglineEn}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* 🏞 Klook Hero Banner with Regional Cover Image */}
+          {(() => {
+            const coverData = REGIONAL_COVERS[activeRegion] || REGIONAL_COVERS.samarqand;
         const coverDesc = language === 'UZ' ? coverData.descUz : language === 'RU' ? coverData.descRu : coverData.descEn;
         return (
           <div style={{
@@ -1703,13 +1943,19 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                         padding: '10px 14px',
                         borderRadius: '10px',
                         backgroundColor: 'var(--input-bg)',
-                        border: '1px solid var(--input-border)',
+                        border: crossRegionStart === '' ? '1.5px solid #ff5b00' : '1px solid var(--input-border)',
                         color: 'var(--text-primary)',
                         fontSize: '14px',
                         outline: 'none',
-                        cursor: 'pointer'
+                        cursor: 'pointer',
+                        boxShadow: crossRegionStart === '' ? '0 0 10px rgba(255, 91, 0, 0.15)' : 'none'
                       }}
                     >
+                      {crossRegionStart === '' && (
+                        <option value="" disabled>
+                          {language === 'UZ' ? 'Viloyatni tanlang' : language === 'RU' ? 'Выберите регион' : 'Select region'}
+                        </option>
+                      )}
                       <option value="samarqand">{language === 'UZ' ? 'Samarqand' : language === 'RU' ? 'Самарканд' : 'Samarkand'}</option>
                       <option value="buxoro">{language === 'UZ' ? 'Buxoro' : language === 'RU' ? 'Бухара' : 'Bukhara'}</option>
                       <option value="xorazm">{language === 'UZ' ? 'Xorazm' : language === 'RU' ? 'Хорезм' : 'Khorezm'}</option>
@@ -1717,6 +1963,11 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                       <option value="toshkent">{language === 'UZ' ? 'Toshkent' : language === 'RU' ? 'Ташкент' : 'Tashkent'}</option>
                       <option value="qoraqalpoq">{language === 'UZ' ? 'Qoraqalpog\'iston' : language === 'RU' ? 'Каракалпакстан' : 'Karakalpakstan'}</option>
                     </select>
+                    {crossRegionStart === '' && (
+                      <span style={{ color: '#ef4444', fontSize: '11px', fontWeight: '600', marginTop: '2px' }}>
+                        {language === 'UZ' ? '⚠️ Iltimos, sayohat boshlanadigan viloyatni tanlang!' : language === 'RU' ? '⚠️ Пожалуйста, выберите регион начала поездки!' : '⚠️ Please select starting region!'}
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -1748,7 +1999,47 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
 
             {/* ========= TAB: EXPLORE (Route planning + Packages) ========= */}
             {(activeTab === 'explore') && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              activeRegion === 'cross_region' && crossRegionStart === '' ? (
+                <div style={{
+                  padding: '40px 24px',
+                  textAlign: 'center',
+                  backgroundColor: 'var(--bg-card)',
+                  borderRadius: '16px',
+                  border: '1px solid var(--border-card)',
+                  boxShadow: '0 2px 10px rgba(0,0,0,0.04)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '16px',
+                }}>
+                  <div style={{
+                    width: '60px',
+                    height: '60px',
+                    borderRadius: '50%',
+                    backgroundColor: 'rgba(255, 91, 0, 0.1)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'var(--primary-blue)',
+                    fontSize: '28px'
+                  }}>
+                    📍
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <h3 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-primary)', margin: 0 }}>
+                      {language === 'UZ' ? 'Sayohatni boshlash viloyati tanlanmagan' : language === 'RU' ? 'Регион начала поездки не выбран' : 'Starting Region Not Selected'}
+                    </h3>
+                    <p style={{ fontSize: '14px', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
+                      {language === 'UZ' 
+                        ? 'Iltimos, chap tomondagi panelda sayohatni boshlash viloyatini tanlang.' 
+                        : language === 'RU' 
+                          ? 'Пожалуйста, выберите регион начала поездки в левой панели.' 
+                          : 'Please select the starting region in the left panel.'}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 
                 {/* 🌤 Weather Banner */}
                 <div style={{
@@ -2779,11 +3070,52 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
               </button>
             </div>
               </div>
+              )
             )}
 
             {/* ========= TAB: SIGHTS (Attractions grid) ========= */}
             {(activeTab === 'sights') && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              activeRegion === 'cross_region' && crossRegionStart === '' ? (
+                <div style={{
+                  padding: '40px 24px',
+                  textAlign: 'center',
+                  backgroundColor: 'var(--bg-card)',
+                  borderRadius: '16px',
+                  border: '1px solid var(--border-card)',
+                  boxShadow: '0 2px 10px rgba(0,0,0,0.04)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '16px',
+                }}>
+                  <div style={{
+                    width: '60px',
+                    height: '60px',
+                    borderRadius: '50%',
+                    backgroundColor: 'rgba(255, 91, 0, 0.1)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'var(--primary-blue)',
+                    fontSize: '28px'
+                  }}>
+                    📍
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <h3 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-primary)', margin: 0 }}>
+                      {language === 'UZ' ? 'Sayohatni boshlash viloyati tanlanmagan' : language === 'RU' ? 'Регион начала поездки не выбран' : 'Starting Region Not Selected'}
+                    </h3>
+                    <p style={{ fontSize: '14px', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
+                      {language === 'UZ' 
+                        ? 'Iltimos, chap tomondagi panelda sayohatni boshlash viloyatini tanlang.' 
+                        : language === 'RU' 
+                          ? 'Пожалуйста, выберите регион начала поездки в левой панели.' 
+                          : 'Please select the starting region in the left panel.'}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)' }}>
                   {language === 'UZ' ? '🕌 Diqqatga sazovor joylar' : language === 'RU' ? '🕌 Достопримечательности' : '🕌 Attractions'}
                 </h2>
@@ -2827,11 +3159,52 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                   </button>
                 </div>
               </div>
+              )
             )}
 
             {/* ========= TAB: TRANSPORT ========= */}
             {(activeTab === 'transport') && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              activeRegion === 'cross_region' && crossRegionStart === '' ? (
+                <div style={{
+                  padding: '40px 24px',
+                  textAlign: 'center',
+                  backgroundColor: 'var(--bg-card)',
+                  borderRadius: '16px',
+                  border: '1px solid var(--border-card)',
+                  boxShadow: '0 2px 10px rgba(0,0,0,0.04)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '16px',
+                }}>
+                  <div style={{
+                    width: '60px',
+                    height: '60px',
+                    borderRadius: '50%',
+                    backgroundColor: 'rgba(255, 91, 0, 0.1)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'var(--primary-blue)',
+                    fontSize: '28px'
+                  }}>
+                    📍
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <h3 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-primary)', margin: 0 }}>
+                      {language === 'UZ' ? 'Sayohatni boshlash viloyati tanlanmagan' : language === 'RU' ? 'Регион начала поездки не выбран' : 'Starting Region Not Selected'}
+                    </h3>
+                    <p style={{ fontSize: '14px', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
+                      {language === 'UZ' 
+                        ? 'Iltimos, chap tomondagi panelda sayohatni boshlash viloyatini tanlang.' 
+                        : language === 'RU' 
+                          ? 'Пожалуйста, выберите регион начала поездки в левой панели.' 
+                          : 'Please select the starting region in the left panel.'}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
                   {language === 'UZ' ? '🚗 Transportni tanlang' : language === 'RU' ? '🚗 Выберите транспорт' : '🚗 Choose Transport'}
                 </h2>
@@ -3022,11 +3395,52 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                   </button>
                 </div>
               </div>
+              )
             )}
 
             {/* ========= TAB: GUIDES ========= */}
             {(activeTab === 'guides') && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              activeRegion === 'cross_region' && crossRegionStart === '' ? (
+                <div style={{
+                  padding: '40px 24px',
+                  textAlign: 'center',
+                  backgroundColor: 'var(--bg-card)',
+                  borderRadius: '16px',
+                  border: '1px solid var(--border-card)',
+                  boxShadow: '0 2px 10px rgba(0,0,0,0.04)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '16px',
+                }}>
+                  <div style={{
+                    width: '60px',
+                    height: '60px',
+                    borderRadius: '50%',
+                    backgroundColor: 'rgba(255, 91, 0, 0.1)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'var(--primary-blue)',
+                    fontSize: '28px'
+                  }}>
+                    📍
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <h3 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-primary)', margin: 0 }}>
+                      {language === 'UZ' ? 'Sayohatni boshlash viloyati tanlanmagan' : language === 'RU' ? 'Регион начала поездки не выбран' : 'Starting Region Not Selected'}
+                    </h3>
+                    <p style={{ fontSize: '14px', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
+                      {language === 'UZ' 
+                        ? 'Iltimos, chap tomondagi panelda sayohatni boshlash viloyatini tanlang.' 
+                        : language === 'RU' 
+                          ? 'Пожалуйста, выберите регион начала поездки в левой панели.' 
+                          : 'Please select the starting region in the left panel.'}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)' }}>
                   {language === 'UZ' ? '🗣 Gidni tanlang' : language === 'RU' ? '🗣 Выберите гида' : '🗣 Choose Your Guide'}
                 </h2>
@@ -3067,12 +3481,28 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                   </button>
                 </div>
               </div>
+              )
             )}
 
             {/* 👤 Checkout (Always visible) */}
             <section id="checkout-step" style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '16px' }}>
               <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)' }}>{t.step4}</h2>
-              <CheckoutForm
+              {activeRegion === 'cross_region' && crossRegionStart === '' ? (
+                <div style={{
+                  padding: '20px',
+                  borderRadius: '16px',
+                  backgroundColor: 'var(--bg-card)',
+                  border: '1px dashed var(--border-card)',
+                  color: 'var(--text-secondary)',
+                  fontSize: '13.5px',
+                  fontWeight: '600',
+                  textAlign: 'center',
+                  boxShadow: '0 2px 10px rgba(0,0,0,0.02)'
+                }}>
+                  {language === 'UZ' ? 'Sayohatni boshlash viloyati tanlanganidan keyin buyurtmani rasmiylashtirish mumkin bo\'ladi.' : language === 'RU' ? 'Оформление заказа будет доступно после выбора региона начала поездки.' : 'Booking will be available after selecting the starting region.'}
+                </div>
+              ) : (
+                <CheckoutForm
                 selectedLocations={selectedLocations}
                 selectedVehicle={selectedVehicle}
                 selectedGuide={selectedGuide}
@@ -3087,6 +3517,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 transportType={transportType}
                 selectedTrain={selectedTrain}
               />
+              )}
             </section>
           </div>
 
@@ -3121,6 +3552,8 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
 
         </div>
       </div>
+      </>
+      )}
 
       {/* Verification OTP Modal Dialog Overlay */}
       <VerificationModal
@@ -3233,7 +3666,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
         backgroundColor: 'var(--bg-card)',
       }}>
         <div>
-          © {new Date().getFullYear()} {activeRegion === 'qoraqalpoq' ? 'Qoraqalpog\'iston' : activeRegion === 'toshkent' ? 'Toshkent' : activeRegion === 'shahrisabz' ? 'Shahrisabz' : activeRegion === 'xorazm' ? 'Xorazm' : activeRegion === 'buxoro' ? 'Buxoro' : 'Samarqand'} CrafTour. {language === 'RU' ? 'Все права защищены.' : 'All rights reserved.'}
+          © {new Date().getFullYear()} {activeRegion === 'qoraqalpoq' ? 'Qoraqalpog\'iston' : activeRegion === 'toshkent' ? 'Toshkent' : activeRegion === 'shahrisabz' ? 'Shahrisabz' : activeRegion === 'xorazm' ? 'Xorazm' : activeRegion === 'buxoro' ? 'Buxoro' : activeRegion === 'samarqand' ? 'Samarqand' : 'O\'zbekiston'} CrafTour. {language === 'RU' ? 'Все права защищены.' : 'All rights reserved.'}
         </div>
         <a
           href="/admin"
