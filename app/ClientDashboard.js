@@ -1496,13 +1496,13 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
         const coverData = REGIONAL_COVERS[activeRegion] || REGIONAL_COVERS.samarqand;
         const coverDesc = language === 'UZ' ? coverData.descUz : language === 'RU' ? coverData.descRu : coverData.descEn;
         return (
-          <div style={{
+          <div className="hero-description-container" style={{
             maxWidth: '1280px',
             margin: '0 auto',
             width: '100%',
             padding: '16px 24px 0 24px',
           }}>
-            <div style={{
+            <div className="hero-expander-card" style={{
               backgroundColor: 'var(--bg-card)',
               borderRadius: '16px',
               padding: '20px 24px',
@@ -1548,7 +1548,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
       })()}
 
       {/* 🗂 Category Tabs (Klook-style) */}
-      <div style={{
+      <div className="category-tabs-container" style={{
         maxWidth: '1280px',
         margin: '0 auto',
         width: '100%',
@@ -1600,7 +1600,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
       </div>
 
       {/* 🚀 Main Content Area */}
-      <div style={{
+      <div className="main-content-container" style={{
         flex: 1,
         padding: '20px 24px 32px 24px',
         maxWidth: '1280px',
