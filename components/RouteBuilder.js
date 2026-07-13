@@ -337,6 +337,7 @@ export default function RouteBuilder({
                             transition: 'transform 0.4s ease',
                           }}
                           className="location-card-img"
+                          referrerPolicy="no-referrer"
                           onError={(e) => {
                             // If Wikimedia image fails, try Wikipedia thumbnail API
                             const wikiTitle = loc.wikipedia_title_en || loc.name_en?.replace(/ /g, '_');

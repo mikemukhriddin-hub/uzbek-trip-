@@ -158,6 +158,7 @@ export default function GuideSelector({
                         objectFit: 'cover',
                         transition: 'transform 0.4s ease'
                       }} 
+                      referrerPolicy="no-referrer"
                       className="guide-avatar"
                     />
                   </div>

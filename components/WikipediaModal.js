@@ -228,6 +228,7 @@ export default function WikipediaModal({
                 height: '100%',
                 objectFit: 'cover'
               }}
+              referrerPolicy="no-referrer"
             />
             <div style={{
               position: 'absolute',

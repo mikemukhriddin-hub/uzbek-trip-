@@ -2361,6 +2361,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 objectFit: 'cover',
                 display: 'block',
               }}
+              referrerPolicy="no-referrer"
             />
             {/* Dark gradient overlay for text readability */}
             <div style={{
