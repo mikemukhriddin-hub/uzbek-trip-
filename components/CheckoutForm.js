@@ -17,6 +17,7 @@ export default function CheckoutForm({
   numDays = 2,
   transportType = 'vehicle',
   selectedTrain = null,
+  userProfile = null,
 }) {
   const [formData, setFormData] = useState({
     name: '',
@@ -26,6 +27,17 @@ export default function CheckoutForm({
     passengerCount: 1,
     localPartners: false,
   });
+
+  // Sync form details with authenticated user profile
+  React.useEffect(() => {
+    if (userProfile) {
+      setFormData(prev => ({
+        ...prev,
+        name: prev.name || userProfile.name || '',
+        email: prev.email || userProfile.email || '',
+      }));
+    }
+  }, [userProfile]);
   const [errors, setErrors] = useState({});
   const [bookingType, setBookingType] = useState('private');
 

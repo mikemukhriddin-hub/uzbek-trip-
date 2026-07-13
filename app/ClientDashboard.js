@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { Compass, Sparkles, MapPin, CheckCircle, XCircle, Languages, AlertCircle, Lock, Info, Sun, Moon } from 'lucide-react';
+import { Compass, Sparkles, MapPin, CheckCircle, XCircle, Languages, AlertCircle, Lock, Info, Sun, Moon, Mail } from 'lucide-react';
 
 // Dynamically import the Map component with no SSR to bypass Leaflet window errors
 const Map = dynamic(() => import('@/components/Map'), { 
@@ -196,6 +196,10 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
   const [language, setLanguage] = useState('UZ'); // Site UI Language - default to UZ
   const [showLangDropdown, setShowLangDropdown] = useState(false);
   const [theme, setTheme] = useState('light');
+  const [userProfile, setUserProfile] = useState(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [qrTimer, setQrTimer] = useState(59);
   const [locations, setLocations] = useState(() => {
     const base = initialLocations && initialLocations.length > 0 ? initialLocations : MOCK_LOCATIONS;
     return base.map(loc => {
@@ -350,7 +354,133 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
     } else {
       isLoadedRef.current = true;
     }
+
+    // Load saved user profile session
+    const savedUser = localStorage.getItem('user_profile');
+    if (savedUser) {
+      try {
+        setUserProfile(JSON.parse(savedUser));
+      } catch (e) {
+        console.error('Error parsing saved user profile', e);
+      }
+    }
   }, []);
+
+  // QR code countdown timer simulation for Klook login clone
+  useEffect(() => {
+    if (!userProfile) {
+      const interval = setInterval(() => {
+        setQrTimer((prev) => (prev <= 1 ? 59 : prev - 1));
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [userProfile]);
+
+  // Handle callback from Google Identity Services token authentication
+  const handleGoogleCredentialResponse = async (response) => {
+    try {
+      const res = await fetch('/api/auth/google', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken: response.credential }),
+      });
+      const data = await res.json();
+      if (data.success && data.user) {
+        setUserProfile(data.user);
+        localStorage.setItem('user_profile', JSON.stringify(data.user));
+        setShowLoginModal(false);
+      } else {
+        console.error('Google Sign In failed:', data.error);
+        alert(language === 'UZ' ? 'Kirishda xatolik yuz berdi' : language === 'RU' ? 'Ошибка входа' : 'Login failed: ' + data.error);
+      }
+    } catch (err) {
+      console.error('Error during Google authentication endpoint call:', err);
+    }
+  };
+
+  // Re-render Google button inside modal when visible
+  useEffect(() => {
+    if (showLoginModal && typeof window !== 'undefined') {
+      const renderGoogleBtn = () => {
+        if (window.google?.accounts?.id) {
+          window.google.accounts.id.renderButton(
+            document.getElementById('google-signin-button-modal'),
+            { theme: theme === 'dark' ? 'filled_blue' : 'outline', size: 'large', width: 340 }
+          );
+        } else {
+          setTimeout(renderGoogleBtn, 500);
+        }
+      };
+      setTimeout(renderGoogleBtn, 100);
+    }
+  }, [showLoginModal, theme]);
+
+  // Initialize Google Identity Services SDK
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const initGoogle = () => {
+        if (window.google?.accounts?.id) {
+          window.google.accounts.id.initialize({
+            client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '8990366035-yourplaceholder.apps.googleusercontent.com',
+            callback: handleGoogleCredentialResponse,
+          });
+        } else {
+          // Retry if not yet loaded in DOM
+          setTimeout(initGoogle, 1000);
+        }
+      };
+      initGoogle();
+    }
+  }, []);
+
+  // Render Google Sign-in button dynamically once DOM element appears
+  useEffect(() => {
+    if (typeof window !== 'undefined' && !userProfile) {
+      const renderGoogleBtn = () => {
+        const btnElem = document.getElementById("google-signin-button");
+        if (btnElem && window.google?.accounts?.id) {
+          window.google.accounts.id.renderButton(btnElem, {
+            theme: "outline",
+            size: "medium",
+            type: "standard",
+            shape: "pill",
+            text: "signin_with",
+            logo_alignment: "left"
+          });
+        } else if (!userProfile) {
+          setTimeout(renderGoogleBtn, 1000);
+        }
+      };
+      renderGoogleBtn();
+    }
+  }, [userProfile]);
+
+  const handleLogout = () => {
+    setUserProfile(null);
+    setShowProfileMenu(false);
+    localStorage.removeItem('user_profile');
+  };
+
+  const handleDeleteAvatar = async () => {
+    if (!userProfile) return;
+    try {
+      const res = await fetch('/api/auth/profile/delete-avatar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: userProfile.email }),
+      });
+      const data = await res.json();
+      if (data.success && data.user) {
+        const updatedProfile = { ...userProfile, ...data.user };
+        setUserProfile(updatedProfile);
+        localStorage.setItem('user_profile', JSON.stringify(updatedProfile));
+      } else {
+        console.error('Failed to delete avatar:', data.error);
+      }
+    } catch (err) {
+      console.error('Error deleting profile avatar:', err);
+    }
+  };
 
   const toggleTheme = () => {
     const nextTheme = theme === 'light' ? 'dark' : 'light';
@@ -620,6 +750,10 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
 
   // Submit checkout form -> Generates OTP and opens OTP dialog
   const handleSubmitBooking = async (formData) => {
+    if (!userProfile) {
+      setShowLoginModal(true);
+      return;
+    }
     setIsSubmitting(true);
     setVerificationError('');
 
@@ -1439,10 +1573,488 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
               </div>
             )}
           </div>
+
+          {/* Google Auth / Profile Area */}
+          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', marginLeft: '6px' }}>
+            {!userProfile ? (
+              <button
+                onClick={() => setShowLoginModal(true)}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '20px',
+                  border: '1.5px solid var(--primary-blue)',
+                  backgroundColor: 'transparent',
+                  color: 'var(--primary-blue)',
+                  fontSize: '13.5px',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 2px 8px rgba(var(--primary-blue-rgb), 0.1)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--primary-blue)';
+                  e.currentTarget.style.color = '#ffffff';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.color = 'var(--primary-blue)';
+                }}
+              >
+                {language === 'UZ' ? 'Kirish' : language === 'RU' ? 'Войти' : 'Sign In'}
+              </button>
+            ) : (
+              <div>
+                <button
+                  onClick={() => setShowProfileMenu(!showProfileMenu)}
+                  style={{
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '50%',
+                    border: '2px solid var(--primary-blue)',
+                    cursor: 'pointer',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: userProfile.avatar_type === 'emoji' ? userProfile.avatar_bg_color : 'transparent',
+                    fontSize: userProfile.avatar_type === 'emoji' ? '20px' : 'inherit',
+                    padding: 0,
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                    transition: 'transform 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+                >
+                  {userProfile.avatar_type === 'emoji' ? (
+                    userProfile.avatar_value
+                  ) : userProfile.avatar_value ? (
+                    <img 
+                      src={userProfile.avatar_value} 
+                      alt={userProfile.name || 'User'} 
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <span style={{ fontSize: '18px' }}>👤</span>
+                  )}
+                </button>
+
+                {showProfileMenu && (
+                  <div style={{
+                    position: 'absolute',
+                    top: 'calc(100% + 8px)',
+                    right: 0,
+                    backgroundColor: 'var(--bg-card)',
+                    border: '1px solid var(--border-card)',
+                    borderRadius: '16px',
+                    padding: '16px',
+                    zIndex: 1000,
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '12px',
+                    minWidth: '220px',
+                    color: 'var(--text-primary)',
+                  }}>
+                    {/* User Header */}
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center', borderBottom: '1px solid var(--border-card)', paddingBottom: '12px' }}>
+                      <div style={{
+                        width: '42px',
+                        height: '42px',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: userProfile.avatar_type === 'emoji' ? userProfile.avatar_bg_color : 'transparent',
+                        fontSize: userProfile.avatar_type === 'emoji' ? '22px' : 'inherit',
+                        overflow: 'hidden'
+                      }}>
+                        {userProfile.avatar_type === 'emoji' ? (
+                          userProfile.avatar_value
+                        ) : userProfile.avatar_value ? (
+                          <img 
+                            src={userProfile.avatar_value} 
+                            alt={userProfile.name} 
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            referrerPolicy="no-referrer"
+                          />
+                        ) : (
+                          <span>👤</span>
+                        )}
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                        <span style={{ fontWeight: '700', fontSize: '14px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                          {userProfile.name}
+                        </span>
+                        <span style={{ fontSize: '11px', color: 'var(--text-secondary)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                          {userProfile.email}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Quick Info / Role */}
+                    <div style={{ display: 'flex', justifycontent: 'space-between', alignItems: 'center', backgroundColor: 'rgba(var(--primary-blue-rgb), 0.05)', padding: '6px 10px', borderRadius: '8px', fontSize: '12px' }}>
+                      <span style={{ color: 'var(--text-secondary)' }}>
+                        {language === 'UZ' ? 'Rol' : language === 'RU' ? 'Роль' : 'Role'}
+                      </span>
+                      <span style={{ fontWeight: '600', color: 'var(--primary-blue)' }}>
+                        {userProfile.role || 'Tourist'}
+                      </span>
+                    </div>
+
+                    {/* Actions */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      {userProfile.avatar_type === 'url' && userProfile.avatar_value && (
+                        <button
+                          onClick={handleDeleteAvatar}
+                          style={{
+                            padding: '8px 12px',
+                            borderRadius: '10px',
+                            border: '1px solid var(--border-card)',
+                            backgroundColor: 'transparent',
+                            color: 'var(--text-primary)',
+                            fontSize: '12px',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            textAlign: 'left',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            transition: 'background-color 0.2s ease',
+                          }}
+                          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : '#f5f5f5'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                        >
+                          🦊 {language === 'UZ' ? 'Hayvon emojisi qilish' : language === 'RU' ? 'Сделать животное эмодзи' : 'Use animal emoji'}
+                        </button>
+                      )}
+
+                      <button
+                        onClick={handleLogout}
+                        style={{
+                          padding: '8px 12px',
+                          borderRadius: '10px',
+                          border: 'none',
+                          backgroundColor: '#ff4d4f',
+                          color: '#fff',
+                          fontSize: '12px',
+                          fontWeight: '600',
+                          cursor: 'pointer',
+                          textAlign: 'center',
+                          marginTop: '4px',
+                          transition: 'opacity 0.2s ease',
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.9'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
+                      >
+                        {language === 'UZ' ? 'Chiqish' : language === 'RU' ? 'Выйти' : 'Log out'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
-      {/* 🧭 Region Ribbon (Mobile/Tablet Only) */}
+      {false ? (
+        // Klook-Style Split Column Auth Gate (disabled — login via modal)
+        <div style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '60px 24px',
+          background: theme === 'dark' ? 'radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%)' : 'radial-gradient(circle at 50% 50%, #f8fafc 0%, #e2e8f0 100%)',
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          {/* Shimmer background shapes */}
+          <div style={{
+            position: 'absolute',
+            width: '300px',
+            height: '300px',
+            borderRadius: '50%',
+            background: 'var(--primary-blue)',
+            filter: 'blur(100px)',
+            opacity: 0.1,
+            top: '10%',
+            left: '15%',
+            pointerEvents: 'none'
+          }} />
+          <div style={{
+            position: 'absolute',
+            width: '300px',
+            height: '300px',
+            borderRadius: '50%',
+            background: 'var(--deep-turquoise)',
+            filter: 'blur(100px)',
+            opacity: 0.1,
+            bottom: '10%',
+            right: '15%',
+            pointerEvents: 'none'
+          }} />
+
+          {/* Klook-Style Split Column Card */}
+          <div className="klook-auth-card">
+            
+            {/* Left Column: QR Code scanner */}
+            <div className="klook-auth-left" style={{ borderRight: '1px solid var(--border-card)' }}>
+              <h3 style={{ fontSize: '20px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '8px' }}>
+                {language === 'UZ' ? 'Kirish uchun skanerlang' : language === 'RU' ? 'Сканируйте для входа' : 'Scan to log in'}
+              </h3>
+              <p style={{ fontSize: '13.5px', color: 'var(--text-secondary)', marginBottom: '24px', textAlign: 'center' }}>
+                {language === 'UZ' ? 'Antigravity ilovasini ochib skanerlang' : language === 'RU' ? 'Откройте приложение Antigravity' : 'Open Antigravity app to scan'} <span style={{ cursor: 'pointer', color: 'var(--primary-blue)' }}>ⓘ</span>
+              </p>
+              
+              {/* QR Container */}
+              <div style={{
+                width: '180px',
+                height: '180px',
+                padding: '12px',
+                backgroundColor: '#ffffff',
+                border: '1px solid #e0e0e0',
+                borderRadius: '16px',
+                boxShadow: '0 4px 16px rgba(0,0,0,0.05)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '24px',
+                position: 'relative'
+              }}>
+                <img
+                  src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=antigravity-login"
+                  alt="Login QR Code"
+                  style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                />
+              </div>
+              
+              <span style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '500' }}>
+                {language === 'UZ' ? 'Faollik muddati: ' : language === 'RU' ? 'Действителен в течение: ' : 'Valid for '} 
+                <span style={{ color: 'var(--primary-blue)', fontWeight: '700' }}>
+                  00:{qrTimer < 10 ? '0' + qrTimer : qrTimer}
+                </span>
+              </span>
+            </div>
+
+            {/* Right Column: Google, Email, Apple Auth Forms */}
+            <div className="klook-auth-right">
+              {/* Brand Logo Header */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '28px' }}>
+                <div style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '8px',
+                  background: 'linear-gradient(135deg, var(--primary-blue) 0%, var(--deep-turquoise) 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#fff',
+                }}>
+                  <Compass size={18} />
+                </div>
+                <span style={{ fontSize: '16px', fontWeight: 800, letterSpacing: '0.02em', color: 'var(--text-primary)' }}>
+                  {activeRegion === '' ? 'O\'ZBEKISTON' : activeRegion === 'cross_region' ? 'O\'ZBEKISTON' : activeRegion.toUpperCase()} <span style={{ color: 'var(--primary-blue)' }}>CRAFTOUR</span>
+                </span>
+              </div>
+
+              {/* Title */}
+              <h2 style={{
+                fontSize: '24px',
+                fontWeight: 700,
+                color: 'var(--text-primary)',
+                marginBottom: '32px',
+                textAlign: 'left'
+              }}>
+                {language === 'UZ' ? 'Kirish yoki ro\'yxatdan o\'tish' : language === 'RU' ? 'Вход или регистрация' : 'Log in or sign up'}
+              </h2>
+
+              {/* Action Buttons Grid */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%', marginBottom: '24px' }}>
+                
+                {/* Custom Google Button wrapping the GSI hidden target */}
+                <div style={{ position: 'relative', width: '100%', height: '44px' }}>
+                  <div 
+                    id="google-signin-button" 
+                    style={{ 
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      height: '100%',
+                      opacity: 0.01,
+                      zIndex: 10,
+                      cursor: 'pointer',
+                      overflow: 'hidden'
+                    }}
+                  ></div>
+
+                  <button
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      height: '100%',
+                      borderRadius: '8px',
+                      border: 'none',
+                      backgroundColor: theme === 'dark' ? '#334155' : '#f5f5f5',
+                      color: 'var(--text-primary)',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '12px',
+                      transition: 'background-color 0.2s ease',
+                      zIndex: 1
+                    }}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24">
+                      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                    </svg>
+                    <span>Google</span>
+                  </button>
+                </div>
+
+                {/* Email Button */}
+                <button
+                  onClick={() => {
+                    alert(language === 'UZ' ? 'Email orqali ro\'yxatdan o\'tish hozircha mavjud emas. Iltimos Google orqali kiring.' : language === 'RU' ? 'Вход по Email временно недоступен. Пожалуйста, используйте Google.' : 'Email sign-in is temporarily unavailable. Please use Google Auth.');
+                  }}
+                  style={{
+                    width: '100%',
+                    height: '44px',
+                    borderRadius: '8px',
+                    border: '1px solid var(--text-primary)',
+                    backgroundColor: 'transparent',
+                    color: 'var(--text-primary)',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '12px',
+                    transition: 'background-color 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(var(--primary-blue-rgb), 0.05)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                >
+                  <Mail size={16} />
+                  <span>Email</span>
+                </button>
+
+                {/* Apple Button */}
+                <button
+                  onClick={() => {
+                    alert(language === 'UZ' ? 'Apple ID orqali kirish hozircha mavjud emas. Iltimos Google orqali kiring.' : language === 'RU' ? 'Вход через Apple временно недоступен. Пожалуйста, используйте Google.' : 'Apple Sign-In is temporarily unavailable. Please use Google Auth.');
+                  }}
+                  style={{
+                    width: '100%',
+                    height: '44px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    backgroundColor: '#000000',
+                    color: '#ffffff',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '12px',
+                    transition: 'opacity 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.85'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff">
+                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.17c.66-.81 1.11-1.93.99-3.06-1 .04-2.2.67-2.92 1.49-.62.71-1.16 1.85-1.01 2.96 1.07.08 2.2-.55 2.94-1.39z"/>
+                  </svg>
+                  <span>Apple</span>
+                </button>
+              </div>
+
+              {/* More options link */}
+              <span 
+                onClick={() => {
+                  alert(language === 'UZ' ? 'Boshqa variantlar mavjud emas.' : language === 'RU' ? 'Другие варианты недоступны.' : 'No other login methods available.');
+                }}
+                style={{
+                  fontSize: '13px',
+                  color: 'var(--text-secondary)',
+                  textDecoration: 'underline',
+                  cursor: 'pointer',
+                  textAlign: 'center',
+                  marginBottom: '40px'
+                }}
+              >
+                {language === 'UZ' ? 'Boshqa usullar' : language === 'RU' ? 'Другие способы' : 'More options'}
+              </span>
+
+              {/* Terms disclaimer */}
+              <p style={{
+                fontSize: '11px',
+                color: '#9e9e9e',
+                lineHeight: '1.5',
+                textAlign: 'center',
+                margin: 0
+              }}>
+                {language === 'UZ' ? (
+                  <>
+                    Ro'yxatdan o'tish yoki kirish orqali siz Antigravity platformasining{' '}
+                    <span style={{ textDecoration: 'underline', cursor: 'pointer' }}>Foydalanish shartlari</span> va{' '}
+                    <span style={{ textDecoration: 'underline', cursor: 'pointer' }}>Maxfiylik siyosatiga</span> rozilik bildirasiz.
+                  </>
+                ) : language === 'RU' ? (
+                  <>
+                    Регистрируясь или входя в систему, вы соглашаетесь с{' '}
+                    <span style={{ textDecoration: 'underline', cursor: 'pointer' }}>Условиями использования</span> и{' '}
+                    <span style={{ textDecoration: 'underline', cursor: 'pointer' }}>Политикой конфиденциальности</span> Antigravity.
+                  </>
+                ) : (
+                  <>
+                    By signing up or logging in, you acknowledge and agree to Antigravity's{' '}
+                    <span style={{ textDecoration: 'underline', cursor: 'pointer' }}>General Terms of Use</span> and{' '}
+                    <span style={{ textDecoration: 'underline', cursor: 'pointer' }}>Privacy Policy</span>.
+                  </>
+                )}
+              </p>
+            </div>
+          </div>
+
+          {/* Admin link on Auth Gate */}
+          <div style={{ marginTop: '24px', zIndex: 1 }}>
+            <a
+              href="/admin"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                color: '#9e9e9e',
+                textDecoration: 'none',
+                fontSize: '12px',
+                opacity: 0.6,
+                transition: 'opacity 0.2s',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.opacity = 1; }}
+              onMouseLeave={(e) => { e.currentTarget.style.opacity = 0.6; }}
+            >
+              <Lock size={12} />
+              <span>{language === 'RU' ? 'Панель администратора' : 'Admin Portal'}</span>
+            </a>
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* 🧭 Region Ribbon (Mobile/Tablet Only) */}
       <div 
         className="ribbon-switcher"
         style={{
@@ -3516,6 +4128,7 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
                 numDays={numDays}
                 transportType={transportType}
                 selectedTrain={selectedTrain}
+                userProfile={userProfile}
               />
               )}
             </section>
@@ -3686,6 +4299,262 @@ export default function ClientDashboard({ initialLocations = [], initialGuides =
           <span>{language === 'RU' ? 'Панель администратора' : 'Admin Portal'}</span>
         </a>
       </footer>
-    </main>
+    </>
+  )}
+
+      {/* 🔐 Login Modal Overlay */}
+      {showLoginModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.6)',
+          backdropFilter: 'blur(8px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 99999,
+          padding: '24px'
+        }}
+        onClick={(e) => {
+          if (e.target === e.currentTarget) {
+            setShowLoginModal(false);
+          }
+        }}>
+          <div style={{ position: 'relative', width: '100%', maxWidth: '480px' }}>
+            <button
+              onClick={() => setShowLoginModal(false)}
+              style={{
+                position: 'absolute',
+                top: '16px',
+                right: '16px',
+                width: '32px',
+                height: '32px',
+                borderRadius: '50%',
+                border: 'none',
+                backgroundColor: theme === 'dark' ? '#334155' : '#f5f5f5',
+                color: 'var(--text-primary)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 100,
+                fontSize: '16px',
+                fontWeight: 'bold',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+              }}
+            >
+              ✕
+            </button>
+
+            {/* Klook-Style Centered Card */}
+            <div className="klook-auth-card" style={{ margin: 0, boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
+              {/* Brand Logo Header */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '28px' }}>
+                <div style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '8px',
+                  background: 'linear-gradient(135deg, var(--primary-blue) 0%, var(--deep-turquoise) 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#fff',
+                }}>
+                  <Compass size={18} />
+                </div>
+                <span style={{ fontSize: '16px', fontWeight: 800, letterSpacing: '0.02em', color: 'var(--text-primary)' }}>
+                  {activeRegion === '' ? "O'ZBEKISTON" : activeRegion === 'cross_region' ? "O'ZBEKISTON" : activeRegion.toUpperCase()} <span style={{ color: 'var(--primary-blue)' }}>CRAFTOUR</span>
+                </span>
+              </div>
+
+              {/* Title */}
+              <h2 style={{
+                fontSize: '24px',
+                fontWeight: 700,
+                color: 'var(--text-primary)',
+                marginBottom: '32px',
+                textAlign: 'center'
+              }}>
+                {language === 'UZ' ? "Kirish yoki ro'yxatdan o'tish" : language === 'RU' ? 'Вход или регистрация' : 'Log in or sign up'}
+              </h2>
+
+              {/* Action Buttons Grid */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%', marginBottom: '24px' }}>
+                
+                {/* Google Button */}
+                <div style={{ position: 'relative', width: '100%', height: '48px' }}>
+                  <div 
+                    id="google-signin-button-modal" 
+                    style={{ 
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      height: '100%',
+                      opacity: 0.01,
+                      zIndex: 10,
+                      cursor: 'pointer',
+                      overflow: 'hidden'
+                    }}
+                  ></div>
+
+                  <button
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      height: '100%',
+                      borderRadius: '8px',
+                      border: 'none',
+                      backgroundColor: theme === 'dark' ? '#334155' : '#f5f5f5',
+                      color: 'var(--text-primary)',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '12px',
+                      transition: 'background-color 0.2s ease',
+                      zIndex: 1
+                    }}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24">
+                      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                    </svg>
+                    <span>{language === 'UZ' ? 'Google orqali davom etish' : language === 'RU' ? 'Продолжить с Google' : 'Continue with Google'}</span>
+                  </button>
+                </div>
+
+                {/* Email / Phone Button */}
+                <button
+                  onClick={() => {
+                    alert(language === 'UZ' ? "Email orqali ro'yxatdan o'tish hozircha mavjud emas. Iltimos Google orqali kiring." : language === 'RU' ? 'Вход по Email временно недоступен. Пожалуйста, используйте Google.' : 'Email sign-in is temporarily unavailable. Please use Google Auth.');
+                  }}
+                  style={{
+                    width: '100%',
+                    height: '48px',
+                    borderRadius: '8px',
+                    border: '1px solid var(--text-primary)',
+                    backgroundColor: 'transparent',
+                    color: 'var(--text-primary)',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '12px',
+                    transition: 'background-color 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(var(--primary-blue-rgb), 0.05)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                >
+                  <Mail size={16} />
+                  <span>Email / Phone</span>
+                </button>
+
+                {/* Apple ID Button */}
+                <button
+                  onClick={() => {
+                    alert(language === 'UZ' ? "Apple ID orqali kirish hozircha mavjud emas. Iltimos Google orqali kiring." : language === 'RU' ? 'Вход через Apple временно недоступен. Пожалуйста, используйте Google.' : 'Apple Sign-In is temporarily unavailable. Please use Google Auth.');
+                  }}
+                  style={{
+                    width: '100%',
+                    height: '48px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    backgroundColor: '#000000',
+                    color: '#ffffff',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '12px',
+                    transition: 'opacity 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.85'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff">
+                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.17c.66-.81 1.11-1.93.99-3.06-1 .04-2.2.67-2.92 1.49-.62.71-1.16 1.85-1.01 2.96 1.07.08 2.2-.55 2.94-1.39z"/>
+                  </svg>
+                  <span>Apple ID</span>
+                </button>
+
+                {/* Telegram Button */}
+                <button
+                  onClick={() => {
+                    alert(language === 'UZ' ? "Telegram orqali kirish hozircha mavjud emas. Iltimos Google orqali kiring." : language === 'RU' ? 'Вход через Telegram временно недоступен. Пожалуйста, используйте Google.' : 'Telegram Sign-In is temporarily unavailable. Please use Google Auth.');
+                  }}
+                  style={{
+                    width: '100%',
+                    height: '48px',
+                    borderRadius: '8px',
+                    border: '1px solid #229ED9',
+                    backgroundColor: 'transparent',
+                    color: '#229ED9',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '12px',
+                    transition: 'background-color 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(34, 158, 217, 0.05)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#229ED9">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.18-.08-.04-.19-.01-.27.01-.12.02-2.03 1.28-5.73 3.77-.54.37-1.03.55-1.47.54-.48-.01-1.4-.27-2.09-.5-.85-.28-1.53-.43-1.47-.91.03-.25.38-.51 1.05-.78 4.12-1.79 6.87-2.97 8.24-3.55 3.92-1.66 4.73-1.95 5.26-1.96.12 0 .38.03.55.17.14.12.18.28.2.4.02.1.03.28.02.39z"/>
+                  </svg>
+                  <span>Telegram</span>
+                </button>
+              </div>
+
+              {/* Terms disclaimer */}
+              <p style={{
+                fontSize: '11px',
+                color: '#9e9e9e',
+                lineHeight: '1.5',
+                textAlign: 'center',
+                margin: 0
+              }}>
+                {language === 'UZ' ? (
+                  <>
+                    {"Ro'yxatdan o'tish yoki kirish orqali siz Antigravity platformasining"}{' '}
+                    <span style={{ textDecoration: 'underline', cursor: 'pointer' }}>Foydalanish shartlari</span>{" va"}{' '}
+                    <span style={{ textDecoration: 'underline', cursor: 'pointer' }}>Maxfiylik siyosatiga</span>{" rozilik bildirasiz."}
+                  </>
+                ) : language === 'RU' ? (
+                  <>
+                    {"Регистрируясь или входя в систему, вы соглашаетесь с"}{' '}
+                    <span style={{ textDecoration: 'underline', cursor: 'pointer' }}>Условиями использования</span>{" и"}{' '}
+                    <span style={{ textDecoration: 'underline', cursor: 'pointer' }}>Политикой конфиденциальности</span>{" Antigravity."}
+                  </>
+                ) : (
+                  <>
+                    {"By signing up or logging in, you acknowledge and agree to Antigravity's"}{' '}
+                    <span style={{ textDecoration: 'underline', cursor: 'pointer' }}>General Terms of Use</span>{" and"}{' '}
+                    <span style={{ textDecoration: 'underline', cursor: 'pointer' }}>Privacy Policy</span>.
+                  </>
+                )}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+  </main>
   );
 }

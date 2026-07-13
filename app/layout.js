@@ -1,4 +1,5 @@
 import { Playfair_Display, Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -28,6 +29,10 @@ export default function RootLayout({ children }) {
           href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
           integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
           crossOrigin=""
+        />
+        <Script 
+          src="https://accounts.google.com/gsi/client" 
+          strategy="beforeInteractive"
         />
       </head>
       <body suppressHydrationWarning>{children}</body>

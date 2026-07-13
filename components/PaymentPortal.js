@@ -427,7 +427,12 @@ export default function PaymentPortal({
           padding: '28px',
           position: 'relative',
           border: '1px solid rgba(var(--primary-blue-rgb), 0.35)',
-          backgroundColor: 'var(--bg-card)',
+          backgroundColor: '#0f172a',
+          '--bg-card': '#0f172a',
+          '--border-card': 'rgba(var(--primary-blue-rgb), 0.35)',
+          '--text-primary': '#ffffff',
+          '--text-secondary': '#94a3b8',
+          '--bg-dark': '#0a0f1d',
           display: 'flex',
           flexDirection: 'column',
           gap: '20px'

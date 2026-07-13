@@ -134,7 +134,11 @@ export default function VerificationModal({
           padding: '24px',
           position: 'relative',
           border: '1px solid rgba(212, 175, 55, 0.4)',
-          backgroundColor: '#0f172a'
+          backgroundColor: '#0f172a',
+          '--bg-card': '#0f172a',
+          '--border-card': 'rgba(212, 175, 55, 0.4)',
+          '--text-primary': '#ffffff',
+          '--text-secondary': '#94a3b8'
         }}
       >
         {/* Close Button */}
