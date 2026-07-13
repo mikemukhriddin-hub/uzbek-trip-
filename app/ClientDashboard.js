@@ -128,43 +128,43 @@ const REGIONS_CONFIG = [
 
 const REGIONAL_COVERS = {
   samarqand: {
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Registan_square_Samarkand.jpg/960px-Registan_square_Samarkand.jpg',
-    descUz: 'Samarqand — dunyoning eng qadimiy shaharlaridan biri, Buyuk Ipak yoʻlining chorrahasi va Temuriylar imperiyasining poytaxti. Bu yerda afsonaviy Registon maydoni, Amir Temur maqbarasi (Go\'ri Amir), Shohi Zinda me\'moriy majmuasi va dunyoga mashhur tarixiy obidalar joylashgan. Registonning muhtasham madrasalari o\'zining feruza gumbazlari va koshin bezaklari bilan butun dunyo sayohatchilarini hayratga soladi. Samarqand nonlari va milliy taomlari o\'ziga xos ta\'mga ega.',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/0/00/Registan_square_Samarkand.jpg',
+    descUz: 'Samarqand — dunyoning eng qadimiy shaharlaridan biri, Buyuk Ipak yoʻlining chorrahasi va Temuriylar imperiyasining poytaxti. Bu yerda afsonaviy Registon maydoni, Amir Temur maqbarasi (Go\'ri Amir), Shohi Zinda me\'moriy majmuasi va dunyoga mashhur tarixiy obidalar joylagan. Registonning muhtasham madrasalari o\'zining feruza gumbazlari va koshin bezaklari bilan butun dunyo sayohatchilarini hayratga soladi. Samarqand nonlari va milliy taomlari o\'ziga xos ta\'mga ega.',
     descRu: 'Самарканд — один из старейших городов мира, перекресток Великого шелкового пути и столица империи Темуридов. Здесь находятся легендарная площадь Регистан, мавзолей Амира Темура (Гур-Эмир), архитектурный ансамбль Шахи-Зинда и всемирно известные исторические памятники. Величественные медресе Регистана с бирюзовыми куполами и изразцовым декором поражают воображение путешественников со всего мира.',
     descEn: 'Samarkand is one of the oldest cities in the world, the crossroads of the Silk Road, and the capital of the Timurid Empire. It is home to the legendary Registan Square, the Mausoleum of Amir Timur (Gur-i Amir), the Shah-i-Zinda architectural complex, and world-renowned monuments. The majestic madrasahs of Registan, with their turquoise domes and intricate mosaic tilework, continue to awe travelers worldwide.'
   },
   buxoro: {
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Poi_Kalon.jpg/960px-Poi_Kalon.jpg',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/9/92/Poi_Kalon.jpg',
     descUz: 'Buxoro — sharq durdonasi, islom olamining muqaddas shaharlaridan biri va ochiq osmon ostidagi muzey. 2500 yildan ortiq tarixga ega bu shaharda Poi Kalon minorasi, qadimiy Ark qal\'asi, Labi Hovuz ansambli va Chor Minor madrasasi qad rostlab turibdi. Buxoroning tor va qadimiy ko\'chalari, tarixiy savdo toqlari sizni o\'tmishga olib boradi. Buxoro zargarlik, gilamdo\'zlik va misgarlik san\'ati bilan mashhur.',
     descRu: 'Бухара — жемчужина Востока, один из священных городов ислама и настоящий музей под открытым небом. В этом городе с более чем 2500-летней историей возвышаются минарет Пои-Калян, древняя крепость Арк, ансамбль Ляби-Хауз и медресе Чор-Минор. Узкие старинные улочки и торговые купола переносят в атмосферу восточной сказки.',
     descEn: 'Bukhara is the pearl of the East, one of the holy cities of Islam, and a living open-air museum. With a history spanning over 2,500 years, it features the Poi Kalyan Minaret, the ancient Ark of Bukhara fortress, the Lyabi-Khauz ensemble, and Chor Minor. The narrow streets and historical trading domes immerse you in the atmosphere of the ancient Silk Road bazaar.'
   },
   xorazm: {
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Ichan_Kala_Khiva.jpg/960px-Ichan_Kala_Khiva.jpg',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/d/d2/Konya_Ark_towers_%28%D0%A6%D0%B8%D1%82%D0%B0%D0%B4%D0%B5%D0%BB%D1%8C_%D0%9A%D1%83%D0%BD%D1%8F-%D0%90%D1%80%D0%BA%2C_Ko%CA%BBhna_ark%29%2C_Itchan_Kala%2C_Khiva.jpg',
     descUz: 'Xiva — ertaklar shahri, sahro bag\'ridagi tirik obida. Uning markaziy qismi — Ichan Qal\'a to\'liqligicha saqlanib qolgan yagona o\'rta asr shachar-qal\'asidir. Kalta Minor, Islom Xo\'ja minorasi va Tosh Hovli saroyi o\'zining betakror xorazmcha ko\'k koshinlari bilan mashhur. Xiva ko\'chalarida yurganda o\'zingizni ming bir kecha ertaklarida yurgandek his qilasiz.',
     descRu: 'Хива — город-сказка, живой памятник посреди пустыни. Ее исторический центр — Ичан-Кала — единственный полностью сохранившийся средневековый город-крепость в Центральной Азии. Кальта-Минор, минарет Ислам-Ходжа и дворец Таш-Хаули славятся уникальной хорезмской майоликой.',
     descEn: 'Khiva is a fairytale city, a living monument preserved in the heart of the desert. Its inner fortress, Ichan-Kala, is the only completely intact medieval walled city in Central Asia. The Kalta-Minor Minaret, Islam-Khodja Minaret, and Tosh Khauli Palace showcase stunning, unique Khorezmian blue tiles.'
   },
   shahrisabz: {
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Aq_Saroy_Palace_Ruins.jpg/960px-Aq_Saroy_Palace_Ruins.jpg',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/d/dc/Portico_of_Ak-Saray_Palace_-_Shakhrisabz_-_Uzbekistan_%287494239284%29.jpg',
     descUz: 'Shahrisabz — Amir Temurning tug\'ilgan va voyaga yetgan shahri, qadimiy Kesh. Bu yerda Temurning eng ulug\'vor loyihasi bo\'lmish Oqsaroy saroyi xarobalari, Dorut Tilovat va Dorus Siyodat majmualari joylashgan. Shahrisabz tog\' etaklarida joylashgan bo\'lib, toza tog\' havosi va boy uzumzorlari bilan azralib turadi.',
     descRu: 'Шахрисабз — родина Амира Темура, древний Кеш. Здесь находятся руины грандиозного дворца Ак-Сарай, крупнейшего проекта Темура, а также мемориальные комплексы Дорут-Тиловат и Дорус-Сиядат. Город расположен у подножия гор и славится свежим горным воздухом и виноградниками.',
     descEn: 'Shakhrisabz is the birthplace of Amir Timur, historically known as Kesh. It houses the ruins of the colossal Ak-Saray Palace—Timur’s grandest building project—as well as the Dorut Tilovat and Dorus Siyodat complexes. Nestled at the foot of the mountains, it offers scenic mountain views and rich vineyards.'
   },
   toshkent: {
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Amir_Timur_Square_Tashkent.jpg/960px-Amir_Timur_Square_Tashkent.jpg',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/e/e1/Khazrat_Imam_panorama.jpg',
     descUz: 'Toshkent — O\'zbekistonning poytaxti, Markaziy Osiyodagi eng yirik megapolis. Zamonaviy osmono\'par binolar qadimiy Chorsu bozori, Hazrati Imom (Xast Imom) majmuasi va dunyoning eng qadimiy Usmon Qur\'oni saqlanayotgan kutubxona bilan uyg\'unlashgan. Chiroyli metro bekatlari va yashil bog\'lari bilan tanilgan.',
     descRu: 'Ташкент — столица Узбекистана, крупнейший мегаполис Центральной Азии. Современные небоскребы гармонично сочетаются с древним базаром Чорсу, комплексом Хазрет Имам (Хаст Имам) и библиотекой, где хранится древнейший Коран Усмана. Город славится красивым метро и зелеными парками.',
     descEn: 'Tashkent is the capital of Uzbekistan and the largest metropolis in Central Asia. Modern skyscrapers stand alongside the historic Chorsu Bazaar and Hazrati Imam (Khast Imam) complex, which houses the world\'s oldest Uthman Quran. Tashkent is famous for its uniquely themed metro stations and lush green parks.'
   },
   qoraqalpoq: {
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Nukus_Museum_of_Art.jpg/960px-Nukus_Museum_of_Art.jpg',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/8/89/The_Karakalpakstan_State_Museum_of_Art_named_after_I.V._Savitsky.jpg',
     descUz: 'Qoraqalpog\'iston — sirli o\'lka, Nukus shahridagi mashhur Savitskiy muzeyi (sahrodagi Luvr) va ekologik fojia timsoli bo\'lgan Orol dengizi hamda kemalar qabristoni bilan tanilgan. Bu yerda Ustyurt platosi va ko\'plab qadimiy qal\'alar (Chilpiq daxmasi) joylashgan bo\'lib, sarguzasht izlovchilar uchun ajoyib maskandir.',
     descRu: 'Каракалпакстан — загадочный край, известный всемирно популярным музеем Савицкого в Нукусе (Лувр в пустыне), Аральским морем и кладбищем кораблей в Муйнаке. Здесь также находятся плато Устюрт и множество древних крепостей (например, дахма Чилпык).',
     descEn: 'Karakalpakstan is a land of mystery, home to the famous Savitsky Art Museum in Nukus (often called the "Louvre in the Desert"), the Aral Sea ship graveyard in Muynaq, and the vast Ustyurt Plateau. It features ancient fortresses like Chilpyk Dahma, making it a dream destination for adventurers.'
   },
   cross_region: {
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Registan_square_Samarkand.jpg/960px-Registan_square_Samarkand.jpg',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/0/00/Registan_square_Samarkand.jpg',
     descUz: 'Viloyatlararo Kombinatsiyalangan tur — butun O\'zbekiston bo\'ylab unutilmas sayohat. Toshkent poytaxtining zamonaviyligi, Samarqand va Buxoroning ko\'hna madrasalari, Xivaning ertaknamo qal\'alari hamda Mo\'ynoqdagi Orol dengizi bo\'ylab yaxlit sayohat dasturini tuzing. Afrosiyob tezyurar poyezdi yordamida shaharlararo silliq sayohat qiling.',
     descRu: 'Межрегиональный комбинированный тур — незабываемое путешествие по всему Узбекистану. Объедините в один маршрут современность Ташкента, древность Самарканда и Бухары, сказочность Хивы и тайны Аральского моря в Муйнаке. Пользуйтесь высокоскоростными поездами.',
     descEn: 'Cross-Region Custom Tour — the ultimate adventure across Uzbekistan. Combine the modern capital of Tashkent, the historic marvels of Samarkand and Bukhara, the fairytale walls of Khiva, and the desert landscapes of Karakalpakstan into one single seamless itinerary.'
